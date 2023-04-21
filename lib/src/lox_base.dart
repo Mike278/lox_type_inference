@@ -92,7 +92,7 @@ List<Token> scanTokens(String source) {
 
   void number() {
     consumeDigits();
-    if (current < source.length && source[current] == '.' && source.codeUnitAt(current+1).isDigit) {
+    if (current+1 < source.length && source[current] == '.' && source.codeUnitAt(current+1).isDigit) {
       current++;
       consumeDigits();
     }
