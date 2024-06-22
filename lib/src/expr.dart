@@ -2,9 +2,25 @@ import 'package:lox/src/lox_base.dart';
 
 sealed class Expr {}
 
-class Literal extends Expr {
+sealed class Literal extends Expr {
   final Object? value;
   Literal(this.value);
+}
+
+class StringLiteral extends Literal {
+  StringLiteral(String super.value);
+}
+class NumberLiteral extends Literal {
+  NumberLiteral(num super.value);
+}
+class FalseLiteral extends Literal {
+  FalseLiteral() : super(false);
+}
+class TrueLiteral extends Literal {
+  TrueLiteral() : super(true);
+}
+class NilLiteral extends Literal {
+  NilLiteral() : super(null);
 }
 
 class Unary extends Expr {

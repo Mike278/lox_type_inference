@@ -1,4 +1,8 @@
 import 'dart:io';
+
+import 'package:lox/src/expr.dart';
+import 'package:lox/src/parser.dart';
+import 'package:lox/src/utils.dart';
 // ignore_for_file: constant_identifier_names
 
 void main(List<String> args) {
@@ -30,15 +34,25 @@ void runFile(String path) {
 void run(String source) {
   final tokens = scanTokens(source);
 
-  for (final token in tokens) {
-    print(token);
-  }
+  final parser = Parser(tokens);
+  final expr = parser.parse();
+
+  if (hadError) return;
+
+  print(expr?.run(display));
 }
 
 
 var hadError = false;
 void error(int line, String message) {
   report(line, "", message);
+}
+void errorForToken(Token token, String message) {
+  if (token.type == TokenType.EOF) {
+    report(token.line, ' at end', message);
+  } else {
+    report(token.line, " at '${token.lexeme}'", message);
+  }
 }
 
 void report(int line, String where, String message) {
