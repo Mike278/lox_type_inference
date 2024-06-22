@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:lox/src/expr.dart';
+import 'package:lox/src/interpreter.dart';
 import 'package:lox/src/parser.dart';
 import 'package:lox/src/utils.dart';
 // ignore_for_file: constant_identifier_names
@@ -29,6 +30,7 @@ void runPrompt() {
 void runFile(String path) {
   run(File(path).readAsStringSync());
   if (hadError) exit(65);
+  if (hadRuntimeError) exit(70);
 }
 
 void run(String source) {
@@ -39,9 +41,14 @@ void run(String source) {
 
   if (hadError) return;
 
-  print(expr?.run(display));
+  if (expr == null) {
+    print(null);
+  } else {
+    Interpreter().interpret(expr);
+  }
 }
 
+var hadRuntimeError = false;
 
 var hadError = false;
 void error(int line, String message) {

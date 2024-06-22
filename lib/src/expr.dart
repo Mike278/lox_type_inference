@@ -23,10 +23,16 @@ class NilLiteral extends Literal {
   NilLiteral() : super(null);
 }
 
-class Unary extends Expr {
+sealed class Unary extends Expr {
   final Token operator;
   final Expr expr;
   Unary(this.operator, this.expr);
+}
+class UnaryMinus extends Unary {
+  UnaryMinus(super.operator, super.expr);
+}
+class UnaryBang extends Unary {
+  UnaryBang(super.operator, super.expr);
 }
 
 class Binary extends Expr {

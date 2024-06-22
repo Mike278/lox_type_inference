@@ -143,13 +143,15 @@ class Parser {
   // unary          → ( "!" | "-" ) unary
   //                | primary ;
   Expr unary() {
-    if (matchFirst(
-      TokenType.BANG,
-      TokenType.MINUS,
-    )) {
+    if (matchFirst(TokenType.BANG)) {
       final operator = previous();
       final right = unary();
-      return Unary(operator, right);
+      return UnaryBang(operator, right);
+    }
+    if (matchFirst(TokenType.MINUS)) {
+      final operator = previous();
+      final right = unary();
+      return UnaryMinus(operator, right);
     }
 
     return primary();
