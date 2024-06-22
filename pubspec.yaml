@@ -4,11 +4,12 @@ version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: '>=3.0.0-edge.0a0c30b15e8d077d47add10acf61805161af25ae <3.0.1'
+  sdk: ^3.3.4
 
-# dependencies:
-#   path: ^1.8.0
+dependencies:
+  analyzer:
+  path:
 
 dev_dependencies:
-  lints: ^2.0.0
-  test: ^1.21.0
+  lints:
+  test:
