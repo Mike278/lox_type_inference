@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:lox/src/interpreter.dart';
 import 'package:lox/src/parser.dart';
+
+import 'env.dart';
 // ignore_for_file: constant_identifier_names
 
 void main(List<String> args) {
@@ -16,22 +18,23 @@ void main(List<String> args) {
 }
 
 void runPrompt() {
+  final env = Env();
   while (true) {
     print('> ');
     final line = stdin.readLineSync();
     if (line == null) break;
-    run(line);
+    run(line, env);
     hadError = false;
   }
 }
 
 void runFile(String path) {
-  run(File(path).readAsStringSync());
+  run(File(path).readAsStringSync(), Env());
   if (hadError) exit(65);
   if (hadRuntimeError) exit(70);
 }
 
-void run(String source) {
+void run(String source, Env env) {
   final tokens = scanTokens(source);
 
   final parser = Parser(tokens);
@@ -39,7 +42,7 @@ void run(String source) {
 
   if (hadError) return;
 
-  Interpreter().interpret(statements);
+  Interpreter(env).interpret(statements);
 }
 
 var hadRuntimeError = false;
