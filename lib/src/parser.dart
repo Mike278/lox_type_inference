@@ -8,7 +8,10 @@ import 'package:lox/src/utils.dart';
 //                | statement ;
 // varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 // statement      → exprStmt
-//                | printStmt ;
+//                | printStmt
+//                | block
+//                ;
+// block          → "{" declaration* "}" ;
 // exprStmt       → expression ";" ;
 // printStmt      → "print" expression ";" ;
 // expression     → equality ;
@@ -113,10 +116,24 @@ class Parser {
   }
 
   // statement      → exprStmt
-  //                | printStmt ;
+  //                | printStmt
+  //                | block
+  //                ;
   Statement statement() {
     if (matchFirst(TokenType.PRINT)) return printStatement();
+    if (matchFirst(TokenType.LEFT_BRACE)) return Block(block());
     return expressionStatement();
+  }
+
+  // block          → "{" declaration* "}" ;
+  List<Statement> block() {
+    final statements = [
+      for (;!check(TokenType.RIGHT_BRACE) && !isAtEnd();)
+        if (declaration() case final decl?)
+          decl,
+    ];
+    consume(TokenType.RIGHT_BRACE, "Expected '}' after block.");
+    return statements;
   }
 
   Statement printStatement() {

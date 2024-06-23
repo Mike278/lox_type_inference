@@ -18,7 +18,7 @@ void main(List<String> args) {
 }
 
 void runPrompt() {
-  final env = Env();
+  final env = Env.global();
   while (true) {
     print('> ');
     final line = stdin.readLineSync();
@@ -29,7 +29,7 @@ void runPrompt() {
 }
 
 void runFile(String path) {
-  run(File(path).readAsStringSync(), Env());
+  run(File(path).readAsStringSync(), Env.global());
   if (hadError) exit(65);
   if (hadRuntimeError) exit(70);
 }
@@ -42,7 +42,7 @@ void run(String source, Env env) {
 
   if (hadError) return;
 
-  Interpreter(env).interpret(statements);
+  interpret(statements, env);
 }
 
 var hadRuntimeError = false;

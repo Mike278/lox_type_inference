@@ -79,3 +79,7 @@ class VariableDeclaration extends Statement {
   final Expr? initializer;
   VariableDeclaration(this.name, this.initializer);
 }
+class Block extends Statement {
+  final List<Statement> statements;
+  Block(this.statements);
+}
