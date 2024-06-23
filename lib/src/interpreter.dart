@@ -37,7 +37,7 @@ void execute(Statement statement, Env env) {
     case FunctionDeclaration(:final name, :final params, :final body):
       env[name] = (
         arity: params.length,
-        impl: (List<Object?> args, Env env) {
+        impl: (List<Object?> args) {
           final newEnv = Env(env);
           for (final (param, arg) in params.zipWith(args, makePair)) {
             newEnv[param] = arg;
@@ -106,10 +106,11 @@ Object? handleInvocation(
   if (args.length != arity) {
     throw LoxRuntimeException(closingParen, 'Expected $arity arguments but got ${args.length}');
   }
-  return impl([ for (final arg in args) eval(arg, env) ], env);
+  final evaluatedArgs = [ for (final arg in args) eval(arg, env) ];
+  return impl(evaluatedArgs);
 }
 
 typedef LoxFunction = ({
   int arity,
-  Object? Function(List<Object?> args, Env closure) impl,
+  Object? Function(List<Object?> args) impl,
 });

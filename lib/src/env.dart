@@ -3,7 +3,7 @@ import 'package:lox/src/interpreter.dart';
 
 final LoxFunction clock = (
   arity: 0,
-  impl: (args, env) => DateTime.now().millisecondsSinceEpoch / 1000,
+  impl: (args) => DateTime.now().millisecondsSinceEpoch / 1000,
 );
 
 class Env {
