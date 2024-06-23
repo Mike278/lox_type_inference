@@ -51,6 +51,12 @@ class Variable extends Expr {
   final Token name;
   Variable(this.name);
 }
+class Call extends Expr {
+  final Expr callee;
+  final List<Expr> args;
+  final Token closingParen;
+  Call(this.callee, this.args, this.closingParen);
+}
 
 String parens(String label, Iterable<Expr> exprs) =>
     '($label ${exprs.map(display).join(' ')})';
@@ -61,6 +67,7 @@ String display(Expr expr) => switch (expr) {
   Binary(:final operator, :final left, :final right) => parens(operator.lexeme, [left, right]),
   Grouping(:final expr)                              => parens('group', [expr]),
   Variable(:final name)                              => 'var ${name.lexeme}',
+  Call(:final callee, :final args)                   => parens('call', [callee, ...args]),
 };
 
 

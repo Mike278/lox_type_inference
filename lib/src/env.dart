@@ -1,10 +1,17 @@
 import 'package:lox/lox.dart';
 import 'package:lox/src/interpreter.dart';
 
+final LoxFunction clock = (
+  arity: 0,
+  impl: (args, env) => DateTime.now().millisecondsSinceEpoch / 1000,
+);
+
 class Env {
   final _values = <String, Object?>{};
   final Env? _enclosing;
-  Env.global() : _enclosing = null;
+  Env.global() : _enclosing = null {
+    _values['clock'] = clock;
+  }
   Env(this._enclosing);
 
   void operator[]=(Token name, Object? value) {

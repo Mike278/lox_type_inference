@@ -20,7 +20,9 @@ import 'package:lox/src/utils.dart';
 // term           → factor ( ( "-" | "+" ) factor )* ;
 // factor         → unary ( ( "/" | "*" ) unary )* ;
 // unary          → ( "!" | "-" ) unary
-//                | primary ;
+//                | call ;
+// call           → primary ( "(" arguments? ")" )* ;
+// arguments      → expression ( "," expression )* ;
 // primary        → NUMBER | STRING
 //                | "true" | "false" | "nil"
 //                | "(" expression ")"
@@ -210,7 +212,7 @@ class Parser {
   }
 
   // unary          → ( "!" | "-" ) unary
-  //                | primary ;
+  //                | call ;
   Expr unary() {
     if (matchFirst(TokenType.BANG)) {
       final operator = previous();
@@ -223,8 +225,41 @@ class Parser {
       return UnaryMinus(operator, right);
     }
 
-    return primary();
+    return call();
   }
+
+  // call           → primary ( "(" arguments? ")" )* ;
+  Expr call() {
+    final callee = primary();
+    var expr = callee;
+    while (true) {
+      if (matchFirst(TokenType.LEFT_PAREN)) {
+        expr = finishCall(expr);
+      } else {
+        break;
+      }
+    }
+    return expr;
+  }
+
+  // arguments      → expression ( "," expression )* ;
+  Expr finishCall(Expr callee) {
+    if (matchFirst(TokenType.RIGHT_PAREN)) {
+      final closingParen = previous();
+      return Call(callee, [], closingParen);
+    } else {
+      final args = <Expr>[];
+      while (true) {
+        args.add(expression());
+        if (!matchFirst(TokenType.COMMA)) {
+          break;
+        }
+      }
+      final closingParen = consume(TokenType.RIGHT_PAREN, "Expected ')' after arguments");
+      return Call(callee, args, closingParen);
+    }
+  }
+
 
   // primary        → NUMBER | STRING
   //                | "true" | "false" | "nil"

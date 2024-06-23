@@ -57,6 +57,7 @@ Object? eval(Expr expr, Env env) {
       final type => throw StateError('bug: unhandled binary operator $type'),
     },
     Variable(:final name) => env[name],
+    Call(:final callee, :final args, :final closingParen) => handleInvocation(callee, args, closingParen, env),
   };
 }
 
@@ -69,3 +70,21 @@ T evalAs<T extends Object>(Expr expr, Token errorOnToken, Env env) {
     throw LoxRuntimeException(errorOnToken, '$e');
   }
 }
+
+Object? handleInvocation(
+  Expr callee,
+  List<Expr> args,
+  Token closingParen,
+  Env env,
+) {
+  final (:arity, :impl) = evalAs<LoxFunction>(callee, closingParen, env);
+  if (args.length != arity) {
+    throw LoxRuntimeException(closingParen, 'Expected $arity arguments but got ${args.length}');
+  }
+  return impl([ for (final arg in args) eval(arg, env) ], env);
+}
+
+typedef LoxFunction = ({
+  int arity,
+  Object? Function(List<Object?> args, Env closure) impl,
+});
