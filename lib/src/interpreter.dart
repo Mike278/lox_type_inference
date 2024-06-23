@@ -2,6 +2,7 @@
 import 'package:lox/src/env.dart';
 import 'package:lox/src/expr.dart';
 import 'package:lox/src/lox_base.dart';
+import 'package:lox/src/utils.dart';
 
 class LoxRuntimeException implements Exception {
   final Token token;
@@ -29,6 +30,20 @@ void execute(Statement statement, Env env) {
       eval(expr, env);
     case VariableDeclaration(:final name, :final initializer):
       env[name] = initializer == null ? null : eval(initializer, env);
+    case FunctionDeclaration(:final name, :final params, :final body):
+      env[name] = (
+        arity: params.length,
+        impl: (List<Object?> args, Env env) {
+          final newEnv = Env(env);
+          for (final (param, arg) in params.zipWith(args, makePair)) {
+            newEnv[param] = arg;
+          }
+          for (final statement in body) {
+            execute(statement, newEnv);
+          }
+          return null; // ?
+        },
+      );
     case Block(:final statements):
       final newEnv = Env(env);
       for (final statement in statements) {

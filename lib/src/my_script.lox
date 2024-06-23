@@ -1,0 +1,11 @@
+fun calcBirthYear(currentYear, currentAge) {
+    var birthYear = currentYear - currentAge;
+    print birthYear;
+}
+
+var name = "Mike";
+var age = 30;
+var currentYear = 2024;
+calcBirthYear(currentYear, age);
+
+print name;

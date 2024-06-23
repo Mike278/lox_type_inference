@@ -5,7 +5,12 @@ import 'package:lox/src/utils.dart';
 //
 // program        → declaration* EOF ;
 // declaration    → varDecl
-//                | statement ;
+//                | funDecl
+//                | statement
+//                ;
+// funDecl        → "fun" function ;
+// function       → IDENTIFIER "(" parameters? ")" block ;
+// parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 // varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 // statement      → exprStmt
 //                | printStmt
@@ -99,10 +104,38 @@ class Parser {
   }
 
   // declaration    → varDecl
-  //                | statement ;
+  //                | funDecl
+  //                | statement
+  //
   Statement? declaration() {
     if (matchFirst(TokenType.VAR)) return varDeclaration();
+    if (matchFirst(TokenType.FUN)) return function();
     return statement();
+  }
+
+  // function       → IDENTIFIER "(" parameters? ")" block ;
+  // parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
+  Statement? function() {
+    final name = consume(TokenType.IDENTIFIER, "Expected function name.");
+    consume(TokenType.LEFT_PAREN, "Expected '(' after function name.");
+
+    final params = <Token>[];
+    if (check(TokenType.RIGHT_PAREN)) {
+      // 0-argument function
+    } else {
+      while (true) {
+        final param = consume(TokenType.IDENTIFIER, "Expected parameter name");
+        params.add(param);
+        if (!matchFirst(TokenType.COMMA)) {
+          break;
+        }
+      }
+      consume(TokenType.RIGHT_PAREN, "Expected ')' after parameter list.");
+    }
+
+    consume(TokenType.LEFT_BRACE, "Expected '{' before body.");
+    final body = block();
+    return FunctionDeclaration(name, params, body);
   }
 
   // varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
@@ -128,6 +161,7 @@ class Parser {
   }
 
   // block          → "{" declaration* "}" ;
+  // Expects open brace is already consumed.
   List<Statement> block() {
     final statements = [
       for (;!check(TokenType.RIGHT_BRACE) && !isAtEnd();)

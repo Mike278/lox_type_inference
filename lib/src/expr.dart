@@ -90,3 +90,9 @@ class Block extends Statement {
   final List<Statement> statements;
   Block(this.statements);
 }
+class FunctionDeclaration extends Statement {
+  final Token name;
+  final List<Token> params;
+  final List<Statement> body;
+  FunctionDeclaration(this.name, this.params, this.body);
+}
