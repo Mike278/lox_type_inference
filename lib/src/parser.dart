@@ -88,9 +88,28 @@ class Parser {
   List<Statement> parse() {
     final statements = <Statement>[];
     while (!isAtEnd()) {
-      statements.add(statement());
+      declaration()?.run(statements.add);
     }
     return statements;
+  }
+
+  // declaration    → varDecl
+  //                | statement ;
+  Statement? declaration() {
+    if (matchFirst(TokenType.VAR)) return varDeclaration();
+    return statement();
+  }
+
+  // varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
+  Statement? varDeclaration() {
+    final name = consume(TokenType.IDENTIFIER, 'Expected variable name.');
+    Expr? initializer;
+    if (matchFirst(TokenType.EQUAL)) {
+      initializer = expression();
+    }
+
+    consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
+    return VariableDeclaration(name, initializer);
   }
 
   // statement      → exprStmt
@@ -190,14 +209,18 @@ class Parser {
     return primary();
   }
 
-  // primary        → NUMBER | STRING | "true" | "false" | "nil"
-  //                | "(" expression ")" ;
+  // primary        → NUMBER | STRING
+  //                | "true" | "false" | "nil"
+  //                | "(" expression ")"
+  //                | IDENTIFIER
+  //                ;
   Expr primary() {
     if (matchFirst(TokenType.NUMBER)) return NumberLiteral(previous().literal as num);
     if (matchFirst(TokenType.STRING)) return StringLiteral(previous().literal as String);
     if (matchFirst(TokenType.TRUE)) return TrueLiteral();
     if (matchFirst(TokenType.FALSE)) return FalseLiteral();
     if (matchFirst(TokenType.NIL)) return NilLiteral();
+    if (matchFirst(TokenType.IDENTIFIER)) return Variable(previous());
 
     if (matchFirst(TokenType.LEFT_PAREN)) {
       final expr = expression();

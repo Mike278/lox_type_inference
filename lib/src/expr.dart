@@ -47,6 +47,11 @@ class Grouping extends Expr {
   Grouping(this.expr);
 }
 
+class Variable extends Expr {
+  final Token name;
+  Variable(this.name);
+}
+
 String parens(String label, Iterable<Expr> exprs) =>
     '($label ${exprs.map(display).join(' ')})';
 
@@ -55,6 +60,7 @@ String display(Expr expr) => switch (expr) {
   Unary(:final operator, :final expr)                => parens(operator.lexeme, [expr]),
   Binary(:final operator, :final left, :final right) => parens(operator.lexeme, [left, right]),
   Grouping(:final expr)                              => parens('group', [expr]),
+  Variable(:final name)                              => 'var ${name.lexeme}',
 };
 
 
@@ -67,4 +73,9 @@ class ExpressionStatement extends Statement {
 class PrintStatement extends Statement {
   final Expr expr;
   PrintStatement(this.expr);
+}
+class VariableDeclaration extends Statement {
+  final Token name;
+  final Expr? initializer;
+  VariableDeclaration(this.name, this.initializer);
 }
