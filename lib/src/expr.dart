@@ -56,3 +56,15 @@ String display(Expr expr) => switch (expr) {
   Binary(:final operator, :final left, :final right) => parens(operator.lexeme, [left, right]),
   Grouping(:final expr)                              => parens('group', [expr]),
 };
+
+
+
+sealed class Statement {}
+class ExpressionStatement extends Statement {
+  final Expr expr;
+  ExpressionStatement(this.expr);
+}
+class PrintStatement extends Statement {
+  final Expr expr;
+  PrintStatement(this.expr);
+}

@@ -10,14 +10,24 @@ class LoxRuntimeException implements Exception {
 
 class Interpreter {
 
-  void interpret(Expr expr) {
+  void interpret(List<Statement> statements) {
     try {
-      final value = eval(expr);
-      print(value);
+      for (final s in statements) {
+        execute(s);
+      }
     } on LoxRuntimeException catch (e) {
       print('Error while evaluating ${display(e.expr)}');
       print(e.message);
       hadRuntimeError = true;
+    }
+  }
+
+  void execute(Statement statement) {
+    switch (statement) {
+      case PrintStatement(:final expr):
+        print(eval(expr));
+      case ExpressionStatement(:final expr):
+        eval(expr);
     }
   }
 

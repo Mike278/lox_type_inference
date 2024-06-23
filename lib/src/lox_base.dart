@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:lox/src/expr.dart';
 import 'package:lox/src/interpreter.dart';
 import 'package:lox/src/parser.dart';
-import 'package:lox/src/utils.dart';
 // ignore_for_file: constant_identifier_names
 
 void main(List<String> args) {
@@ -37,15 +35,11 @@ void run(String source) {
   final tokens = scanTokens(source);
 
   final parser = Parser(tokens);
-  final expr = parser.parse();
+  final statements = parser.parse();
 
   if (hadError) return;
 
-  if (expr == null) {
-    print(null);
-  } else {
-    Interpreter().interpret(expr);
-  }
+  Interpreter().interpret(statements);
 }
 
 var hadRuntimeError = false;

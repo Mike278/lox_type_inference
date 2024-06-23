@@ -3,6 +3,14 @@ import 'package:lox/src/lox_base.dart';
 import 'package:lox/src/utils.dart';
 
 //
+// program        → declaration* EOF ;
+// declaration    → varDecl
+//                | statement ;
+// varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
+// statement      → exprStmt
+//                | printStmt ;
+// exprStmt       → expression ";" ;
+// printStmt      → "print" expression ";" ;
 // expression     → equality ;
 // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 // comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
@@ -10,8 +18,11 @@ import 'package:lox/src/utils.dart';
 // factor         → unary ( ( "/" | "*" ) unary )* ;
 // unary          → ( "!" | "-" ) unary
 //                | primary ;
-// primary        → NUMBER | STRING | "true" | "false" | "nil"
-//                | "(" expression ")" ;
+// primary        → NUMBER | STRING
+//                | "true" | "false" | "nil"
+//                | "(" expression ")"
+//                | IDENTIFIER
+//                ;
 //
 
 class Parser {
@@ -74,9 +85,31 @@ class Parser {
     }
   }
 
-  Expr? parse() {
-    try { return expression(); }
-    on ParseError { return null; }
+  List<Statement> parse() {
+    final statements = <Statement>[];
+    while (!isAtEnd()) {
+      statements.add(statement());
+    }
+    return statements;
+  }
+
+  // statement      → exprStmt
+  //                | printStmt ;
+  Statement statement() {
+    if (matchFirst(TokenType.PRINT)) return printStatement();
+    return expressionStatement();
+  }
+
+  Statement printStatement() {
+    final value = expression();
+    consume(TokenType.SEMICOLON, "Expected ';' after value.");
+    return PrintStatement(value);
+  }
+
+  Statement expressionStatement() {
+    final value = expression();
+    consume(TokenType.SEMICOLON, "Expected ';' after value.");
+    return ExpressionStatement(value);
   }
 
   // expression     → equality ;
