@@ -1,0 +1,26 @@
+fun zeroArgsEmptyBody() { }
+fun zeroArgsNoReturn() { print 1; }
+fun zeroArgsWithReturn() { return 1; }
+
+fun oneArgEmptyBody(a) { }
+fun oneArgNoReturn(a) { print a; }
+fun oneArgWithReturn(a) { return a; }
+
+fun twoArgsEmptyBody(a, b) { }
+fun twoArgsNoReturn(a, b) { print a; print b; }
+fun twoArgsWithReturn(a, b) { return a + b; }
+
+print zeroArgsEmptyBody();
+print zeroArgsNoReturn();
+print zeroArgsWithReturn();
+
+print oneArgEmptyBody(1);
+print oneArgNoReturn(1);
+print oneArgWithReturn(1);
+
+print twoArgsEmptyBody(1, 2);
+print twoArgsNoReturn(1, 2);
+print twoArgsWithReturn(1, 2);
+
+var assignment = "assignment!";
+print assignment;

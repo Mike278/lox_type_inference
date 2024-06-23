@@ -9,6 +9,10 @@ class LoxRuntimeException implements Exception {
   final String message;
   LoxRuntimeException(this.token, this.message);
 }
+class Return {
+  final Object? returnValue;
+  Return(this.returnValue);
+}
 
 void interpret(List<Statement> statements, Env env) {
   try {
@@ -38,8 +42,12 @@ void execute(Statement statement, Env env) {
           for (final (param, arg) in params.zipWith(args, makePair)) {
             newEnv[param] = arg;
           }
-          for (final statement in body) {
-            execute(statement, newEnv);
+          try {
+            for (final statement in body) {
+              execute(statement, newEnv);
+            }
+          } on Return catch (r) {
+            return r.returnValue;
           }
           return null; // ?
         },
@@ -49,6 +57,8 @@ void execute(Statement statement, Env env) {
       for (final statement in statements) {
         execute(statement, newEnv);
       }
+    case ReturnStatement(:final expr):
+      throw Return(expr == null ? null : eval(expr, env));
   }
 }
 

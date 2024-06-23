@@ -15,10 +15,12 @@ import 'package:lox/src/utils.dart';
 // statement      → exprStmt
 //                | printStmt
 //                | block
+//                | returnStmt
 //                ;
 // block          → "{" declaration* "}" ;
 // exprStmt       → expression ";" ;
 // printStmt      → "print" expression ";" ;
+// returnStmt     → "return" expression? ";" ;
 // expression     → equality ;
 // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 // comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
@@ -121,7 +123,7 @@ class Parser {
 
     final params = <Token>[];
     if (check(TokenType.RIGHT_PAREN)) {
-      // 0-argument function
+      // 0-param function
     } else {
       while (true) {
         final param = consume(TokenType.IDENTIFIER, "Expected parameter name");
@@ -130,8 +132,8 @@ class Parser {
           break;
         }
       }
-      consume(TokenType.RIGHT_PAREN, "Expected ')' after parameter list.");
     }
+    consume(TokenType.RIGHT_PAREN, "Expected ')' after parameter list.");
 
     consume(TokenType.LEFT_BRACE, "Expected '{' before body.");
     final body = block();
@@ -150,13 +152,14 @@ class Parser {
     return VariableDeclaration(name, initializer);
   }
 
-  // statement      → exprStmt
-  //                | printStmt
+  // statement      → printStmt
   //                | block
-  //                ;
+  //                | returnStmt
+  //                | exprStmt
   Statement statement() {
     if (matchFirst(TokenType.PRINT)) return printStatement();
     if (matchFirst(TokenType.LEFT_BRACE)) return Block(block());
+    if (matchFirst(TokenType.RETURN)) return returnStatement();
     return expressionStatement();
   }
 
@@ -170,6 +173,13 @@ class Parser {
     ];
     consume(TokenType.RIGHT_BRACE, "Expected '}' after block.");
     return statements;
+  }
+
+  Statement returnStatement() {
+    final keyword = previous();
+    final value = check(TokenType.SEMICOLON) ? null : expression();
+    consume(TokenType.SEMICOLON, "Expected ';' after value.");
+    return ReturnStatement(keyword, value);
   }
 
   Statement printStatement() {
@@ -278,20 +288,19 @@ class Parser {
 
   // arguments      → expression ( "," expression )* ;
   Expr finishCall(Expr callee) {
-    if (matchFirst(TokenType.RIGHT_PAREN)) {
-      final closingParen = previous();
-      return Call(callee, [], closingParen);
+    final args = <Expr>[];
+    if (check(TokenType.RIGHT_PAREN)) {
+      // 0-arg function
     } else {
-      final args = <Expr>[];
       while (true) {
         args.add(expression());
         if (!matchFirst(TokenType.COMMA)) {
           break;
         }
       }
-      final closingParen = consume(TokenType.RIGHT_PAREN, "Expected ')' after arguments");
-      return Call(callee, args, closingParen);
     }
+    final closingParen = consume(TokenType.RIGHT_PAREN, "Expected ')' after arguments");
+    return Call(callee, args, closingParen);
   }
 
 

@@ -96,3 +96,8 @@ class FunctionDeclaration extends Statement {
   final List<Statement> body;
   FunctionDeclaration(this.name, this.params, this.body);
 }
+class ReturnStatement extends Statement {
+  final Token keyword;
+  final Expr? expr;
+  ReturnStatement(this.keyword, this.expr);
+}
