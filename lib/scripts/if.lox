@@ -16,3 +16,5 @@ fun count(n) {
 }
 
 count(3);
+
+print 1 > 2 ? "a" : "b";

@@ -71,19 +71,27 @@ class Call extends Expr {
   final Token closingParen;
   Call(this.callee, this.args, this.closingParen);
 }
+class Ternary extends Expr {
+  final Token questionMark;
+  final Expr condition;
+  final Expr ifTrue;
+  final Expr ifFalse;
+  Ternary(this.questionMark, this.condition, this.ifTrue, this.ifFalse);
+}
 
 String parens(String label, Iterable<Expr> exprs) =>
     '($label ${exprs.map(display).join(' ')})';
 
 String display(Expr expr) => switch (expr) {
-  Literal(:final value)                              => value?.toString() ?? 'nil',
-  Unary(:final operator, :final expr)                => parens(operator.lexeme, [expr]),
-  Binary(:final operator, :final left, :final right) => parens(operator.lexeme, [left, right]),
-  Grouping(:final expr)                              => parens('group', [expr]),
-  Variable(:final name)                              => 'var ${name.lexeme}',
-  Call(:final callee, :final args)                   => parens('call', [callee, ...args]),
+  Literal(:final value)                                    => value?.toString() ?? 'nil',
+  Unary(:final operator, :final expr)                      => parens(operator.lexeme, [expr]),
+  Binary(:final operator, :final left, :final right)       => parens(operator.lexeme, [left, right]),
+  Grouping(:final expr)                                    => parens('group', [expr]),
+  Variable(:final name)                                    => 'var ${name.lexeme}',
+  Call(:final callee, :final args)                         => parens('call', [callee, ...args]),
   LogicalAnd(:final left, :final keyword, :final right) ||
-  LogicalOr(:final left, :final keyword, :final right) => parens(keyword.lexeme, [left, right]),
+  LogicalOr(:final left, :final keyword, :final right)     => parens(keyword.lexeme, [left, right]),
+  Ternary(:final condition, :final ifTrue, :final ifFalse) => parens('?:', [condition, ifTrue, ifFalse]),
 };
 
 

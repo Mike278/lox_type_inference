@@ -24,7 +24,8 @@ import 'package:lox/src/utils.dart';
 // ifStmt         → "if" expression "then" statement
 //                ( "else" statement )?;
 // returnStmt     → "return" expression? ";" ;
-// expression     → logical_or;
+// expression     → ternary;
+// ternary        → logical_or "?" expression ":" expression ";";
 // logical_or     → logical_and ( "or" logical_and)* ;
 // logical_and    → equality ( "and" equality)* ;
 // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -212,8 +213,21 @@ class Parser {
     return ExpressionStatement(value);
   }
 
-  // expression     → logical_or;
-  Expr expression() => or();
+  // expression     → ternary;
+  Expr expression() => ternary();
+
+  // ternary        → logical_or "?" expression ":" expression ";";
+  Expr ternary() {
+    final condition = or();
+    if (matchFirst(TokenType.QUESTION)) {
+      final questionMark = previous();
+      final ifTrue = expression();
+      consume(TokenType.COLON, "Expected ':' before last ternary expression");
+      final ifFalse = expression();
+      return Ternary(questionMark, condition, ifTrue, ifFalse);
+    }
+    return condition;
+  }
 
   // logical_or     → logical_and ( "or" logical_and)* ;
   Expr or() {
