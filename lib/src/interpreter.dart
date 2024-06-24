@@ -14,52 +14,54 @@ class Return {
   Return(this.returnValue);
 }
 
-void interpret(List<Statement> statements, Env env) {
+Env interpret(List<Statement> statements, Env env) {
   try {
     for (final s in statements) {
-      execute(s, env);
+      env = execute(s, env);
     }
   } on LoxRuntimeException catch (e) {
     print('Error while evaluating ${e.token} on line ${e.token.line}');
     print(e.message);
     hadRuntimeError = true;
   }
+  return env;
 }
 
-void execute(Statement statement, Env env) {
+Env execute(Statement statement, Env env) {
   switch (statement) {
     case PrintStatement(:final expr):
       print(eval(expr, env));
     case ExpressionStatement(:final expr):
       eval(expr, env);
     case VariableDeclaration(:final name, :final initializer):
-      env[name] = initializer == null ? null : eval(initializer, env);
+      env = env.defining(name, initializer == null ? null : eval(initializer, env));
     case FunctionDeclaration(:final name, :final params, :final body):
-      env[name] = (
+      env = env.defining(name, (
         arity: params.length,
         impl: (List<Object?> args) {
-          final newEnv = Env(env);
-          for (final (param, arg) in params.zipWith(args, makePair)) {
-            newEnv[param] = arg;
-          }
+          var newEnv = Env(env, {
+            for (final (param, arg) in params.zipWith(args, makePair))
+              param.lexeme: arg,
+          });
           try {
             for (final statement in body) {
-              execute(statement, newEnv);
+              newEnv = execute(statement, newEnv);
             }
           } on Return catch (r) {
             return r.returnValue;
           }
-          return null; // ?
+          return null; // void
         },
-      );
+      ));
     case Block(:final statements):
-      final newEnv = Env(env);
+      var newEnv = Env(env);
       for (final statement in statements) {
-        execute(statement, newEnv);
+        newEnv = execute(statement, newEnv);
       }
     case ReturnStatement(:final expr):
       throw Return(expr == null ? null : eval(expr, env));
   }
+  return env;
 }
 
 Object? eval(Expr expr, Env env) {

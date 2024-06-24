@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:lox/lox.dart';
 import 'package:lox/src/interpreter.dart';
 
@@ -6,21 +8,25 @@ final LoxFunction clock = (
   impl: (args) => DateTime.now().millisecondsSinceEpoch / 1000,
 );
 
-class Env {
-  final _values = <String, Object?>{};
-  final Env? _enclosing;
-  Env.global() : _enclosing = null {
-    _values['clock'] = clock;
-  }
-  Env(this._enclosing);
+final globals = UnmodifiableMapView({
+  'clock': clock,
+});
 
-  void operator[]=(Token name, Object? value) {
+class Env {
+  final UnmodifiableMapView<String, Object?> _values;
+  final Env? _enclosing;
+  Env.global() : _values = globals, _enclosing = null;
+  Env(this._enclosing, [Map<String, Object?>? values]) : _values = UnmodifiableMapView({...?values});
+
+  Env defining(Token name, Object? value) {
     final key = name.lexeme;
-    final values = _values;
-    if (values.containsKey(key)) {
+    if (_values.containsKey(key)) {
       throw LoxRuntimeException(name, "The name '${name.lexeme}' is already defined.");
     }
-    values[key] = value;
+    return Env(_enclosing, {
+      ..._values,
+      key: value,
+    });
   }
 
   Object? operator[](Token name) {

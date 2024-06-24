@@ -18,12 +18,12 @@ void main(List<String> args) {
 }
 
 void runPrompt() {
-  final env = Env.global();
+  var env = Env.global();
   while (true) {
     print('> ');
     final line = stdin.readLineSync();
     if (line == null) break;
-    run(line, env);
+    env = run(line, env);
     hadError = false;
   }
 }
@@ -34,15 +34,15 @@ void runFile(String path) {
   if (hadRuntimeError) exit(70);
 }
 
-void run(String source, Env env) {
+Env run(String source, Env env) {
   final tokens = scanTokens(source);
 
   final parser = Parser(tokens);
   final statements = parser.parse();
 
-  if (hadError) return;
+  if (hadError) return env;
 
-  interpret(statements, env);
+  return interpret(statements, env);
 }
 
 var hadRuntimeError = false;
