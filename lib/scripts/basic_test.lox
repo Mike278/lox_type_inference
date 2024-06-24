@@ -41,7 +41,3 @@ print true or isGreat();
 
 print "=== true and isGreat(); ===";
 print true and isGreat();
-
-if 1 > 2 or true then {
-    print 1;
-} else print 0;
