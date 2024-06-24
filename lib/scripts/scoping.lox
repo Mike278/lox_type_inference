@@ -1,11 +1,11 @@
 
-var a = "global";
+let a = "global";
 {
   fun showA() {
     print a;
   }
 
   showA();
-  var a = "block";
+  let a = "block";
   showA();
 }

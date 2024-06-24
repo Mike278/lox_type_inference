@@ -6,7 +6,7 @@ if 1 > 2 or true then {
 fun maybe() { return false; }
 
 if maybe() or 2 > 1 then {
-    var a = "b";
+    let a = "b";
     print a;
 }
 

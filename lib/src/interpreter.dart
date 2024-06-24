@@ -33,8 +33,8 @@ Env execute(Statement statement, Env env) {
       print(eval(expr, env));
     case ExpressionStatement(:final expr):
       eval(expr, env);
-    case VariableDeclaration(:final name, :final initializer):
-      env = env.defining(name, initializer == null ? null : eval(initializer, env));
+    case LetDeclaration(:final name, :final initializer):
+      env = env.defining(name, eval(initializer, env));
     case FunctionDeclaration(:final name, :final params, :final body):
       env = env.defining(name, (
         arity: params.length,

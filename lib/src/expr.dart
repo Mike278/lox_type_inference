@@ -87,7 +87,7 @@ String display(Expr expr) => switch (expr) {
   Unary(:final operator, :final expr)                      => parens(operator.lexeme, [expr]),
   Binary(:final operator, :final left, :final right)       => parens(operator.lexeme, [left, right]),
   Grouping(:final expr)                                    => parens('group', [expr]),
-  Variable(:final name)                                    => 'var ${name.lexeme}',
+  Variable(:final name)                                    => 'let ${name.lexeme}',
   Call(:final callee, :final args)                         => parens('call', [callee, ...args]),
   LogicalAnd(:final left, :final keyword, :final right) ||
   LogicalOr(:final left, :final keyword, :final right)     => parens(keyword.lexeme, [left, right]),
@@ -105,10 +105,10 @@ class PrintStatement extends Statement {
   final Expr expr;
   PrintStatement(this.expr);
 }
-class VariableDeclaration extends Statement {
+class LetDeclaration extends Statement {
   final Token name;
-  final Expr? initializer;
-  VariableDeclaration(this.name, this.initializer);
+  final Expr initializer;
+  LetDeclaration(this.name, this.initializer);
 }
 class Block extends Statement {
   final List<Statement> statements;

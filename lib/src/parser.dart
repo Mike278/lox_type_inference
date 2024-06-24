@@ -4,14 +4,14 @@ import 'package:lox/src/utils.dart';
 
 //
 // program        → declaration* EOF ;
-// declaration    → varDecl
+// declaration    → letDecl
 //                | funDecl
 //                | statement
 //                ;
 // funDecl        → "fun" function ;
 // function       → IDENTIFIER "(" parameters? ")" block ;
 // parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
-// varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
+// letDecl        → "let" IDENTIFIER "=" expression ";" ;
 // statement      → exprStmt
 //                | printStmt
 //                | ifStmt
@@ -90,7 +90,7 @@ class Parser {
       switch (peek().type) {
         case TokenType.CLASS:
         case TokenType.FUN:
-        case TokenType.VAR:
+        case TokenType.LET:
         case TokenType.FOR:
         case TokenType.IF:
         case TokenType.WHILE:
@@ -111,12 +111,12 @@ class Parser {
     return statements;
   }
 
-  // declaration    → varDecl
+  // declaration    → letDecl
   //                | funDecl
   //                | statement
   //
   Statement? declaration() {
-    if (matchFirst(TokenType.VAR)) return varDeclaration();
+    if (matchFirst(TokenType.LET)) return letDeclaration();
     if (matchFirst(TokenType.FUN)) return function();
     return statement();
   }
@@ -146,16 +146,13 @@ class Parser {
     return FunctionDeclaration(name, params, body);
   }
 
-  // varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
-  Statement? varDeclaration() {
+  // letDecl        → "let" IDENTIFIER "=" expression ";" ;
+  Statement? letDeclaration() {
     final name = consume(TokenType.IDENTIFIER, 'Expected variable name.');
-    Expr? initializer;
-    if (matchFirst(TokenType.EQUAL)) {
-      initializer = expression();
-    }
-
+    consume(TokenType.EQUAL, "Expected '=' before variable declaration.");
+    final initializer = expression();
     consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
-    return VariableDeclaration(name, initializer);
+    return LetDeclaration(name, initializer);
   }
 
   // statement      → printStmt

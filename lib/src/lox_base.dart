@@ -179,6 +179,7 @@ final keywords = {
   'for' :    TokenType.FOR,
   'fun' :    TokenType.FUN,
   'if' :     TokenType.IF,
+  'let' :    TokenType.LET,
   'nil' :    TokenType.NIL,
   'or' :     TokenType.OR,
   'print' :  TokenType.PRINT,
@@ -187,7 +188,6 @@ final keywords = {
   'this' :   TokenType.THIS,
   'then' :   TokenType.THEN,
   'true' :   TokenType.TRUE,
-  'var' :    TokenType.VAR,
   'while' :  TokenType.WHILE,
 };
 
@@ -207,7 +207,7 @@ enum TokenType {
 
   // Keywords.
   AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
-  PRINT, RETURN, SUPER, THEN, THIS, TRUE, VAR, WHILE,
+  PRINT, RETURN, SUPER, THEN, THIS, TRUE, LET, WHILE,
 
   EOF;
 }

@@ -7,8 +7,8 @@ fun makeCounter(i) {
   return count;
 }
 
-var counter1 = makeCounter(0);
-var counter2 = counter1();
-var counter3 = counter2();
-var counter4 = counter3();
+let counter1 = makeCounter(0);
+let counter2 = counter1();
+let counter3 = counter2();
+let counter4 = counter3();
 

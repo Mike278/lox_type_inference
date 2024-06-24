@@ -22,7 +22,7 @@ print twoArgsEmptyBody(1, 2);
 print twoArgsNoReturn(1, 2);
 print twoArgsWithReturn(1, 2);
 
-var assignment = "assignment!";
+let assignment = "assignment!";
 print assignment;
 
 fun isGreat() {
