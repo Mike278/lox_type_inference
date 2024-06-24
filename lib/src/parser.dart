@@ -14,12 +14,15 @@ import 'package:lox/src/utils.dart';
 // varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 // statement      → exprStmt
 //                | printStmt
+//                | ifStmt
 //                | block
 //                | returnStmt
 //                ;
 // block          → "{" declaration* "}" ;
 // exprStmt       → expression ";" ;
 // printStmt      → "print" expression ";" ;
+// ifStmt         → "if" expression "then" statement
+//                ( "else" statement )?;
 // returnStmt     → "return" expression? ";" ;
 // expression     → logical_or;
 // logical_or     → logical_and ( "or" logical_and)* ;
@@ -155,6 +158,7 @@ class Parser {
   }
 
   // statement      → printStmt
+  //                | ifStmt
   //                | block
   //                | returnStmt
   //                | exprStmt
@@ -162,6 +166,7 @@ class Parser {
     if (matchFirst(TokenType.PRINT)) return printStatement();
     if (matchFirst(TokenType.LEFT_BRACE)) return Block(block());
     if (matchFirst(TokenType.RETURN)) return returnStatement();
+    if (matchFirst(TokenType.IF)) return ifStatement();
     return expressionStatement();
   }
 
@@ -175,6 +180,17 @@ class Parser {
     ];
     consume(TokenType.RIGHT_BRACE, "Expected '}' after block.");
     return statements;
+  }
+
+  // ifStmt         → "if" expression "then" statement
+  //                ( "else" statement )?;
+  Statement ifStatement() {
+    final keyword = previous();
+    final condition = expression();
+    consume(TokenType.THEN, "Expected 'then' after if condition.");
+    final thenBranch = statement();
+    final elseBranch = matchFirst(TokenType.ELSE) ? statement() : null;
+    return IfStatement(keyword, condition, thenBranch, elseBranch);
   }
 
   Statement returnStatement() {

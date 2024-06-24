@@ -117,3 +117,10 @@ class ReturnStatement extends Statement {
   final Expr? expr;
   ReturnStatement(this.keyword, this.expr);
 }
+class IfStatement extends Statement {
+  final Token keyword;
+  final Expr condition;
+  final Statement thenBranch;
+  final Statement? elseBranch;
+  IfStatement(this.keyword, this.condition, this.thenBranch, this.elseBranch);
+}

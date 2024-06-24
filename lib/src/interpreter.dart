@@ -60,6 +60,15 @@ Env execute(Statement statement, Env env) {
       }
     case ReturnStatement(:final expr):
       throw Return(expr == null ? null : eval(expr, env));
+    case IfStatement(:final keyword, :final condition, :final thenBranch, :final elseBranch):
+      final result = evalAs<bool>(condition, keyword, env);
+      if (result) {
+        env = execute(thenBranch, env);
+      } else {
+        if (elseBranch != null) {
+          env = execute(elseBranch, env);
+        }
+      }
   }
   return env;
 }

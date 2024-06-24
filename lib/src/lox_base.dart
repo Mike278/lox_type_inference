@@ -183,6 +183,7 @@ final keywords = {
   'return' : TokenType.RETURN,
   'super' :  TokenType.SUPER,
   'this' :   TokenType.THIS,
+  'then' :   TokenType.THEN,
   'true' :   TokenType.TRUE,
   'var' :    TokenType.VAR,
   'while' :  TokenType.WHILE,
@@ -204,7 +205,7 @@ enum TokenType {
 
   // Keywords.
   AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
-  PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE,
+  PRINT, RETURN, SUPER, THEN, THIS, TRUE, VAR, WHILE,
 
   EOF;
 }
