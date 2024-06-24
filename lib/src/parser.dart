@@ -21,7 +21,9 @@ import 'package:lox/src/utils.dart';
 // exprStmt       → expression ";" ;
 // printStmt      → "print" expression ";" ;
 // returnStmt     → "return" expression? ";" ;
-// expression     → equality ;
+// expression     → logical_or;
+// logical_or     → logical_and ( "or" logical_and)* ;
+// logical_and    → equality ( "and" equality)* ;
 // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 // comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 // term           → factor ( ( "-" | "+" ) factor )* ;
@@ -194,8 +196,31 @@ class Parser {
     return ExpressionStatement(value);
   }
 
-  // expression     → equality ;
-  Expr expression() => equality();
+  // expression     → logical_or;
+  Expr expression() => or();
+
+  // logical_or     → logical_and ( "or" logical_and)* ;
+  Expr or() {
+    var expr = and();
+    while (matchFirst(TokenType.OR)) {
+      final operator = previous();
+      final right = and();
+      expr = LogicalOr(expr, operator, right);
+    }
+    return expr;
+  }
+
+  // logical_and    → equality ( "and" equality)* ;
+  Expr and() {
+    var expr = equality();
+    while (matchFirst(TokenType.AND)) {
+      final operator = previous();
+      final right = equality();
+      expr = LogicalAnd(expr, operator, right);
+    }
+    return expr;
+  }
+
 
   // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
   Expr equality() {

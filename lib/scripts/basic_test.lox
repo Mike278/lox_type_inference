@@ -24,3 +24,20 @@ print twoArgsWithReturn(1, 2);
 
 var assignment = "assignment!";
 print assignment;
+
+fun isGreat() {
+    print "side effect!";
+    return true;
+}
+
+print "=== false or isGreat(); ===";
+print false or isGreat();
+
+print "=== false and isGreat(); ===";
+print false and isGreat();
+
+print "=== true or isGreat(); ===";
+print true or isGreat();
+
+print "=== true and isGreat(); ===";
+print true and isGreat();

@@ -83,6 +83,8 @@ Object? eval(Expr expr, Env env) {
     },
     Variable(:final name) => env[name],
     Call(:final callee, :final args, :final closingParen) => handleInvocation(callee, args, closingParen, env),
+    LogicalAnd(:final left, :final keyword, :final right) => evalAs<bool>(left, keyword, env) && evalAs<bool>(right, keyword, env),
+    LogicalOr(:final left, :final keyword, :final right) => evalAs<bool>(left, keyword, env) || evalAs<bool>(right, keyword, env),
   };
 }
 

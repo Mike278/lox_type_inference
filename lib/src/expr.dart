@@ -42,6 +42,20 @@ class Binary extends Expr {
   Binary(this.left, this.operator, this.right);
 }
 
+class LogicalAnd extends Expr {
+  final Expr left;
+  final Token keyword;
+  final Expr right;
+  LogicalAnd(this.left, this.keyword, this.right);
+}
+
+class LogicalOr extends Expr {
+  final Expr left;
+  final Token keyword;
+  final Expr right;
+  LogicalOr(this.left, this.keyword, this.right);
+}
+
 class Grouping extends Expr {
   final Expr expr;
   Grouping(this.expr);
@@ -68,6 +82,8 @@ String display(Expr expr) => switch (expr) {
   Grouping(:final expr)                              => parens('group', [expr]),
   Variable(:final name)                              => 'var ${name.lexeme}',
   Call(:final callee, :final args)                   => parens('call', [callee, ...args]),
+  LogicalAnd(:final left, :final keyword, :final right) ||
+  LogicalOr(:final left, :final keyword, :final right) => parens(keyword.lexeme, [left, right]),
 };
 
 
