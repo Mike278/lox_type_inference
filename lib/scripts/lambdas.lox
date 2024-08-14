@@ -1,0 +1,27 @@
+let someRecord = {
+    a: false,
+    b: || { return 123; },
+    c: |x| { return x + 123; }
+};
+print someRecord.b();
+let tearoff = someRecord.b;
+print tearoff();
+
+print someRecord.c(1);
+
+print (|x| { return x; })(1);
+
+let makeCounter = |i, fn| {
+  let count = || {
+    fn(i + 1);
+    return makeCounter(i+1, fn);
+  };
+
+  return count;
+};
+
+let counter1 = makeCounter(0, |value| { print value*value; });
+let counter2 = counter1();
+let counter3 = counter2();
+let counter4 = counter3();
+

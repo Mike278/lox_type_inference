@@ -3,17 +3,17 @@ if 1 > 2 or true then {
     print "a";
 } else print 0;
 
-fun maybe() { return false; }
+let maybe = || { return false; };
 
 if maybe() or 2 > 1 then {
     let a = "b";
     print a;
 }
 
-fun count(n) {
+let count = |n| {
     if n > 1 then count(n-1);
     print n;
-}
+};
 
 count(3);
 

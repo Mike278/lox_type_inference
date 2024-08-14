@@ -5,12 +5,8 @@ import 'package:lox/src/utils.dart';
 //
 // program        → declaration* EOF ;
 // declaration    → letDecl
-//                | funDecl
 //                | statement
 //                ;
-// funDecl        → "fun" function ;
-// function       → IDENTIFIER "(" parameters? ")" block ;
-// parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 // letDecl        → "let" IDENTIFIER "=" expression ";" ;
 // statement      → exprStmt
 //                | printStmt
@@ -33,8 +29,11 @@ import 'package:lox/src/utils.dart';
 // term           → factor ( ( "-" | "+" ) factor )* ;
 // factor         → unary ( ( "/" | "*" ) unary )* ;
 // unary          → ( "!" | "-" ) unary
+//                | lambda
 //                | recordLiteral
 //                | call ;
+// lambda         → "|" parameters? "|" block ;
+// parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 // recordLiteral  → "{" recordField ( "," recordField )* "}"
 // recordField    → IDENTIFIER ":" expression
 // call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
@@ -92,7 +91,6 @@ class Parser {
       if (previous().type == TokenType.SEMICOLON) return;
       switch (peek().type) {
         case TokenType.CLASS:
-        case TokenType.FUN:
         case TokenType.LET:
         case TokenType.FOR:
         case TokenType.IF:
@@ -117,33 +115,7 @@ class Parser {
   //
   Statement declaration() {
     if (matchFirst(TokenType.LET)) return letDeclaration();
-    if (matchFirst(TokenType.FUN)) return function();
     return statement();
-  }
-
-  // function       → IDENTIFIER "(" parameters? ")" block ;
-  // parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
-  Statement function() {
-    final name = consume(TokenType.IDENTIFIER, "Expected function name.");
-    consume(TokenType.OPEN_PAREN, "Expected '(' after function name.");
-
-    final params = <Token>[];
-    if (check(TokenType.CLOSE_PAREN)) {
-      // 0-param function
-    } else {
-      while (true) {
-        final param = consume(TokenType.IDENTIFIER, "Expected parameter name");
-        params.add(param);
-        if (!matchFirst(TokenType.COMMA)) {
-          break;
-        }
-      }
-    }
-    consume(TokenType.CLOSE_PAREN, "Expected ')' after parameter list.");
-
-    consume(TokenType.OPEN_BRACE, "Expected '{' before body.");
-    final body = block();
-    return FunctionDeclaration(name, params, body);
   }
 
   // letDecl        → "let" IDENTIFIER "=" expression ";" ;
@@ -307,6 +279,7 @@ class Parser {
   }
 
   // unary          → ( "!" | "-" ) unary
+  //                | lambda
   //                | recordLiteral
   //                | call ;
   Expr unary() {
@@ -319,6 +292,9 @@ class Parser {
       final operator = previous();
       final right = unary();
       return UnaryMinus(operator, right);
+    }
+    if (matchFirst(TokenType.PIPE)) {
+      return lambda();
     }
     if (matchFirst(TokenType.OPEN_BRACE)) {
       return recordLiteral();
@@ -379,6 +355,28 @@ class Parser {
     } while (!check(TokenType.CLOSE_BRACE) && !isAtEnd());
     final closingBrace = consume(TokenType.CLOSE_BRACE, "Expected '}' after record literal.");
     return Record(closingBrace, fields);
+  }
+
+  // lambda        → "|" parameters? "|" block ;
+  // parameters      → IDENTIFIER ( "," IDENTIFIER )* ;
+  Expr lambda() {
+    final params = <Token>[];
+    if (check(TokenType.PIPE)) {
+      // 0-param function
+    } else {
+      while (true) {
+        final param = consume(TokenType.IDENTIFIER, "Expected parameter name");
+        params.add(param);
+        if (!matchFirst(TokenType.COMMA)) {
+          break;
+        }
+      }
+    }
+    consume(TokenType.PIPE, "Expected '|' after parameter list.");
+
+    consume(TokenType.OPEN_BRACE, "Expected '{' before body.");
+    final body = block();
+    return Lambda(params, body);
   }
 
 

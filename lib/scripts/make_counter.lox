@@ -1,11 +1,11 @@
-fun makeCounter(i) {
-  fun count() {
+let makeCounter = |i| {
+  let count = || {
     print i + 1;
     return makeCounter(i+1);
-  }
+  };
 
   return count;
-}
+};
 
 let counter1 = makeCounter(0);
 let counter2 = counter1();

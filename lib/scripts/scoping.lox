@@ -1,9 +1,9 @@
 
 let a = "global";
 {
-  fun showA() {
+  let showA = || {
     print a;
-  }
+  };
 
   showA();
   let a = "block";

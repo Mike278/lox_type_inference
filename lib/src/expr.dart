@@ -56,6 +56,12 @@ class LogicalOr extends Expr {
   LogicalOr(this.left, this.keyword, this.right);
 }
 
+class Lambda extends Expr {
+  final List<Token> params;
+  final List<Statement> body;
+  Lambda(this.params, this.body);
+}
+
 class Grouping extends Expr {
   final Expr expr;
   Grouping(this.expr);
@@ -91,25 +97,6 @@ class FieldAccess extends Expr {
 }
 
 
-String parens(String label, Iterable<Expr> exprs) =>
-    '($label ${exprs.map(display).join(' ')})';
-
-String display(Expr expr) => switch (expr) {
-  Literal(:final value)                                    => value?.toString() ?? 'nil',
-  Unary(:final operator, :final expr)                      => parens(operator.lexeme, [expr]),
-  Binary(:final operator, :final left, :final right)       => parens(operator.lexeme, [left, right]),
-  Grouping(:final expr)                                    => parens('group', [expr]),
-  Variable(:final name)                                    => 'let ${name.lexeme}',
-  Call(:final callee, :final args)                         => parens('call', [callee, ...args]),
-  LogicalAnd(:final left, :final keyword, :final right) ||
-  LogicalOr(:final left, :final keyword, :final right)     => parens(keyword.lexeme, [left, right]),
-  Ternary(:final condition, :final ifTrue, :final ifFalse) => parens('?:', [condition, ifTrue, ifFalse]),
-  Record(:final fields)                                    => parens('rec', fields.values),
-  FieldAccess(:final record, :final name)                  => parens('${name.lexeme}.', [record]),
-};
-
-
-
 sealed class Statement {}
 class ExpressionStatement extends Statement {
   final Expr expr;
@@ -127,12 +114,6 @@ class LetDeclaration extends Statement {
 class Block extends Statement {
   final List<Statement> statements;
   Block(this.statements);
-}
-class FunctionDeclaration extends Statement {
-  final Token name;
-  final List<Token> params;
-  final List<Statement> body;
-  FunctionDeclaration(this.name, this.params, this.body);
 }
 class ReturnStatement extends Statement {
   final Token keyword;

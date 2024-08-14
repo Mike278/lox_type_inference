@@ -1,4 +1,4 @@
-fun foo() { return 123; }
+let foo = || { return 123; };
 
 
 let someRecord = {
@@ -17,7 +17,7 @@ print tearoff();
 
 print someRecord.d();
 
-fun ok(name) {
+let ok = |name| {
     return {
         first: name,
         last: nil,
@@ -26,7 +26,7 @@ fun ok(name) {
         },
         name: name
     };
-}
+};
 
 let user = ok("joe");
 print user.first;

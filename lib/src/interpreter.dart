@@ -34,25 +34,12 @@ Env execute(Statement statement, Env env) {
     case ExpressionStatement(:final expr):
       eval(expr, env);
     case LetDeclaration(:final name, :final initializer):
-      env = env.defining(name, eval(initializer, env));
-    case FunctionDeclaration(:final name, :final params, :final body):
-      env = env.defining(name, (
-        arity: params.length,
-        impl: (List<Object?> args) {
-          var newEnv = Env(env, {
-            for (final (param, arg) in params.zipWith(args, makePair))
-              param.lexeme: arg,
-          });
-          try {
-            for (final statement in body) {
-              newEnv = execute(statement, newEnv);
-            }
-          } on Return catch (r) {
-            return r.returnValue;
-          }
-          return null; // void
-        },
-      ));
+      if (initializer case Lambda(:final body, :final params)) {
+        late final Env lazyEnv;
+        lazyEnv = env.defining(name, newLoxFunction(() => lazyEnv, params, body));
+        return lazyEnv;
+      }
+      return env.defining(name, eval(initializer, env));
     case Block(:final statements):
       var newEnv = Env(env);
       for (final statement in statements) {
@@ -108,7 +95,8 @@ Object? eval(Expr expr, Env env) {
       switch (evalAs<Map<String, Object?>>(record, name, env)) {
         final map when map.containsKey(name.lexeme) => map[name.lexeme],
         _ => throw LoxRuntimeException(name, "Record doesn't have a field named ${name.lexeme}")
-      }
+      },
+    Lambda(:final params, :final body) => newLoxFunction(() => env, params, body),
   };
 }
 
@@ -140,3 +128,26 @@ typedef LoxFunction = ({
   int arity,
   Object? Function(List<Object?> args) impl,
 });
+
+LoxFunction newLoxFunction(
+  Env Function() getEnv,
+  List<Token> params,
+  List<Statement> body,
+) =>
+  (
+    arity: params.length,
+    impl: (List<Object?> args) {
+      var newEnv = Env(getEnv(), {
+        for (final (param, arg) in params.zipWith(args, makePair))
+          param.lexeme: arg,
+      });
+      try {
+        for (final statement in body) {
+          newEnv = execute(statement, newEnv);
+        }
+      } on Return catch (r) {
+        return r.returnValue;
+      }
+      return null; // void
+    },
+  );

@@ -1,14 +1,14 @@
-fun zeroArgsEmptyBody() { }
-fun zeroArgsNoReturn() { print 1; }
-fun zeroArgsWithReturn() { return 1; }
+let zeroArgsEmptyBody = || { };
+let zeroArgsNoReturn = || { print 1; };
+let zeroArgsWithReturn = || { return 1; };
 
-fun oneArgEmptyBody(a) { }
-fun oneArgNoReturn(a) { print a; }
-fun oneArgWithReturn(a) { return a; }
+let oneArgEmptyBody = |a| { };
+let oneArgNoReturn = |a| { print a; };
+let oneArgWithReturn = |a| { return a; };
 
-fun twoArgsEmptyBody(a, b) { }
-fun twoArgsNoReturn(a, b) { print a; print b; }
-fun twoArgsWithReturn(a, b) { return a + b; }
+let twoArgsEmptyBody = |a, b| { };
+let twoArgsNoReturn = |a, b| { print a; print b; };
+let twoArgsWithReturn = |a, b| { return a + b; };
 
 print zeroArgsEmptyBody();
 print zeroArgsNoReturn();
@@ -25,10 +25,10 @@ print twoArgsWithReturn(1, 2);
 let assignment = "assignment!";
 print assignment;
 
-fun isGreat() {
+let isGreat = || {
     print "side effect!";
     return true;
-}
+};
 
 print "=== false or isGreat(); ===";
 print false or isGreat();

@@ -138,6 +138,7 @@ List<Token> scanTokens(String source) {
       case '.': addToken(TokenType.DOT);
       case '-': addToken(TokenType.MINUS);
       case '+': addToken(TokenType.PLUS);
+      case '|': addToken(TokenType.PIPE);
       case ';': addToken(TokenType.SEMICOLON);
       case '*': addToken(TokenType.STAR);
       case '?': addToken(TokenType.QUESTION);
@@ -177,7 +178,6 @@ final keywords = {
   'else' :   TokenType.ELSE,
   'false' :  TokenType.FALSE,
   'for' :    TokenType.FOR,
-  'fun' :    TokenType.FUN,
   'if' :     TokenType.IF,
   'let' :    TokenType.LET,
   'nil' :    TokenType.NIL,
@@ -194,7 +194,7 @@ final keywords = {
 enum TokenType {
   // Single-character tokens.
   OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
-  COLON, COMMA, DOT, MINUS, PLUS, QUESTION, SEMICOLON, SLASH, STAR,
+  COLON, COMMA, DOT, MINUS, PIPE, PLUS, QUESTION, SEMICOLON, SLASH, STAR,
 
   // One or two character tokens.
   BANG, BANG_EQUAL,
@@ -206,7 +206,7 @@ enum TokenType {
   IDENTIFIER, STRING, NUMBER,
 
   // Keywords.
-  AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
+  AND, CLASS, ELSE, FALSE, FOR, IF, NIL, OR,
   PRINT, RETURN, SUPER, THEN, THIS, TRUE, LET, WHILE,
 
   EOF;
