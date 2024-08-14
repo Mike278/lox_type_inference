@@ -79,6 +79,18 @@ class Ternary extends Expr {
   Ternary(this.questionMark, this.condition, this.ifTrue, this.ifFalse);
 }
 
+class Record extends Expr {
+  final Token closingBrace;
+  final Map<Token, Expr> fields;
+  Record(this.closingBrace, this.fields);
+}
+class FieldAccess extends Expr {
+  final Expr record;
+  final Token name;
+  FieldAccess(this.record, this.name);
+}
+
+
 String parens(String label, Iterable<Expr> exprs) =>
     '($label ${exprs.map(display).join(' ')})';
 
@@ -92,6 +104,8 @@ String display(Expr expr) => switch (expr) {
   LogicalAnd(:final left, :final keyword, :final right) ||
   LogicalOr(:final left, :final keyword, :final right)     => parens(keyword.lexeme, [left, right]),
   Ternary(:final condition, :final ifTrue, :final ifFalse) => parens('?:', [condition, ifTrue, ifFalse]),
+  Record(:final fields)                                    => parens('rec', fields.values),
+  FieldAccess(:final record, :final name)                  => parens('${name.lexeme}.', [record]),
 };
 
 

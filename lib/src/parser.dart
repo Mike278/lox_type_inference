@@ -33,8 +33,11 @@ import 'package:lox/src/utils.dart';
 // term           → factor ( ( "-" | "+" ) factor )* ;
 // factor         → unary ( ( "/" | "*" ) unary )* ;
 // unary          → ( "!" | "-" ) unary
+//                | recordLiteral
 //                | call ;
-// call           → primary ( "(" arguments? ")" )* ;
+// recordLiteral  → "{" recordField ( "," recordField )* "}"
+// recordField    → IDENTIFIER ":" expression
+// call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 // arguments      → expression ( "," expression )* ;
 // primary        → NUMBER | STRING
 //                | "true" | "false" | "nil"
@@ -103,19 +106,16 @@ class Parser {
     }
   }
 
-  List<Statement> parse() {
-    final statements = <Statement>[];
-    while (!isAtEnd()) {
-      declaration()?.run(statements.add);
-    }
-    return statements;
-  }
+  List<Statement> parse() => [
+    for (;!isAtEnd();)
+      declaration()
+  ];
 
   // declaration    → letDecl
   //                | funDecl
   //                | statement
   //
-  Statement? declaration() {
+  Statement declaration() {
     if (matchFirst(TokenType.LET)) return letDeclaration();
     if (matchFirst(TokenType.FUN)) return function();
     return statement();
@@ -123,12 +123,12 @@ class Parser {
 
   // function       → IDENTIFIER "(" parameters? ")" block ;
   // parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
-  Statement? function() {
+  Statement function() {
     final name = consume(TokenType.IDENTIFIER, "Expected function name.");
-    consume(TokenType.LEFT_PAREN, "Expected '(' after function name.");
+    consume(TokenType.OPEN_PAREN, "Expected '(' after function name.");
 
     final params = <Token>[];
-    if (check(TokenType.RIGHT_PAREN)) {
+    if (check(TokenType.CLOSE_PAREN)) {
       // 0-param function
     } else {
       while (true) {
@@ -139,15 +139,15 @@ class Parser {
         }
       }
     }
-    consume(TokenType.RIGHT_PAREN, "Expected ')' after parameter list.");
+    consume(TokenType.CLOSE_PAREN, "Expected ')' after parameter list.");
 
-    consume(TokenType.LEFT_BRACE, "Expected '{' before body.");
+    consume(TokenType.OPEN_BRACE, "Expected '{' before body.");
     final body = block();
     return FunctionDeclaration(name, params, body);
   }
 
   // letDecl        → "let" IDENTIFIER "=" expression ";" ;
-  Statement? letDeclaration() {
+  Statement letDeclaration() {
     final name = consume(TokenType.IDENTIFIER, 'Expected variable name.');
     consume(TokenType.EQUAL, "Expected '=' before variable declaration.");
     final initializer = expression();
@@ -162,7 +162,7 @@ class Parser {
   //                | exprStmt
   Statement statement() {
     if (matchFirst(TokenType.PRINT)) return printStatement();
-    if (matchFirst(TokenType.LEFT_BRACE)) return Block(block());
+    if (matchFirst(TokenType.OPEN_BRACE)) return Block(block());
     if (matchFirst(TokenType.RETURN)) return returnStatement();
     if (matchFirst(TokenType.IF)) return ifStatement();
     return expressionStatement();
@@ -172,11 +172,10 @@ class Parser {
   // Expects open brace is already consumed.
   List<Statement> block() {
     final statements = [
-      for (;!check(TokenType.RIGHT_BRACE) && !isAtEnd();)
-        if (declaration() case final decl?)
-          decl,
+      for (;!check(TokenType.CLOSE_BRACE) && !isAtEnd();)
+        declaration()
     ];
-    consume(TokenType.RIGHT_BRACE, "Expected '}' after block.");
+    consume(TokenType.CLOSE_BRACE, "Expected '}' after block.");
     return statements;
   }
 
@@ -308,6 +307,7 @@ class Parser {
   }
 
   // unary          → ( "!" | "-" ) unary
+  //                | recordLiteral
   //                | call ;
   Expr unary() {
     if (matchFirst(TokenType.BANG)) {
@@ -320,17 +320,23 @@ class Parser {
       final right = unary();
       return UnaryMinus(operator, right);
     }
+    if (matchFirst(TokenType.OPEN_BRACE)) {
+      return recordLiteral();
+    }
 
     return call();
   }
 
-  // call           → primary ( "(" arguments? ")" )* ;
+  // call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
   Expr call() {
     final callee = primary();
     var expr = callee;
     while (true) {
-      if (matchFirst(TokenType.LEFT_PAREN)) {
+      if (matchFirst(TokenType.OPEN_PAREN)) {
         expr = finishCall(expr);
+      } else if (matchFirst(TokenType.DOT)) {
+        final fieldName = consume(TokenType.IDENTIFIER, "Expected field name");
+        expr = FieldAccess(expr, fieldName);
       } else {
         break;
       }
@@ -341,7 +347,7 @@ class Parser {
   // arguments      → expression ( "," expression )* ;
   Expr finishCall(Expr callee) {
     final args = <Expr>[];
-    if (check(TokenType.RIGHT_PAREN)) {
+    if (check(TokenType.CLOSE_PAREN)) {
       // 0-arg function
     } else {
       while (true) {
@@ -351,9 +357,30 @@ class Parser {
         }
       }
     }
-    final closingParen = consume(TokenType.RIGHT_PAREN, "Expected ')' after arguments");
+    final closingParen = consume(TokenType.CLOSE_PAREN, "Expected ')' after arguments");
     return Call(callee, args, closingParen);
   }
+
+  // record         → "{" recordField ( "," recordField )* "}"
+  // recordField    → IDENTIFIER ":" expression
+  Expr recordLiteral() {
+    final fields = <Token, Expr>{};
+    var first = true;
+    do {
+      if (!first) consume(TokenType.COMMA, 'Expected comma between record field declarations.');
+      first = false;
+      final name = consume(TokenType.IDENTIFIER, 'Expected field name.');
+      if (fields.containsKey(name)) {
+        throw newParseError(name, 'Duplicate field name');
+      }
+      consume(TokenType.COLON, "Expected ':' between field name and value.");
+      final value = expression();
+      fields[name] = value;
+    } while (!check(TokenType.CLOSE_BRACE) && !isAtEnd());
+    final closingBrace = consume(TokenType.CLOSE_BRACE, "Expected '}' after record literal.");
+    return Record(closingBrace, fields);
+  }
+
 
 
   // primary        → NUMBER | STRING
@@ -369,9 +396,9 @@ class Parser {
     if (matchFirst(TokenType.NIL)) return NilLiteral();
     if (matchFirst(TokenType.IDENTIFIER)) return Variable(previous());
 
-    if (matchFirst(TokenType.LEFT_PAREN)) {
+    if (matchFirst(TokenType.OPEN_PAREN)) {
       final expr = expression();
-      consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
+      consume(TokenType.CLOSE_PAREN, "Expected ')' after expression.");
       return Grouping(expr);
     }
 

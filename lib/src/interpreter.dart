@@ -99,7 +99,16 @@ Object? eval(Expr expr, Env env) {
     Ternary(:final questionMark, :final condition, :final ifTrue, :final ifFalse) =>
       evalAs<bool>(condition, questionMark, env)
         ? eval(ifTrue, env)
-        : eval(ifFalse, env)
+        : eval(ifFalse, env),
+    Record(:final fields) => {
+      for (final (field, expr) in fields.pairs())
+        field.lexeme: eval(expr, env),
+    },
+    FieldAccess(:final record, :final name) =>
+      switch (evalAs<Map<String, Object?>>(record, name, env)) {
+        final map when map.containsKey(name.lexeme) => map[name.lexeme],
+        _ => throw LoxRuntimeException(name, "Record doesn't have a field named ${name.lexeme}")
+      }
   };
 }
 

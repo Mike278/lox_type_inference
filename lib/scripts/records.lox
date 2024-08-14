@@ -1,0 +1,43 @@
+fun foo() { return 123; }
+
+
+let someRecord = {
+    a: "one",
+    b: 2,
+    c: false,
+    d: foo
+};
+
+print someRecord;
+
+print someRecord.a;
+print someRecord.d;
+let tearoff = someRecord.d;
+print tearoff();
+
+print someRecord.d();
+
+fun ok(name) {
+    return {
+        first: name,
+        last: nil,
+        nested: {
+            another: 1
+        },
+        name: name
+    };
+}
+
+let user = ok("joe");
+print user.first;
+print user.last;
+print user.nested.another;
+print user.name;
+
+print "==========";
+
+let user2 = ok(1);
+print user2.first;
+print user2.last;
+print user2.nested.another;
+print user2.name;
