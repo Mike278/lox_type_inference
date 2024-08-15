@@ -1,31 +1,37 @@
-let zeroArgsEmptyBody = || { };
-let zeroArgsNoReturn = || { print 1; };
-let zeroArgsWithReturn = || { return 1; };
+let zeroArgsEmptyBody = \ { };
+let zeroArgsNoReturn = \ { print 1; };
+let zeroArgsWithReturn = \ { return 1; };
+let zeroArgsExprBody = \ -> 1;
 
-let oneArgEmptyBody = |a| { };
-let oneArgNoReturn = |a| { print a; };
-let oneArgWithReturn = |a| { return a; };
+let oneArgEmptyBody = \a { };
+let oneArgNoReturn = \a { print a; };
+let oneArgWithReturn = \a { return a; };
+let oneArgsExprBody = \a -> a;
 
-let twoArgsEmptyBody = |a, b| { };
-let twoArgsNoReturn = |a, b| { print a; print b; };
-let twoArgsWithReturn = |a, b| { return a + b; };
+let twoArgsEmptyBody = \a, b { };
+let twoArgsNoReturn = \a, b { print a; print b; };
+let twoArgsWithReturn = \a, b { return a + b; };
+let twoArgsExprBody = \a, b -> a + b;
 
 print zeroArgsEmptyBody();
 print zeroArgsNoReturn();
 print zeroArgsWithReturn();
+print zeroArgsExprBody();
 
 print oneArgEmptyBody(1);
 print oneArgNoReturn(1);
 print oneArgWithReturn(1);
+print oneArgsExprBody(1);
 
 print twoArgsEmptyBody(1, 2);
 print twoArgsNoReturn(1, 2);
 print twoArgsWithReturn(1, 2);
+print twoArgsExprBody(1, 2);
 
 let assignment = "assignment!";
 print assignment;
 
-let isGreat = || {
+let isGreat = \ {
     print "side effect!";
     return true;
 };

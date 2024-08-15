@@ -32,7 +32,7 @@ import 'package:lox/src/utils.dart';
 //                | lambda
 //                | recordLiteral
 //                | call ;
-// lambda         → "|" parameters? "|" block ;
+// lambda         → "\" parameters? (block | ("->" expression)) ;
 // parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 // recordLiteral  → "{" recordField ( "," recordField )* "}"
 // recordField    → IDENTIFIER ":" expression
@@ -293,7 +293,7 @@ class Parser {
       final right = unary();
       return UnaryMinus(operator, right);
     }
-    if (matchFirst(TokenType.PIPE)) {
+    if (matchFirst(TokenType.BACKSLASH)) {
       return lambda();
     }
     if (matchFirst(TokenType.OPEN_BRACE)) {
@@ -357,11 +357,11 @@ class Parser {
     return Record(closingBrace, fields);
   }
 
-  // lambda        → "|" parameters? "|" block ;
+  // lambda          → "\" parameters? (block | ("->" expression)) ;
   // parameters      → IDENTIFIER ( "," IDENTIFIER )* ;
   Expr lambda() {
     final params = <Token>[];
-    if (check(TokenType.PIPE)) {
+    if (check(TokenType.OPEN_BRACE) || check(TokenType.ARROW)) {
       // 0-param function
     } else {
       while (true) {
@@ -372,10 +372,16 @@ class Parser {
         }
       }
     }
-    consume(TokenType.PIPE, "Expected '|' after parameter list.");
 
-    consume(TokenType.OPEN_BRACE, "Expected '{' before body.");
-    final body = block();
+    final List<Statement> body;
+    if (matchFirst(TokenType.ARROW)) {
+      final arrow = previous();
+      body = [ReturnStatement(arrow, expression())];
+    } else {
+      consume(TokenType.OPEN_BRACE, "Expected '{' before body.");
+      body = block();
+    }
+
     return Lambda(params, body);
   }
 

@@ -133,10 +133,11 @@ List<Token> scanTokens(String source) {
       case ')': addToken(TokenType.CLOSE_PAREN);
       case '{': addToken(TokenType.OPEN_BRACE);
       case '}': addToken(TokenType.CLOSE_BRACE);
+      case r'\': addToken(TokenType.BACKSLASH);
       case ':': addToken(TokenType.COLON);
       case ',': addToken(TokenType.COMMA);
       case '.': addToken(TokenType.DOT);
-      case '-': addToken(TokenType.MINUS);
+      case '-': addToken(match('>') ? TokenType.ARROW : TokenType.MINUS);
       case '+': addToken(TokenType.PLUS);
       case '|': addToken(TokenType.PIPE);
       case ';': addToken(TokenType.SEMICOLON);
@@ -194,10 +195,10 @@ final keywords = {
 enum TokenType {
   // Single-character tokens.
   OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
-  COLON, COMMA, DOT, MINUS, PIPE, PLUS, QUESTION, SEMICOLON, SLASH, STAR,
+  BACKSLASH, COLON, COMMA, DOT, MINUS, PIPE, PLUS, QUESTION, SEMICOLON, SLASH, STAR,
 
   // One or two character tokens.
-  BANG, BANG_EQUAL,
+  ARROW, BANG, BANG_EQUAL,
   EQUAL, EQUAL_EQUAL,
   GREATER, GREATER_EQUAL,
   LESS, LESS_EQUAL,

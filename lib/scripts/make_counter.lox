@@ -1,5 +1,5 @@
-let makeCounter = |i| {
-  let count = || {
+let makeCounter = \i {
+  let count = \ {
     print i + 1;
     return makeCounter(i+1);
   };

@@ -1,18 +1,22 @@
 let someRecord = {
     a: false,
-    b: || { return 123; },
-    c: |x| { return x + 123; }
+    b: \ { return 123; },
+    c: \x { return x + 123; },
+    d: \x -> x + 123,
+    e: \ -> 123
 };
 print someRecord.b();
 let tearoff = someRecord.b;
 print tearoff();
 
 print someRecord.c(1);
+print someRecord.d(54);
+print someRecord.e();
 
-print (|x| { return x; })(1);
+print (\x { return x; })(1);
 
-let makeCounter = |i, fn| {
-  let count = || {
+let makeCounter = \i, fn {
+  let count = \ {
     fn(i + 1);
     return makeCounter(i+1, fn);
   };
@@ -20,8 +24,29 @@ let makeCounter = |i, fn| {
   return count;
 };
 
-let counter1 = makeCounter(0, |value| { print value*value; });
-let counter2 = counter1();
-let counter3 = counter2();
-let counter4 = counter3();
+makeCounter(0, \value { print value*value; })
+()
+()
+()
+()
+()
+()
+;
 
+let id = \x -> x;
+print id("hello");
+print (\x -> x)(1);
+
+let zeroArgFunction = \ -> 123;
+print zeroArgFunction();
+
+let makeUser = \name, age -> {
+    userId: clock(),
+    name: name,
+    age: age,
+    calcBirthYear: \currentYear -> currentYear - age
+};
+
+let user = makeUser("mike", 30);
+print user.age;
+print user.calcBirthYear(2024);
