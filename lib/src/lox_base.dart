@@ -8,10 +8,18 @@ import 'env.dart';
 
 void main(List<String> args) {
   if (args.length > 1) {
-    print("Usage: jlox [script]");
+    print("Usage: jlox [script or directory of scripts]");
     exit(64);
-  } else if (args.length == 1) {
-    runFile(args[0]);
+  } else if (args case [final path]) {
+    if (path.endsWith('.lox')) {
+      runFile(path);
+    } else {
+      Directory(path)
+          .listSync(recursive: true)
+          .whereType<File>()
+          .map((f) => f.path)
+          .forEach(runFile);
+    }
   } else {
     runPrompt();
   }

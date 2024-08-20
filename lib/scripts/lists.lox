@@ -1,10 +1,18 @@
-let map = \list, fn ->
+let fold = \list, state, fn ->
     List.empty(list)
-        ? []
-        : [
-            fn(List.first(list)),
-            ..map(List.rest(list), fn)
-          ];
+        ? state
+        : fold(
+            List.rest(list),
+            fn(state, List.first(list)),
+            fn
+        );
+
+
+let map = \list, fn ->
+    fold(list, [], \state, element -> [..state, fn(element)]);
+
+let reduce = \list, fn ->
+    fold(list, List.first(list), fn);
 
 let xs = [1, 2, 3];
 print xs;
@@ -22,3 +30,28 @@ print mixed;
 
 print map([1,2,3], \x -> x == 1);
 print map(mixed, \x -> x == 1);
+
+
+let employees = [
+    {name: "mike", age: 30},
+    {name: "jane", age: 60},
+    {name: "joe", age: 50}
+];
+
+let employeeWithMaxAge = reduce(
+    employees,
+    \highest, employee ->
+        employee.age > highest.age
+            ? employee
+            : highest
+);
+print(employeeWithMaxAge);
+
+let maxAge = reduce(
+    map(employees, \e -> e.age),
+    \highest, age ->
+        age > highest
+            ? age
+            : highest
+);
+print(maxAge);
