@@ -65,7 +65,12 @@ Env execute(Statement statement, Env env) {
 Object? eval(Expr expr, Env env) {
   return switch (expr) {
     Literal(:final value) => value,
-    ListLiteral(elements:final values) => [ for (final x in values) eval(x, env) ],
+    ListLiteral(elements:final values) => [
+      for (final x in values) ...switch (x) {
+        ExpressionListElement(:final expr) => [eval(expr, env)],
+        SpreadListElement(:final expr, :final dotdot) => evalAs<List<Object?>>(expr, dotdot, env),
+      },
+    ],
     Grouping(:final expr) => eval(expr, env),
     UnaryBang(:final expr, :final operator) => !evalAs<bool>(expr, operator, env),
     UnaryMinus(:final expr, :final operator) => -evalAs<num>(expr, operator, env),

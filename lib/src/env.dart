@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:lox/lox.dart';
 import 'package:lox/src/interpreter.dart';
-import 'package:lox/src/utils.dart';
 
 final LoxFunction clock = (
   arity: 0,
@@ -26,10 +25,6 @@ final LoxFunction empty = (
   arity: 1,
   impl: (args) => (args.single as List).isEmpty,
 );
-final LoxFunction concat = (
-  arity: 2,
-  impl: (args) => args.cast<List>().expand(identity).toList(),
-);
 
 final globals = UnmodifiableMapView({
   'clock': clock,
@@ -37,7 +32,6 @@ final globals = UnmodifiableMapView({
     'first': first,
     'rest': rest,
     'empty': empty,
-    'concat': concat,
   },
 });
 

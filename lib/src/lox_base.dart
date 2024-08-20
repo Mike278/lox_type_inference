@@ -138,7 +138,7 @@ List<Token> scanTokens(String source) {
       case r'\': addToken(TokenType.BACKSLASH);
       case ':': addToken(TokenType.COLON);
       case ',': addToken(TokenType.COMMA);
-      case '.': addToken(TokenType.DOT);
+      case '.': addToken(match('.') ? TokenType.DOTDOT : TokenType.DOT);
       case '-': addToken(match('>') ? TokenType.ARROW : TokenType.MINUS);
       case '+': addToken(TokenType.PLUS);
       case '|': addToken(TokenType.PIPE);
@@ -200,7 +200,7 @@ enum TokenType {
   BACKSLASH, COLON, COMMA, DOT, MINUS, PIPE, PLUS, QUESTION, SEMICOLON, SLASH, STAR,
 
   // One or two character tokens.
-  ARROW, BANG, BANG_EQUAL,
+  ARROW, BANG, BANG_EQUAL, DOTDOT,
   EQUAL, EQUAL_EQUAL,
   GREATER, GREATER_EQUAL,
   LESS, LESS_EQUAL,

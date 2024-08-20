@@ -97,8 +97,18 @@ class FieldAccess extends Expr {
 }
 class ListLiteral extends Expr {
   final Token closingBracket;
-  final List<Expr> elements;
+  final List<ListElement> elements;
   ListLiteral(this.closingBracket, this.elements);
+}
+sealed class ListElement {}
+class ExpressionListElement extends ListElement {
+  final Expr expr;
+  ExpressionListElement(this.expr);
+}
+class SpreadListElement extends ListElement {
+  final Token dotdot;
+  final Expr expr;
+  SpreadListElement(this.dotdot, this.expr);
 }
 
 

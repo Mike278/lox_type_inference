@@ -37,7 +37,9 @@ import 'package:lox/src/utils.dart';
 // parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 // recordLiteral  → "{" recordField ( "," recordField )* "}"
 // recordField    → IDENTIFIER ":" expression
-// listLiteral    → "[" expression ( "," expression )* "]"
+// listLiteral    → "[" listElement ( "," listElement )* "]"
+// listElement    → ".." expression
+//                | expression
 // call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 // arguments      → expression ( "," expression )* ;
 // primary        → NUMBER | STRING
@@ -363,16 +365,24 @@ class Parser {
     return Record(closingBrace, fields);
   }
 
-  // listLiteral    → "[" expression ( "," expression )* "]"
+  // listLiteral    → "[" listElement ( "," listElement )* "]"
+  // listElement    → ".." expression
+  //                | expression
   Expr listLiteral() {
-    final elements = <Expr>[];
+    final elements = <ListElement>[];
     var first = true;
-    do {
+    while (!check(TokenType.CLOSE_BRACKET) && !isAtEnd()) {
       if (!first) consume(TokenType.COMMA, 'Expected comma between list elements.');
       first = false;
-      final value = expression();
-      elements.add(value);
-    } while (!check(TokenType.CLOSE_BRACKET) && !isAtEnd());
+      if (matchFirst(TokenType.DOTDOT)) {
+        final dotdot = previous();
+        final expr = expression();
+        elements.add(SpreadListElement(dotdot, expr));
+      } else {
+        final expr = expression();
+        elements.add(ExpressionListElement(expr));
+      }
+    }
     final closingBracket = consume(TokenType.CLOSE_BRACKET, "Expected ']' after list literal.");
     return ListLiteral(closingBracket, elements);
   }
