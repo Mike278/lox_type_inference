@@ -1,0 +1,15 @@
+let xs = [1, 2, 3];
+print xs;
+
+let map = \list, fn {
+    if List.empty(list) then return list;
+    let first = List.first(list);
+    let newFirst = fn(first);
+
+    let rest = List.rest(list);
+    let newRest = map(rest, fn);
+
+    return List.concat([newFirst], newRest);
+};
+
+print map([1,2,3], \x -> x == 1);

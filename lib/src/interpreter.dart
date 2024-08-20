@@ -5,7 +5,7 @@ import 'package:lox/src/lox_base.dart';
 import 'package:lox/src/utils.dart';
 
 class LoxRuntimeException implements Exception {
-  final Token token;
+  final Token? token;
   final String message;
   LoxRuntimeException(this.token, this.message);
 }
@@ -20,7 +20,9 @@ Env interpret(List<Statement> statements, Env env) {
       env = execute(s, env);
     }
   } on LoxRuntimeException catch (e) {
-    print('Error while evaluating ${e.token} on line ${e.token.line}');
+    if (e.token case final token?) {
+      print('Error while evaluating $token on line ${token.line}');
+    }
     print(e.message);
     hadRuntimeError = true;
   }
@@ -63,6 +65,7 @@ Env execute(Statement statement, Env env) {
 Object? eval(Expr expr, Env env) {
   return switch (expr) {
     Literal(:final value) => value,
+    ListLiteral(elements:final values) => [ for (final x in values) eval(x, env) ],
     Grouping(:final expr) => eval(expr, env),
     UnaryBang(:final expr, :final operator) => !evalAs<bool>(expr, operator, env),
     UnaryMinus(:final expr, :final operator) => -evalAs<num>(expr, operator, env),

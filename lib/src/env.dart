@@ -2,14 +2,43 @@ import 'dart:collection';
 
 import 'package:lox/lox.dart';
 import 'package:lox/src/interpreter.dart';
+import 'package:lox/src/utils.dart';
 
 final LoxFunction clock = (
   arity: 0,
   impl: (args) => DateTime.now().millisecondsSinceEpoch / 1000,
 );
+final LoxFunction first = (
+  arity: 1,
+  impl: (args) => switch (args.single as List) {
+    [final x, ...] => x,
+    [] => throw LoxRuntimeException(null, 'List is empty'),
+  },
+);
+final LoxFunction rest = (
+  arity: 1,
+  impl: (args) => switch (args.single as List) {
+    [final _, ...final rest] => rest,
+    [] => [],
+  },
+);
+final LoxFunction empty = (
+  arity: 1,
+  impl: (args) => (args.single as List).isEmpty,
+);
+final LoxFunction concat = (
+  arity: 2,
+  impl: (args) => args.cast<List>().expand(identity).toList(),
+);
 
 final globals = UnmodifiableMapView({
   'clock': clock,
+  'List': {
+    'first': first,
+    'rest': rest,
+    'empty': empty,
+    'concat': concat,
+  },
 });
 
 class Env {

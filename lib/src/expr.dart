@@ -95,6 +95,11 @@ class FieldAccess extends Expr {
   final Token name;
   FieldAccess(this.record, this.name);
 }
+class ListLiteral extends Expr {
+  final Token closingBracket;
+  final List<Expr> elements;
+  ListLiteral(this.closingBracket, this.elements);
+}
 
 
 sealed class Statement {}

@@ -31,11 +31,13 @@ import 'package:lox/src/utils.dart';
 // unary          → ( "!" | "-" ) unary
 //                | lambda
 //                | recordLiteral
+//                | listLiteral
 //                | call ;
 // lambda         → "\" parameters? (block | ("->" expression)) ;
 // parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 // recordLiteral  → "{" recordField ( "," recordField )* "}"
 // recordField    → IDENTIFIER ":" expression
+// listLiteral    → "[" expression ( "," expression )* "]"
 // call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 // arguments      → expression ( "," expression )* ;
 // primary        → NUMBER | STRING
@@ -281,6 +283,7 @@ class Parser {
   // unary          → ( "!" | "-" ) unary
   //                | lambda
   //                | recordLiteral
+  //                | listLiteral
   //                | call ;
   Expr unary() {
     if (matchFirst(TokenType.BANG)) {
@@ -295,6 +298,9 @@ class Parser {
     }
     if (matchFirst(TokenType.BACKSLASH)) {
       return lambda();
+    }
+    if (matchFirst(TokenType.OPEN_BRACKET)) {
+      return listLiteral();
     }
     if (matchFirst(TokenType.OPEN_BRACE)) {
       return recordLiteral();
@@ -355,6 +361,20 @@ class Parser {
     } while (!check(TokenType.CLOSE_BRACE) && !isAtEnd());
     final closingBrace = consume(TokenType.CLOSE_BRACE, "Expected '}' after record literal.");
     return Record(closingBrace, fields);
+  }
+
+  // listLiteral    → "[" expression ( "," expression )* "]"
+  Expr listLiteral() {
+    final elements = <Expr>[];
+    var first = true;
+    do {
+      if (!first) consume(TokenType.COMMA, 'Expected comma between list elements.');
+      first = false;
+      final value = expression();
+      elements.add(value);
+    } while (!check(TokenType.CLOSE_BRACKET) && !isAtEnd());
+    final closingBracket = consume(TokenType.CLOSE_BRACKET, "Expected ']' after list literal.");
+    return ListLiteral(closingBracket, elements);
   }
 
   // lambda          → "\" parameters? (block | ("->" expression)) ;
