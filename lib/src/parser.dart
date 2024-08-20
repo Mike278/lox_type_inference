@@ -312,12 +312,25 @@ class Parser {
   }
 
   // call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
+  // arguments      → expression ( "," expression )* ;
   Expr call() {
     final callee = primary();
     var expr = callee;
     while (true) {
       if (matchFirst(TokenType.OPEN_PAREN)) {
-        expr = finishCall(expr);
+        final args = <Expr>[];
+        if (check(TokenType.CLOSE_PAREN)) {
+          // 0-arg function
+        } else {
+          while (true) {
+            args.add(expression());
+            if (!matchFirst(TokenType.COMMA)) {
+              break;
+            }
+          }
+        }
+        final closingParen = consume(TokenType.CLOSE_PAREN, "Expected ')' after arguments");
+        expr = Call(expr, args, closingParen);
       } else if (matchFirst(TokenType.DOT)) {
         final fieldName = consume(TokenType.IDENTIFIER, "Expected field name");
         expr = FieldAccess(expr, fieldName);
@@ -326,23 +339,6 @@ class Parser {
       }
     }
     return expr;
-  }
-
-  // arguments      → expression ( "," expression )* ;
-  Expr finishCall(Expr callee) {
-    final args = <Expr>[];
-    if (check(TokenType.CLOSE_PAREN)) {
-      // 0-arg function
-    } else {
-      while (true) {
-        args.add(expression());
-        if (!matchFirst(TokenType.COMMA)) {
-          break;
-        }
-      }
-    }
-    final closingParen = consume(TokenType.CLOSE_PAREN, "Expected ')' after arguments");
-    return Call(callee, args, closingParen);
   }
 
   // record         → "{" recordField ( "," recordField )* "}"
