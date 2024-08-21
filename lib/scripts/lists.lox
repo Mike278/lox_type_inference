@@ -49,9 +49,14 @@ print(employeeWithMaxAge);
 
 let maxAge = reduce(
     map(employees, \e -> e.age),
-    \highest, age ->
-        age > highest
-            ? age
-            : highest
+    \highest, age -> age > highest ? age : highest
 );
 print(maxAge);
+
+let sub = \x, y -> x-y;
+
+let oneMinusX = sub(1, _);
+let xMinusOne = sub(_, 1);
+
+print(oneMinusX(3));
+print(xMinusOne(3));

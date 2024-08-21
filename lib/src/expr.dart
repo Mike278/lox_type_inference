@@ -73,10 +73,22 @@ class Variable extends Expr {
 }
 class Call extends Expr {
   final Expr callee;
-  final List<Expr> args;
+  final CallArgs args;
   final Token closingParen;
   Call(this.callee, this.args, this.closingParen);
 }
+sealed class CallArgs {}
+class ArgsWithPlaceholder extends CallArgs {
+  final List<Expr> before;
+  final Token placeholder;
+  final List<Expr> after;
+  ArgsWithPlaceholder(this.before, this.placeholder, this.after);
+}
+class ExpressionArgs implements CallArgs {
+  final List<Expr> exprs;
+  ExpressionArgs(this.exprs);
+}
+
 class Ternary extends Expr {
   final Token questionMark;
   final Expr condition;

@@ -137,6 +137,7 @@ List<Token> scanTokens(String source) {
   void scanToken() {
     final c = source[current++];
     switch (c) {
+      case '_': addToken(TokenType.UNDERSCORE);
       case '(': addToken(TokenType.OPEN_PAREN);
       case ')': addToken(TokenType.CLOSE_PAREN);
       case '{': addToken(TokenType.OPEN_BRACE);
@@ -205,7 +206,7 @@ final keywords = {
 enum TokenType {
   // Single-character tokens.
   OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE, OPEN_BRACKET, CLOSE_BRACKET,
-  BACKSLASH, COLON, COMMA, DOT, MINUS, PIPE, PLUS, QUESTION, SEMICOLON, SLASH, STAR,
+  BACKSLASH, COLON, COMMA, DOT, MINUS, PIPE, PLUS, QUESTION, SEMICOLON, SLASH, STAR, UNDERSCORE,
 
   // One or two character tokens.
   ARROW, BANG, BANG_EQUAL, DOTDOT,

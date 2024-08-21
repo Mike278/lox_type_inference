@@ -120,16 +120,34 @@ T evalAs<T extends Object>(Expr expr, Token errorOnToken, Env env) {
 
 Object? handleInvocation(
   Expr callee,
-  List<Expr> args,
+  CallArgs args,
   Token closingParen,
   Env env,
 ) {
   final (:arity, :impl) = evalAs<LoxFunction>(callee, closingParen, env);
-  if (args.length != arity) {
-    throw LoxRuntimeException(closingParen, 'Expected $arity arguments but got ${args.length}');
+  final argCount = switch (args) {
+    ArgsWithPlaceholder(:final before, :final after) =>
+        before.length + after.length + 1, // +1 for placeholder
+
+    ExpressionArgs(:final exprs) =>
+        exprs.length,
+  };
+  if (argCount != arity) {
+    throw LoxRuntimeException(closingParen, 'Expected $arity arguments but got $argCount');
   }
-  final evaluatedArgs = [ for (final arg in args) eval(arg, env) ];
-  return impl(evaluatedArgs);
+
+  return switch (args) {
+    ExpressionArgs(:final exprs) =>
+        impl([ for (final arg in exprs) eval(arg, env) ]),
+    ArgsWithPlaceholder(:final before, :final after) => (
+        arity: 1,
+        impl: (args) => impl([
+          for (final arg in before) eval(arg, env),
+          ...args,
+          for (final arg in after) eval(arg, env),
+        ]),
+      ),
+  };
 }
 
 typedef LoxFunction = ({

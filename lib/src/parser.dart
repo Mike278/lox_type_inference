@@ -41,7 +41,8 @@ import 'package:lox/src/utils.dart';
 // listElement    → ".." expression
 //                | expression
 // call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
-// arguments      → expression ( "," expression )* ;
+// arguments      → argument ( "," argument )* ;
+// argument       → "_" | expression;
 // primary        → NUMBER | STRING
 //                | "true" | "false" | "nil"
 //                | "(" expression ")"
@@ -312,25 +313,44 @@ class Parser {
   }
 
   // call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
-  // arguments      → expression ( "," expression )* ;
+  // arguments      → argument ( "," argument )* ;
+  // argument       → "_" | expression;
   Expr call() {
     final callee = primary();
     var expr = callee;
     while (true) {
       if (matchFirst(TokenType.OPEN_PAREN)) {
-        final args = <Expr>[];
+        final before = <Expr>[];
+        final after = <Expr>[];
+        Token? placeholder;
         if (check(TokenType.CLOSE_PAREN)) {
           // 0-arg function
         } else {
           while (true) {
-            args.add(expression());
+            if (matchFirst(TokenType.UNDERSCORE)) {
+              if (placeholder != null) {
+                throw newParseError(previous(), 'Can only have 1 placeholder arg');
+              }
+              placeholder = previous();
+            } else {
+              if (placeholder == null) {
+                before.add(expression());
+              } else {
+                after.add(expression());
+              }
+            }
             if (!matchFirst(TokenType.COMMA)) {
               break;
             }
           }
         }
         final closingParen = consume(TokenType.CLOSE_PAREN, "Expected ')' after arguments");
-        expr = Call(expr, args, closingParen);
+        if (placeholder != null) {
+          expr = Call(expr, ArgsWithPlaceholder(before, placeholder, after), closingParen);
+        } else {
+          if (after.isNotEmpty) throw 'bug';
+          expr = Call(expr, ExpressionArgs(before), closingParen);
+        }
       } else if (matchFirst(TokenType.DOT)) {
         final fieldName = consume(TokenType.IDENTIFIER, "Expected field name");
         expr = FieldAccess(expr, fieldName);
