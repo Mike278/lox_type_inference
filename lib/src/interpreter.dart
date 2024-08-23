@@ -85,6 +85,7 @@ Object? eval(Expr expr, Env env) {
       TokenType.LESS_EQUAL    => evalAs<num>(left, operator, env) <= evalAs<num>(right, operator, env),
       TokenType.EQUAL_EQUAL   => eval(left, env) == eval(right, env),
       TokenType.BANG_EQUAL    => eval(left, env) != eval(right, env),
+      TokenType.PIPELINE      => handleInvocation(right, ExpressionArgs([left]), operator, env),
       final type => throw StateError('bug: unhandled binary operator $type'),
     },
     Variable(:final name) => env[name],

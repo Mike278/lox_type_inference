@@ -21,7 +21,8 @@ import 'package:lox/src/utils.dart';
 //                ( "else" statement )?;
 // returnStmt     → "return" expression? ";" ;
 // expression     → ternary;
-// ternary        → logical_or "?" expression ":" expression ";";
+// ternary        → pipeline "?" expression ":" expression ";";
+// pipeline       → logical_or ( "|>" logical_or )* ;
 // logical_or     → logical_and ( "or" logical_and)* ;
 // logical_and    → equality ( "and" equality)* ;
 // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -189,9 +190,9 @@ class Parser {
   // expression     → ternary;
   Expr expression() => ternary();
 
-  // ternary        → logical_or "?" expression ":" expression ";";
+  // ternary        → pipeline "?" expression ":" expression ";";
   Expr ternary() {
-    final condition = or();
+    final condition = pipeline();
     if (matchFirst(TokenType.QUESTION)) {
       final questionMark = previous();
       final ifTrue = expression();
@@ -200,6 +201,17 @@ class Parser {
       return Ternary(questionMark, condition, ifTrue, ifFalse);
     }
     return condition;
+  }
+
+  // pipeline       → logical_or ( "|>" logical_or )* ;
+  Expr pipeline() {
+    var expr = or();
+    while (matchFirst(TokenType.PIPELINE)) {
+      final operator = previous();
+      final right = or();
+      expr = Binary(expr, operator, right);
+    }
+    return expr;
   }
 
   // logical_or     → logical_and ( "or" logical_and)* ;

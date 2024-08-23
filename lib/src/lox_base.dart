@@ -144,7 +144,7 @@ List<Token> scanTokens(String source) {
       case '}': addToken(TokenType.CLOSE_BRACE);
       case '[': addToken(TokenType.OPEN_BRACKET);
       case ']': addToken(TokenType.CLOSE_BRACKET);
-      case r'\': addToken(TokenType.BACKSLASH);
+      case r'\': addToken(match('>') ? TokenType.PIPELINE : TokenType.BACKSLASH);
       case ':': addToken(TokenType.COLON);
       case ',': addToken(TokenType.COMMA);
       case '.': addToken(match('.') ? TokenType.DOTDOT : TokenType.DOT);
@@ -213,6 +213,7 @@ enum TokenType {
   EQUAL, EQUAL_EQUAL,
   GREATER, GREATER_EQUAL,
   LESS, LESS_EQUAL,
+  PIPELINE,
 
   // Literals.
   IDENTIFIER, STRING, NUMBER,
