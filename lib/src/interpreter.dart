@@ -1,7 +1,7 @@
 
 import 'package:lox/src/env.dart';
 import 'package:lox/src/expr.dart';
-import 'package:lox/src/lox_base.dart';
+import 'package:lox/src/scanner.dart';
 import 'package:lox/src/utils.dart';
 
 class LoxRuntimeException implements Exception {
@@ -159,7 +159,7 @@ typedef LoxFunction = ({
 LoxFunction newLoxFunction(
   Env Function() getEnv,
   List<Token> params,
-  List<Statement> body,
+  LambdaBody body,
 ) =>
   (
     arity: params.length,
@@ -169,8 +169,13 @@ LoxFunction newLoxFunction(
           param.lexeme: arg,
       });
       try {
-        for (final statement in body) {
-          newEnv = execute(statement, newEnv);
+        switch (body) {
+          case ArrowExpression(:final body):
+            newEnv = execute(ExpressionStatement(body), newEnv);
+          case FunctionBody(body: Block(:final statements)):
+            for (final statement in statements) {
+              newEnv = execute(statement, newEnv);
+            }
         }
       } on Return catch (r) {
         return r.returnValue;

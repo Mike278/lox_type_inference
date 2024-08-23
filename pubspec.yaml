@@ -9,6 +9,8 @@ environment:
 dependencies:
   analyzer:
   path:
+  collection:
+  equatable:
 
 dev_dependencies:
   lints:

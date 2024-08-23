@@ -1,5 +1,5 @@
 import 'package:lox/src/expr.dart';
-import 'package:lox/src/lox_base.dart';
+import 'package:lox/src/scanner.dart';
 import 'package:lox/src/utils.dart';
 
 //
@@ -140,7 +140,7 @@ class Parser {
   //                | exprStmt
   Statement statement() {
     if (matchFirst(TokenType.PRINT)) return printStatement();
-    if (matchFirst(TokenType.OPEN_BRACE)) return Block(block());
+    if (matchFirst(TokenType.OPEN_BRACE)) return block();
     if (matchFirst(TokenType.RETURN)) return returnStatement();
     if (matchFirst(TokenType.IF)) return ifStatement();
     return expressionStatement();
@@ -148,13 +148,14 @@ class Parser {
 
   // block          → "{" declaration* "}" ;
   // Expects open brace is already consumed.
-  List<Statement> block() {
+  Block block() {
+    final openBrace = previous();
     final statements = [
       for (;!check(TokenType.CLOSE_BRACE) && !isAtEnd();)
         declaration()
     ];
-    consume(TokenType.CLOSE_BRACE, "Expected '}' after block.");
-    return statements;
+    final closeBrace = consume(TokenType.CLOSE_BRACE, "Expected '}' after block.");
+    return Block(openBrace, statements, closeBrace);
   }
 
   // ifStmt         → "if" expression "then" statement
@@ -431,13 +432,13 @@ class Parser {
       }
     }
 
-    final List<Statement> body;
+    final LambdaBody body;
     if (matchFirst(TokenType.ARROW)) {
       final arrow = previous();
-      body = [ReturnStatement(arrow, expression())];
+      body = ArrowExpression(arrow, expression());
     } else {
       consume(TokenType.OPEN_BRACE, "Expected '{' before body.");
-      body = block();
+      body = FunctionBody(block());
     }
 
     return Lambda(params, body);
