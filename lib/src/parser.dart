@@ -53,8 +53,9 @@ import 'package:lox/src/utils.dart';
 
 class Parser {
   final List<Token> tokens;
+  final ErrorReporter _errorReporter;
   var current = 0;
-  Parser(this.tokens);
+  Parser(this.tokens, this._errorReporter);
 
   Token previous() => tokens[current-1];
   Token peek() => tokens[current];
@@ -85,8 +86,14 @@ class Parser {
     throw newParseError(peek(), message);
   }
 
+  var _hadError = false;
   ParseError newParseError(Token token, String message) {
-    errorForToken(token, message);
+    _hadError = true;
+    if (token.type == TokenType.EOF) {
+      _errorReporter(formatError(token.line, ' at end', message));
+    } else {
+      _errorReporter(formatError(token.line, " at '${token.lexeme}'", message));
+    }
     return ParseError();
   }
 
@@ -110,10 +117,13 @@ class Parser {
     }
   }
 
-  List<Statement> parse() => [
-    for (;!isAtEnd();)
-      declaration()
-  ];
+  (List<Statement>, {bool hadError}) parse() {
+    final statements = [
+      for (;!isAtEnd();)
+        declaration()
+    ];
+    return (statements, hadError: _hadError);
+  }
 
   // declaration    → letDecl
   //                | funDecl

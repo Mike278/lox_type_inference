@@ -6,37 +6,60 @@ import 'package:lox/src/parser.dart';
 import 'env.dart';
 // ignore_for_file: constant_identifier_names
 
-Env run(String source, Env env) {
-  final tokens = scanTokens(source);
+typedef ErrorReporter = void Function(String);
 
-  final parser = Parser(tokens);
-  final statements = parser.parse();
+typedef RunResult = (Env, {bool hadScanError, bool hadParseError, bool hadRuntimeError});
 
-  if (hadError) return env;
+RunResult run(
+  String source,
+  Env env,
+  ErrorReporter errorReporter,
+  RuntimeIO io,
+) {
+  final (tokens, hadError: hadScanError) = scanTokens(source, errorReporter);
 
-  return interpret(statements, env);
-}
+  final parser = Parser(tokens, errorReporter);
+  final (statements, hadError: hadParseError) = parser.parse();
 
-var hadRuntimeError = false;
-
-var hadError = false;
-void error(int line, String message) {
-  report(line, "", message);
-}
-void errorForToken(Token token, String message) {
-  if (token.type == TokenType.EOF) {
-    report(token.line, ' at end', message);
-  } else {
-    report(token.line, " at '${token.lexeme}'", message);
+  if (hadParseError || hadScanError) {
+    return (
+      env,
+      hadParseError: hadParseError,
+      hadScanError: hadScanError,
+      hadRuntimeError: false,
+    );
   }
+
+  final (
+    newEnv,
+    :hadRuntimeError,
+  ) = LoxRuntime(errorReporter, io).interpret(
+    statements,
+    env,
+  );
+
+  return (
+    newEnv,
+    hadParseError: false,
+    hadScanError: false,
+    hadRuntimeError: hadRuntimeError,
+  );
 }
 
-void report(int line, String where, String message) {
-  print("[line $line] Error$where: $message");
-  hadError = true;
+String formatError(int line, String atToken, String message) {
+  return "[line $line] Error$atToken: $message";
 }
 
-List<Token> scanTokens(String source) {
+(List<Token>, {bool hadError}) scanTokens(
+  String source,
+  ErrorReporter errorReporter,
+) {
+  var hadError = false;
+  void error(int line, String message) {
+    hadError = true;
+    errorReporter(formatError(line, '', message));
+  }
+
   final tokens = <Token>[];
 
   int start = 0;
@@ -145,7 +168,7 @@ List<Token> scanTokens(String source) {
   }
 
   tokens.add(Token(TokenType.EOF, '', null, line));
-  return tokens;
+  return (tokens, hadError: hadError);
 }
 
 final keywords = {

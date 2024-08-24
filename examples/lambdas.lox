@@ -1,3 +1,7 @@
+let fn = \x -> \y -> x + y;
+
+print fn(1)(10);
+
 let someRecord = {
     a: false,
     b: \ { return 123; },

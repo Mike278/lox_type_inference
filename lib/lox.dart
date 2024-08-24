@@ -22,19 +22,29 @@ void main(List<String> args) {
   }
 }
 
+RunResult _run(String source, Env env) =>
+  run(source, env, print, (print: print));
+
 void runPrompt() {
   var env = Env.global();
   while (true) {
     print('> ');
     final line = stdin.readLineSync();
     if (line == null) break;
-    env = run(line, env);
-    hadError = false;
+    RunResult($1: env) = _run(line, env);
   }
 }
 
 void runFile(String path) {
-  run(File(path).readAsStringSync(), Env.global());
-  if (hadError) exit(65);
+  final RunResult(
+    :hadScanError,
+    :hadParseError,
+    :hadRuntimeError,
+  ) = _run(
+    File(path).readAsStringSync(),
+    Env.global(),
+  );
+  if (hadScanError) exit(65);
+  if (hadParseError) exit(66);
   if (hadRuntimeError) exit(70);
 }
