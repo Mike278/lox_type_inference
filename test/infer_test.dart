@@ -62,10 +62,40 @@ void main() {
   });
 
   test('lox inference', () {
+
+    expect(inferSource(r'\x -> 1'), matchesTypeFunctionApplication(
+      name: kFunction,
+      monoTypes: [matchesTypeVariable(name: 't0'), num_t]
+    ));
+    expect(inferSource(r'\x, y -> 1'), matchesTypeFunctionApplication(
+      name: kFunction,
+      monoTypes: [
+        matchesTypeVariable(name: 't0'),
+        matchesTypeFunctionApplication(name: kFunction, monoTypes: [
+          matchesTypeVariable(name: 't1'),
+          num_t,
+        ]),
+      ]
+    ));
+
+    expect(inferSource(r'\x, y, z -> 1'), matchesTypeFunctionApplication(
+      name: kFunction,
+      monoTypes: [
+        matchesTypeVariable(name: 't0'),
+        matchesTypeFunctionApplication(name: kFunction, monoTypes: [
+          matchesTypeVariable(name: 't1'),
+          matchesTypeFunctionApplication(name: kFunction, monoTypes: [
+            matchesTypeVariable(name: 't2'),
+            num_t,
+          ]),
+        ]),
+      ]
+    ));
+
     expect(inferSource(r'(\x -> x)(1)'), num_t);
     expect(inferSource(r'(\x -> 1)([])'), num_t);
-    expect(inferSource(r'(\x -> x)([])'), matchesTypeFunctionApplication(name: kList, monoTypes: hasLength(1)));
-    expect(inferSource(r'(\x -> [])(1)'), matchesTypeFunctionApplication(name: kList, monoTypes: hasLength(1)));
+    expect(inferSource(r'(\x -> x)([])'), matchesTypeFunctionApplication(name: kList, monoTypes: [matchesTypeVariable(name: 't1')]));
+    expect(inferSource(r'(\x -> [])(1)'), matchesTypeFunctionApplication(name: kList, monoTypes: [matchesTypeVariable(name: 't1')]));
   });
 }
 
@@ -113,6 +143,7 @@ Expr parseExpression(String source) {
 }
 
 MonoType infer(Expr expression, Context context) {
+  TypeVariable.counter = 0;
   final (type, _) = _infer(expression, context);
   return type;
 }
@@ -120,10 +151,10 @@ MonoType infer(Expr expression, Context context) {
 (MonoType, Substitution) _infer(Expr expression, Context context) {
   switch (expression) {
     case Variable(name: Token(lexeme: final name)):
-      return varRule(name, context);
+      return _varRule(name, context);
     case Lambda():
       final (param, body) = curry(expression);
-      return absRule(param.lexeme, body, context);
+      return _absRule(param.lexeme, body, context);
     case Call(callee: final func, :final args):
       final arg = (args as ExpressionArgs).exprs.single; // TODO: desugar to nested single-arg calls
       return appRule(arg, func, context);
@@ -151,13 +182,13 @@ MonoType infer(Expr expression, Context context) {
   }
 }
 
-(MonoType, Substitution) varRule(String name, Context context) {
+(MonoType, Substitution) _varRule(String name, Context context) {
   final type = context[name];
   if (type == null) throw 'Undefined variable $name';
   return (instantiate(type), {});
 }
 
-(MonoType, Substitution) absRule(String param, Expr body, Context context) {
+(MonoType, Substitution) _absRule(String param, Expr body, Context context) {
   final solveFor = TypeVariable.fresh();
   final (retType, retSubstitution) = _infer(body, {
     ...context,
@@ -214,11 +245,9 @@ final newArrow = (int line) => Token(TokenType.ARROW, '->', null, line);
         (newUnused(arrow.line), body),
     [final x] =>
         (x, body),
-    [final x, final y] =>
-        (x, newLambda([y], body)),
-    [final x, final y, ...final rest] => () {
-        final (param, newBody) = _curry(rest, arrow, body);
-        return (x, newLambda([y], newLambda([param], newBody)));
+    [final x, ...final rest] => () {
+        final (y, newBody) = _curry(rest, arrow, body);
+        return (x, newLambda([y], newBody));
     } (),
   };
 }
