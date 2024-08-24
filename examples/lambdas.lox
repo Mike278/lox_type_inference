@@ -1,6 +1,10 @@
 let fn = \x -> \y -> x + y;
-
 print fn(1)(10);
+
+let fn2 = \x -> \y -> \z -> x + y + z;
+print fn2(1)(10)(100);
+
+print (\x -> \y -> \z -> x + y + z)(2)(20)(200);
 
 let someRecord = {
     a: false,

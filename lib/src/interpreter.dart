@@ -183,7 +183,7 @@ class LoxRuntime {
         try {
           switch (body) {
             case ArrowExpression(:final body):
-              newEnv = execute(ExpressionStatement(body), newEnv);
+              return eval(body, newEnv);
             case FunctionBody(body: Block(:final statements)):
               for (final statement in statements) {
                 newEnv = execute(statement, newEnv);

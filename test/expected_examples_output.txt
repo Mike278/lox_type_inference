@@ -1,0 +1,92 @@
+null
+1
+null
+1
+1
+null
+1
+null
+1
+1
+null
+1
+2
+null
+3
+3
+assignment!
+=== false or isGreat(); ===
+side effect!
+true
+=== false and isGreat(); ===
+false
+=== true or isGreat(); ===
+true
+=== true and isGreat(); ===
+side effect!
+true
+a
+b
+1
+2
+3
+b
+11
+111
+222
+123
+123
+124
+177
+123
+1
+1
+4
+9
+16
+25
+36
+hello
+1
+123
+30
+1994
+[1, 2, 3]
+[3, 2, 1]
+[]
+[1]
+[1, {two: three}]
+[true, false, false]
+[true, false]
+{name: jane, age: 60}
+60
+60
+30
+{name: mike, age: 30}
+-2
+2
+[1] \> List.first \> id
+1
+1 \> xMinusOne \> xMinusOne
+-1
+[1] \> List.first \> id \> sub(_, 1)
+0
+1
+2
+3
+{a: one, b: 2, c: false, d: (arity: 0, impl: Closure: (List<Object?>) => Object?)}
+one
+(arity: 0, impl: Closure: (List<Object?>) => Object?)
+123
+123
+joe
+null
+1
+joe
+==========
+1
+null
+1
+1
+global
+global
