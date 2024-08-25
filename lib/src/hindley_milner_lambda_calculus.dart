@@ -42,7 +42,7 @@ class LetExpression extends Expression {
   String toString() => 'let $x = $e1 in $e2';
 }
 
-const kFunction = '->';
+const kFunction = 'Function';
 const kBool = 'Bool';
 const kNum = 'Num';
 const kString = 'String';

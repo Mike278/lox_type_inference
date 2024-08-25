@@ -29,6 +29,7 @@ void main() {
 
     final id = (String named, [int line = 1]) => Token(TokenType.IDENTIFIER, named, null, line);
     final plus = Token(TokenType.PLUS, '+', null, 1);
+    final questionMark = Token(TokenType.QUESTION, '?', null, 1);
     final unused = newUnused(1);
     final arrow = newArrow(1);
     
@@ -61,6 +62,11 @@ void main() {
     expect(
       currySource(r'\x -> \x -> x'),
       (id('x'), Lambda([id('x')], ArrowExpression(arrow, Variable(id('x'))))),
+    );
+
+    expect(
+      currySource(r'\x, y, z -> x ? y : z'),
+      (id('x'), Lambda([id('y')], ArrowExpression(arrow, Lambda([id('z')], ArrowExpression(arrow, Ternary(questionMark, Variable(id('x')), Variable(id('y')), Variable(id('z')))))))),
     );
   });
 
@@ -100,6 +106,9 @@ void main() {
     expect(inferSource(r'\x, y -> x / y'),   _fn(num_t, _fn(num_t, num_t)));
     expect(inferSource(r'\x, y -> -x'),      _fn(num_t, _fn(_var('t1'), num_t)));
     expect(inferSource(r'\x, y -> x - -y'),  _fn(num_t, _fn(num_t, num_t)));
+
+    expect(inferSource(r'\c, x, y -> c ? x : y').toString(),  'Function[Bool, Function[t6, Function[t6, t6]]]');
+    expect(inferSource(r'\c, x, y -> c ? x : y'),  _fn(bool_t, _fn(_var('t6'), _fn(_var('t6'), _var('t6')))));
   });
 }
 
@@ -121,6 +130,30 @@ const boolOp = TypeFunctionApplication(
   kFunction, [ bool_t, TypeFunctionApplication(kFunction, [ bool_t, bool_t ])]
 );
 
+const ternary =
+  TypeQuantifier(
+    'a',
+    TypeFunctionApplication(
+      kFunction,
+      [
+        bool_t, // todo works with TypeVariable('a')?
+        TypeFunctionApplication(
+          kFunction,
+          [
+            TypeVariable('a'), // todo works with bool_t?..
+            TypeFunctionApplication(
+              kFunction,
+              [
+                TypeVariable('a'),
+                TypeVariable('a'),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+
 const emptyList = TypeQuantifier('a', TypeFunctionApplication(kList, [TypeVariable('a')]));
 const listFirst = TypeQuantifier('a', TypeFunctionApplication(kFunction, [ TypeFunctionApplication(kList, [TypeVariable('a')]), TypeVariable('a')]));
 const listRest = TypeQuantifier('a', TypeFunctionApplication(kFunction, [ TypeFunctionApplication(kList, [TypeVariable('a')]), TypeFunctionApplication(kList, [TypeVariable('a')])]));
@@ -134,6 +167,7 @@ const Context loxStandardLibraryContext = {
   'or': boolOp,
   'and': boolOp,
   '!': boolOp,
+  '?': ternary,
   '[]': emptyList,
   'List.first': listFirst,
   'List.rest': listRest,
@@ -207,7 +241,10 @@ MonoType infer(Expr expression, Context context) {
     case UnaryBang(:final operator, :final expr):
       return appRule(arg: expr, func: Variable(operator), context);
 
-    case Ternary():
+    case Ternary(:final condition, :final ifTrue, :final ifFalse, :final questionMark):
+      final (:arg, :func) = curriedCall(Variable(questionMark), [condition, ifTrue, ifFalse], questionMark);
+      return appRule(arg: arg, func: func, context);
+
     case Record():
     case FieldAccess():
     case ListLiteral(elements: [_, ...]):

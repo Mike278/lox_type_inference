@@ -60,7 +60,7 @@ class TypeFunctionApplication extends MonoType with EquatableMixin {
   const TypeFunctionApplication(this.name, this.monoTypes);
 
   @override
-  String toString() => "$name ${monoTypes.join(' ')}";
+  String toString() => "$name${monoTypes.isEmpty ? '' : '[${monoTypes.join(', ')}]'}";
 
   @override get props => [name, monoTypes];
 }
