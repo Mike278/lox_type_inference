@@ -73,6 +73,7 @@ void main() {
     expect(inferSource(r'\x, y -> 1'),     _fn(_var('t0'), _fn(_var('t1'), num_t)));
     expect(inferSource(r'\x, y -> x'),     _fn(_var('t0'), _fn(_var('t1'), _var('t0'))));
     expect(inferSource(r'\x, y -> y'),     _fn(_var('t0'), _fn(_var('t1'), _var('t1'))));
+    expect(inferSource(r'\x, y -> []'),    _fn(_var('t0'), _fn(_var('t1'), _list('t2'))));
     expect(inferSource(r'\x, y -> x(y)'),  _fn(_fn(_var('t1'), _var('t2')), _fn(_var('t1'), _var('t2'))));
 
     expect(inferSource(r'\x, y, z -> 1'),  _fn(_var('t0'), _fn(_var('t1'), _fn(_var('t2'), num_t))));
@@ -82,6 +83,7 @@ void main() {
 
     expect(inferSource(r'(\  -> 1)()'),   num_t);
     expect(inferSource(r'(\x -> x)(1)'),  num_t);
+    expect(inferSource(r'(\x -> x)(-1)'),  num_t);
     expect(inferSource(r'(\x -> 1)([])'), num_t);
     expect(inferSource(r'(\x -> x)([])'), _list('t1'));
     expect(inferSource(r'(\x -> [])(1)'), _list('t1'));
@@ -89,6 +91,15 @@ void main() {
     expect(inferSource(r'(\x, y -> 1)("ok", false)'), num_t);
     expect(inferSource(r'(\x, y -> x)("ok", false)'), string_t);
     expect(inferSource(r'(\x, y -> y)("ok", false)'), bool_t);
+
+    expect(inferSource(r'\x, y -> x and y'), _fn(bool_t, _fn(bool_t, bool_t)));
+    expect(inferSource(r'\x, y -> x or y'),  _fn(bool_t, _fn(bool_t, bool_t)));
+    expect(inferSource(r'\x, y -> x + y'),   _fn(num_t, _fn(num_t, num_t)));
+    expect(inferSource(r'\x, y -> x - y'),   _fn(num_t, _fn(num_t, num_t)));
+    expect(inferSource(r'\x, y -> x * y'),   _fn(num_t, _fn(num_t, num_t)));
+    expect(inferSource(r'\x, y -> x / y'),   _fn(num_t, _fn(num_t, num_t)));
+    expect(inferSource(r'\x, y -> -x'),      _fn(num_t, _fn(_var('t1'), num_t)));
+    expect(inferSource(r'\x, y -> x - -y'),  _fn(num_t, _fn(num_t, num_t)));
   });
 }
 
@@ -122,6 +133,7 @@ const Context loxStandardLibraryContext = {
   '/': numOp,
   'or': boolOp,
   'and': boolOp,
+  '!': boolOp,
   '[]': emptyList,
   'List.first': listFirst,
   'List.rest': listRest,
@@ -174,23 +186,27 @@ MonoType infer(Expr expression, Context context) {
       final (:arg, :func) = curriedCall(callee, args, closingParen);
       return appRule(arg: arg, func: func, context);
 
-    case FalseLiteral() || TrueLiteral():
-      return (instantiate(bool_t), {});
-    case StringLiteral():
-      return (instantiate(string_t), {});
-    case NumberLiteral():
-      return (instantiate(num_t), {});
-    case NilLiteral():
-      return (instantiate(unit_t), {});
-    case ListLiteral(elements: []):
-      return (instantiate(emptyList), {});
-    case Grouping(:final expr):
-      return _infer(expr, context);
-    case Binary():
-    case LogicalAnd():
-    case LogicalOr():
-    case UnaryMinus():
-    case UnaryBang():
+    case FalseLiteral() || TrueLiteral(): return (instantiate(bool_t), {});
+    case StringLiteral():                 return (instantiate(string_t), {});
+    case NumberLiteral():                 return (instantiate(num_t), {});
+    case NilLiteral():                    return (instantiate(unit_t), {});
+    case ListLiteral(elements: []):       return (instantiate(emptyList), {});
+
+    case Grouping(:final expr):           return _infer(expr, context);
+
+    case LogicalAnd(:final left, :final right, :final keyword):
+    case LogicalOr(:final left, :final right, :final keyword):
+    case Binary(:final left, :final right, operator: final keyword):
+      final (:arg, :func) = curriedCall(Variable(keyword), [left, right], keyword);
+      return appRule(arg: arg, func: func, context);
+
+    case UnaryMinus(:final operator, :final expr):
+      final (:arg, :func) = curriedCall(Variable(operator), [NumberLiteral(0), expr], operator);
+      return appRule(arg: arg, func: func, context);
+
+    case UnaryBang(:final operator, :final expr):
+      return appRule(arg: expr, func: Variable(operator), context);
+
     case Ternary():
     case Record():
     case FieldAccess():
