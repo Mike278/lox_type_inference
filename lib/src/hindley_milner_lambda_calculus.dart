@@ -47,10 +47,12 @@ const kBool = 'Bool';
 const kNum = 'Num';
 const kString = 'String';
 const kList = 'List';
+const kUnit = 'Unit';
 
 const bool_t = TypeFunctionApplication(kBool, []);
 const num_t = TypeFunctionApplication(kNum, []);
 const string_t = TypeFunctionApplication(kString, []);
+const unit_t = TypeFunctionApplication(kUnit, []);
 final function_t = (MonoType from, MonoType to) => TypeFunctionApplication(kFunction, [from, to]);
 final list_t = (MonoType of) => TypeFunctionApplication(kList, [of]);
 

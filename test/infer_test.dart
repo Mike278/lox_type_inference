@@ -32,7 +32,11 @@ void main() {
     final unused = newUnused(1);
     final arrow = newArrow(1);
     
-    final currySource = (String source) => curry(parseExpression(source) as Lambda);
+    final currySource = (String source) {
+      final lambda = parseExpression(source) as Lambda;
+      final (:arrow, :body) = asArrowExpression(lambda);
+      return curry(lambda.params, arrow, body);
+    };
 
     expect(
       currySource(r'\ -> x'),
@@ -62,41 +66,42 @@ void main() {
 
   test('lox inference', () {
 
-    expect(inferSource(r'\x -> 1'), matchesTypeFunctionApplication(
-      name: kFunction,
-      monoTypes: [matchesTypeVariable(name: 't0'), num_t]
-    ));
-    expect(inferSource(r'\x, y -> 1'), matchesTypeFunctionApplication(
-      name: kFunction,
-      monoTypes: [
-        matchesTypeVariable(name: 't0'),
-        matchesTypeFunctionApplication(name: kFunction, monoTypes: [
-          matchesTypeVariable(name: 't1'),
-          num_t,
-        ]),
-      ]
-    ));
+    expect(inferSource(r'\  -> 1'),        _fn(_var('t0'), num_t));
+    expect(inferSource(r'\x -> 1'),        _fn(_var('t0'), num_t));
+    expect(inferSource(r'\x -> x'),        _fn(_var('t0'), _var('t0')));
 
-    expect(inferSource(r'\x, y, z -> 1'), matchesTypeFunctionApplication(
-      name: kFunction,
-      monoTypes: [
-        matchesTypeVariable(name: 't0'),
-        matchesTypeFunctionApplication(name: kFunction, monoTypes: [
-          matchesTypeVariable(name: 't1'),
-          matchesTypeFunctionApplication(name: kFunction, monoTypes: [
-            matchesTypeVariable(name: 't2'),
-            num_t,
-          ]),
-        ]),
-      ]
-    ));
+    expect(inferSource(r'\x, y -> 1'),     _fn(_var('t0'), _fn(_var('t1'), num_t)));
+    expect(inferSource(r'\x, y -> x'),     _fn(_var('t0'), _fn(_var('t1'), _var('t0'))));
+    expect(inferSource(r'\x, y -> y'),     _fn(_var('t0'), _fn(_var('t1'), _var('t1'))));
+    expect(inferSource(r'\x, y -> x(y)'),  _fn(_fn(_var('t1'), _var('t2')), _fn(_var('t1'), _var('t2'))));
 
-    expect(inferSource(r'(\x -> x)(1)'), num_t);
+    expect(inferSource(r'\x, y, z -> 1'),  _fn(_var('t0'), _fn(_var('t1'), _fn(_var('t2'), num_t))));
+    expect(inferSource(r'\x, y, z -> x'),  _fn(_var('t0'), _fn(_var('t1'), _fn(_var('t2'), _var('t0')))));
+    expect(inferSource(r'\x, y, z -> y'),  _fn(_var('t0'), _fn(_var('t1'), _fn(_var('t2'), _var('t1')))));
+    expect(inferSource(r'\x, y, z -> z'),  _fn(_var('t0'), _fn(_var('t1'), _fn(_var('t2'), _var('t2')))));
+
+    expect(inferSource(r'(\  -> 1)()'),   num_t);
+    expect(inferSource(r'(\x -> x)(1)'),  num_t);
     expect(inferSource(r'(\x -> 1)([])'), num_t);
-    expect(inferSource(r'(\x -> x)([])'), matchesTypeFunctionApplication(name: kList, monoTypes: [matchesTypeVariable(name: 't1')]));
-    expect(inferSource(r'(\x -> [])(1)'), matchesTypeFunctionApplication(name: kList, monoTypes: [matchesTypeVariable(name: 't1')]));
+    expect(inferSource(r'(\x -> x)([])'), _list('t1'));
+    expect(inferSource(r'(\x -> [])(1)'), _list('t1'));
+
+    expect(inferSource(r'(\x, y -> 1)("ok", false)'), num_t);
+    expect(inferSource(r'(\x, y -> x)("ok", false)'), string_t);
+    expect(inferSource(r'(\x, y -> y)("ok", false)'), bool_t);
   });
 }
+
+final _list = (String typeVariableName) => 
+  matchesTypeFunctionApplication(name: kList, monoTypes: [_var(typeVariableName)]);
+
+final _var = (String typeVariableName) => matchesTypeVariable(name: typeVariableName);
+
+final _fn = (a, b) => 
+  matchesTypeFunctionApplication(
+    name: kFunction,
+    monoTypes: [a, b],
+  );
 
 const numOp = TypeFunctionApplication(
   kFunction, [ num_t, TypeFunctionApplication(kFunction, [ num_t, num_t ])]
@@ -147,34 +152,51 @@ MonoType infer(Expr expression, Context context) {
 
 (MonoType, Substitution) _infer(Expr expression, Context context) {
   switch (expression) {
+
     case Variable(name: Token(lexeme: final name)):
       return _varRule(name, context);
-    case Lambda():
-      final (param, body) = curry(expression);
-      return _absRule(param.lexeme, body, context);
-    case Call(callee: final func, :final args):
-      final arg = (args as ExpressionArgs).exprs.single; // TODO: desugar to nested single-arg calls
-      return appRule(arg, func, context);
+
+    case Lambda(
+      :final params,
+      body: ArrowExpression(
+        :final arrow,
+        :final body,
+      ),
+    ):
+      final (param, curriedBody) = curry(params, arrow, body);
+      return _absRule(param.lexeme, curriedBody, context);
+
+    case Call(
+      :final callee,
+      args: ExpressionArgs(exprs: final args),
+      :final closingParen,
+    ):
+      final (:arg, :func) = curriedCall(callee, args, closingParen);
+      return appRule(arg: arg, func: func, context);
+
     case FalseLiteral() || TrueLiteral():
       return (instantiate(bool_t), {});
     case StringLiteral():
       return (instantiate(string_t), {});
     case NumberLiteral():
       return (instantiate(num_t), {});
+    case NilLiteral():
+      return (instantiate(unit_t), {});
     case ListLiteral(elements: []):
       return (instantiate(emptyList), {});
     case Grouping(:final expr):
       return _infer(expr, context);
     case Binary():
-    case ListLiteral():
     case LogicalAnd():
     case LogicalOr():
+    case UnaryMinus():
+    case UnaryBang():
     case Ternary():
     case Record():
     case FieldAccess():
-    case NilLiteral():
-    case UnaryMinus():
-    case UnaryBang():
+    case ListLiteral(elements: [_, ...]):
+    case Lambda(body: FunctionBody()):
+    case Call(args: ArgsWithPlaceholder()):
       throw 'unsupported $expression';
   }
 }
@@ -195,7 +217,7 @@ MonoType infer(Expr expression, Context context) {
   return (exprType, retSubstitution);
 }
 
-(MonoType, Substitution) appRule(Expr arg, Expr func, Context context) {
+(MonoType, Substitution) appRule(Context context, {required Expr func, required Expr arg}) {
   final (funcType, funcSubstitution) = _infer(func, context);
   final (argType, argSubstitution) = _infer(arg, funcSubstitution.applyContext(context));
   final solveFor = TypeVariable.fresh();
@@ -209,17 +231,16 @@ MonoType infer(Expr expression, Context context) {
 
 
 final newUnused = (int line) => Token(TokenType.UNDERSCORE, '_', null, line);
+final newNil = (int line) => Token(TokenType.NIL, 'nil', null, line);
 final newArrow = (int line) => Token(TokenType.ARROW, '->', null, line);
 
-(Token, Expr) curry(Lambda lambda) {
-  final Lambda(:params, :body) = lambda;
-  final (fnStart, fnBody) =  switch (body) {
+({Token arrow, Expr body}) asArrowExpression(Lambda lambda) {
+  return switch (lambda.body) {
     ArrowExpression(:final arrow, :final body) =>
-        (arrow, body),
-    FunctionBody(body: Block(:final openBrace, :final statements)) =>
+        (arrow: arrow, body: body),
+    FunctionBody(body: Block()) =>
         throw 'only expression bodies for now'
   };
-  return _curry(params, fnStart, fnBody);
 }
 
 //
@@ -232,7 +253,7 @@ final newArrow = (int line) => Token(TokenType.ARROW, '->', null, line);
 // IN:  \x, y -> x + y * 2
 // OUT: \x -> \y -> x + y * 2
 //
-(Token, Expr) _curry(List<Token> params, Token arrow, Expr body) {
+(Token, Expr) curry(List<Token> params, Token arrow, Expr body) {
 
   final newLambda = (List<Token> params, Expr body) =>
       Lambda(params, ArrowExpression(arrow, body));
@@ -243,8 +264,35 @@ final newArrow = (int line) => Token(TokenType.ARROW, '->', null, line);
     [final x] =>
         (x, body),
     [final x, ...final rest] => () {
-        final (y, newBody) = _curry(rest, arrow, body);
+        final (y, newBody) = curry(rest, arrow, body);
         return (x, newLambda([y], newBody));
+    } (),
+  };
+}
+
+//
+// IN:  f()
+// OUT: f(nil)
+//
+// IN:  f(x)
+// OUT: f(x)
+//
+// IN:  f(x, y)
+// OUT: f(x)(y)
+//
+({Expr func, Expr arg}) curriedCall(Expr callee, List<Expr> args, Token closingParen) {
+
+  final newCall = (List<Expr> args, Expr body) =>
+      Call(body, ExpressionArgs(args), closingParen);
+
+  return switch (args) {
+    [] =>
+        (func: callee, arg: NilLiteral()),
+    [final x] =>
+        (func: callee, arg: x),
+    [final x, ...final rest] => () {
+        final (:func, :arg) = curriedCall(callee, rest, closingParen);
+        return (arg: arg, func: newCall([x], func));
     } (),
   };
 }

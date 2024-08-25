@@ -90,3 +90,5 @@ print 1 \> xMinusOne \> xMinusOne;
 print "[1] \> List.first \> id \> sub(_, 1)";
 print [1] \> List.first \> id \> sub(_, 1);
 
+print (\list, item -> [..list, item])([], false);
+print (\list, item -> [..list, item])(_, false)([]);
