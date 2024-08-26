@@ -4,39 +4,48 @@ import 'package:lox/src/hindley_milner_api.dart';
 // ignore_for_file: constant_identifier_names
 
 
-sealed class Expression {}
+sealed class LambdaCalculusExpression {}
 
-class VariableExpression extends Expression {
+class Lit extends LambdaCalculusExpression {
+  final PolyType type;
+  Lit(this.type);
+  @override
+  String toString() => '<$type>';
+}
+
+class Var extends LambdaCalculusExpression {
   final String x;
-  VariableExpression(this.x);
+  Var(this.x);
 
   @override
   String toString() => x;
 }
 
-class ApplicationExpression extends Expression {
-  final Expression e1;
-  final Expression e2;
-  ApplicationExpression(this.e1, this.e2);
+class App extends LambdaCalculusExpression {
+  final LambdaCalculusExpression func;
+  final LambdaCalculusExpression arg;
+
+  App({required this.func, required this.arg});
 
   @override
-  String toString() => '$e1 $e2';
+  String toString() => '($func $arg)';
 }
 
-class AbstractionExpression extends Expression {
+
+class Abs extends LambdaCalculusExpression {
   final String x;
-  final Expression e;
-  AbstractionExpression(this.x, this.e);
+  final LambdaCalculusExpression e;
+  Abs(this.x, this.e);
 
   @override
-  String toString() => '\\$x -> $e';
+  String toString() => 'λ$x -> $e';
 }
 
-class LetExpression extends Expression {
+class Let extends LambdaCalculusExpression {
   final String x;
-  final Expression e1;
-  final Expression e2;
-  LetExpression(this.x, this.e1, this.e2);
+  final LambdaCalculusExpression e1;
+  final LambdaCalculusExpression e2;
+  Let(this.x, this.e1, this.e2);
 
   @override
   String toString() => 'let $x = $e1 in $e2';
@@ -55,24 +64,26 @@ const string_t = TypeFunctionApplication(kString, []);
 const unit_t = TypeFunctionApplication(kUnit, []);
 final function_t = (MonoType from, MonoType to) => TypeFunctionApplication(kFunction, [from, to]);
 final list_t = (MonoType of) => TypeFunctionApplication(kList, [of]);
+const emptyList = TypeQuantifier('a', TypeFunctionApplication(kList, [TypeVariable('a')]));
 
-(Substitution, MonoType) w(Expression expr, Context context) {
+(Substitution, MonoType) w(LambdaCalculusExpression expr, Context context) {
   switch (expr) {
-    case VariableExpression(:final x):
+    case Lit(): return ({}, instantiate(expr.type));
+    case Var(:final x):
       final type = context[x];
       if (type == null) throw Exception('Undefined variable $x');
       return ({}, instantiate(type));
-    case AbstractionExpression(:final x, :final e):
+    case Abs(:final x, :final e):
       final beta = TypeVariable.fresh();
       final (s1, t1) = w(e, {...context, x: beta});
       return (s1, s1.apply(function_t(beta, t1)));
-    case ApplicationExpression(:final e1, :final e2):
+    case App(func:final e1, arg:final e2):
       final (s1, t1) = w(e1, context);
       final (s2, t2) = w(e2, s1.applyContext(context));
       final beta = TypeVariable.fresh();
       final s3 = unify(s2.apply(t1), function_t(t2, beta));
       return (combine([s1, s2, s3]), s3.apply(beta));
-    case LetExpression(:final x, :final e1, :final e2):
+    case Let(:final x, :final e1, :final e2):
       final (s1, t1) = w(e1, context);
       final (s2, t2) = w(e2, {...s1.applyContext(context), x: generalize(context, t1)});
       return (combine([s1, s2]), t2);
