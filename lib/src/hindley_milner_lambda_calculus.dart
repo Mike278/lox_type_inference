@@ -14,11 +14,11 @@ class Lit extends LambdaCalculusExpression {
 }
 
 class Var extends LambdaCalculusExpression {
-  final String x;
-  Var(this.x);
+  final String name;
+  Var(this.name);
 
   @override
-  String toString() => x;
+  String toString() => name;
 }
 
 class App extends LambdaCalculusExpression {
@@ -33,59 +33,58 @@ class App extends LambdaCalculusExpression {
 
 
 class Abs extends LambdaCalculusExpression {
-  final String x;
-  final LambdaCalculusExpression e;
-  Abs(this.x, this.e);
+  final String param;
+  final LambdaCalculusExpression body;
+  Abs(this.param, this.body);
 
   @override
-  String toString() => 'λ$x -> $e';
+  String toString() => 'λ$param -> $body';
 }
 
 class Let extends LambdaCalculusExpression {
-  final String x;
-  final LambdaCalculusExpression e1;
-  final LambdaCalculusExpression e2;
-  Let(this.x, this.e1, this.e2);
+  final String name;
+  final LambdaCalculusExpression assignment;
+  final LambdaCalculusExpression body;
+  Let(this.name, this.assignment, this.body);
 
   @override
-  String toString() => 'let $x = $e1 in $e2';
+  String toString() => 'let $name = $assignment in $body';
 }
 
-const kFunction = 'Function';
-const kBool = 'Bool';
-const kNum = 'Num';
-const kString = 'String';
-const kList = 'List';
-const kUnit = 'Unit';
-
-const bool_t = TypeFunctionApplication(kBool, []);
-const num_t = TypeFunctionApplication(kNum, []);
-const string_t = TypeFunctionApplication(kString, []);
-const unit_t = TypeFunctionApplication(kUnit, []);
-final function_t = (MonoType from, MonoType to) => TypeFunctionApplication(kFunction, [from, to]);
-final list_t = (MonoType of) => TypeFunctionApplication(kList, [of]);
-const emptyList = TypeQuantifier('a', TypeFunctionApplication(kList, [TypeVariable('a')]));
+const bool_t = TypeFunctionApplication('Bool', []);
+const num_t = TypeFunctionApplication('Num', []);
+const string_t = TypeFunctionApplication('String', []);
+const unit_t = TypeFunctionApplication('Unit', []);
+final list_t = (MonoType of) => TypeFunctionApplication('List', [of]);
+final function_t = (MonoType from, MonoType to) => TypeFunctionApplication('Function', [from, to]);
+final var_t = TypeVariable.new;
+final forall = TypeQuantifier.new;
+final unary_bool_t = function_t(bool_t, bool_t);
+final binary_num_t = function_t(num_t, function_t(num_t, num_t));
+final binary_bool_t = function_t(bool_t, function_t(bool_t, bool_t));
+final ternary_t = forall('a', function_t(bool_t, function_t(var_t('a'), function_t(var_t('a'), var_t('a')))));
+final emptyList_t = forall('a', list_t(var_t('a')));
 
 (Substitution, MonoType) w(LambdaCalculusExpression expr, Context context) {
   switch (expr) {
     case Lit(): return ({}, instantiate(expr.type));
-    case Var(:final x):
-      final type = context[x];
-      if (type == null) throw Exception('Undefined variable $x');
+    case Var(:final name):
+      final type = context[name];
+      if (type == null) throw Exception('Undefined variable $name');
       return ({}, instantiate(type));
-    case Abs(:final x, :final e):
+    case Abs(:final param, :final body):
       final beta = TypeVariable.fresh();
-      final (s1, t1) = w(e, {...context, x: beta});
+      final (s1, t1) = w(body, {...context, param: beta});
       return (s1, s1.apply(function_t(beta, t1)));
-    case App(func:final e1, arg:final e2):
-      final (s1, t1) = w(e1, context);
-      final (s2, t2) = w(e2, s1.applyContext(context));
+    case App(:final func, :final arg):
+      final (s1, t1) = w(func, context);
+      final (s2, t2) = w(arg, s1.applyContext(context));
       final beta = TypeVariable.fresh();
       final s3 = unify(s2.apply(t1), function_t(t2, beta));
       return (combine([s1, s2, s3]), s3.apply(beta));
-    case Let(:final x, :final e1, :final e2):
-      final (s1, t1) = w(e1, context);
-      final (s2, t2) = w(e2, {...s1.applyContext(context), x: generalize(context, t1)});
+    case Let(:final name, :final assignment, :final body):
+      final (s1, t1) = w(assignment, context);
+      final (s2, t2) = w(body, {...s1.applyContext(context), name: generalize(context, t1)});
       return (combine([s1, s2]), t2);
   }
 }

@@ -1,10 +1,9 @@
-import 'package:lox/src/expr.dart';
 import 'package:lox/src/hindley_milner_lambda_calculus.dart';
 import 'package:lox/src/lox_lambda_calculus.dart';
-import 'package:lox/src/parser.dart';
-import 'package:lox/src/scanner.dart';
 import 'package:lox/src/utils.dart';
 import 'package:test/test.dart';
+
+import 'test_utils.dart';
 
 void main() {
   final tests = [
@@ -111,9 +110,6 @@ void main() {
 }
 
 LambdaCalculusExpression toLC(String source) {
-  if (!source.endsWith(';')) source = '$source;';
-  final (tokens, hadError: _) = scanTokens(source, fail);
-  final (statements, hadError: _) = Parser(tokens, fail).parse();
-  final expr = (statements.single as ExpressionStatement).expr;
+  final expr = parseExpression(source);
   return toLambdaCalculus(expr);
 }

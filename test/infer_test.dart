@@ -1,64 +1,61 @@
-import 'package:lox/src/expr.dart';
 import 'package:lox/src/hindley_milner_api.dart';
 import 'package:lox/src/hindley_milner_lambda_calculus.dart';
 import 'package:lox/src/lox_lambda_calculus.dart';
-import 'package:lox/src/parser.dart';
-import 'package:lox/src/scanner.dart';
 import 'package:lox/src/utils.dart';
 import 'package:test/test.dart';
 
-import 'test_matchers.dart';
+import 'test_utils.dart';
 
 void main() {
   for (final (source, expectedType) in {
     // arity 0
-    r'\  -> 1': _fn(_var('t0'), num_t),
+    r'\  -> 1': function_t(var_t('t0'), num_t),
 
     // arity 1
-    r'\x -> 1': _fn(_var('t0'), num_t),
-    r'\x -> x': _fn(_var('t0'), _var('t0')),
+    r'\x -> 1': function_t(var_t('t0'), num_t),
+    r'\x -> x': function_t(var_t('t0'), var_t('t0')),
 
     // arity 2
-    r'\x, y -> 1':  _fn(_var('t0'), _fn(_var('t1'), num_t)),
-    r'\x, y -> x':  _fn(_var('t0'), _fn(_var('t1'), _var('t0'))),
-    r'\x, y -> y':  _fn(_var('t0'), _fn(_var('t1'), _var('t1'))),
-    r'\x, y -> []': _fn(_var('t0'), _fn(_var('t1'), _list('t2'))),
-    r'\x, y -> x(y and false)': _fn(_fn(bool_t, _var('t4')), _fn(bool_t, _var('t4'))),
-    r'\x, y -> x(y)':           _fn(_fn(_var('t1'), _var('t2')), _fn(_var('t1'), _var('t2'))),
+    r'\x, y -> 1':  function_t(var_t('t0'), function_t(var_t('t1'), num_t)),
+    r'\x, y -> x':  function_t(var_t('t0'), function_t(var_t('t1'), var_t('t0'))),
+    r'\x, y -> y':  function_t(var_t('t0'), function_t(var_t('t1'), var_t('t1'))),
+    r'\x, y -> []': function_t(var_t('t0'), function_t(var_t('t1'), list_t(var_t('t2')))),
+    r'\x, y -> x(y and false)': function_t(function_t(bool_t, var_t('t4')), function_t(bool_t, var_t('t4'))),
+    r'\x, y -> x(y)':           function_t(function_t(var_t('t1'), var_t('t2')), function_t(var_t('t1'), var_t('t2'))),
 
     // arity 3
-    r'\x, y, z -> 1':            _fn(_var('t0'), _fn(_var('t1'), _fn(_var('t2'), num_t))),
-    r'\x, y, z -> x':            _fn(_var('t0'), _fn(_var('t1'), _fn(_var('t2'), _var('t0')))),
-    r'\x, y, z -> y':            _fn(_var('t0'), _fn(_var('t1'), _fn(_var('t2'), _var('t1')))),
-    r'\x, y, z -> z':            _fn(_var('t0'), _fn(_var('t1'), _fn(_var('t2'), _var('t2')))),
-    r'\x, y, z -> x or y':       _fn(bool_t, _fn(bool_t, _fn(_var('t2'), bool_t))),
-    r'\x, y, z -> z(x or y)':    _fn(bool_t, _fn(bool_t, _fn(_fn(bool_t, _var('t5')), _var('t5')))),
-    r'\x, y, z -> z(x or y, x)': _fn(bool_t, _fn(bool_t, _fn(_fn(bool_t, _fn(bool_t, _var('t6'))), _var('t6')))),
+    r'\x, y, z -> 1':            function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), num_t))),
+    r'\x, y, z -> x':            function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), var_t('t0')))),
+    r'\x, y, z -> y':            function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), var_t('t1')))),
+    r'\x, y, z -> z':            function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), var_t('t2')))),
+    r'\x, y, z -> x or y':       function_t(bool_t, function_t(bool_t, function_t(var_t('t2'), bool_t))),
+    r'\x, y, z -> z(x or y)':    function_t(bool_t, function_t(bool_t, function_t(function_t(bool_t, var_t('t5')), var_t('t5')))),
+    r'\x, y, z -> z(x or y, x)': function_t(bool_t, function_t(bool_t, function_t(function_t(bool_t, function_t(bool_t, var_t('t6'))), var_t('t6')))),
 
     // unary function body
-    r'\x -> -x': _fn(num_t, num_t),
-    r'\x -> !x': _fn(bool_t, bool_t),
-    r'\x, y -> -x': _fn(num_t, _fn(_var('t1'), num_t)),
-    r'\x, y -> !x': _fn(bool_t, _fn(_var('t1'), bool_t)),
+    r'\x -> -x': function_t(num_t, num_t),
+    r'\x -> !x': function_t(bool_t, bool_t),
+    r'\x, y -> -x': function_t(num_t, function_t(var_t('t1'), num_t)),
+    r'\x, y -> !x': function_t(bool_t, function_t(var_t('t1'), bool_t)),
 
     // binary function body
-    r'\x, y -> x and y': _fn(bool_t, _fn(bool_t, bool_t)),
-    r'\x, y -> x or y':  _fn(bool_t, _fn(bool_t, bool_t)),
-    r'\x, y -> x + y':   _fn(num_t, _fn(num_t, num_t)),
-    r'\x, y -> x - y':   _fn(num_t, _fn(num_t, num_t)),
-    r'\x, y -> x * y':   _fn(num_t, _fn(num_t, num_t)),
-    r'\x, y -> x / y':   _fn(num_t, _fn(num_t, num_t)),
-    r'\x, y -> x - -y':  _fn(num_t, _fn(num_t, num_t)),
+    r'\x, y -> x and y': function_t(bool_t, function_t(bool_t, bool_t)),
+    r'\x, y -> x or y':  function_t(bool_t, function_t(bool_t, bool_t)),
+    r'\x, y -> x + y':   function_t(num_t, function_t(num_t, num_t)),
+    r'\x, y -> x - y':   function_t(num_t, function_t(num_t, num_t)),
+    r'\x, y -> x * y':   function_t(num_t, function_t(num_t, num_t)),
+    r'\x, y -> x / y':   function_t(num_t, function_t(num_t, num_t)),
+    r'\x, y -> x - -y':  function_t(num_t, function_t(num_t, num_t)),
 
     // ternary function body
-    r'\c, x, y -> c ? x : y':           _fn(bool_t, _fn(_var('t6'), _fn(_var('t6'), _var('t6')))),
-    r'\c, x, y -> c ? x : y+1':         _fn(bool_t, _fn(num_t, _fn(num_t, num_t))),
-    r'\c, x, y -> c ? x : -y':          _fn(bool_t, _fn(num_t, _fn(num_t, num_t))),
-    r'\c, x, y -> c ? x : y or false':  _fn(bool_t, _fn(bool_t, _fn(bool_t, bool_t))),
-    r'\c, x, y -> c ? x : !y':          _fn(bool_t, _fn(bool_t, _fn(bool_t, bool_t))),
+    r'\c, x, y -> c ? x : y':           function_t(bool_t, function_t(var_t('t6'), function_t(var_t('t6'), var_t('t6')))),
+    r'\c, x, y -> c ? x : y+1':         function_t(bool_t, function_t(num_t, function_t(num_t, num_t))),
+    r'\c, x, y -> c ? x : -y':          function_t(bool_t, function_t(num_t, function_t(num_t, num_t))),
+    r'\c, x, y -> c ? x : y or false':  function_t(bool_t, function_t(bool_t, function_t(bool_t, bool_t))),
+    r'\c, x, y -> c ? x : !y':          function_t(bool_t, function_t(bool_t, function_t(bool_t, bool_t))),
 
     // complex
-    r'\x, y, z -> x(y and false, z + 1)': _fn(_fn(bool_t, _fn(num_t, _var('t8'))), _fn(bool_t, _fn(num_t, _var('t8')))),
+    r'\x, y, z -> x(y and false, z + 1)': function_t(function_t(bool_t, function_t(num_t, var_t('t8'))), function_t(bool_t, function_t(num_t, var_t('t8')))),
   }.pairs()) {
     test('infer function $source', () {
       expect(inferSource(source),  expectedType, reason: source);
@@ -74,8 +71,8 @@ void main() {
     r'(\x -> x)(1)': num_t,
     r'(\x -> x)(-1)': num_t,
     r'(\x -> 1)([])': num_t,
-    r'(\x -> x)([])': _list('t1'),
-    r'(\x -> [])(1)': _list('t1'),
+    r'(\x -> x)([])': list_t(var_t('t1')),
+    r'(\x -> [])(1)': list_t(var_t('t1')),
 
     // arity 2
     r'(\x, y -> 1)("ok", false)': num_t,
@@ -85,7 +82,7 @@ void main() {
     // complex
     r'(\x, y -> x(y and false)) (\b -> 1, false)': num_t,
     r'(\x, y -> x(y and false)) (\b -> b, false)': bool_t,
-    r'(\x, y, z -> x(y and false, z + 1)) (\a, b -> b, true, 1)': num_t,
+    r'(\x, y, z ->       x(y and false, z + 1)) (\a, b -> b, true, 1)': num_t,
   }.pairs()) {
     test('infer call $source', () {
       expect(inferSource(source),  expectedType, reason: source);
@@ -93,88 +90,19 @@ void main() {
   }
 }
 
-final _list = (String typeVariableName) =>
-  matchesTypeFunctionApplication(name: kList, monoTypes: [_var(typeVariableName)]);
-
-final _var = (String typeVariableName) => matchesTypeVariable(name: typeVariableName);
-
-final _fn = (a, b) =>
-  matchesTypeFunctionApplication(
-    name: kFunction,
-    monoTypes: [a, b],
-  );
-
-const numOp = TypeFunctionApplication(
-  kFunction, [ num_t, TypeFunctionApplication(kFunction, [ num_t, num_t ])]
-);
-const boolOp = TypeFunctionApplication(
-  kFunction, [ bool_t, TypeFunctionApplication(kFunction, [ bool_t, bool_t ])]
-);
-const negate = TypeFunctionApplication(kFunction, [ bool_t, bool_t]);
-
-const ternary =
-  TypeQuantifier(
-    'a',
-    TypeFunctionApplication(
-      kFunction,
-      [
-        bool_t,
-        TypeFunctionApplication(
-          kFunction,
-          [
-            TypeVariable('a'),
-            TypeFunctionApplication(
-              kFunction,
-              [
-                TypeVariable('a'),
-                TypeVariable('a'),
-              ],
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-
-const listFirst = TypeQuantifier('a', TypeFunctionApplication(kFunction, [ TypeFunctionApplication(kList, [TypeVariable('a')]), TypeVariable('a')]));
-const listRest = TypeQuantifier('a', TypeFunctionApplication(kFunction, [ TypeFunctionApplication(kList, [TypeVariable('a')]), TypeFunctionApplication(kList, [TypeVariable('a')])]));
-const listEmpty = TypeQuantifier('a', TypeFunctionApplication(kFunction, [ TypeFunctionApplication(kList, [TypeVariable('a')]), bool_t]));
-
-const Context loxStandardLibraryContext = {
-  '+': numOp,
-  '-': numOp,
-  '*': numOp,
-  '/': numOp,
-  'or': boolOp,
-  'and': boolOp,
-  '!': negate,
-  '?': ternary,
-  '[]': emptyList,
-  'nil': unit_t,
-  'List.first': listFirst,
-  'List.rest': listRest,
-  'List.empty': listEmpty,
+Map<String, PolyType> newContext() => {
+  ...loxStandardLibraryContext,
 };
 
 MonoType inferSource(String source) {
   final expr = parseExpression(source);
-  final context = <String, PolyType>{
-    ...loxStandardLibraryContext,
-  };
-  return infer(expr, context);
+  final context = newContext();
+  final lc = toLambdaCalculus(expr);
+  return infer(lc, context);
 }
 
-Expr parseExpression(String source) {
-  if (!source.endsWith(';')) source = '$source;';
-  final (tokens, hadError: _) = scanTokens(source, fail);
-  final (statements, hadError: _) = Parser(tokens, fail).parse();
-  final expr = (statements.single as ExpressionStatement).expr;
-  return expr;
-}
-
-MonoType infer(Expr expression, Context context) {
+MonoType infer(LambdaCalculusExpression expr, Context context) {
   TypeVariable.counter = 0;
-  final expr = toLambdaCalculus(expression);
   final (substitution, t) = w(expr, context);
   final type = substitution.apply(t);
   return type;

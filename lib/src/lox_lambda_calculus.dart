@@ -1,5 +1,6 @@
 
 import 'package:lox/src/expr.dart';
+import 'package:lox/src/hindley_milner_api.dart';
 import 'package:lox/src/scanner.dart';
 
 import 'hindley_milner_lambda_calculus.dart';
@@ -10,7 +11,7 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
     NumberLiteral()                   => Lit(num_t),
     NilLiteral()                      => Lit(unit_t),
     FalseLiteral() || TrueLiteral()   => Lit(bool_t),
-    ListLiteral(elements: [])         => Lit(emptyList),
+    ListLiteral(elements: [])         => Lit(emptyList_t),
 
     Variable(name: Token(lexeme: final name)) =>
         Var(name),
@@ -70,3 +71,18 @@ App toApp(Expr callee, List<Expr> args) {
     ),
   };
 }
+
+
+
+final Context loxStandardLibraryContext = {
+  '+': binary_num_t,
+  '-': binary_num_t,
+  '*': binary_num_t,
+  '/': binary_num_t,
+  'or': binary_bool_t,
+  'and': binary_bool_t,
+  '!': unary_bool_t,
+  '?': ternary_t,
+  '[]': emptyList_t,
+  'nil': unit_t,
+};
