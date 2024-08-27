@@ -86,18 +86,12 @@ void main() {
   testInferCall(r'(\x, y -> x(y and false)) (\b -> b, true)',  bool_t);
   testInferCall(r'(\x, y -> x(y and false)) (\b -> 1, true)',  num_t);
   testInferCall(r'(\x, y -> x(y)) (\b -> 1, true)',  num_t);
-  testInferCall(r'(\x -> x("h") ) (\b    -> 1)',  num_t);
-  testInferCall(r'(\x -> "h"    ) (\b, c -> 1)',  string_t);
-  testInferCall(r'(\x -> x      ) (\b, c -> 1)',  function_t(var_t('t1'), function_t(var_t('t2'), num_t)));
+  testInferCall(r'(\x -> x("h")) (\b -> 1)',  num_t);
+  testInferCall(r'(\x -> "h") (\b, c -> 1)',  string_t);
+  testInferCall(r'(\x -> x) (\b, c -> 1)',  function_t(var_t('t1'), function_t(var_t('t2'), num_t)));
   testInferCall(r'(\x -> x)(\f -> f("h", 1))', function_t(function_t(string_t, function_t(num_t, var_t('t3'))), var_t('t3')));
-
-
-
-  // both of these fail in the same way..
-  testInferCall(r'(\x, y, z ->       x(y and false, z + 1)) (\a, b -> b, true, 1)',  num_t);
-  // .. even in pre-curried form
+  testInferCall(r'(\x, y, z -> x(y and false, z + 1)) (\a, b -> b, true, 1)',  num_t);
   testInferCall(r'(\x -> \y -> \z -> x(y and false)(z + 1)) (\a -> \b -> b)(true)(1)',  num_t);
-  // .. simplified:
   testInferCall(r'(\x -> x(1, 1)) (\a, b -> "h")',  string_t);
 
   test('manual', () {

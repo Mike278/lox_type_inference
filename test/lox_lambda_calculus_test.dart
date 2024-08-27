@@ -104,8 +104,8 @@ void main() {
     } (),
 
 
-    r'(\x -> x("h")     ) (\b    -> 1)': '(λx -> (x <String>) λb                  -> <Num>)',
-    r'(\x -> "h")         (\b, c -> 1)': '(λx -> <String> λb -> λc                -> <Num>)',
+    r'(\x -> x("h")     ) (\b    -> 1)': '(λx -> (x <String>) λb -> <Num>)',
+    r'(\x -> "h")         (\b, c -> 1)': '(λx -> <String> λb -> λc -> <Num>)',
     r'(\x -> x("h", "h")) (\b, c -> 1)': '(λx -> ((x <String>) <String>) λb -> λc -> <Num>)',
 
   }.pairs()) {
