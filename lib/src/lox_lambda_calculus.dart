@@ -39,9 +39,11 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
     Grouping(:final expr) =>
         toLambdaCalculus(expr),
 
-    Lambda(body: FunctionBody())
+    ListLiteral(:final elements) =>
+        toList(elements),
+
+    Lambda(body: FunctionBody(body: Block()))
     || Call(args: ArgsWithPlaceholder())
-    || ListLiteral(elements: [_, ...])
     || Record()
     || FieldAccess() =>
         throw 'unsupported $loxExpression',
@@ -72,7 +74,19 @@ App toApp(Expr callee, List<Expr> args) {
   };
 }
 
-
+LambdaCalculusExpression toList(List<ListElement> elements) =>
+  elements
+    .map(
+      (element) => switch (element) {
+        ExpressionListElement(:final expr) => expr,
+        SpreadListElement() => throw 'spread not supported yet',
+      },
+    )
+    .map(toLambdaCalculus)
+    .fold(
+      Var('[]'),
+      (list, element) => App(func: App(func: Var('_ListAdd'), arg: list), arg: element),
+    );
 
 final Context loxStandardLibraryContext = {
   '+': binary_num_t,
@@ -85,4 +99,5 @@ final Context loxStandardLibraryContext = {
   '?': ternary_t,
   '[]': emptyList_t,
   'nil': unit_t,
+  '_ListAdd': forall('a', function_t(list_t(var_t('a')), function_t(var_t('a'), list_t(var_t('a'))))),
 };

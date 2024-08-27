@@ -108,11 +108,51 @@ void main() {
     final result = infer(expr, newContext());
     expect(result, string_t);
   });
+
+
+  final testInferListLiteral = testInferSource.partial('infer list');
+
+  testInferListLiteral('[1]', list_t(num_t));
+  testInferListLiteral('[1, 2]', list_t(num_t));
+  testInferListLiteral('[1, 2, 3]', list_t(num_t));
+  testInferListLiteral('[1, 2, 3, 4]', list_t(num_t));
+
+  testInferListLiteral('["h"]', list_t(string_t));
+  testInferListLiteral('["h", "h"]', list_t(string_t));
+  testInferListLiteral('["h", "h", "h"]', list_t(string_t));
+  testInferListLiteral('["h", "h", "h", "h"]', list_t(string_t));
+
+  testInferListLiteral('[[]]', list_t(list_t(var_t('t3'))));
+  testInferListLiteral('[[], []]', list_t(list_t(var_t('t7'))));
+  testInferListLiteral('[[], [], []]', list_t(list_t(var_t('t11'))));
+  testInferListLiteral('[[], [], [], []]', list_t(list_t(var_t('t15'))));
+
+  testInferListLiteral('[["h"]]', list_t(list_t(string_t)));
+  testInferListLiteral('[["h"], ["h"]]', list_t(list_t(string_t)));
+  testInferListLiteral('[["h"], ["h"], ["h"]]', list_t(list_t(string_t)));
+  testInferListLiteral('[["h"], ["h"], ["h"], ["h"]]', list_t(list_t(string_t)));
+
+  testInferListLiteral('[[], ["h"]]', list_t(list_t(string_t)));
+  testInferListLiteral('[[], ["h"], ["h"]]', list_t(list_t(string_t)));
+  testInferListLiteral('[[], ["h"], ["h"], ["h"]]', list_t(list_t(string_t)));
+  testInferListLiteral('[[], ["h"], ["h"], ["h"], ["h"]]', list_t(list_t(string_t)));
+
+  testInferListLiteral('[["h"], []]', list_t(list_t(string_t)));
+  testInferListLiteral('[["h"], ["h"], []]', list_t(list_t(string_t)));
+  testInferListLiteral('[["h"], ["h"], ["h"], []]', list_t(list_t(string_t)));
+  testInferListLiteral('[["h"], ["h"], ["h"], ["h"], []]', list_t(list_t(string_t)));
+
+
 }
 
 void testInferSource(String prefix, String source, expectedType) {
-  final [_, _, frame, ...] = StackTrace.current.toString().split('\n');
-  final line = RegExp(r'main \((.+)\)').firstMatch(frame)?.group(1);
+  final line = StackTrace.current
+      .toString()
+      .split('\n')
+      .map(RegExp(r'main \((.+)\)').firstMatch)
+      .whereNotNull()
+      .single
+      .group(1);
   test('$prefix $source', () {
     expect(
       inferSource(source),
