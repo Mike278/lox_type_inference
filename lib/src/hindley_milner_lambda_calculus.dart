@@ -67,7 +67,8 @@ final emptyList_t = forall('a', list_t(var_t('a')));
 
 (Substitution, MonoType) w(LambdaCalculusExpression expr, Context context) {
   switch (expr) {
-    case Lit(): return ({}, instantiate(expr.type));
+    case Lit(:final type):
+      return ({}, instantiate(type));
     case Var(:final name):
       final type = context[name];
       if (type == null) throw Exception('Undefined variable $name');
@@ -81,7 +82,7 @@ final emptyList_t = forall('a', list_t(var_t('a')));
       final (s2, t2) = w(arg, s1.applyContext(context));
       final beta = TypeVariable.fresh();
       final s3 = unify(s2.apply(t1), function_t(t2, beta));
-      return (combine([s1, s2, s3]), s3.apply(beta));
+      return (combine([s3, s2, s1]), s3.apply(beta));
     case Let(:final name, :final assignment, :final body):
       final (s1, t1) = w(assignment, context);
       final (s2, t2) = w(body, {...s1.applyContext(context), name: generalize(context, t1)});

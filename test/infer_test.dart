@@ -7,87 +7,125 @@ import 'package:test/test.dart';
 import 'test_utils.dart';
 
 void main() {
-  for (final (source, expectedType) in {
-    // arity 0
-    r'\  -> 1': function_t(var_t('t0'), num_t),
+  
+  final testInferFunction = testInferSource.partial('infer function');
+  
+  // arity 0
+  testInferFunction(r'\  -> 1',  function_t(var_t('t0'), num_t));
 
-    // arity 1
-    r'\x -> 1': function_t(var_t('t0'), num_t),
-    r'\x -> x': function_t(var_t('t0'), var_t('t0')),
+  // arity 1
+  testInferFunction(r'\x -> 1',  function_t(var_t('t0'), num_t));
+  testInferFunction(r'\x -> x',  function_t(var_t('t0'), var_t('t0')));
 
-    // arity 2
-    r'\x, y -> 1':  function_t(var_t('t0'), function_t(var_t('t1'), num_t)),
-    r'\x, y -> x':  function_t(var_t('t0'), function_t(var_t('t1'), var_t('t0'))),
-    r'\x, y -> y':  function_t(var_t('t0'), function_t(var_t('t1'), var_t('t1'))),
-    r'\x, y -> []': function_t(var_t('t0'), function_t(var_t('t1'), list_t(var_t('t2')))),
-    r'\x, y -> x(y and false)': function_t(function_t(bool_t, var_t('t4')), function_t(bool_t, var_t('t4'))),
-    r'\x, y -> x(y)':           function_t(function_t(var_t('t1'), var_t('t2')), function_t(var_t('t1'), var_t('t2'))),
+  // arity 2
+  testInferFunction(r'\x, y -> 1',   function_t(var_t('t0'), function_t(var_t('t1'), num_t)));
+  testInferFunction(r'\x, y -> x',   function_t(var_t('t0'), function_t(var_t('t1'), var_t('t0'))));
+  testInferFunction(r'\x, y -> y',   function_t(var_t('t0'), function_t(var_t('t1'), var_t('t1'))));
+  testInferFunction(r'\x, y -> []',  function_t(var_t('t0'), function_t(var_t('t1'), list_t(var_t('t2')))));
+  testInferFunction(r'\x, y -> x(y and false)',  function_t(function_t(bool_t, var_t('t4')), function_t(bool_t, var_t('t4'))));
+  testInferFunction(r'\x, y -> x(y)',            function_t(function_t(var_t('t1'), var_t('t2')), function_t(var_t('t1'), var_t('t2'))));
 
-    // arity 3
-    r'\x, y, z -> 1':            function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), num_t))),
-    r'\x, y, z -> x':            function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), var_t('t0')))),
-    r'\x, y, z -> y':            function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), var_t('t1')))),
-    r'\x, y, z -> z':            function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), var_t('t2')))),
-    r'\x, y, z -> x or y':       function_t(bool_t, function_t(bool_t, function_t(var_t('t2'), bool_t))),
-    r'\x, y, z -> z(x or y)':    function_t(bool_t, function_t(bool_t, function_t(function_t(bool_t, var_t('t5')), var_t('t5')))),
-    r'\x, y, z -> z(x or y, x)': function_t(bool_t, function_t(bool_t, function_t(function_t(bool_t, function_t(bool_t, var_t('t6'))), var_t('t6')))),
+  // arity 3
+  testInferFunction(r'\x, y, z -> 1',             function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), num_t))));
+  testInferFunction(r'\x, y, z -> x',             function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), var_t('t0')))));
+  testInferFunction(r'\x, y, z -> y',             function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), var_t('t1')))));
+  testInferFunction(r'\x, y, z -> z',             function_t(var_t('t0'), function_t(var_t('t1'), function_t(var_t('t2'), var_t('t2')))));
+  testInferFunction(r'\x, y, z -> x or y',        function_t(bool_t, function_t(bool_t, function_t(var_t('t2'), bool_t))));
+  testInferFunction(r'\x, y, z -> z(x or y)',     function_t(bool_t, function_t(bool_t, function_t(function_t(bool_t, var_t('t5')), var_t('t5')))));
+  testInferFunction(r'\x, y, z -> z(x or y, x)',  function_t(bool_t, function_t(bool_t, function_t(function_t(bool_t, function_t(bool_t, var_t('t6'))), var_t('t6')))));
 
-    // unary function body
-    r'\x -> -x': function_t(num_t, num_t),
-    r'\x -> !x': function_t(bool_t, bool_t),
-    r'\x, y -> -x': function_t(num_t, function_t(var_t('t1'), num_t)),
-    r'\x, y -> !x': function_t(bool_t, function_t(var_t('t1'), bool_t)),
+  // unary function body
+  testInferFunction(r'\x -> -x',  function_t(num_t, num_t));
+  testInferFunction(r'\x -> !x',  function_t(bool_t, bool_t));
+  testInferFunction(r'\x, y -> -x',  function_t(num_t, function_t(var_t('t1'), num_t)));
+  testInferFunction(r'\x, y -> !x',  function_t(bool_t, function_t(var_t('t1'), bool_t)));
 
-    // binary function body
-    r'\x, y -> x and y': function_t(bool_t, function_t(bool_t, bool_t)),
-    r'\x, y -> x or y':  function_t(bool_t, function_t(bool_t, bool_t)),
-    r'\x, y -> x + y':   function_t(num_t, function_t(num_t, num_t)),
-    r'\x, y -> x - y':   function_t(num_t, function_t(num_t, num_t)),
-    r'\x, y -> x * y':   function_t(num_t, function_t(num_t, num_t)),
-    r'\x, y -> x / y':   function_t(num_t, function_t(num_t, num_t)),
-    r'\x, y -> x - -y':  function_t(num_t, function_t(num_t, num_t)),
+  // binary function body
+  testInferFunction(r'\x, y -> x and y',  function_t(bool_t, function_t(bool_t, bool_t)));
+  testInferFunction(r'\x, y -> x or y',   function_t(bool_t, function_t(bool_t, bool_t)));
+  testInferFunction(r'\x, y -> x + y',    function_t(num_t, function_t(num_t, num_t)));
+  testInferFunction(r'\x, y -> x - y',    function_t(num_t, function_t(num_t, num_t)));
+  testInferFunction(r'\x, y -> x * y',    function_t(num_t, function_t(num_t, num_t)));
+  testInferFunction(r'\x, y -> x / y',    function_t(num_t, function_t(num_t, num_t)));
+  testInferFunction(r'\x, y -> x - -y',   function_t(num_t, function_t(num_t, num_t)));
 
-    // ternary function body
-    r'\c, x, y -> c ? x : y':           function_t(bool_t, function_t(var_t('t6'), function_t(var_t('t6'), var_t('t6')))),
-    r'\c, x, y -> c ? x : y+1':         function_t(bool_t, function_t(num_t, function_t(num_t, num_t))),
-    r'\c, x, y -> c ? x : -y':          function_t(bool_t, function_t(num_t, function_t(num_t, num_t))),
-    r'\c, x, y -> c ? x : y or false':  function_t(bool_t, function_t(bool_t, function_t(bool_t, bool_t))),
-    r'\c, x, y -> c ? x : !y':          function_t(bool_t, function_t(bool_t, function_t(bool_t, bool_t))),
+  // ternary function body
+  testInferFunction(r'\c, x, y -> c ? x : y',            function_t(bool_t, function_t(var_t('t6'), function_t(var_t('t6'), var_t('t6')))));
+  testInferFunction(r'\c, x, y -> c ? x : y+1',          function_t(bool_t, function_t(num_t, function_t(num_t, num_t))));
+  testInferFunction(r'\c, x, y -> c ? x : -y',           function_t(bool_t, function_t(num_t, function_t(num_t, num_t))));
+  testInferFunction(r'\c, x, y -> c ? x : y or false',   function_t(bool_t, function_t(bool_t, function_t(bool_t, bool_t))));
+  testInferFunction(r'\c, x, y -> c ? x : !y',           function_t(bool_t, function_t(bool_t, function_t(bool_t, bool_t))));
 
-    // complex
-    r'\x, y, z -> x(y and false, z + 1)': function_t(function_t(bool_t, function_t(num_t, var_t('t8'))), function_t(bool_t, function_t(num_t, var_t('t8')))),
-  }.pairs()) {
-    test('infer function $source', () {
-      expect(inferSource(source),  expectedType, reason: source);
-    });
-  }
+  // function call in function body
+  testInferFunction(r'\x -> x("h", 1)', function_t(function_t(string_t, function_t(num_t, var_t('t2'))), var_t('t2')));
 
-  for (final (source, expectedType) in {
+  // complex
+  testInferFunction(r'\x, y, z -> x(y and false, z + 1)',  function_t(function_t(bool_t, function_t(num_t, var_t('t8'))), function_t(bool_t, function_t(num_t, var_t('t8')))));
 
-    // arity 0
-    r'(\  -> 1)()': num_t,
 
-    // arity 1
-    r'(\x -> x)(1)': num_t,
-    r'(\x -> x)(-1)': num_t,
-    r'(\x -> 1)([])': num_t,
-    r'(\x -> x)([])': list_t(var_t('t1')),
-    r'(\x -> [])(1)': list_t(var_t('t1')),
+  final testInferCall = testInferSource.partial('infer call');
 
-    // arity 2
-    r'(\x, y -> 1)("ok", false)': num_t,
-    r'(\x, y -> x)("ok", false)': string_t,
-    r'(\x, y -> y)("ok", false)': bool_t,
+  // arity 0
+  testInferCall(r'(\  -> 1)()',  num_t);
 
-    // complex
-    r'(\x, y -> x(y and false)) (\b -> 1, false)': num_t,
-    r'(\x, y -> x(y and false)) (\b -> b, false)': bool_t,
-    r'(\x, y, z ->       x(y and false, z + 1)) (\a, b -> b, true, 1)': num_t,
-  }.pairs()) {
-    test('infer call $source', () {
-      expect(inferSource(source),  expectedType, reason: source);
-    });
-  }
+  // arity 1
+  testInferCall(r'(\x -> x)(1)',  num_t);
+  testInferCall(r'(\x -> x)(-1)',  num_t);
+  testInferCall(r'(\x -> 1)([])',  num_t);
+  testInferCall(r'(\x -> x)([])',  list_t(var_t('t1')));
+  testInferCall(r'(\x -> [])(1)',  list_t(var_t('t1')));
+
+  // arity 2
+  testInferCall(r'(\x, y -> 1)("ok", false)',  num_t);
+  testInferCall(r'(\x, y -> x)("ok", false)',  string_t);
+  testInferCall(r'(\x, y -> y)("ok", false)',  bool_t);
+
+  // complex
+  testInferCall(r'(\x, y -> x(y and false)) (\b -> 1, false)',  num_t);
+  testInferCall(r'(\x, y -> x(y and false)) (\b -> b, false)',  bool_t);
+  testInferCall(r'(\x, y -> x(y and false)) (\b -> b, true)',  bool_t);
+  testInferCall(r'(\x, y -> x(y and false)) (\b -> 1, true)',  num_t);
+  testInferCall(r'(\x, y -> x(y)) (\b -> 1, true)',  num_t);
+  testInferCall(r'(\x -> x("h") ) (\b    -> 1)',  num_t);
+  testInferCall(r'(\x -> "h"    ) (\b, c -> 1)',  string_t);
+  testInferCall(r'(\x -> x      ) (\b, c -> 1)',  function_t(var_t('t1'), function_t(var_t('t2'), num_t)));
+  testInferCall(r'(\x -> x)(\f -> f("h", 1))', function_t(function_t(string_t, function_t(num_t, var_t('t3'))), var_t('t3')));
+
+
+
+  // both of these fail in the same way..
+  testInferCall(r'(\x, y, z ->       x(y and false, z + 1)) (\a, b -> b, true, 1)',  num_t);
+  // .. even in pre-curried form
+  testInferCall(r'(\x -> \y -> \z -> x(y and false)(z + 1)) (\a -> \b -> b)(true)(1)',  num_t);
+  // .. simplified:
+  testInferCall(r'(\x -> x(1, 1)) (\a, b -> "h")',  string_t);
+
+  test('manual', () {
+    // (x 1)
+    final x1 = App(func: Var('x'), arg: Lit(num_t));
+    // ((x 1) 1)
+    final x11 = App(func: x1, arg: Lit(num_t));
+    // \x -> ((x 1) 1)
+    final abs = Abs('x', x11);
+    // \a -> \b -> "h"
+    final arg = Abs('a', Abs('b', Lit(string_t)));
+    // (\x -> ((x 1) 1))(\a -> \b -> "h")
+    final expr = App(func: abs, arg: arg);
+    final result = infer(expr, newContext());
+    expect(result, string_t);
+  });
+}
+
+void testInferSource(String prefix, String source, expectedType) {
+  final [_, _, frame, ...] = StackTrace.current.toString().split('\n');
+  final line = RegExp(r'main \((.+)\)').firstMatch(frame)?.group(1);
+  test('$prefix $source', () {
+    expect(
+      inferSource(source),
+      expectedType,
+      reason: line == null ? null : 'test case: $line',
+    );
+  });
 }
 
 Map<String, PolyType> newContext() => {

@@ -102,6 +102,12 @@ void main() {
         final arg3 = '<Num>';
         return '((($func $arg1) $arg2) $arg3)';
     } (),
+
+
+    r'(\x -> x("h")     ) (\b    -> 1)': '(λx -> (x <String>) λb                  -> <Num>)',
+    r'(\x -> "h")         (\b, c -> 1)': '(λx -> <String> λb -> λc                -> <Num>)',
+    r'(\x -> x("h", "h")) (\b, c -> 1)': '(λx -> ((x <String>) <String>) λb -> λc -> <Num>)',
+
   }.pairs()) {
     test('toLambdaCalculus call $source', () {
       expect(toLC(source).toString(),  expectedType, reason: source);
