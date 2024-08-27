@@ -39,8 +39,8 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
     Grouping(:final expr) =>
         toLambdaCalculus(expr),
 
-    ListLiteral(:final elements) =>
-        toList(elements),
+    ListLiteral(:final elements, :final closingBracket) =>
+        toList(elements, closingBracket),
 
     Lambda(body: FunctionBody(body: Block()))
     || Call(args: ArgsWithPlaceholder())
@@ -74,19 +74,29 @@ App toApp(Expr callee, List<Expr> args) {
   };
 }
 
-LambdaCalculusExpression toList(List<ListElement> elements) =>
-  elements
-    .map(
-      (element) => switch (element) {
-        ExpressionListElement(:final expr) => expr,
-        SpreadListElement() => throw 'spread not supported yet',
-      },
-    )
-    .map(toLambdaCalculus)
-    .fold(
-      Var('[]'),
-      (list, element) => App(func: App(func: Var('_ListAdd'), arg: list), arg: element),
-    );
+LambdaCalculusExpression toList(
+  List<ListElement> elements,
+  Token closingBracket,
+) =>
+    // Normalize to list of lists, then concat them all:
+    // [1, ..[2, 3], 4]  ->  [[1], [2, 3], [4]]  ->  [1, 2, 3, 4]
+    elements
+      .map(normalizeListElement)
+      .fold(
+        Var('[]'),
+        (list, element) =>
+          // ((_ListConcat list) element)
+          App(func: App(func: Var('_ListConcat'), arg: list), arg: element),
+      );
+
+LambdaCalculusExpression normalizeListElement(ListElement element) =>
+  switch (element) {
+    SpreadListElement(:final expr) => toLambdaCalculus(expr),
+    ExpressionListElement(:final expr) => App(
+      func: App(func: Var('_ListAdd'), arg: Var('[]')),
+      arg: toLambdaCalculus(expr),
+    ),
+  };
 
 final Context loxStandardLibraryContext = {
   '+': binary_num_t,
@@ -100,4 +110,5 @@ final Context loxStandardLibraryContext = {
   '[]': emptyList_t,
   'nil': unit_t,
   '_ListAdd': forall('a', function_t(list_t(var_t('a')), function_t(var_t('a'), list_t(var_t('a'))))),
+  '_ListConcat': forall('a', function_t(list_t(var_t('a')), function_t(list_t(var_t('a')), list_t(var_t('a'))))),
 };
