@@ -1,3 +1,4 @@
+import 'package:lox/src/expr.dart';
 import 'package:lox/src/hindley_milner_api.dart';
 import 'package:lox/src/hindley_milner_lambda_calculus.dart';
 import 'package:lox/src/lox_lambda_calculus.dart';
@@ -8,7 +9,7 @@ import 'test_utils.dart';
 
 void main() {
   
-  final testInferFunction = testInferSource.partial('infer function');
+  final testInferFunction = testInferSourceExpression.partial('infer function');
   
   // arity 0
   testInferFunction(r'\  -> 1',  function_t(var_t('t0'), num_t));
@@ -63,7 +64,7 @@ void main() {
   testInferFunction(r'\x, y, z -> x(y and false, z + 1)',  function_t(function_t(bool_t, function_t(num_t, var_t('t0'))), function_t(bool_t, function_t(num_t, var_t('t0')))));
 
 
-  final testInferCall = testInferSource.partial('infer call');
+  final testInferCall = testInferSourceExpression.partial('infer call');
 
   // arity 0
   testInferCall(r'(\  -> 1)()',  num_t);
@@ -110,7 +111,7 @@ void main() {
   });
 
 
-  final testInferListLiteral = testInferSource.partial('infer list');
+  final testInferListLiteral = testInferSourceExpression.partial('infer list');
 
   testInferListLiteral('[1]', list_t(num_t));
   testInferListLiteral('[1, 2]', list_t(num_t));
@@ -166,10 +167,22 @@ void main() {
   testInferListLiteral('[..[], []]', list_t(list_t(var_t('t0'))));
   testInferListLiteral('[..[], ..[]]', list_t(var_t('t0')));
 
+  test('let', () {
+    expect(inferLetStatementsFromSource(r'let f = \x -> x > 3 ? f(x - 1) : x;'), function_t(num_t, num_t));
+    expect(inferLetStatementsFromSource(r'let x = 1;'), num_t);
+    expect(inferLetStatementsFromSource(r'''
+    let x = 1;
+    let y = "h";
+    '''), string_t);
+    expect(inferLetStatementsFromSource(r'''
+    let x = \list -> [..list, 1]; 
+    let y = x([4]);
+    '''), list_t(num_t));
+  });
 
 }
 
-void testInferSource(String prefix, String source, expectedType) {
+void testInferSourceExpression(String prefix, String source, expectedType) {
   final line = StackTrace.current
       .toString()
       .split('\n')
@@ -179,7 +192,7 @@ void testInferSource(String prefix, String source, expectedType) {
       .group(1);
   test('$prefix $source', () {
     expect(
-      inferSource(source),
+      inferExpressionFromSource(source),
       expectedType,
       reason: line == null ? null : 'test case: $line',
     );
@@ -190,7 +203,18 @@ Map<String, PolyType> newContext() => {
   ...loxStandardLibraryContext,
 };
 
-MonoType inferSource(String source) {
+MonoType inferLetStatementsFromSource(String source) {
+  final statements = parse(source);
+  final lets = [for (final s in statements) if (s is LetDeclaration) s];
+  if (lets.isEmpty) fail('source does not contain any let statements');
+  if (lets.length < statements.length) fail('source contains non-let statements');
+  final lc = toLet(lets);
+  final context = newContext();
+  final inferred = infer(lc, context);
+  return normalizeTypeVariableIds(inferred);
+}
+
+MonoType inferExpressionFromSource(String source) {
   final expr = parseExpression(source);
   final context = newContext();
   final lc = toLambdaCalculus(expr);

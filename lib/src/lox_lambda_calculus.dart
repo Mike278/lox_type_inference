@@ -74,6 +74,29 @@ App toApp(Expr callee, List<Expr> args) {
   };
 }
 
+LambdaCalculusExpression toLet(List<LetDeclaration> statements) {
+  final body = Var(statements.last.name.lexeme);
+  final lets = [
+    for (final statement in statements.reversed) (
+      name: statement.name.lexeme,
+      expr: toLambdaCalculus(statement.initializer),
+    )
+  ];
+  return switch (lets) {
+    [] => body,
+    [(:final name, :final expr)] => Let(name, expr, body),
+    [(:final name, :final expr), ...final rest] =>
+      rest.fold(
+        Let(name, expr, body),
+        (let, statement) => Let(
+          statement.name,
+          statement.expr,
+          let,
+        ),
+      ),
+  };
+}
+
 LambdaCalculusExpression toList(
   List<ListElement> elements,
   Token closingBracket,
@@ -99,14 +122,12 @@ LambdaCalculusExpression normalizeListElement(ListElement element) =>
   };
 
 final Context loxStandardLibraryContext = {
-  '+': binary_num_t,
-  '-': binary_num_t,
-  '*': binary_num_t,
-  '/': binary_num_t,
-  'or': binary_bool_t,
-  'and': binary_bool_t,
-  '!': unary_bool_t,
-  '?': ternary_t,
+  for (final symbol in {'+', '-', '*', '/'})   symbol : function_t(num_t, function_t(num_t, num_t)),
+  for (final symbol in {'or', 'and'})          symbol : function_t(bool_t, function_t(bool_t, bool_t)),
+  for (final symbol in {'>', '>=', '<', '<='}) symbol : function_t(num_t, function_t(num_t, bool_t)),
+  for (final symbol in {'!=', '=='})           symbol : forall('a', function_t(var_t('a'), function_t(var_t('a'), bool_t))),
+  '!': function_t(bool_t, bool_t),
+  '?': forall('a', function_t(bool_t, function_t(var_t('a'), function_t(var_t('a'), var_t('a'))))),
   '[]': emptyList_t,
   'nil': unit_t,
   '_ListAdd': forall('a', function_t(list_t(var_t('a')), function_t(var_t('a'), list_t(var_t('a'))))),

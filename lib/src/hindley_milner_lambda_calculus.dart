@@ -59,10 +59,6 @@ final list_t = (MonoType of) => TypeFunctionApplication('List', [of]);
 final function_t = (MonoType from, MonoType to) => TypeFunctionApplication('Function', [from, to]);
 final var_t = TypeVariable.new;
 final forall = TypeQuantifier.new;
-final unary_bool_t = function_t(bool_t, bool_t);
-final binary_num_t = function_t(num_t, function_t(num_t, num_t));
-final binary_bool_t = function_t(bool_t, function_t(bool_t, bool_t));
-final ternary_t = forall('a', function_t(bool_t, function_t(var_t('a'), function_t(var_t('a'), var_t('a')))));
 final emptyList_t = forall('a', list_t(var_t('a')));
 
 (Substitution, MonoType) w(LambdaCalculusExpression expr, Context context) {

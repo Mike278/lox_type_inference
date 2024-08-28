@@ -11,3 +11,9 @@ Expr parseExpression(String source) {
   final expr = (statements.single as ExpressionStatement).expr;
   return expr;
 }
+
+List<Statement> parse(String source) {
+  final (tokens, hadError: _) = scanTokens(source, fail);
+  final (statements, hadError: _) = Parser(tokens, fail).parse();
+  return statements;
+}
