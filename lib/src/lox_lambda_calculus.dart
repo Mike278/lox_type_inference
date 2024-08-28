@@ -108,15 +108,15 @@ LambdaCalculusExpression toList(
       .fold(
         Var('[]'),
         (list, element) =>
-          // ((_ListConcat list) element)
-          App(func: App(func: Var('_ListConcat'), arg: list), arg: element),
+          // ((List#Concat list) element)
+          App(func: App(func: Var('List#Concat'), arg: list), arg: element),
       );
 
 LambdaCalculusExpression normalizeListElement(ListElement element) =>
   switch (element) {
     SpreadListElement(:final expr) => toLambdaCalculus(expr),
     ExpressionListElement(:final expr) => App(
-      func: App(func: Var('_ListAdd'), arg: Var('[]')),
+      func: App(func: Var('List#Add'), arg: Var('[]')),
       arg: toLambdaCalculus(expr),
     ),
   };
@@ -130,6 +130,6 @@ final Context loxStandardLibraryContext = {
   '?': forall('a', function_t(bool_t, function_t(var_t('a'), function_t(var_t('a'), var_t('a'))))),
   '[]': emptyList_t,
   'nil': unit_t,
-  '_ListAdd': forall('a', function_t(list_t(var_t('a')), function_t(var_t('a'), list_t(var_t('a'))))),
-  '_ListConcat': forall('a', function_t(list_t(var_t('a')), function_t(list_t(var_t('a')), list_t(var_t('a'))))),
+  'List#Add': forall('a', function_t(list_t(var_t('a')), function_t(var_t('a'), list_t(var_t('a'))))),
+  'List#Concat': forall('a', function_t(list_t(var_t('a')), function_t(list_t(var_t('a')), list_t(var_t('a'))))),
 };
