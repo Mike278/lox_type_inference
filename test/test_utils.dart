@@ -6,8 +6,7 @@ import 'package:test/test.dart';
 
 Expr parseExpression(String source) {
   if (!source.endsWith(';')) source = '$source;';
-  final (tokens, hadError: _) = scanTokens(source, fail);
-  final (statements, hadError: _) = Parser(tokens, fail).parse();
+  final statements = parse(source);
   final expr = (statements.single as ExpressionStatement).expr;
   return expr;
 }

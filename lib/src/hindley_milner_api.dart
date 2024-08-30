@@ -86,7 +86,7 @@ typedef Substitution = Map<String, MonoType>;
 Substitution combine(List<Substitution> ss) => ss.reduce((a, b) => {
   ...a,
   for (final (k, v) in b.pairs())
-    k: a.apply(v)
+    k: a.appliedTo(v)
 });
 
 extension ContextAPI on Context {
@@ -95,21 +95,21 @@ extension ContextAPI on Context {
 
 extension SubstitutionAPI on Substitution {
 
-  MonoType apply(MonoType mono) =>
+  MonoType appliedTo(MonoType mono) =>
     switch (mono) {
       TypeVariable typeVariable => this[typeVariable.name] ?? typeVariable,
       TypeFunctionApplication app => TypeFunctionApplication(
         app.name,
-        app.monoTypes.map(apply).toList(),
+        app.monoTypes.map(appliedTo).toList(),
       )
     };
 
-  Context applyContext(Context context) =>
+  Context appliedToContext(Context context) =>
     context.mapValues(_applyPoly);
 
   PolyType _applyPoly(PolyType poly) =>
     switch (poly) {
-      MonoType m => apply(m),
+      MonoType m => appliedTo(m),
       TypeQuantifier(:final a, :final sigma) => TypeQuantifier(a, _applyPoly(sigma))
     };
 
@@ -145,8 +145,8 @@ Substitution unify(MonoType t1, MonoType t2) {
     Substitution substitution = {};
 
     for (final (a, b) in zip(t1.monoTypes, t2.monoTypes, makePair)) {
-      final a1 = substitution.apply(a);
-      final b1 = substitution.apply(b);
+      final a1 = substitution.appliedTo(a);
+      final b1 = substitution.appliedTo(b);
       final unified = unify(a1, b1);
       substitution = combine([substitution, unified]);
     }

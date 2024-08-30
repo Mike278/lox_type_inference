@@ -9,7 +9,7 @@ import 'test_utils.dart';
 
 void main() {
   
-  final testInferFunction = testInferSourceExpression.partial('infer function');
+  final testInferFunction = testInferSource.partial('infer function');
   
   // arity 0
   testInferFunction(r'\  -> 1',  function_t(var_t('t0'), num_t));
@@ -64,7 +64,7 @@ void main() {
   testInferFunction(r'\x, y, z -> x(y and false, z + 1)',  function_t(function_t(bool_t, function_t(num_t, var_t('t0'))), function_t(bool_t, function_t(num_t, var_t('t0')))));
 
 
-  final testInferCall = testInferSourceExpression.partial('infer call');
+  final testInferCall = testInferSource.partial('infer call');
 
   // arity 0
   testInferCall(r'(\  -> 1)()',  num_t);
@@ -111,7 +111,7 @@ void main() {
   });
 
 
-  final testInferListLiteral = testInferSourceExpression.partial('infer list');
+  final testInferListLiteral = testInferSource.partial('infer list');
 
   testInferListLiteral('[1]', list_t(num_t));
   testInferListLiteral('[1, 2]', list_t(num_t));
@@ -168,13 +168,13 @@ void main() {
   testInferListLiteral('[..[], ..[]]', list_t(var_t('t0')));
 
   test('let', () {
-    expect(inferLetStatementsFromSource(r'let f = \x -> x > 3 ? f(x - 1) : x;'), function_t(num_t, num_t));
-    expect(inferLetStatementsFromSource(r'let x = 1;'), num_t);
-    expect(inferLetStatementsFromSource(r'''
+    expect(inferSource(r'let factorial = \n -> n > 0 ? n * factorial(n - 1) : 1;'), function_t(num_t, num_t));
+    expect(inferSource(r'let x = 1;'), num_t);
+    expect(inferSource(r'''
     let x = 1;
     let y = "h";
     '''), string_t);
-    expect(inferLetStatementsFromSource(r'''
+    expect(inferSource(r'''
     let x = \list -> [..list, 1]; 
     let y = x([4]);
     '''), list_t(num_t));
@@ -182,17 +182,21 @@ void main() {
 
 }
 
-void testInferSourceExpression(String prefix, String source, expectedType) {
-  final line = StackTrace.current
+String? get mainStackTrace =>
+  StackTrace.current
       .toString()
       .split('\n')
       .map(RegExp(r'main \((.+)\)').firstMatch)
       .whereNotNull()
       .single
       .group(1);
+
+
+void testInferSource(String prefix, String source, expectedType) {
+  final line = mainStackTrace;
   test('$prefix $source', () {
     expect(
-      inferExpressionFromSource(source),
+      inferSource(source),
       expectedType,
       reason: line == null ? null : 'test case: $line',
     );
@@ -203,21 +207,22 @@ Map<String, PolyType> newContext() => {
   ...loxStandardLibraryContext,
 };
 
-MonoType inferLetStatementsFromSource(String source) {
+
+MonoType inferSource(String source) {
+  final LambdaCalculusExpression lc;
+
+  if (!source.contains(';')) {
+    final expr = parseExpression(source);
+    lc = toLambdaCalculus(expr);
+  } else {
   final statements = parse(source);
   final lets = [for (final s in statements) if (s is LetDeclaration) s];
   if (lets.isEmpty) fail('source does not contain any let statements');
   if (lets.length < statements.length) fail('source contains non-let statements');
-  final lc = toLet(lets);
-  final context = newContext();
-  final inferred = infer(lc, context);
-  return normalizeTypeVariableIds(inferred);
-}
+    lc = toLet(lets);
+  }
 
-MonoType inferExpressionFromSource(String source) {
-  final expr = parseExpression(source);
   final context = newContext();
-  final lc = toLambdaCalculus(expr);
   final inferred = infer(lc, context);
   return normalizeTypeVariableIds(inferred);
 }
@@ -225,7 +230,7 @@ MonoType inferExpressionFromSource(String source) {
 MonoType infer(LambdaCalculusExpression expr, Context context) {
   TypeVariable.counter = 0;
   final (substitution, t) = w(expr, context);
-  final type = substitution.apply(t);
+  final type = substitution.appliedTo(t);
   return type;
 }
 

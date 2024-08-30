@@ -70,18 +70,34 @@ final emptyList_t = forall('a', list_t(var_t('a')));
       if (type == null) throw Exception('Undefined variable $name');
       return ({}, instantiate(type));
     case Abs(:final param, :final body):
-      final beta = TypeVariable.fresh();
-      final (s1, t1) = w(body, {...context, param: beta});
-      return (s1, s1.apply(function_t(beta, t1)));
+      final paramType = TypeVariable.fresh();
+      final (bodySubstitution, bodyReturnType) = w(body, {
+        ...context,
+        param: paramType,
+      });
+      final funcType = bodySubstitution.appliedTo(function_t(paramType, bodyReturnType));
+      return (bodySubstitution, funcType);
     case App(:final func, :final arg):
-      final (s1, t1) = w(func, context);
-      final (s2, t2) = w(arg, s1.applyContext(context));
-      final beta = TypeVariable.fresh();
-      final s3 = unify(s2.apply(t1), function_t(t2, beta));
-      return (combine([s3, s2, s1]), s3.apply(beta));
+      final (funcSubstitution, funcType) = w(func, context);
+      final (argSubstitution, argType) = w(arg, funcSubstitution.appliedToContext(context));
+      final evaluatesToType = TypeVariable.fresh();
+      final unifiedSubstitution = unify(
+        argSubstitution.appliedTo(funcType),
+        function_t(argType, evaluatesToType),
+      );
+      final overallType = unifiedSubstitution.appliedTo(evaluatesToType);
+      final substitutionsCombined = combine([unifiedSubstitution, argSubstitution, funcSubstitution]);
+      return (substitutionsCombined, overallType);
     case Let(:final name, :final assignment, :final body):
-      final (s1, t1) = w(assignment, context);
-      final (s2, t2) = w(body, {...s1.applyContext(context), name: generalize(context, t1)});
+      final (s1, t1) = w(assignment, {
+        ...context,
+        // [assignment] might reference [name], so add it to the context with a fresh type variable and let it get resolved normally
+        name: generalize(context, TypeVariable.fresh()),
+      });
+      final (s2, t2) = w(body, {
+        ...s1.appliedToContext(context),
+        name: generalize(context, t1),
+      });
       return (combine([s1, s2]), t2);
   }
 }
