@@ -117,11 +117,16 @@ class LoxRuntime {
         for (final (field, expr) in fields.pairs())
           field.lexeme: eval(expr, env),
       },
-      FieldAccess(:final record, :final name) =>
+      RecordGet(:final record, :final name) =>
         switch (evalAs<Map<String, Object?>>(record, name, env)) {
           final map when map.containsKey(name.lexeme) => map[name.lexeme],
           _ => throw LoxRuntimeException(name, "Record doesn't have a field named ${name.lexeme}")
         },
+      RecordUpdate(:final dotdot, :final record, :final newFields) => {
+        ...evalAs<Map<String, Object?>>(record, dotdot, env),
+        for (final (label, value) in newFields.pairs())
+          label.lexeme: eval(value, env),
+      },
       Lambda(:final params, :final body) => newLoxFunction(() => env, params, body),
     };
   }

@@ -45,3 +45,18 @@ print user2.name;
 let emptyRecord = {};
 print emptyRecord;
 print {};
+
+let r1 = {a: "a"};
+let r2 = {..r1, b: false};
+let r3 = {..r1, b: true, c: 1};
+let r4 = {..r1};
+let r5 = {..r1, a: "b"};
+let r6 = {..r1, a: true};
+print r1;
+print r2;
+print r3;
+print r2.b;
+print r3.b;
+print r4;
+print r5;
+print r6;

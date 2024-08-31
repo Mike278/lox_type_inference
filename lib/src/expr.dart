@@ -128,11 +128,19 @@ class Record extends Expr with EquatableMixin {
   Record(this.closingBrace, this.fields);
   @override get props => [closingBrace, fields];
 }
-class FieldAccess extends Expr with EquatableMixin {
+class RecordGet extends Expr with EquatableMixin {
   final Expr record;
   final Token name;
-  FieldAccess(this.record, this.name);
+  RecordGet(this.record, this.name);
   @override get props => [record, name];
+}
+class RecordUpdate extends Expr with EquatableMixin {
+  final Token dotdot;
+  final Expr record;
+  final Map<Token, Expr> newFields;
+  final Token closingBrace;
+  RecordUpdate(this.dotdot, this.record, this.newFields, this.closingBrace);
+  @override get props => [dotdot, record, newFields, closingBrace];
 }
 class ListLiteral extends Expr with EquatableMixin {
   final Token closingBracket;

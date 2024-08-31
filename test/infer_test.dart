@@ -411,6 +411,72 @@ void main() {
     expect(inferSource(source), list_t(num_t));
   });
 
+
+  test('record update', () {
+
+    expect(inferSource(r'''
+      let r1 = {a: "a"};
+      let r2 = {..r1, b: false};
+    '''), record_t({'a': string_t, 'b': bool_t}));
+    expect(inferSource(r'''
+      let r1 = {a: "a"};
+      let r2 = {..r1, b: false};
+      let r3 = {..r1, b: true, c: 1};
+    '''), record_t({'a': string_t, 'b': bool_t, 'c': num_t}));
+    expect(inferSource(r'''
+      let r1 = {a: "a"};
+      let r2 = {..r1, b: false};
+      let r3 = {..r1, b: true, c: 1};
+      let r4 = {..r1};
+    '''), record_t({'a': string_t}));
+    expect(inferSource(r'''
+      let r1 = {};
+      let r2 = {..r1};
+    '''), record_empty_t);
+    expect(inferSource(r'''
+    \r -> {..r, one: "one"}
+    '''), function_t(t0, record_extension_t(t0, {'one': string_t})));
+    expect(inferSource(r'''
+    \r -> {..r, one: "one", two: 2}
+    '''), function_t(t0, record_extension_t(t0, {'one': string_t, 'two': num_t})));
+    expect(inferSource(r'''
+    let f = \r -> {..r, one: "one", two: 2};
+    f({hello: 1});
+    '''), record_t({'hello': num_t, 'one': string_t, 'two': num_t}));
+    expect(inferSource(r'''
+    let f = \r -> {..r, one: "one", two: 2};
+    f({hello: 1});
+    f({a: false});
+    '''), record_t({'a': bool_t, 'one': string_t, 'two': num_t}));
+    expect(inferSource(r'''
+    let f = \r -> {..r, one: "one", two: 2};
+    f({hello: 1}).one;
+    f({a: false}).two;
+    '''), num_t);
+    expect(inferSource(r'''
+    let f = \r -> {..r, one: "one", two: 2};
+    f({hello: 1}).hello;
+    '''), num_t);
+    expect(inferSource(r'''
+    let f = \r -> {..r, one: "one", two: 2};
+    f({hello: 1}).hello;
+    f({a: false}).a;
+    '''), bool_t);
+    expect(inferSource(r'''
+    let f = \r -> {..r, one: "one", two: 2};
+    f({one: "hello"}).one;
+    '''), string_t);
+
+    // todo: bumping up against the "feature" of duplicate labels - maybe just add an implicit retraction before extension?
+    expect(inferSource(r'''
+    let f = \r -> {..r, one: "one", two: 2};
+    f({one: 1});
+    '''), record_t({'one': num_t, 'two': num_t}), skip: 'todo: decide how to handle duplicate labels');
+    expect(inferSource(r'''
+    let f = \r -> {..r, one: "one", two: 2};
+    f({one: 1}).one;
+    '''), num_t, skip: 'todo: decide how to handle duplicate labels');
+  });
 }
 
 String? get mainStackTrace =>

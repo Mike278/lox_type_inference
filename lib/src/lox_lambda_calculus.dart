@@ -52,11 +52,21 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
             record,
           ),
         ),
-    FieldAccess(:final record, :final name) =>
+    RecordGet(:final record, :final name) =>
         RecordSelection(
           name.lexeme,
           toLambdaCalculus(record),
         ),
+
+    RecordUpdate(:final record, :final newFields) =>
+      newFields.fold(
+        toLambdaCalculus(record),
+        (record, label, field) => RecordExtension(
+          label.lexeme,
+          toLambdaCalculus(field),
+          record,
+        ),
+      ),
 
     Lambda(body: FunctionBody(body: Block())) ||
     Call(args: ArgsWithPlaceholder()) =>

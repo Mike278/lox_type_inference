@@ -92,5 +92,13 @@ null
 1
 {}
 {}
+{a: a}
+{a: a, b: false}
+{a: a, b: true, c: 1}
+false
+true
+{a: a}
+{a: b}
+{a: true}
 global
 global

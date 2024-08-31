@@ -376,7 +376,7 @@ class Parser {
         }
       } else if (matchFirst(TokenType.DOT)) {
         final fieldName = consume(TokenType.IDENTIFIER, "Expected field name");
-        expr = FieldAccess(expr, fieldName);
+        expr = RecordGet(expr, fieldName);
       } else {
         break;
       }
@@ -389,18 +389,35 @@ class Parser {
   Expr recordLiteral() {
     final fields = <Token, Expr>{};
     var first = true;
+    ({Token dotdot, Expr record})? update;
     while (!check(TokenType.CLOSE_BRACE) && !isAtEnd()) {
       if (!first) consume(TokenType.COMMA, 'Expected comma between record field declarations.');
-      first = false;
-      final name = consume(TokenType.IDENTIFIER, 'Expected field name.');
-      if (fields.containsKey(name)) {
-        throw newParseError(name, 'Duplicate field name');
+      if (matchFirst(TokenType.DOTDOT)) {
+
+        // todo: relax these constraints and transform into multiple record updates?
+        if (update != null) throw newParseError(previous(), 'Can only update 1 record');
+        if (!first) throw newParseError(previous(), 'The record being updated must be the first entry.');
+
+        first = false;
+        update = (
+          dotdot: previous(),
+          record: expression(),
+        );
+      } else {
+        first = false;
+        final name = consume(TokenType.IDENTIFIER, 'Expected field name.');
+        if (fields.containsKey(name)) {
+          throw newParseError(name, 'Duplicate field name');
+        }
+        consume(TokenType.COLON, "Expected ':' between field name and value.");
+        final value = expression();
+        fields[name] = value;
       }
-      consume(TokenType.COLON, "Expected ':' between field name and value.");
-      final value = expression();
-      fields[name] = value;
     }
     final closingBrace = consume(TokenType.CLOSE_BRACE, "Expected '}' after record literal.");
+    if (update case (:final dotdot, :final record)?) {
+      return RecordUpdate(dotdot, record, fields, closingBrace);
+    }
     return Record(closingBrace, fields);
   }
 
