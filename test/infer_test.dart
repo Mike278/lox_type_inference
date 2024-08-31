@@ -269,6 +269,7 @@ void main() {
   });
 
   final testInferRecord = testInferSource.partial('infer record');
+  testInferRecord('let y = {};', record_empty_t);
   testInferRecord('let y = {foo: "foo"};', record_t({'foo': string_t}));
   testInferRecord('let y = {foo: "foo"}; let x = y.foo;', string_t);
   testInferRecord(r'let double = \x -> x * 2; let y = {foo: "foo", bar: double(4)};', record_t({'foo': string_t, 'bar': num_t}));

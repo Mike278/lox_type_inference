@@ -41,3 +41,7 @@ print user2.first;
 print user2.last;
 print user2.nested.another;
 print user2.name;
+
+let emptyRecord = {};
+print emptyRecord;
+print {};

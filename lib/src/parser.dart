@@ -389,7 +389,7 @@ class Parser {
   Expr recordLiteral() {
     final fields = <Token, Expr>{};
     var first = true;
-    do {
+    while (!check(TokenType.CLOSE_BRACE) && !isAtEnd()) {
       if (!first) consume(TokenType.COMMA, 'Expected comma between record field declarations.');
       first = false;
       final name = consume(TokenType.IDENTIFIER, 'Expected field name.');
@@ -399,7 +399,7 @@ class Parser {
       consume(TokenType.COLON, "Expected ':' between field name and value.");
       final value = expression();
       fields[name] = value;
-    } while (!check(TokenType.CLOSE_BRACE) && !isAtEnd());
+    }
     final closingBrace = consume(TokenType.CLOSE_BRACE, "Expected '}' after record literal.");
     return Record(closingBrace, fields);
   }
