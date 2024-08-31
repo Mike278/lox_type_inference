@@ -2,6 +2,7 @@
 import 'package:lox/src/expr.dart';
 import 'package:lox/src/hindley_milner_api.dart';
 import 'package:lox/src/scanner.dart';
+import 'package:lox/src/utils.dart';
 
 import 'hindley_milner_lambda_calculus.dart';
 
@@ -42,10 +43,23 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
     ListLiteral(:final elements, :final closingBracket) =>
         toList(elements, closingBracket),
 
-    Lambda(body: FunctionBody(body: Block()))
-    || Call(args: ArgsWithPlaceholder())
-    || Record()
-    || FieldAccess() =>
+    Record(:final fields) =>
+        fields.fold(
+          RecordEmpty(),
+          (record, label, field) => RecordExtension(
+            label.lexeme,
+            toLambdaCalculus(field),
+            record,
+          ),
+        ),
+    FieldAccess(:final record, :final name) =>
+        RecordSelection(
+          name.lexeme,
+          toLambdaCalculus(record),
+        ),
+
+    Lambda(body: FunctionBody(body: Block())) ||
+    Call(args: ArgsWithPlaceholder()) =>
         throw 'unsupported $loxExpression',
   }
 ;
@@ -132,4 +146,9 @@ final Context loxStandardLibraryContext = {
   'nil': unit_t,
   'List#Add': forall('a', function_t(list_t(var_t('a')), function_t(var_t('a'), list_t(var_t('a'))))),
   'List#Concat': forall('a', function_t(list_t(var_t('a')), function_t(list_t(var_t('a')), list_t(var_t('a'))))),
+  'List' : forall('a', forall('b', forall('c', record_t({
+    'first': function_t(list_t(var_t('a')), var_t('a')),
+    'rest': function_t(list_t(var_t('b')), list_t(var_t('b'))),
+    'empty': function_t(list_t(var_t('c')), bool_t),
+  })))),
 };

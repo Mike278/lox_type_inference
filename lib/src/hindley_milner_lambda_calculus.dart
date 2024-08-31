@@ -1,4 +1,5 @@
 import 'package:lox/src/hindley_milner_api.dart';
+import 'package:lox/src/utils.dart';
 
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: constant_identifier_names
@@ -51,6 +52,31 @@ class Let extends LambdaCalculusExpression {
   String toString() => 'let $name = $assignment in $body';
 }
 
+class RecordEmpty extends LambdaCalculusExpression {}
+class RecordSelection extends LambdaCalculusExpression {
+  final String label;
+  final LambdaCalculusExpression record;
+  RecordSelection(this.label, this.record);
+
+  @override String toString() => '$record.$label';
+}
+class RecordExtension extends LambdaCalculusExpression {
+  final String label;
+  final LambdaCalculusExpression newField;
+  final LambdaCalculusExpression record;
+
+  RecordExtension(this.label, this.newField, this.record);
+
+  @override String toString() => ' { ..$record, $label = $newField }';
+}
+class RecordRestriction extends LambdaCalculusExpression {
+  final String label;
+  final LambdaCalculusExpression record;
+  RecordRestriction(this.label, this.record);
+
+  @override String toString() => '{$record - $label}';
+}
+
 const bool_t = TypeFunctionApplication('Bool', []);
 const num_t = TypeFunctionApplication('Num', []);
 const string_t = TypeFunctionApplication('String', []);
@@ -60,6 +86,16 @@ final function_t = (MonoType from, MonoType to) => TypeFunctionApplication('Func
 final var_t = TypeVariable.new;
 final forall = TypeQuantifier.new;
 final emptyList_t = forall('a', list_t(var_t('a')));
+final record_empty_t = TypeRowEmpty();
+final record_t = (Map<String, MonoType> fields) => record_extension_t(TypeRowEmpty(), fields);
+final record_extension_t = (MonoType row, Map<String, MonoType> fields) =>
+  fields.pairs().fold(
+    row,
+    (row, pair) => TypeRowExtend(
+      newEntry: pair,
+      row: row,
+    ),
+  );
 
 (Substitution, MonoType) w(LambdaCalculusExpression expr, Context context) {
   switch (expr) {
@@ -99,5 +135,54 @@ final emptyList_t = forall('a', list_t(var_t('a')));
         name: generalize(context, t1),
       });
       return (combine([s1, s2]), t2);
+    case RecordEmpty():
+      return ({}, instantiate(record_empty_t));
+    case RecordSelection(:final label, :final record):
+      final (recordSubstitution, recordType) = w(record, context);
+      final restRowType = TypeVariable.fresh();
+      final fieldType = TypeVariable.fresh();
+      final paramType = recordSubstitution.appliedTo(TypeRowExtend(
+          newEntry: (label, fieldType),
+          row: restRowType,
+      ));
+      final unifiedSubstitution = unify(
+        paramType,
+        recordType,
+      );
+      final allSubstitutions = combine([recordSubstitution, unifiedSubstitution]);
+      final returnType = unifiedSubstitution.appliedTo(fieldType);
+      return (allSubstitutions, returnType);
+
+    case RecordExtension(:final label, :final newField, :final record):
+      final (fieldSubstitution, fieldType) = w(newField, context);
+      final (recordSubstitution, recordType) = w(record, fieldSubstitution.appliedToContext(context));
+
+      final restRowType = TypeVariable.fresh();
+      final param1Type = TypeVariable.fresh();
+      final returnType = recordSubstitution.appliedTo(TypeRowExtend(
+        newEntry: (label, param1Type),
+        row: restRowType,
+      ));
+
+      final sub1 = unify(
+        param1Type,
+        fieldType,
+      );
+      final sub2 = unify(
+        restRowType,
+        recordType,
+      );
+
+      final substitutionsCombined = combine([
+        sub2,
+        sub1,
+        recordSubstitution,
+        fieldSubstitution,
+      ]);
+
+      final overallType = substitutionsCombined.appliedTo(returnType);
+      return (substitutionsCombined, overallType);
+    case RecordRestriction():
+        throw 'todo';
   }
 }
