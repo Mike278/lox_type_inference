@@ -470,15 +470,52 @@ void main() {
     let f = \r -> true ? {..r, x: 2} : {..r, y: 2};
     '''), isException(contains('recursive row type')));
 
-    // todo: bumping up against the "feature" of duplicate labels - maybe just add an implicit retraction before extension?
     expect(inferSource(r'''
-    let f = \r -> {..r, one: "one", two: 2};
-    f({one: 1});
-    '''), record_t({'one': num_t, 'two': num_t}), skip: 'todo: decide how to handle duplicate labels');
+    let named = \r, name -> {..r, name: name};
+    let x = {title: "a", name: "some name"};
+    let y = named(x, "updated");
+    '''), record_allow_dupe_labels_t(record_empty_t, [('title', string_t), ('name', string_t), ('name', string_t)]));
     expect(inferSource(r'''
-    let f = \r -> {..r, one: "one", two: 2};
-    f({one: 1}).one;
-    '''), num_t, skip: 'todo: decide how to handle duplicate labels');
+    let named = \r, name -> {..r, name: name};
+    let x = {title: "a", name: "some name"};
+    let y = named(x, "updated");
+    print y.name;
+    '''), string_t);
+    expect(inferSource(r'''
+    let named = \r, name -> {..r, name: name};
+    let x = {title: "a", name: 42};
+    let y = named(x, "updated");
+    print y.name;
+    '''), string_t);
+    expect(inferSource(r'''
+    let named = \r, name -> {..r, name: name};
+    let x = {title: "a", name: "a"};
+    let y = named(x, 42);
+    print y.name;
+    '''), num_t);
+    expect(inferSource(r'''
+    let incrX = \r -> {..r, x: r.x+1};
+    let point1 = {y: 1, x: 0};
+    let point2 = incrX(point1);
+    let point3 = incrX(point2);'''), record_allow_dupe_labels_t(record_empty_t, [
+      ('y', num_t),
+      ('x', num_t),
+      ('x', num_t),
+      ('x', num_t),
+    ]));
+    expect(inferSource(r'''
+    let takesInt = \x -> x+1;
+    let takesList = \x -> [..x];
+    let takesBool = \x -> x or false;
+    let a = {x: 0};
+    let b = {..a, x: []};
+    let c = {..a, x: false};
+    let d = {..b, x: "abc"};
+    takesInt(a.x);
+    takesList(b.x);
+    takesBool(c.x);
+    d.x;
+    '''), string_t);
   });
 }
 

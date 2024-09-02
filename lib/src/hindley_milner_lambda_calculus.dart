@@ -69,13 +69,6 @@ class RecordExtension extends LambdaCalculusExpression {
 
   @override String toString() => ' { ..$record, $label = $newField }';
 }
-class RecordRestriction extends LambdaCalculusExpression {
-  final String label;
-  final LambdaCalculusExpression record;
-  RecordRestriction(this.label, this.record);
-
-  @override String toString() => '{$record - $label}';
-}
 
 const bool_t = TypeFunctionApplication('Bool', []);
 const num_t = TypeFunctionApplication('Num', []);
@@ -88,8 +81,9 @@ final forall = TypeQuantifier.new;
 final emptyList_t = forall('a', list_t(var_t('a')));
 final record_empty_t = TypeRowEmpty();
 final record_t = (Map<String, MonoType> fields) => record_extension_t(TypeRowEmpty(), fields);
-final record_extension_t = (MonoType row, Map<String, MonoType> fields) =>
-  fields.pairs().fold(
+final record_extension_t = (MonoType row, Map<String, MonoType> fields) => record_allow_dupe_labels_t(row, fields.pairs());
+final record_allow_dupe_labels_t = (MonoType row, List<(String, MonoType)> fields) =>
+  fields.fold(
     row,
     (row, pair) => TypeRowExtend(
       newEntry: pair,
@@ -182,7 +176,5 @@ final record_extension_t = (MonoType row, Map<String, MonoType> fields) =>
 
       final overallType = substitutionsCombined.appliedTo(returnType);
       return (substitutionsCombined, overallType);
-    case RecordRestriction():
-        throw 'todo';
   }
 }
