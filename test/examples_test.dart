@@ -42,6 +42,11 @@ void main() {
   final prints = [];
   final (env, :hadRuntimeError) = LoxRuntime(
     errors.add,
+    (keyword, source, value) => expect(
+      value,
+      isTrue,
+      reason: 'lox `assert` failed: $source',
+    ),
     (print: prints.add),
   ).interpret(
     statements,

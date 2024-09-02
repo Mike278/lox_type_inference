@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:lox/src/env.dart';
+import 'package:lox/src/interpreter.dart';
 import 'package:lox/src/scanner.dart';
 
 void main(List<String> args) {
@@ -22,8 +23,19 @@ void main(List<String> args) {
   }
 }
 
+void _loxAssert(Token keyword, String source, Object? value) {
+  switch (value) {
+    case true: return;
+    case false: throw LoxRuntimeException(keyword, 'Assertion failed: $source');
+    default: throw LoxRuntimeException(
+      keyword,
+      'Assertion failed: value is not a bool. `$source` evaluates to a `${value.runtimeType}`'
+    );
+  }
+}
+
 RunResult _run(String source, Env env) =>
-  run(source, env, print, (print: print));
+  run(source, env, print, _loxAssert, (print: print));
 
 void runPrompt() {
   var env = Env.global();

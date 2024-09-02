@@ -571,6 +571,7 @@ MonoType _inferSource(String source) {
       LetDeclaration() => s,
       ExpressionStatement(:final expr) => LetDeclaration(newIdentifier('expr'), expr),
       PrintStatement(:final expr) => LetDeclaration(newIdentifier('print'), expr),
+      AssertStatement(:final expr) => LetDeclaration(newIdentifier('assert'), expr),
       ReturnStatement() ||
       Block() ||
       IfStatement() => null,

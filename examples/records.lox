@@ -52,11 +52,41 @@ let r3 = {..r1, b: true, c: 1};
 let r4 = {..r1};
 let r5 = {..r1, a: "b"};
 let r6 = {..r1, a: true};
-print r1;
-print r2;
-print r3;
-print r2.b;
-print r3.b;
-print r4;
-print r5;
-print r6;
+
+assert r1 == {a: "a"};
+assert r2 == {a: "a", b: false};
+assert r2.b == false;
+assert r3 == {a: "a", b: true, c: 1};
+assert r3.b == true;
+assert r4 == {a: "a"};
+assert r5 == {a: "b"};
+assert r6 == {a: true};
+
+
+
+let named = \r, name -> {..r, name: name};
+
+let x1 = {title: "a", name: "some name"};
+let y1 = named(x1, "updated");
+assert x1.name == "some name";
+assert y1.name == "updated";
+
+let x2 = {title: "a", name: 42};
+let y2 = named(x2, "updated");
+assert x2.name == 42;
+assert y2.name == "updated";
+
+let x3 = {title: "a", name: "hello"};
+let y3 = named(x3, 42);
+assert x3.name == "hello";
+assert y3.name == 42;
+
+
+let incrX = \r -> {..r, x: r.x+1};
+let point1 = {y: 1, x: 0};
+let point2 = incrX(point1);
+let point3 = incrX(point2);
+
+assert point1 == {y: 1, x: 0};
+assert point2 == {y: 1, x: 1};
+assert point3 == {y: 1, x: 2};

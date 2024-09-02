@@ -17,6 +17,7 @@ import 'package:lox/src/utils.dart';
 // block          → "{" declaration* "}" ;
 // exprStmt       → expression ";" ;
 // printStmt      → "print" expression ";" ;
+// assertStmt     → "assert" expression ";" ;
 // ifStmt         → "if" expression "then" statement
 //                ( "else" statement )?;
 // returnStmt     → "return" expression? ";" ;
@@ -149,6 +150,7 @@ class Parser {
   //                | returnStmt
   //                | exprStmt
   Statement statement() {
+    if (matchFirst(TokenType.ASSERT)) return assertStatement();
     if (matchFirst(TokenType.PRINT)) return printStatement();
     if (matchFirst(TokenType.OPEN_BRACE)) return block();
     if (matchFirst(TokenType.RETURN)) return returnStatement();
@@ -190,6 +192,16 @@ class Parser {
     final value = expression();
     consume(TokenType.SEMICOLON, "Expected ';' after value.");
     return PrintStatement(value);
+  }
+
+  Statement assertStatement() {
+    var start = current;
+    final keyword = previous();
+    final value = expression();
+    consume(TokenType.SEMICOLON, "Expected ';' after value.");
+    var end = current;
+    final source = tokens.sublist(start, end).map((t) => t.lexeme).join();
+    return AssertStatement(keyword, source, value);
   }
 
   Statement expressionStatement() {

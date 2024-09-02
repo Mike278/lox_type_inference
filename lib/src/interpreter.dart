@@ -24,12 +24,15 @@ typedef RuntimeIO = ({
   void Function(Object?) print,
 });
 
+typedef LoxAssertion = void Function(Token keyword, String source, Object?);
+
 class LoxRuntime {
   
   final ErrorReporter reportError;
+  final LoxAssertion runAssert;
   final RuntimeIO io;
 
-  LoxRuntime(this.reportError, this.io);
+  LoxRuntime(this.reportError, this.runAssert, this.io);
   
   
   (Env, {bool hadRuntimeError}) interpret(List<Statement> statements, Env env) {
@@ -51,6 +54,8 @@ class LoxRuntime {
     switch (statement) {
       case PrintStatement(:final expr):
         io.print(eval(expr, env));
+      case AssertStatement(:final keyword, :final source, :final expr):
+        runAssert(keyword, source, eval(expr, env));
       case ExpressionStatement(:final expr):
         eval(expr, env);
       case LetDeclaration(:final name, :final initializer):

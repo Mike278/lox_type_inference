@@ -14,6 +14,7 @@ RunResult run(
   String source,
   Env env,
   ErrorReporter errorReporter,
+  LoxAssertion runAssert,
   RuntimeIO io,
 ) {
   final (tokens, hadError: hadScanError) = scanTokens(source, errorReporter);
@@ -33,7 +34,7 @@ RunResult run(
   final (
     newEnv,
     :hadRuntimeError,
-  ) = LoxRuntime(errorReporter, io).interpret(
+  ) = LoxRuntime(errorReporter, runAssert, io).interpret(
     statements,
     env,
   );
@@ -172,6 +173,7 @@ String formatError(int line, String atToken, String message) {
 }
 
 final keywords = {
+  'assert' : TokenType.ASSERT,
   'and' :    TokenType.AND,
   'class' :  TokenType.CLASS,
   'else' :   TokenType.ELSE,
@@ -206,7 +208,7 @@ enum TokenType {
   IDENTIFIER, STRING, NUMBER,
 
   // Keywords.
-  AND, CLASS, ELSE, FALSE, FOR, IF, NIL, OR,
+  ASSERT, AND, CLASS, ELSE, FALSE, FOR, IF, NIL, OR,
   PRINT, RETURN, SUPER, THEN, THIS, TRUE, LET, WHILE,
 
   EOF;

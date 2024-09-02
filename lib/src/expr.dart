@@ -171,6 +171,12 @@ class PrintStatement extends Statement {
   final Expr expr;
   PrintStatement(this.expr);
 }
+class AssertStatement extends Statement {
+  final Token keyword;
+  final String source;
+  final Expr expr;
+  AssertStatement(this.keyword, this.source, this.expr);
+}
 class LetDeclaration extends Statement {
   final Token name;
   final Expr initializer;
