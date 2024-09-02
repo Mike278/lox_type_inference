@@ -249,12 +249,27 @@ Substitution unify(MonoType t1, MonoType t2) {
       row: restRow1,
     ) = t1;
     final (rowSubstitution, restRow2) = rewriteRow(t2, label1, fieldType1);
+
+    // from `uni-row` rule: tail(r) !∈ dom(θ`)
+    final tailVar = findTailTypeVariableName(restRow1);
+    if (tailVar != null && rowSubstitution.containsKey(tailVar)) {
+      throw Exception('recursive row type');
+    }
+
     final unifiedSubstitution = unify(rowSubstitution.appliedTo(restRow1), restRow2);
     return combine([rowSubstitution, unifiedSubstitution]);
   }
 
   throw 'Type unification error: $t1 != $t2';
 }
+
+
+String? findTailTypeVariableName(MonoType row) => switch (row) {
+  TypeVariable(:final name) => name,
+  TypeRowEmpty() => null,
+  TypeRowExtend(:final row) => findTailTypeVariableName(row),
+  TypeFunctionApplication() => throw '$row is not a row type',
+};
 
 MonoType instantiate(
   PolyType type, [

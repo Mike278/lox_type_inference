@@ -1,5 +1,5 @@
 import 'package:lox/src/expr.dart';
-import 'package:lox/src/hindley_milner_api.dart';
+import 'package:lox/src/hindley_milner_api.dart' hide contains;
 import 'package:lox/src/hindley_milner_lambda_calculus.dart';
 import 'package:lox/src/lox_lambda_calculus.dart';
 import 'package:lox/src/scanner.dart';
@@ -466,6 +466,9 @@ void main() {
     let f = \r -> {..r, one: "one", two: 2};
     f({one: "hello"}).one;
     '''), string_t);
+    expect(inferSource(r'''
+    let f = \r -> true ? {..r, x: 2} : {..r, y: 2};
+    '''), isException(contains('recursive row type')));
 
     // todo: bumping up against the "feature" of duplicate labels - maybe just add an implicit retraction before extension?
     expect(inferSource(r'''
@@ -504,8 +507,18 @@ Map<String, PolyType> newContext() => {
   ...loxStandardLibraryContext,
 };
 
+Matcher isException(message) =>
+  isA<Exception>().having((e) => e.toString(), 'message', message);
 
-MonoType inferSource(String source) {
+dynamic inferSource(String source) {
+  try {
+    return _inferSource(source);
+  } catch (e) {
+    return e;
+  }
+}
+
+MonoType _inferSource(String source) {
   final LambdaCalculusExpression lc;
 
   if (!source.contains(';')) {

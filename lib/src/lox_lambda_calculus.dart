@@ -145,20 +145,27 @@ LambdaCalculusExpression normalizeListElement(ListElement element) =>
     ),
   };
 
+
+final a = var_t('a');
+final b = var_t('b');
+final c = var_t('c');
+
 final Context loxStandardLibraryContext = {
   for (final symbol in {'+', '-', '*', '/'})   symbol : function_t(num_t, function_t(num_t, num_t)),
   for (final symbol in {'or', 'and'})          symbol : function_t(bool_t, function_t(bool_t, bool_t)),
   for (final symbol in {'>', '>=', '<', '<='}) symbol : function_t(num_t, function_t(num_t, bool_t)),
-  for (final symbol in {'!=', '=='})           symbol : forall('a', function_t(var_t('a'), function_t(var_t('a'), bool_t))),
+  for (final symbol in {'!=', '=='})           symbol : forall('a', function_t(a, function_t(a, bool_t))),
   '!': function_t(bool_t, bool_t),
-  '?': forall('a', function_t(bool_t, function_t(var_t('a'), function_t(var_t('a'), var_t('a'))))),
+  '?': forall('a', function_t(bool_t, function_t(a, function_t(a, a)))),
   '[]': emptyList_t,
   'nil': unit_t,
-  'List#Add': forall('a', function_t(list_t(var_t('a')), function_t(var_t('a'), list_t(var_t('a'))))),
-  'List#Concat': forall('a', function_t(list_t(var_t('a')), function_t(list_t(var_t('a')), list_t(var_t('a'))))),
+  'true': bool_t,
+  'false': bool_t,
+  'List#Add': forall('a', function_t(list_t(a), function_t(a, list_t(a)))),
+  'List#Concat': forall('a', function_t(list_t(a), function_t(list_t(a), list_t(a)))),
   'List' : forall('a', forall('b', forall('c', record_t({
-    'first': function_t(list_t(var_t('a')), var_t('a')),
-    'rest': function_t(list_t(var_t('b')), list_t(var_t('b'))),
-    'empty': function_t(list_t(var_t('c')), bool_t),
+    'first': function_t(list_t(a), a),
+    'rest': function_t(list_t(b), list_t(b)),
+    'empty': function_t(list_t(c), bool_t),
   })))),
 };
