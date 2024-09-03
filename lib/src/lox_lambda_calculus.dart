@@ -6,6 +6,12 @@ import 'package:lox/src/utils.dart';
 
 import 'hindley_milner_lambda_calculus.dart';
 
+var _i = 0;
+Token _synthesizeNewIdentifier(int line) {
+  final id = 'x#${_i++}';
+  return Token(TokenType.IDENTIFIER, id, id, line);
+}
+
 LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpression) {
 
     StringLiteral()                   => Lit(string_t),
@@ -19,6 +25,22 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
 
     Lambda(:final params, body: ArrowExpression(:final body)) =>
         toAbs(params, body),
+
+  Call(
+    :final callee,
+    args: ArgsWithPlaceholder(:final before, :final after),
+    :final closingParen,
+  ) =>
+        switch (_synthesizeNewIdentifier(closingParen.line)) {
+          final param => toAbs(
+              [param],
+              Call(
+                callee,
+                ExpressionArgs([...before, Variable(param), ...after]),
+                closingParen,
+              ),
+            )
+        },
 
     Call(:final callee, args: ExpressionArgs(exprs: final args)) =>
         toApp(callee, args),
@@ -68,8 +90,7 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
         ),
       ),
 
-    Lambda(body: FunctionBody(body: Block())) ||
-    Call(args: ArgsWithPlaceholder()) =>
+    Lambda(body: FunctionBody(body: Block())) =>
         throw 'unsupported $loxExpression',
   }
 ;

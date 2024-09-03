@@ -86,6 +86,13 @@ void main() {
   testInferCall(r'(\x, y -> x)("ok", false)',  string_t);
   testInferCall(r'(\x, y -> y)("ok", false)',  bool_t);
 
+  // placeholder
+  testInferCall(r'let f = \x, y -> (x ? 1 : 0) + y; let f1 = f(false, _);',  function_t(num_t, num_t));
+  testInferCall(r'let f = \x, y -> (x ? 1 : 0) + y; let f1 = f(false, _); f1(1);',  num_t);
+  testInferCall(r'let f = \x, y -> (x ? 1 : 0) + y; let f1 = f(_, 1);',  function_t(bool_t, num_t));
+  testInferCall(r'let f = \x, y -> (x ? 1 : 0) + y; let f1 = f(_, 1); f1(false);',  num_t);
+
+
   // complex
   testInferCall(r'(\x, y -> x(y and false)) (\b -> 1, false)',  num_t);
   testInferCall(r'(\x, y -> x(y and false)) (\b -> b, false)',  bool_t);
