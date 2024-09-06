@@ -190,6 +190,21 @@ void main() {
     let x = \list -> [..list, 1]; 
     let y = x([4]);
     '''), list_t(num_t));
+
+    final f1 = (source: r'\x, y -> List.first(x) + y',       expectedType: function_t(list_t(num_t),  function_t(num_t, num_t)));
+    final f2 = (source: r'\x, y -> List.first(x) or y',      expectedType: function_t(list_t(bool_t), function_t(bool_t, bool_t)));
+    final f3 = (source: r'\x, y -> (true ? x : y) + 1',      expectedType: function_t(num_t,  function_t(num_t, num_t)));
+    final f4 = (source: r'\x, y -> (true ? x : y) or false', expectedType: function_t(bool_t, function_t(bool_t, bool_t)));
+
+    expect(inferSource(f1.source),  f1.expectedType);
+    expect(inferSource(f2.source),  f2.expectedType);
+    expect(inferSource(f3.source),  f3.expectedType);
+    expect(inferSource(f4.source),  f4.expectedType);
+
+    expect(inferSource('let f = ${f1.source};'),  f1.expectedType);
+    expect(inferSource('let f = ${f2.source};'),  f2.expectedType);
+    expect(inferSource('let f = ${f3.source};'),  f3.expectedType);
+    expect(inferSource('let f = ${f4.source};'),  f4.expectedType);
   });
 
   final fold = r'''
@@ -296,6 +311,7 @@ void main() {
   test('infer accessing field of record thats passed in as a parameter', () {
     expect(inferSource(r'\someRecord -> someRecord.bar'), function_t(record_extension_t(t0, {'bar': t1}), t1));
     expect(inferSource(r'\someRecord -> someRecord.bar + 1'), function_t(record_extension_t(t0, {'bar': num_t}), num_t));
+    expect(inferSource(r'\someRecord, someNum -> someRecord.bar + someNum'), function_t(record_extension_t(t0, {'bar': num_t}), function_t(num_t, num_t)));
     expect(inferSource(r'''
     let getAge = \person -> person.age;
     let bob = {age: 100};

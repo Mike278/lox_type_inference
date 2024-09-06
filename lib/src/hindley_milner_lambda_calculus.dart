@@ -116,19 +116,22 @@ final record_allow_dupe_labels_t = (MonoType row, List<(String, MonoType)> field
         function_t(argType, evaluatesToType),
       );
       final overallType = unifiedSubstitution.appliedTo(evaluatesToType);
-      final substitutionsCombined = combine([unifiedSubstitution, argSubstitution, funcSubstitution]);
+      final substitutionsCombined = combine([funcSubstitution, argSubstitution, unifiedSubstitution]);
       return (substitutionsCombined, overallType);
     case Let(:final name, :final assignment, :final body):
-      final (s1, t1) = w(assignment, {
+      final (assignmentSub, assignmentType) = w(assignment, {
         ...context,
         // [assignment] might reference [name], so add it to the context with a fresh type variable and let it get resolved normally
         name: generalize(context, TypeVariable.fresh()),
       });
-      final (s2, t2) = w(body, {
-        ...s1.appliedToContext(context),
-        name: generalize(context, t1),
+      final contextWithAssignment = assignmentSub.appliedToContext(context);
+      final generalizedAssignmentType = generalize(contextWithAssignment, assignmentType);
+      final (bodySub, bodyType) = w(body, {
+        ...contextWithAssignment,
+        name: generalizedAssignmentType,
       });
-      return (combine([s1, s2]), t2);
+      final combined = combine([assignmentSub, bodySub]);
+      return (combined, bodyType);
     case RecordEmpty():
       return ({}, instantiate(record_empty_t));
     case RecordSelection(:final label, :final record):

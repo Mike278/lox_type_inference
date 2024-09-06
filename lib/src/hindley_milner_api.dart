@@ -156,9 +156,9 @@ extension PolyTypeAPI on PolyType {
 typedef Context = Map<String, PolyType>;
 typedef Substitution = Map<String, MonoType>;
 Substitution combine(List<Substitution> ss) => ss.reduce((a, b) => {
-  ...a,
-  for (final (k, v) in b.pairs())
-    k: a.appliedTo(v)
+  ...b,
+  for (final (k, v) in a.pairs())
+    k: b.appliedTo(v)
 });
 
 extension ContextAPI on Context {
