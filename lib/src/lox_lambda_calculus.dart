@@ -190,3 +190,60 @@ final Context loxStandardLibraryContext = {
     'empty': function_t(list_t(c), bool_t),
   })))),
 };
+
+
+MonoType normalizeTypeVariableIds(MonoType t) {
+  final namesSorted =
+    collectTypeVariables({}, t)
+      .map(
+        (name) => switch (extractTypeVariableId(name)) {
+          null => null,
+          final id => (name, id),
+        },
+      )
+      .whereNotNull()
+      .toList()
+      .sorted((a, b) => a.$2.compareTo(b.$2))
+      .map((x) => x.$1)
+      .toList();
+
+  String lookup(String name) =>
+    namesSorted.contains(name)
+      ? 't${namesSorted.indexOf(name)}'
+      : name;
+
+  return rename(t, lookup);
+}
+
+MonoType rename(MonoType t, String Function(String) lookup) => switch (t) {
+  TypeVariable(:final name) => TypeVariable(lookup(name)),
+  TypeFunctionApplication(:final name, :final monoTypes) => TypeFunctionApplication(
+    lookup(name),
+    [ for (final t in monoTypes) rename(t, lookup) ]
+  ),
+  TypeRowEmpty() => t,
+  TypeRowExtend(:final label, :final type, :final row) => TypeRowExtend(
+    newEntry: (label, rename(type, lookup)),
+    row: rename(row, lookup),
+  ),
+};
+
+Set<String> collectTypeVariables(Set<String> state, MonoType t) => {
+  ...state,
+  ...switch (t) {
+    TypeVariable(:final name) => {name},
+    TypeFunctionApplication(:final name, :final monoTypes) => {
+      name,
+      for (final t in monoTypes)
+        ...collectTypeVariables(state, t),
+    },
+    TypeRowEmpty() => { },
+    TypeRowExtend(:final type, :final row) => {
+      ...collectTypeVariables(state, type),
+      ...collectTypeVariables(state, row),
+    }
+  }
+};
+
+int? extractTypeVariableId(String s) =>
+  s.startsWith('t') ? int.parse(s.substring(1)) : null;
