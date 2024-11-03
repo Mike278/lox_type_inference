@@ -7,9 +7,9 @@ import 'package:lox/src/utils.dart';
 import 'hindley_milner_lambda_calculus.dart';
 
 var _i = 0;
-Token _synthesizeNewIdentifier(int line) {
+Token _synthesizeNewIdentifier(int line, int offset) {
   final id = 'x#${_i++}';
-  return Token(TokenType.IDENTIFIER, id, id, line);
+  return Token(TokenType.IDENTIFIER, id, id, line, offset);
 }
 
 LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpression) {
@@ -26,12 +26,12 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
     Lambda(:final params, body: ArrowExpression(:final body)) =>
         toAbs(params, body),
 
-  Call(
-    :final callee,
-    args: ArgsWithPlaceholder(:final before, :final after),
-    :final closingParen,
-  ) =>
-        switch (_synthesizeNewIdentifier(closingParen.line)) {
+    Call(
+      :final callee,
+      args: ArgsWithPlaceholder(:final before, :final after),
+      :final closingParen,
+    ) =>
+        switch (_synthesizeNewIdentifier(closingParen.line, closingParen.offset)) {
           final param => toAbs(
               [param],
               Call(

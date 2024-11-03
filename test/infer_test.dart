@@ -588,7 +588,7 @@ MonoType _inferSource(String source) {
     var i = 0;
     final newIdentifier = (String prefix) {
       final id = '$prefix#${i++}';
-      return Token(TokenType.IDENTIFIER, id, id, -1);
+      return Token(TokenType.IDENTIFIER, id, id, -1, -1);
     };
     LetDeclaration? tryConvert(Statement s) => switch (s) {
       LetDeclaration() => s,

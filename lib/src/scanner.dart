@@ -66,23 +66,29 @@ String formatError(int line, String atToken, String message) {
   int start = 0;
   int current = 0;
   int line = 1;
+  int offset = 0;
 
   void addToken(TokenType type, [Object? literal]) {
     final text = source.substring(start, current);
-    tokens.add(Token(type, text, literal, line));
+    tokens.add(Token(type, text, literal, line, offset - (current - start)));
   }
 
   bool match(String expected) {
     if (current >= source.length) return false;
     if (source[current] != expected) return false;
     current++;
+    offset++;
     return true;
   }
 
   void string() {
     while (current < source.length && source[current] != '"') {
-      if (source[current] == '\n') line++;
+      if (source[current] == '\n') {
+        line++;
+        offset = 0;
+      }
       current++;
+      offset++;
     }
 
     if (current >= source.length) {
@@ -92,6 +98,7 @@ String formatError(int line, String atToken, String message) {
 
     // The closing ".
     current++;
+    offset++;
 
     // Trim the surrounding quotes.
     final stringValue = source.substring(start + 1, current - 1);
@@ -101,6 +108,7 @@ String formatError(int line, String atToken, String message) {
   void consumeDigits() {
     while (current < source.length && source.codeUnitAt(current).isDigit) {
       current++;
+      offset++;
     }
   }
 
@@ -108,6 +116,7 @@ String formatError(int line, String atToken, String message) {
     consumeDigits();
     if (current+1 < source.length && source[current] == '.' && source.codeUnitAt(current+1).isDigit) {
       current++;
+      offset++;
       consumeDigits();
     }
     final n = num.parse(source.substring(start, current));
@@ -117,6 +126,7 @@ String formatError(int line, String atToken, String message) {
   void identifier() {
     while (current < source.length && source.codeUnitAt(current).isAlphaNumeric) {
       current++;
+      offset++;
     }
     final text = source.substring(start, current);
     addToken(keywords[text] ?? TokenType.IDENTIFIER);
@@ -124,6 +134,7 @@ String formatError(int line, String atToken, String message) {
 
   void scanToken() {
     final c = source[current++];
+    offset++;
     switch (c) {
       case '_': addToken(TokenType.UNDERSCORE);
       case '(': addToken(TokenType.OPEN_PAREN);
@@ -147,7 +158,7 @@ String formatError(int line, String atToken, String message) {
       case '<': addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
       case '>': addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
       case '"': string();
-      case '\n': line++;
+      case '\n': line++; offset = 0;
       case ' ' || '\r' || '\t': break;
       case String(codeUnits: [Char(isDigit: true)]): number();
       case String(codeUnits: [Char(isAlpha: true)]): identifier();
@@ -155,6 +166,7 @@ String formatError(int line, String atToken, String message) {
         if (match('/')) {
           while (current < source.length && source[current] != '\n') {
             current++;
+            offset++;
           }
         } else {
           addToken(TokenType.SLASH);
@@ -168,7 +180,7 @@ String formatError(int line, String atToken, String message) {
     scanToken();
   }
 
-  tokens.add(Token(TokenType.EOF, '', null, line));
+  tokens.add(Token(TokenType.EOF, '', null, line, 0));
   return (tokens, hadError: hadError);
 }
 
@@ -219,13 +231,14 @@ class Token with EquatableMixin {
   final String lexeme;
   final Object? literal;
   final int line;
+  final int offset;
 
-  Token(this.type, this.lexeme, this.literal, this.line);
+  Token(this.type, this.lexeme, this.literal, this.line, this.offset);
 
   @override
-  String toString() => [type.name, lexeme, if (literal != null) literal, '(ln$line)'].join(' ');
+  String toString() => [type.name, lexeme, if (literal != null) literal, '(ln$line:${offset})'].join(' ');
 
-  @override get props => [type, lexeme, literal, line];
+  @override get props => [type, lexeme, literal, line, offset];
 }
 
 const zero = 48;
