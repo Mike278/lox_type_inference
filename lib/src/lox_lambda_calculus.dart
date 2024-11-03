@@ -45,6 +45,9 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
     Call(:final callee, args: ExpressionArgs(exprs: final args)) =>
         toApp(callee, args),
 
+    Binary(:final left, :final right, operator: Token(type: TokenType.PIPELINE)) =>
+        toApp(right, [left]),
+
     LogicalAnd(:final left, :final right, :final keyword)
     || LogicalOr(:final left, :final right, :final keyword)
     || Binary(:final left, :final right, operator: final keyword) =>
