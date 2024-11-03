@@ -9,6 +9,8 @@ environment:
 # Add regular dependencies here.
 dependencies:
   web: ^0.5.1
+  lox:
+    path: ../
 
 dev_dependencies:
   build_runner: ^2.4.8

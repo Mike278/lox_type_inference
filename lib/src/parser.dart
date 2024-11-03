@@ -87,9 +87,7 @@ class Parser {
     throw newParseError(peek(), message);
   }
 
-  var _hadError = false;
   ParseError newParseError(Token token, String message) {
-    _hadError = true;
     if (token.type == TokenType.EOF) {
       _errorReporter(formatError(token.line, ' at end', message));
     } else {
@@ -119,11 +117,15 @@ class Parser {
   }
 
   (List<Statement>, {bool hadError}) parse() {
-    final statements = [
-      for (;!isAtEnd();)
-        declaration()
-    ];
-    return (statements, hadError: _hadError);
+    try {
+      final statements = [
+        for (;!isAtEnd();)
+          declaration()
+      ];
+      return (statements, hadError: false);
+    } on ParseError {
+      return ([], hadError: true);
+    }
   }
 
   // declaration    → letDecl

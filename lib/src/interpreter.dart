@@ -26,6 +26,17 @@ typedef RuntimeIO = ({
 
 typedef LoxAssertion = void Function(Token keyword, String source, Object?);
 
+void defaultLoxAssert(Token keyword, String source, Object? value) {
+  switch (value) {
+    case true: return;
+    case false: throw LoxRuntimeException(keyword, 'Assertion failed: $source');
+    default: throw LoxRuntimeException(
+      keyword,
+      'Assertion failed: value is not a bool. `$source` evaluates to a `${value.runtimeType}`'
+    );
+  }
+}
+
 class LoxRuntime {
   
   final ErrorReporter reportError;
