@@ -165,11 +165,13 @@ class SpreadListElement with EquatableMixin implements ListElement {
 sealed class Statement {}
 class ExpressionStatement extends Statement {
   final Expr expr;
-  ExpressionStatement(this.expr);
+  final Token semicolon;
+  ExpressionStatement(this.expr, this.semicolon);
 }
 class PrintStatement extends Statement {
   final Expr expr;
-  PrintStatement(this.expr);
+  final Token keyword;
+  PrintStatement(this.expr, this.keyword);
 }
 class AssertStatement extends Statement {
   final Token keyword;

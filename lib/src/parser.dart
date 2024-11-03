@@ -191,9 +191,10 @@ class Parser {
   }
 
   Statement printStatement() {
+    final keyword = previous();
     final value = expression();
     consume(TokenType.SEMICOLON, "Expected ';' after value.");
-    return PrintStatement(value);
+    return PrintStatement(value, keyword);
   }
 
   Statement assertStatement() {
@@ -208,8 +209,8 @@ class Parser {
 
   Statement expressionStatement() {
     final value = expression();
-    consume(TokenType.SEMICOLON, "Expected ';' after value.");
-    return ExpressionStatement(value);
+    final semicolon = consume(TokenType.SEMICOLON, "Expected ';' after value.");
+    return ExpressionStatement(value, semicolon);
   }
 
   // expression     → ternary;
