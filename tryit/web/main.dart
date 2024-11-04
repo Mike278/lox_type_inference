@@ -191,6 +191,13 @@ final codeMirrorOptions = {
   'lineNumbers': true,
   'theme': 'ambiance',
   'indentUnit': 4,
+  'highlightSelectionMatches': true,
+  'matchBrackets': true,
+  'autoCloseBrackets': true,
+  'autoCloseTags': {
+    'whenOpening': true,
+    'whenClosing': true,
+  },
 };
 
 
