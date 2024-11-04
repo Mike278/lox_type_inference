@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'dart:js_interop';
 
 import 'package:web/web.dart' as web;
 import 'package:lox/src/scanner.dart';
+import 'package:lox/src/expr.dart';
 import 'package:lox/src/parser.dart';
 import 'package:lox/src/interpreter.dart';
+import 'package:lox/src/lox_lambda_calculus.dart';
+import 'package:lox/src/hindley_milner_api.dart';
+import 'package:lox/src/hindley_milner_lambda_calculus.dart';
 import 'package:lox/src/env.dart';
 import './codemirror.dart';
 
@@ -20,6 +25,28 @@ void main() {
   web.document.getElementById('run-button')!.onClick.listen((_) {
     outputElement.text = exec(editor.getDoc().getValue().trim());
   });
+
+  final clearMarks = <void Function()>[];
+  Timer? debounce;
+  void queueTypecheck() {
+    debounce?.cancel();
+    debounce = Timer(const Duration(milliseconds: 300), () {
+      for (var clear in clearMarks) {
+        clear();
+      }
+      clearMarks.clear();
+      final (summary, marks) = typecheck(editor.getDoc().getValue().trim());
+      outputElement.text = summary;
+      final doc = editor.getDoc();
+      for (final (:from, :to, options) in marks) {
+        final mark = doc.markText(from, to, options);
+        clearMarks.add(() => mark.clear());
+      }
+    });
+  }
+
+  editor.on('change', (JSAny? _, JSAny? __) { queueTypecheck(); }.toJS);
+  queueTypecheck();
 }
 
 final sample = r'''
@@ -165,3 +192,100 @@ final codeMirrorOptions = {
   'theme': 'ambiance',
   'indentUnit': 4,
 };
+
+
+(String, List<MarkText>) typecheck(String source) {
+
+  final marks = <MarkText>[];
+  final output = [];
+  reportError(kind) => (err) => output.add('$kind:\n$err');
+
+  final (tokens, hadError: hadScanError) = scanTokens(source, reportError('scan error'));
+  final (statements, hadError: hadParseError) = Parser(tokens, reportError('parse error')).parse();
+
+  if (!hadParseError && !hadScanError) {
+
+    unsupported(token, kind) {
+      final msg = 'type checking $kind statements is not supported';
+      final (:from, :to) = toCodeMirrorPositions(token);
+      marks.add((
+        from: from,
+        to: to,
+        MarkTextOptions(
+          className: 'type-error',
+          title: msg,
+        ),
+      ));
+    }
+
+    final lets = <LetDeclaration>[];
+
+    for (final statement in statements) {
+      switch (statement) {
+        case LetDeclaration(:final initializer, :final name):
+          lets.add(statement);
+          marks.add(runInference(name, lets, initializer));
+        case ExpressionStatement(:final expr, :final semicolon):
+          lets.add(LetDeclaration(semicolon, expr));
+          marks.add(runInference(semicolon, lets, expr));
+        case PrintStatement(:final expr, :final keyword):
+          lets.add(LetDeclaration(keyword, expr));
+          marks.add(runInference(keyword, lets, expr));
+        case AssertStatement(:final expr, :final keyword):
+          lets.add(LetDeclaration(keyword, expr));
+          marks.add(runInference(keyword, lets, expr));
+        case ReturnStatement(:final keyword):
+          unsupported(keyword, 'return');
+        case Block(:final openBrace):
+          unsupported(openBrace, 'block');
+        case IfStatement(:final keyword):
+          unsupported(keyword, 'if');
+      }
+    }
+  }
+
+  return (output.join('\n'), marks);
+}
+
+typedef MarkText = (
+  MarkTextOptions options, {
+  Position from,
+  Position to,
+});
+
+({Position from, Position to}) toCodeMirrorPositions(Token token) {
+  final from = Position(line: token.line-1, ch: token.offset);
+  final to = Position(line: token.line-1, ch: token.offset + token.lexeme.length);
+  return (from: from, to: to);
+}
+
+MarkText runInference(Token token, List<LetDeclaration> lets, Expr loxExpr) {
+  final (:from ,:to) = toCodeMirrorPositions(token);
+
+  final context = {...loxStandardLibraryContext};
+  final expr = lets.length == 1
+      ? toLambdaCalculus(loxExpr)
+      : toLet(lets);
+  try {
+    final (substitution, t) = w(expr, context);
+    final type = substitution.appliedTo(t);
+    final normalized = normalizeTypeVariableIds(type);
+    return (
+      from: from,
+      to: to,
+      MarkTextOptions(
+        className: 'type-info',
+        title: '${token.lexeme}: $normalized',
+      ),
+    );
+  } catch (e) {
+    return (
+      from: from,
+      to: to,
+      MarkTextOptions(
+        className: 'type-error',
+        title: '${token.lexeme}: $e',
+      ),
+    );
+  }
+}

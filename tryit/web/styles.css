@@ -40,3 +40,9 @@ body {
     color: #fff;
     white-space: pre-wrap;
 }
+.type-info {
+  border-bottom: 2px solid #7EA7D8;
+}
+.type-error {
+  border-bottom: 2px solid #EF5350;
+}
