@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:js_interop';
 
+import 'package:lox/env.dart';
+import 'package:lox/expr.dart';
+import 'package:lox/hindley_milner_api.dart';
+import 'package:lox/hindley_milner_lambda_calculus.dart';
+import 'package:lox/interpreter.dart';
+import 'package:lox/lox_lambda_calculus.dart';
+import 'package:lox/parser.dart';
+import 'package:lox/scanner.dart';
 import 'package:web/web.dart' as web;
-import 'package:lox/src/scanner.dart';
-import 'package:lox/src/expr.dart';
-import 'package:lox/src/parser.dart';
-import 'package:lox/src/interpreter.dart';
-import 'package:lox/src/lox_lambda_calculus.dart';
-import 'package:lox/src/hindley_milner_api.dart';
-import 'package:lox/src/hindley_milner_lambda_calculus.dart';
-import 'package:lox/src/env.dart';
+
 import './codemirror.dart';
 
 

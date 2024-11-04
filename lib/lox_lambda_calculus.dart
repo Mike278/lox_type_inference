@@ -1,8 +1,8 @@
 
-import 'package:lox/src/expr.dart';
-import 'package:lox/src/hindley_milner_api.dart';
-import 'package:lox/src/scanner.dart';
-import 'package:lox/src/utils.dart';
+import 'package:lox/expr.dart';
+import 'package:lox/hindley_milner_api.dart';
+import 'package:lox/scanner.dart';
+import 'package:lox/utils.dart';
 
 import 'hindley_milner_lambda_calculus.dart';
 

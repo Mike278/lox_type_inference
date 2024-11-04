@@ -1,9 +1,9 @@
 
 import 'package:collection/collection.dart';
-import 'package:lox/src/env.dart';
-import 'package:lox/src/expr.dart';
-import 'package:lox/src/scanner.dart';
-import 'package:lox/src/utils.dart';
+import 'package:lox/env.dart';
+import 'package:lox/expr.dart';
+import 'package:lox/scanner.dart';
+import 'package:lox/utils.dart';
 
 class LoxRuntimeException implements Exception {
   final Token? token;

@@ -1,9 +1,9 @@
 
 import 'package:equatable/equatable.dart';
-import 'package:lox/src/interpreter.dart';
-import 'package:lox/src/parser.dart';
+import 'package:lox/interpreter.dart';
+import 'package:lox/parser.dart';
 
-import 'env.dart';
+import '../env.dart';
 // ignore_for_file: constant_identifier_names
 
 typedef ErrorReporter = void Function(String);

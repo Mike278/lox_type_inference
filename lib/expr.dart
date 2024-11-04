@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:lox/src/scanner.dart';
+import 'package:lox/scanner.dart';
 
 sealed class Expr {}
 

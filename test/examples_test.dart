@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:lox/src/env.dart';
-import 'package:lox/src/interpreter.dart';
-import 'package:lox/src/parser.dart';
-import 'package:lox/src/scanner.dart';
+import 'package:lox/env.dart';
+import 'package:lox/interpreter.dart';
+import 'package:lox/parser.dart';
+import 'package:lox/scanner.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 

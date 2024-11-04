@@ -1,6 +1,6 @@
-import 'package:lox/src/hindley_milner_lambda_calculus.dart';
-import 'package:lox/src/lox_lambda_calculus.dart';
-import 'package:lox/src/utils.dart';
+import 'package:lox/hindley_milner_lambda_calculus.dart';
+import 'package:lox/lox_lambda_calculus.dart';
+import 'package:lox/utils.dart';
 import 'package:test/test.dart';
 
 import 'test_utils.dart';

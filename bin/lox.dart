@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:lox/src/env.dart';
-import 'package:lox/src/interpreter.dart';
-import 'package:lox/src/scanner.dart';
+import 'package:lox/env.dart';
+import 'package:lox/interpreter.dart';
+import 'package:lox/scanner.dart';
 
 void main(List<String> args) {
   if (args.length > 1) {

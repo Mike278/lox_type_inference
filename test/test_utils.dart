@@ -1,7 +1,7 @@
 
-import 'package:lox/src/expr.dart';
-import 'package:lox/src/parser.dart';
-import 'package:lox/src/scanner.dart';
+import 'package:lox/expr.dart';
+import 'package:lox/parser.dart';
+import 'package:lox/scanner.dart';
 import 'package:test/test.dart';
 
 Expr parseExpression(String source) {

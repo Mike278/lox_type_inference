@@ -1,7 +1,7 @@
 import 'dart:collection';
 
-import 'package:lox/src/interpreter.dart';
-import 'package:lox/src/scanner.dart';
+import 'package:lox/interpreter.dart';
+import 'package:lox/scanner.dart';
 
 final LoxFunction clock = (
   arity: 0,

@@ -1,6 +1,6 @@
 
 import 'package:equatable/equatable.dart';
-import 'package:lox/src/utils.dart';
+import 'package:lox/utils.dart';
 
 //                                     <PolyType>
 //                                    /          \
