@@ -117,18 +117,25 @@ final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
       final substitutionsCombined = combine([funcSubstitution, argSubstitution, unifiedSubstitution]);
       return (substitutionsCombined, overallType);
     case Let(:final name, :final assignment, :final body):
+      final maybeRecursive = TypeVariable.fresh();
       final (assignmentSub, assignmentType) = w(assignment, {
         ...context,
         // [assignment] might reference [name], so add it to the context with a fresh type variable and let it get resolved normally
-        name: generalize(context, TypeVariable.fresh()),
+        name: maybeRecursive,
       });
-      final contextWithAssignment = assignmentSub.appliedToContext(context);
-      final generalizedAssignmentType = generalize(contextWithAssignment, assignmentType);
+      final finalAssignmentSub = combine([
+        assignmentSub,
+        // tie together the self reference (if any)
+        unify(assignmentSub.appliedTo(maybeRecursive), assignmentType),
+      ]);
+
+      final contextWithAssignment = finalAssignmentSub.appliedToContext(context);
+      final generalizedAssignmentType = generalize(contextWithAssignment, finalAssignmentSub.appliedTo(assignmentType));
       final (bodySub, bodyType) = w(body, {
         ...contextWithAssignment,
         name: generalizedAssignmentType,
       });
-      final combined = combine([assignmentSub, bodySub]);
+      final combined = combine([finalAssignmentSub, bodySub]);
       return (combined, bodyType);
     case RecordEmpty():
       return ({}, instantiate(record_empty_t));

@@ -226,6 +226,15 @@ void main() {
 
   test('recursive polymorphic functions', () {
 
+    expect(
+      inferSource(fold),
+      'List[t1], t0, (t0, t1 -> t0) -> t0',
+    );
+    expect(
+      inferSource(fold + r' fold([1,2,3], false, \state, element -> "wat");'),
+      'Type unification error: Bool != String',
+    );
+
     expect(inferSource(fold + r'''
       fold([1,2,3], false, \state, num -> num > 1 ? state : false);
     '''), 'Bool');
