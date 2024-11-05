@@ -80,16 +80,14 @@ final var_t = TypeVariable.new;
 final forall = TypeQuantifier.new;
 final emptyList_t = forall('a', list_t(var_t('a')));
 final record_empty_t = TypeRowEmpty();
-final record_t = (Map<String, MonoType> fields) => record_extension_t(TypeRowEmpty(), fields);
-final record_extension_t = (MonoType row, Map<String, MonoType> fields) => record_allow_dupe_labels_t(row, fields.pairs());
-final record_allow_dupe_labels_t = (MonoType row, List<(String, MonoType)> fields) =>
-  fields.fold(
-    row,
-    (row, pair) => TypeRowExtend(
-      newEntry: pair,
+final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
+    record_empty_t,
+    (row, label, type) => TypeRowExtend(
+      newEntry: (label, type),
       row: row,
-    ),
-  );
+    )
+);
+
 
 (Substitution, MonoType) w(LambdaCalculusExpression expr, Context context) {
   switch (expr) {

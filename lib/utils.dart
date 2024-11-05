@@ -92,3 +92,7 @@ extension Functions3<T, A, B, C> on T Function(A, B, C) {
 }
 
 (A, B) makePair<A, B>(A a, B b) => (a, b);
+
+extension StringUtils on String {
+  String get parenthesized => '($this)';
+}

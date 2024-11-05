@@ -66,8 +66,7 @@ class TypeVariable extends MonoType with EquatableMixin {
   static int counter = 0;
   TypeVariable.fresh() : name = "t${counter++}";
 
-  @override
-  String toString() => name;
+  @override String toString() => prettyPrint(this);
 
   @override get props => [name];
 }
@@ -78,15 +77,13 @@ class TypeFunctionApplication extends MonoType with EquatableMixin {
 
   const TypeFunctionApplication(this.name, this.monoTypes);
 
-  @override
-  String toString() => "$name${monoTypes.isEmpty ? '' : '[${monoTypes.join(', ')}]'}";
-
+  @override String toString() => prettyPrint(this);
   @override get props => [name, monoTypes];
 }
 
 class TypeRowEmpty extends MonoType with EquatableMixin {
   @override get props => [];
-  @override String toString() => '{}';
+  @override String toString() => prettyPrint(this);
 }
 class TypeRowExtend extends MonoType with EquatableMixin {
   final String label;
@@ -96,7 +93,7 @@ class TypeRowExtend extends MonoType with EquatableMixin {
         label = newEntry.$1,
         type = newEntry.$2;
   @override get props => [label, type, row];
-  @override String toString() => '{ ..$row, $label = $type }';
+  @override String toString() => prettyPrint(this);
 }
 
 (Substitution, MonoType) rewriteRow(
@@ -298,4 +295,68 @@ MonoType instantiate(
 PolyType generalize(Context context, MonoType type) {
   final freeVars = type.freeVars().difference(context.freeVars());
   return freeVars.fold(type, (sigma, a) => TypeQuantifier(a, sigma));
+}
+
+
+String prettyPrint(MonoType type) => switch (type) {
+  TypeVariable(:final name)
+      => name,
+
+  TypeFunctionApplication(:final name, monoTypes: [])
+      => name,
+
+  TypeFunctionApplication(name: 'List', monoTypes: [final typeArg])
+      => 'List[$typeArg]',
+
+  TypeFunctionApplication(name: 'Function', monoTypes: [final input, final output])
+      => prettyPrintFunction(input, output),
+
+  TypeRowExtend(:final label, :final type, :final row)
+      => prettyPrintRecord(label, type, row),
+
+  TypeRowEmpty()
+      => '{}',
+  _
+      => throw 'unknown TypeFunctionApplication $type',
+};
+
+
+String prettyPrintFunction(MonoType parameter, MonoType body) {
+
+  final parameters = [parameter];
+
+  // https://github.com/dart-lang/language/issues/2536
+  while (true) if (body case TypeFunctionApplication(
+    name: 'Function',
+    monoTypes: [final input, final output],
+  )) {
+    parameters.add(input);
+    body = output;
+  } else break;
+
+  final prettyParameters = [
+    for (final param in parameters)
+      if (param case TypeFunctionApplication(name: 'Function'))
+        prettyPrint(param).parenthesized
+      else
+        prettyPrint(param)
+  ].join(', ');
+
+  return '$prettyParameters -> ${prettyPrint(body)}';
+}
+
+
+String prettyPrintRecord(String label, MonoType type, MonoType tail) {
+  final rows = ['$label = ${prettyPrint(type)}'];
+  while (tail is TypeRowExtend) {
+    rows.add('${tail.label} = ${prettyPrint(tail.type)}');
+    tail = tail.row;
+  }
+  final pairs = rows.reversed.join(', ');
+
+  if (tail is TypeRowEmpty) {
+    return '{$pairs}';
+  } else {
+    return '{..${prettyPrint(tail)}, $pairs}';
+  }
 }
