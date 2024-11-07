@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: constant_identifier_names
 
 import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_api.dart';
@@ -169,6 +171,23 @@ LambdaCalculusExpression normalizeListElement(ListElement element) =>
     ),
   };
 
+const bool_t = TypeFunctionApplication('Bool', []);
+const num_t = TypeFunctionApplication('Num', []);
+const string_t = TypeFunctionApplication('String', []);
+const unit_t = TypeFunctionApplication('Unit', []);
+final list_t = (MonoType of) => TypeFunctionApplication('List', [of]);
+final function_t = (MonoType from, MonoType to) => TypeFunctionApplication('Function', [from, to]);
+final var_t = TypeVariable.new;
+final forall = TypeQuantifier.new;
+final emptyList_t = forall('a', list_t(var_t('a')));
+final record_empty_t = TypeRowEmpty();
+final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
+    record_empty_t,
+    (row, label, type) => TypeRowExtend(
+      newEntry: (label, type),
+      row: row,
+    )
+);
 
 final a = var_t('a');
 final b = var_t('b');

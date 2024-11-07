@@ -1,9 +1,4 @@
 import 'package:lox/hindley_milner_api.dart';
-import 'package:lox/utils.dart';
-
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: constant_identifier_names
-
 
 sealed class LambdaCalculusExpression {}
 
@@ -70,24 +65,8 @@ class RecordExtension extends LambdaCalculusExpression {
   @override String toString() => ' { ..$record, $label = $newField }';
 }
 
-const bool_t = TypeFunctionApplication('Bool', []);
-const num_t = TypeFunctionApplication('Num', []);
-const string_t = TypeFunctionApplication('String', []);
-const unit_t = TypeFunctionApplication('Unit', []);
-final list_t = (MonoType of) => TypeFunctionApplication('List', [of]);
-final function_t = (MonoType from, MonoType to) => TypeFunctionApplication('Function', [from, to]);
-final var_t = TypeVariable.new;
-final forall = TypeQuantifier.new;
-final emptyList_t = forall('a', list_t(var_t('a')));
-final record_empty_t = TypeRowEmpty();
-final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
-    record_empty_t,
-    (row, label, type) => TypeRowExtend(
-      newEntry: (label, type),
-      row: row,
-    )
-);
 
+final function = ({required MonoType from, required MonoType to}) => TypeFunctionApplication('Function', [from, to]);
 
 (Substitution, MonoType) w(LambdaCalculusExpression expr, Context context) {
   switch (expr) {
@@ -103,7 +82,7 @@ final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
         ...context,
         param: paramType,
       });
-      final funcType = bodySubstitution.appliedTo(function_t(paramType, bodyReturnType));
+      final funcType = bodySubstitution.appliedTo(function(from: paramType, to: bodyReturnType));
       return (bodySubstitution, funcType);
     case App(:final func, :final arg):
       final (funcSubstitution, funcType) = w(func, context);
@@ -111,7 +90,7 @@ final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
       final evaluatesToType = TypeVariable.fresh();
       final unifiedSubstitution = unify(
         argSubstitution.appliedTo(funcType),
-        function_t(argType, evaluatesToType),
+        function(from: argType, to: evaluatesToType),
       );
       final overallType = unifiedSubstitution.appliedTo(evaluatesToType);
       final substitutionsCombined = combine([funcSubstitution, argSubstitution, unifiedSubstitution]);
@@ -138,7 +117,7 @@ final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
       final combined = combine([finalAssignmentSub, bodySub]);
       return (combined, bodyType);
     case RecordEmpty():
-      return ({}, instantiate(record_empty_t));
+      return ({}, instantiate(TypeRowEmpty()));
     case RecordSelection(:final label, :final record):
       final (recordSubstitution, recordType) = w(record, context);
       final restRowType = TypeVariable.fresh();
