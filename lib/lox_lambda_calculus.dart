@@ -1,3 +1,4 @@
+// ignore_for_file: slash_for_doc_comments
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: constant_identifier_names
 
@@ -95,22 +96,163 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
         ),
       ),
 
-    Lambda(body: FunctionBody(body: Block())) =>
-        throw 'unsupported $loxExpression',
+    Lambda(:final params, body: FunctionBody(:final body)) =>
+        toAbsFromStatements(params, body.statements),
   }
 ;
 
-Abs toAbs(List<Token> params, Expr body) {
-  final lcBody = toLambdaCalculus(body);
-  return switch (params.reversed.map((x) => x.lexeme).toList()) {
-    [] => Abs('_', lcBody),
-    [final one] => Abs(one, lcBody),
+/**
+
+let x = \ {  };
+let x = \f -> f(nil);
+
+
+let x = \y { if y > 1 return 3; };
+let x = \y, f -> y > 1 ? f(3) : f(nil);  <---- invalid atm because Num != Unit - need variants
+
+
+
+let x = \y { if y > 1 return 3; return 5; };
+let x = \y, f -> y > 1 ? f(3) : f(5);
+
+
+
+let x = \y {
+    if y > 1 return 3;
+    let a = 1;
+    let b = 2;
+    if a == b print 1;
+    return b;
+};
+let x = \y, f ->
+    y > 1
+      ? f(3)
+      : let a = 1 in
+        let b = 2 in
+        a == b
+          ? let #print = 1 in f(b)
+          : f(b)
+
+
+
+let x = \y {
+    let a = 1;
+    if y > 1 return 3;
+    let b = 2;
+    if a == b {
+      print 1;
+      if a > b return 55;
+    };
+    return b;
+};
+let x = \y, f ->
+    let a = 1 in
+      y > 1
+        then f(3)
+        else let b = 2 in
+             a == b
+               then let #print = 1 in
+                    a > b
+                      then f(55)
+                      else f(b)
+               else f(b)
+
+
+
+let x = \y {
+    let a = 1;
+    {
+      let a = 2;
+      print a+y;
+    }
+    print a;
+};
+let x = \y, f ->
+    let a = 1 in
+    let #block = (\_ -> let a = 2 in let #print = ((+ a) y) in _) in
+    let #blockInvoke = (#block nil) in                                        <-- required?
+    let #print = a in
+    f(nil)
+
+
+
+let x = \y {
+    let a = 1;
+    {
+      let a = 2;
+      print a;
+      if a > 1 then return 55;
+    }
+    print a;
+    return 6;
+};
+let x = \y, f ->
+    let a = 1 in
+    let #block = (\_ ->
+        let a = 2 in
+        let #print = a in
+        a > 1
+            then f(55)                                     <-----------------------
+            else f(6)                                                             |
+                                                                              how to short-circuit?
+    ) in                                                                          |
+    let #blockInvoke = (#block nil) in                     <----------------------|
+    let #print = a in
+    f(6)
+
+ */
+
+
+Abs toAbsFromStatements(List<Token> params, List<Statement> statements) {
+
+  // return statements are converted to Continuation-Passing Style -
+  // i.e. replaced with a call to a "continuation" function thats passed in as the last parameter
+  final continuation = Var('#continuation');
+  final parameterNames = [
+    for (final param in params) param.lexeme,
+    continuation.name,
+  ];
+
+  App convertReturn(Expr expr) => App(func: continuation, arg: toLambdaCalculus(expr));
+
+  final returnNil = convertReturn(NilLiteral());
+
+  if (statements.isEmpty) {
+    return _toAbs(parameterNames, returnNil);
+  }
+
+  var i = 0;
+  final lets = <(String, Expr)>[];
+  for (final statement in statements) {
+    switch (statement) {
+      case ExpressionStatement(:final expr)
+        || PrintStatement(:final expr)
+        || AssertStatement(:final expr):
+        lets.add(('#${i++}', expr));
+      case LetDeclaration(:final name, :final initializer):
+        lets.add((name.lexeme, initializer));
+      case Block():
+      case ReturnStatement():
+      case IfStatement():
+    }
+  }
+
+  return _toAbs(parameterNames, body);
+}
+
+
+Abs toAbs(List<Token> params, Expr body) =>
+  _toAbs([for (final p in params) p.lexeme], toLambdaCalculus(body));
+
+Abs _toAbs(List<String> params, LambdaCalculusExpression body) =>
+  switch (params.reversed.toList()) {
+    [] => Abs('_', body),
+    [final one] => Abs(one, body),
     [final first, ...final rest] => rest.fold(
-      Abs(first, lcBody),
+      Abs(first, body),
       (body, param) => Abs(param, body),
     ),
   };
-}
 
 App toApp(Expr callee, List<Expr> args) {
   final lcFunc = toLambdaCalculus(callee);
