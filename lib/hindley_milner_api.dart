@@ -214,7 +214,7 @@ Substitution unify(MonoType t1, MonoType t2) {
   if (t1 is TypeFunctionApplication &&
       t2 is TypeFunctionApplication) {
     if (t1.name != t2.name) {
-      throw 'Type unification error: ${t1.name} != ${t2.name}';
+      throw 'Type unification error:\n$t1\n$t2';
     }
 
     if (t1.monoTypes.length != t2.monoTypes.length) {
@@ -308,16 +308,20 @@ String prettyPrint(MonoType type) => switch (type) {
   TypeFunctionApplication(name: 'List', monoTypes: [final typeArg])
       => 'List[$typeArg]',
 
+  TypeFunctionApplication(name: 'Result', monoTypes: [final typeArg])
+      => 'Result[$typeArg]',
+
   TypeFunctionApplication(name: 'Function', monoTypes: [final input, final output])
       => prettyPrintFunction(input, output),
+
+  TypeFunctionApplication(:final name)
+      => throw 'unknown TypeFunctionApplication $name',
 
   TypeRowExtend(:final label, :final type, :final row)
       => prettyPrintRecord(label, type, row),
 
   TypeRowEmpty()
       => '{}',
-  _
-      => throw 'unknown TypeFunctionApplication $type',
 };
 
 

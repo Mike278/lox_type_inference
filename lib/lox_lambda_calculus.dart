@@ -15,6 +15,60 @@ Token _synthesizeNewIdentifier(int line, int offset) {
   return Token(TokenType.IDENTIFIER, id, id, line, offset);
 }
 
+
+LambdaCalculusExpression transformStatements(List<Statement> statements) {
+  if (statements.isEmpty) return _continue(Lit(unit_t));
+  final [first, ...rest] = statements;
+
+  return switch (first) {
+    ReturnStatement(:final expr?) =>
+        _return(toLambdaCalculus(expr)),
+
+    ReturnStatement(expr: null) =>
+        _return(toLambdaCalculus(NilLiteral())),
+
+    PrintStatement(:final expr) ||
+    AssertStatement(:final expr) ||
+    ExpressionStatement(:final expr) =>
+        rest.isEmpty
+          ? toLambdaCalculus(expr)
+          : _bind(
+              _continue(toLambdaCalculus(expr)),
+              Abs('_', transformStatements(rest)),
+            ),
+
+    LetDeclaration(:final name, :final initializer) =>
+        rest.isEmpty
+          ? toLambdaCalculus(initializer)
+          : _bind(
+              _continue(toLambdaCalculus(initializer)),
+              Abs('value', Let(name.lexeme, Var('value'), transformStatements(rest))),
+            ),
+
+    IfStatement(
+      :final condition,
+      :final thenBranch,
+      :final elseBranch,
+    ) =>
+        App(func: App(func: App(func: Var('?'),
+            arg: toLambdaCalculus(condition)),
+            arg: transformStatements([thenBranch])),
+            arg: transformStatements([
+              if (elseBranch != null) elseBranch,
+              ...rest,
+            ])),
+
+    Block(statements: []) => transformStatements([]),
+    Block(:final statements) =>
+      rest.isEmpty
+        ? transformStatements(statements)
+        : _bind(
+            _continue(transformStatements(statements)),
+            Abs('_', transformStatements(rest)),
+          ),
+  };
+}
+
 LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpression) {
 
     StringLiteral()                   => Lit(string_t),
@@ -97,148 +151,12 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
       ),
 
     Lambda(:final params, body: FunctionBody(:final body)) =>
-        toAbsFromStatements(params, body.statements),
+      _toAbs(
+        [for (final p in params) p.lexeme],
+        transformStatements(body.statements),
+      ),
   }
 ;
-
-/**
-
-let x = \ {  };
-let x = \f -> f(nil);
-
-
-let x = \y { if y > 1 return 3; };
-let x = \y, f -> y > 1 ? f(3) : f(nil);  <---- invalid atm because Num != Unit - need variants
-
-
-
-let x = \y { if y > 1 return 3; return 5; };
-let x = \y, f -> y > 1 ? f(3) : f(5);
-
-
-
-let x = \y {
-    if y > 1 return 3;
-    let a = 1;
-    let b = 2;
-    if a == b print 1;
-    return b;
-};
-let x = \y, f ->
-    y > 1
-      ? f(3)
-      : let a = 1 in
-        let b = 2 in
-        a == b
-          ? let #print = 1 in f(b)
-          : f(b)
-
-
-
-let x = \y {
-    let a = 1;
-    if y > 1 return 3;
-    let b = 2;
-    if a == b {
-      print 1;
-      if a > b return 55;
-    };
-    return b;
-};
-let x = \y, f ->
-    let a = 1 in
-      y > 1
-        then f(3)
-        else let b = 2 in
-             a == b
-               then let #print = 1 in
-                    a > b
-                      then f(55)
-                      else f(b)
-               else f(b)
-
-
-
-let x = \y {
-    let a = 1;
-    {
-      let a = 2;
-      print a+y;
-    }
-    print a;
-};
-let x = \y, f ->
-    let a = 1 in
-    let #block = (\_ -> let a = 2 in let #print = ((+ a) y) in _) in
-    let #blockInvoke = (#block nil) in                                        <-- required?
-    let #print = a in
-    f(nil)
-
-
-
-let x = \y {
-    let a = 1;
-    {
-      let a = 2;
-      print a;
-      if a > 1 then return 55;
-    }
-    print a;
-    return 6;
-};
-let x = \y, f ->
-    let a = 1 in
-    let #block = (\_ ->
-        let a = 2 in
-        let #print = a in
-        a > 1
-            then f(55)                                     <-----------------------
-            else f(6)                                                             |
-                                                                              how to short-circuit?
-    ) in                                                                          |
-    let #blockInvoke = (#block nil) in                     <----------------------|
-    let #print = a in
-    f(6)
-
- */
-
-
-Abs toAbsFromStatements(List<Token> params, List<Statement> statements) {
-
-  // return statements are converted to Continuation-Passing Style -
-  // i.e. replaced with a call to a "continuation" function thats passed in as the last parameter
-  final continuation = Var('#continuation');
-  final parameterNames = [
-    for (final param in params) param.lexeme,
-    continuation.name,
-  ];
-
-  App convertReturn(Expr expr) => App(func: continuation, arg: toLambdaCalculus(expr));
-
-  final returnNil = convertReturn(NilLiteral());
-
-  if (statements.isEmpty) {
-    return _toAbs(parameterNames, returnNil);
-  }
-
-  var i = 0;
-  final lets = <(String, Expr)>[];
-  for (final statement in statements) {
-    switch (statement) {
-      case ExpressionStatement(:final expr)
-        || PrintStatement(:final expr)
-        || AssertStatement(:final expr):
-        lets.add(('#${i++}', expr));
-      case LetDeclaration(:final name, :final initializer):
-        lets.add((name.lexeme, initializer));
-      case Block():
-      case ReturnStatement():
-      case IfStatement():
-    }
-  }
-
-  return _toAbs(parameterNames, body);
-}
 
 
 Abs toAbs(List<Token> params, Expr body) =>
@@ -313,6 +231,20 @@ LambdaCalculusExpression normalizeListElement(ListElement element) =>
     ),
   };
 
+App _return(LambdaCalculusExpression expr) => App(
+  func: Var('Return'),
+  arg: expr,
+);
+App _continue(LambdaCalculusExpression expr) => App(
+  func: Var('Continue'),
+  arg: expr,
+);
+App _bind(LambdaCalculusExpression m, LambdaCalculusExpression f) => App(
+  func: App(func: Var('bind'), arg: m),
+  arg: f,
+);
+
+
 const bool_t = TypeFunctionApplication('Bool', []);
 const num_t = TypeFunctionApplication('Num', []);
 const string_t = TypeFunctionApplication('String', []);
@@ -330,6 +262,11 @@ final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
       row: row,
     )
 );
+
+final result_t = (MonoType ty) => TypeFunctionApplication('Result', [ty]);
+final result_continue_t = result_t;
+final result_return_t = result_t;
+
 
 final a = var_t('a');
 final b = var_t('b');
@@ -353,6 +290,9 @@ final Context loxStandardLibraryContext = {
     'rest': function_t(list_t(b), list_t(b)),
     'empty': function_t(list_t(c), bool_t),
   })))),
+  'Return': forall('a', function_t(a, result_return_t(a))),
+  'Continue': forall('a', function_t(a, result_continue_t(a))),
+  'bind': forall('a', forall('b', function_t(result_t(a), function_t(function_t(a, result_t(b)), result_t(b))))),
 };
 
 
@@ -378,6 +318,26 @@ MonoType normalizeTypeVariableIds(MonoType t) {
 
   return rename(t, lookup);
 }
+
+MonoType unwrapResults(MonoType t) => switch (t) {
+  TypeFunctionApplication(name: 'Result', :final monoTypes) =>
+      unwrapResults(monoTypes.single),
+
+  TypeFunctionApplication(:final name, :final monoTypes) =>
+      TypeFunctionApplication(
+        name,
+        [ for (final t in monoTypes) unwrapResults(t) ]
+      ),
+
+  TypeRowExtend(:final label, :final type, :final row) =>
+      TypeRowExtend(
+        newEntry: (label, unwrapResults(type)),
+        row: unwrapResults(row),
+      ),
+
+  TypeVariable() || TypeRowEmpty() =>
+      t,
+};
 
 MonoType rename(MonoType t, String Function(String) lookup) => switch (t) {
   TypeVariable(:final name) => TypeVariable(lookup(name)),

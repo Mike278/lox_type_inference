@@ -5,16 +5,14 @@ sealed class LambdaCalculusExpression {}
 class Lit extends LambdaCalculusExpression {
   final PolyType type;
   Lit(this.type);
-  @override
-  String toString() => '<$type>';
+  @override String toString() => prettyPrint(this);
 }
 
 class Var extends LambdaCalculusExpression {
   final String name;
   Var(this.name);
 
-  @override
-  String toString() => name;
+  @override String toString() => prettyPrint(this);
 }
 
 class App extends LambdaCalculusExpression {
@@ -23,8 +21,7 @@ class App extends LambdaCalculusExpression {
 
   App({required this.func, required this.arg});
 
-  @override
-  String toString() => '($func $arg)';
+  @override String toString() => prettyPrint(this);
 }
 
 
@@ -33,8 +30,7 @@ class Abs extends LambdaCalculusExpression {
   final LambdaCalculusExpression body;
   Abs(this.param, this.body);
 
-  @override
-  String toString() => 'λ$param -> $body';
+  @override String toString() => prettyPrint(this);
 }
 
 class Let extends LambdaCalculusExpression {
@@ -43,17 +39,18 @@ class Let extends LambdaCalculusExpression {
   final LambdaCalculusExpression body;
   Let(this.name, this.assignment, this.body);
 
-  @override
-  String toString() => 'let $name = $assignment in $body';
+  @override String toString() => prettyPrint(this);
 }
 
-class RecordEmpty extends LambdaCalculusExpression {}
+class RecordEmpty extends LambdaCalculusExpression {
+  @override String toString() => prettyPrint(this);
+}
 class RecordSelection extends LambdaCalculusExpression {
   final String label;
   final LambdaCalculusExpression record;
   RecordSelection(this.label, this.record);
 
-  @override String toString() => '$record.$label';
+  @override String toString() => prettyPrint(this);
 }
 class RecordExtension extends LambdaCalculusExpression {
   final String label;
@@ -62,7 +59,7 @@ class RecordExtension extends LambdaCalculusExpression {
 
   RecordExtension(this.label, this.newField, this.record);
 
-  @override String toString() => ' { ..$record, $label = $newField }';
+  @override String toString() => prettyPrint(this);
 }
 
 
@@ -163,5 +160,66 @@ final function = ({required MonoType from, required MonoType to}) => TypeFunctio
 
       final overallType = substitutionsCombined.appliedTo(returnType);
       return (substitutionsCombined, overallType);
+  }
+}
+
+String prettyPrint(LambdaCalculusExpression expr) => switch (expr) {
+  Lit(:final type) =>
+      '<$type>',
+
+  Var(:final name) =>
+      name,
+
+  App() =>
+      prettyPrintApp(expr),
+
+  Abs() =>
+      prettyPrintAbs(expr),
+
+  Let(:final name, :final assignment, :final body) =>
+      'let $name = ${prettyPrint(assignment)} in ${prettyPrint(body)}',
+
+  RecordEmpty() =>
+      '{}',
+
+  RecordSelection(:final record, :final label) =>
+      '(${prettyPrint(record)}).$label',
+
+  RecordExtension() =>
+      prettyPrintRecord(expr),
+};
+
+String prettyPrintApp(App expr) {
+  var func = expr.func;
+  final args = [expr.arg];
+  while (func is App) {
+    args.add(func.arg);
+    func = func.func;
+  }
+  return '${prettyPrint(func)}(${args.reversed.map(prettyPrint).join(', ')})';
+}
+
+String prettyPrintAbs(Abs expr) {
+  var body = expr.body;
+  final params = [expr.param];
+  while (body is Abs) {
+    params.add(body.param);
+    body = body.body;
+  }
+  return '\\${params.join(', ')} -> ${prettyPrint(body)}';
+}
+
+String prettyPrintRecord(RecordExtension expr) {
+  final rows = ['${expr.label} = ${prettyPrint(expr.newField)}'];
+  var tail = expr.record;
+  while (tail is RecordExtension) {
+    rows.add('${tail.label} = ${prettyPrint(tail.newField)}');
+    tail = tail.record;
+  }
+  final pairs = rows.reversed.join(', ');
+  if (tail is RecordEmpty) {
+    return '{$pairs}';
+  } else {
+    return '{..${prettyPrint(tail)}, $pairs}';
   }
 }

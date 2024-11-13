@@ -1,10 +1,8 @@
-import 'package:lox/expr.dart';
-import 'package:lox/hindley_milner_api.dart' hide contains;
 import 'package:lox/hindley_milner_lambda_calculus.dart';
 import 'package:lox/lox_lambda_calculus.dart';
-import 'package:lox/scanner.dart';
 import 'package:lox/utils.dart';
 import 'package:test/test.dart';
+import 'package:test_api/src/backend/invoker.dart'; // ignore: depend_on_referenced_packages
 
 import 'test_utils.dart';
 
@@ -114,7 +112,7 @@ void main() {
     final arg = Abs('a', Abs('b', Lit(string_t)));
     // (\x -> ((x 1) 1))(\a -> \b -> "h")
     final expr = App(func: abs, arg: arg);
-    final result = infer(expr, newContext()).toString();
+    final result = infer(expr).toString();
     expect(result, 'String');
   });
 
@@ -538,6 +536,94 @@ void main() {
     d.x;
     '''), 'String');
   });
+
+  group('statements', () {
+
+    test(r'''
+    let fn = \ {};
+    ''', () => expectedType('t0 -> Unit'));
+    test(r'''
+    let fn = \x {};
+    ''', () => expectedType('t0 -> Unit'));
+    test(r'''
+    let fn = \x { return x; };
+    ''', () => expectedType('t0 -> t0'));
+    test(r'''
+    let fn = \x { return [x]; };
+    ''', () => expectedType('t0 -> List[t0]'));
+    test(r'''
+    let fn = \x { return "a"; };
+    ''', () => expectedType('t0 -> String'));
+    test(r'''
+    let fn = \x { return ["a"]; };
+    ''', () => expectedType('t0 -> List[String]'));
+    test(r'''
+    let fn = \x { return [x, "a"]; };
+    ''', () => expectedType('String -> List[String]'));
+
+
+    test(r'''
+    let fn = \ { print 1; };
+    ''', () => expectedType('t0 -> Unit'));
+    test(r'''
+    let fn = \x { print 1; };
+    ''', () => expectedType('t0 -> Unit'));
+    test(r'''
+    let fn = \x { print 1; return x; };
+    ''', () => expectedType('t0 -> t0'));
+    test(r'''
+    let fn = \x { print 1; return [x]; };
+    ''', () => expectedType('t0 -> List[t0]'));
+    test(r'''
+    let fn = \x { print 1; return "a"; };
+    ''', () => expectedType('t0 -> String'));
+    test(r'''
+    let fn = \x { print 1; return ["a"]; };
+    ''', () => expectedType('t0 -> List[String]'));
+    test(r'''
+    let fn = \x { print 1; return [x, "a"]; };
+    ''', () => expectedType('String -> List[String]'));
+
+
+    test(r'''
+    let fn = \ { let a = 1; };
+    ''', () => expectedType('t0 -> Unit'));
+    test(r'''
+    let fn = \x { let a = 1; };
+    ''', () => expectedType('t0 -> Unit'));
+    test(r'''
+    let fn = \x { let a = 1; return x; };
+    ''', () => expectedType('t0 -> t0'));
+    test(r'''
+    let fn = \x { let a = 1; return [x]; };
+    ''', () => expectedType('t0 -> List[t0]'));
+    test(r'''
+    let fn = \x { let a = 1; return "a"; };
+    ''', () => expectedType('t0 -> String'));
+    test(r'''
+    let fn = \x { let a = 1; return ["a"]; };
+    ''', () => expectedType('t0 -> List[String]'));
+    test(r'''
+    let fn = \x { let a = 1; return [x, "a"]; };
+    ''', () => expectedType('String -> List[String]'));
+
+
+    test(r'''
+    let fn = \x {
+      if x then {
+        print "here1";
+        return true;
+      }
+      print "here2";
+      return false;
+    };
+    
+    let r1 = fn(true);
+    let r2 = fn(false);
+    print r1;
+    print r2;
+    ''', () => expectedType('Bool'));
+  });
 }
 
 String? get mainStackTrace =>
@@ -554,76 +640,27 @@ void testInferSource(String prefix, String source, expectedType) {
   final line = mainStackTrace;
   test('$prefix $source', () {
     expect(
-      inferSource(source),
+      _inferSource(source),
       expectedType,
       reason: line == null ? null : 'test case: $line',
     );
   });
 }
 
-Map<String, PolyType> newContext() => {
-  ...loxStandardLibraryContext,
-};
 
 Matcher isException(message) =>
   isA<Exception>().having((e) => e.toString(), 'message', message);
 
-dynamic inferSource(String source) {
+dynamic _inferSource(String source) {
   try {
-    return _inferSource(source).toString();
+    if (!source.contains(';')) source = '$source;';
+    return inferSource(source).toString();
   } catch (e) {
     return e;
   }
 }
 
-MonoType _inferSource(String source) {
-  final LambdaCalculusExpression lc;
 
-  if (!source.contains(';')) {
-    final expr = parseExpression(source);
-    lc = toLambdaCalculus(expr);
-  } else {
-    var i = 0;
-    final newIdentifier = (String prefix) {
-      final id = '$prefix#${i++}';
-      return Token(TokenType.IDENTIFIER, id, id, -1, -1);
-    };
-    LetDeclaration? tryConvert(Statement s) => switch (s) {
-      LetDeclaration() => s,
-      ExpressionStatement(:final expr) => LetDeclaration(newIdentifier('expr'), expr),
-      PrintStatement(:final expr) => LetDeclaration(newIdentifier('print'), expr),
-      AssertStatement(:final expr) => LetDeclaration(newIdentifier('assert'), expr),
-      ReturnStatement() ||
-      Block() ||
-      IfStatement() => null,
-    };
-
-    final statements = parse(source);
-    final lets = [
-      for (final s in statements)
-        if (tryConvert(s) case final let?)
-          let
-    ];
-    if (lets.isEmpty) fail('source does not contain any supported statements');
-    if (lets.length < statements.length) fail('source contains unsupported statements');
-    lc = toLet(lets);
-  }
-
-  final context = newContext();
-  final inferred = infer(lc, context);
-  final normalized = normalizeTypeVariableIds(inferred);
-
-  //print('''
-  //______________________________
-  //source:          $source
-  //inferred type:   $normalized
-  //''');
-  return normalized;
-}
-
-MonoType infer(LambdaCalculusExpression expr, Context context) {
-  TypeVariable.counter = 0;
-  final (substitution, t) = w(expr, context);
-  final type = substitution.appliedTo(t);
-  return type;
+void expectedType(String expected) {
+  expect(inferSource(Invoker.current!.liveTest.test.name).toString(), expected);
 }
