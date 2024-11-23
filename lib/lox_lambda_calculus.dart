@@ -150,14 +150,23 @@ LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpr
         ),
       ),
 
-    Lambda(:final params, body: FunctionBody(:final body)) =>
+    Lambda(:final params, body: FunctionBody(body: Block(:final statements, :final closeBrace))) =>
       _toAbs(
         [for (final p in params) p.lexeme],
-        transformStatements(body.statements),
+        transformStatements([
+          ...statements,
+          if (!endsWithReturn(statements))
+            ReturnStatement(closeBrace, NilLiteral()),
+        ]),
       ),
   }
 ;
 
+bool endsWithReturn(List<Statement> statements) => switch (statements) {
+  [..., ReturnStatement()] => true,
+  [..., Block(:final statements)] => endsWithReturn(statements),
+  _ => false,
+};
 
 Abs toAbs(List<Token> params, Expr body) =>
   _toAbs([for (final p in params) p.lexeme], toLambdaCalculus(body));
