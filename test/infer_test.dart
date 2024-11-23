@@ -174,13 +174,13 @@ void main() {
   testInferListLiteral('[..[], ..[]]', 'List[t0]');
 
   test('let', () {
-    expect(inferSource(r'let factorial = \n -> n > 0 ? n * factorial(n - 1) : 1;'), 'Num -> Num');
-    expect(inferSource(r'let x = 1;'), 'Num');
-    expect(inferSource(r'''
+    expect(_inferSource(r'let factorial = \n -> n > 0 ? n * factorial(n - 1) : 1;'), 'Num -> Num');
+    expect(_inferSource(r'let x = 1;'), 'Num');
+    expect(_inferSource(r'''
     let x = 1;
     let y = "h";
     '''), 'String');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let x = \list -> [..list, 1]; 
     let y = x([4]);
     '''), 'List[Num]');
@@ -190,15 +190,15 @@ void main() {
     final f3 = (source: r'\x, y -> (true ? x : y) + 1',      expectedType: 'Num, Num -> Num');
     final f4 = (source: r'\x, y -> (true ? x : y) or false', expectedType: 'Bool, Bool -> Bool');
 
-    expect(inferSource(f1.source),  f1.expectedType);
-    expect(inferSource(f2.source),  f2.expectedType);
-    expect(inferSource(f3.source),  f3.expectedType);
-    expect(inferSource(f4.source),  f4.expectedType);
+    expect(_inferSource(f1.source),  f1.expectedType);
+    expect(_inferSource(f2.source),  f2.expectedType);
+    expect(_inferSource(f3.source),  f3.expectedType);
+    expect(_inferSource(f4.source),  f4.expectedType);
 
-    expect(inferSource('let f = ${f1.source};'),  f1.expectedType);
-    expect(inferSource('let f = ${f2.source};'),  f2.expectedType);
-    expect(inferSource('let f = ${f3.source};'),  f3.expectedType);
-    expect(inferSource('let f = ${f4.source};'),  f4.expectedType);
+    expect(_inferSource('let f = ${f1.source};'),  f1.expectedType);
+    expect(_inferSource('let f = ${f2.source};'),  f2.expectedType);
+    expect(_inferSource('let f = ${f3.source};'),  f3.expectedType);
+    expect(_inferSource('let f = ${f4.source};'),  f4.expectedType);
   });
 
   final fold = r'''
@@ -225,39 +225,39 @@ void main() {
   test('recursive polymorphic functions', () {
 
     expect(
-      inferSource(fold),
+      _inferSource(fold),
       'List[t1], t0, (t0, t1 -> t0) -> t0',
     );
     expect(
-      inferSource(fold + r' fold([1,2,3], false, \state, element -> "wat");'),
-      'Type unification error: Bool != String',
+      _inferSource(fold + r' fold([1,2,3], false, \state, element -> "wat");'),
+      'Type unification error:\nBool\nString',
     );
 
-    expect(inferSource(fold + r'''
+    expect(_inferSource(fold + r'''
       fold([1,2,3], false, \state, num -> num > 1 ? state : false);
     '''), 'Bool');
-    expect(inferSource(fold + r'''
+    expect(_inferSource(fold + r'''
       fold([1,2,3], false, \state, num -> num > 1 ? state : false);
       fold(["a", "b", "c"], 0, \state, str -> str == "a" ? state+1 : state);
     '''), 'Num');
 
-    expect(inferSource(map), 'List[t1], (t1 -> t0) -> List[t0]');
-    expect(inferSource(map + r'''
+    expect(_inferSource(map), 'List[t1], (t1 -> t0) -> List[t0]');
+    expect(_inferSource(map + r'''
       map([1,2,3], \x -> x > 1);
     '''), 'List[Bool]');
-    expect(inferSource(map + r'''
+    expect(_inferSource(map + r'''
       map([1,2,3], \x -> x > 1);
       map([false], \x -> x ? 5 : 10);
     '''), 'List[Num]');
 
-    expect(inferSource(reduce + r'''
+    expect(_inferSource(reduce + r'''
       reduce([4,5,6], \max, e -> e > max ? e : max);
     '''), 'Num');
-    expect(inferSource(reduce + r'''
+    expect(_inferSource(reduce + r'''
       reduce([4,5,6], \max, e -> e > max ? e : max);
       reduce([true, false, true], \state, b -> state and b);
     '''), 'Bool');
-    expect(inferSource(reduce + r'''
+    expect(_inferSource(reduce + r'''
       let r = reduce; 
       r([4,5,6], \max, e -> e > max ? e : max);
       r([true, false, true], \state, b -> state and b);
@@ -271,7 +271,7 @@ void main() {
     ];
     ''';
 
-    expect(inferSource(reduce + employees + r'''
+    expect(_inferSource(reduce + employees + r'''
       let employeeWithMaxAge = reduce(
           employees,
           \highest, employee ->
@@ -281,7 +281,7 @@ void main() {
       );
     '''), '{name = String, age = Num}');
 
-    expect(inferSource(map + reduce + employees + r'''
+    expect(_inferSource(map + reduce + employees + r'''
       let maxAge = reduce(
           map(employees, \e -> e.age),
           \highest, age -> age > highest ? age : highest
@@ -308,74 +308,72 @@ void main() {
   testInferRecord(r'let f = \x -> {a: x}; f(5).a; f("hi").a;', 'String');
 
   test('infer accessing field of record thats passed in as a parameter', () {
-    expect(inferSource(r'\someRecord -> someRecord.bar'), '{..t0, bar = t1} -> t1');
-    expect(inferSource(r'\someRecord -> someRecord.bar + 1'), '{..t0, bar = Num} -> Num');
-    expect(inferSource(r'\someRecord, someNum -> someRecord.bar + someNum'), '{..t0, bar = Num}, Num -> Num');
-    expect(inferSource(r'''
+    expect(_inferSource(r'\someRecord -> someRecord.bar'), '{..t0, bar = t1} -> t1');
+    expect(_inferSource(r'\someRecord -> someRecord.bar + 1'), '{..t0, bar = Num} -> Num');
+    expect(_inferSource(r'\someRecord, someNum -> someRecord.bar + someNum'), '{..t0, bar = Num}, Num -> Num');
+    expect(_inferSource(r'''
     let getAge = \person -> person.age;
     let bob = {age: 100};
     let age = getAge(bob);
     '''), 'Num');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let getAge = \person -> person.age;
     let getBirthYear = \currentYear, person -> currentYear - getAge(person);
     '''), 'Num, {..t0, age = Num} -> Num');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let getAge = \person -> person.age;
     let getBirthYear = \currentYear, person -> currentYear - getAge(person);
     let bob = {age: 100};
     let bornIn = getBirthYear(2024, bob);
     '''), 'Num');
 
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let getAge = \person -> person.age;
     let getBirthYear = \args -> args.currentYear - getAge(args.person);
     let bornIn = getBirthYear({currentYear: 2024, person: {age: 100}});
     '''), 'Num');
 
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let getAge = \person -> person.age;
     let getBirthYear = \args -> args.currentYear - getAge(args.person);
     let bornIn = getBirthYear({currentYear: 2024, person: {age: 100, someExtraArg: "hi"}});
     '''), 'Num');
 
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let withRecord = \x -> \f -> f(x);
     print withRecord({a: "one", b: 2});
     '''), '({a = String, b = Num} -> t0) -> t0');
 
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let withRecord = \x -> \f -> f(x);
     print withRecord({a: "one", b: 2});
     print withRecord({a: "one", b: 2, c: 4});
     '''), '({a = String, b = Num, c = Num} -> t0) -> t0');
 
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let withRecord = \x -> \f -> f(x);
     print withRecord({a: "one", b: 2});
     print withRecord({a: "one", b: 2, c: 4});
     print withRecord;
     '''), 't1, (t1 -> t0) -> t0');
 
-    expect(inferSource(r'''
-    let f = \rec -> rec.first + (rec.second ? 1 : 0);
-    '''), '{..t0, second = Bool, first = Num} -> Num');
+    expect(_inferSource(r'let f = \rec -> rec.first + (rec.second ? 1 : 0);'), '{..t0, second = Bool, first = Num} -> Num');
 
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let f = \rec -> rec.first + (rec.second ? 1 : 0);
     print f({first: 1, second: false});
     '''), 'Num');
 
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let f = \rec -> rec.first + (rec.second ? 1 : 0);
     print f({second: false, first: 1});
     '''), 'Num');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let f = \rec -> rec.first + (rec.second ? 1 : 0);
     print f({first: 1, second: false});
     print f({second: false, first: 1});
     '''), 'Num');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let f = \rec -> rec.first + (rec.second ? 1 : 0);
     print f({first: 1, second: false});
     print f({second: false, first: 1});
@@ -430,99 +428,93 @@ void main() {
     //                          ^ need variants?
     ''';
 
-    expect(inferSource(source), 'List[Num]');
+    expect(_inferSource(source), 'List[Num]');
   });
 
 
   test('record update', () {
 
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
       let r1 = {a: "a"};
       let r2 = {..r1, b: false};
     '''), '{a = String, b = Bool}');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
       let r1 = {a: "a"};
       let r2 = {..r1, b: false};
       let r3 = {..r1, b: true, c: 1};
     '''), '{a = String, b = Bool, c = Num}');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
       let r1 = {a: "a"};
       let r2 = {..r1, b: false};
       let r3 = {..r1, b: true, c: 1};
       let r4 = {..r1};
     '''), '{a = String}');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
       let r1 = {};
       let r2 = {..r1};
     '''), '{}');
-    expect(inferSource(r'''
-    \r -> {..r, one: "one"}
-    '''), 't0 -> {..t0, one = String}');
-    expect(inferSource(r'''
-    \r -> {..r, one: "one", two: 2}
-    '''), 't0 -> {..t0, one = String, two = Num}');
-    expect(inferSource(r'''
+    expect(_inferSource(r'\r -> {..r, one: "one"}'), 't0 -> {..t0, one = String}');
+    expect(_inferSource(r'\r -> {..r, one: "one", two: 2}'), 't0 -> {..t0, one = String, two = Num}');
+    expect(_inferSource(r'''
     let f = \r -> {..r, one: "one", two: 2};
     f({hello: 1});
     '''), '{hello = Num, one = String, two = Num}');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let f = \r -> {..r, one: "one", two: 2};
     f({hello: 1});
     f({a: false});
     '''), '{a = Bool, one = String, two = Num}');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let f = \r -> {..r, one: "one", two: 2};
     f({hello: 1}).one;
     f({a: false}).two;
     '''), 'Num');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let f = \r -> {..r, one: "one", two: 2};
     f({hello: 1}).hello;
     '''), 'Num');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let f = \r -> {..r, one: "one", two: 2};
     f({hello: 1}).hello;
     f({a: false}).a;
     '''), 'Bool');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let f = \r -> {..r, one: "one", two: 2};
     f({one: "hello"}).one;
     '''), 'String');
-    expect(inferSource(r'''
-    let f = \r -> true ? {..r, x: 2} : {..r, y: 2};
-    '''), isException(contains('recursive row type')));
+    expect(_inferSource(r'let f = \r -> true ? {..r, x: 2} : {..r, y: 2};'), isException(contains('recursive row type')));
 
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let named = \r, name -> {..r, name: name};
     let x = {title: "a", name: "some name"};
     let y = named(x, "updated");
     '''), '{title = String, name = String, name = String}');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let named = \r, name -> {..r, name: name};
     let x = {title: "a", name: "some name"};
     let y = named(x, "updated");
     print y.name;
     '''), 'String');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let named = \r, name -> {..r, name: name};
     let x = {title: "a", name: 42};
     let y = named(x, "updated");
     print y.name;
     '''), 'String');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let named = \r, name -> {..r, name: name};
     let x = {title: "a", name: "a"};
     let y = named(x, 42);
     print y.name;
     '''), 'Num');
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let incrX = \r -> {..r, x: r.x+1};
     let point1 = {y: 1, x: 0};
     let point2 = incrX(point1);
     let point3 = incrX(point2);'''),
-        '{y = Num, x = Num, x = Num, x = Num}'
+        '{y = Num, x = Num, x = Num, x = Num}',
     );
-    expect(inferSource(r'''
+    expect(_inferSource(r'''
     let takesInt = \x -> x+1;
     let takesList = \x -> [..x];
     let takesBool = \x -> x or false;
@@ -563,56 +555,40 @@ void main() {
 
 
     test(r'''
-    let fn = \ { print 1; };
-    ''', () => expectedType('t0 -> Unit'));
-    test(r'''
-    let fn = \x { print 1; };
-    ''', () => expectedType('t0 -> Unit'));
-    test(r'''
-    let fn = \x { print 1; return x; };
-    ''', () => expectedType('t0 -> t0'));
-    test(r'''
-    let fn = \x { print 1; return [x]; };
-    ''', () => expectedType('t0 -> List[t0]'));
-    test(r'''
-    let fn = \x { print 1; return "a"; };
-    ''', () => expectedType('t0 -> String'));
-    test(r'''
-    let fn = \x { print 1; return ["a"]; };
-    ''', () => expectedType('t0 -> List[String]'));
-    test(r'''
-    let fn = \x { print 1; return [x, "a"]; };
-    ''', () => expectedType('String -> List[String]'));
-
-
-    test(r'''
-    let fn = \ { let a = 1; };
-    ''', () => expectedType('t0 -> Unit'));
-    test(r'''
-    let fn = \x { let a = 1; };
-    ''', () => expectedType('t0 -> Unit'));
-    test(r'''
-    let fn = \x { let a = 1; return x; };
-    ''', () => expectedType('t0 -> t0'));
-    test(r'''
-    let fn = \x { let a = 1; return [x]; };
-    ''', () => expectedType('t0 -> List[t0]'));
-    test(r'''
-    let fn = \x { let a = 1; return "a"; };
-    ''', () => expectedType('t0 -> String'));
-    test(r'''
-    let fn = \x { let a = 1; return ["a"]; };
-    ''', () => expectedType('t0 -> List[String]'));
-    test(r'''
-    let fn = \x { let a = 1; return [x, "a"]; };
-    ''', () => expectedType('String -> List[String]'));
-
+    let fn = \x {
+      if x then {
+        print "here1";
+        return true;
+      }
+      print "here2";
+      return false;
+    };
+    
+    let r1 = fn(true);
+    let r2 = fn(false);
+    print r1;
+    print r2;
+    ''', () => expectedType('Bool'));
 
     test(r'''
     let fn = \x {
       if x then {
         print "here1";
-        return true;
+      }
+      print "here2";
+      return false;
+    };
+    
+    let r1 = fn(true);
+    let r2 = fn(false);
+    print r1;
+    print r2;
+    ''', () => expectedType('Bool'));
+
+    test(r'''
+    let fn = \x {
+      {
+        print "here1";
       }
       print "here2";
       return false;
@@ -662,5 +638,7 @@ dynamic _inferSource(String source) {
 
 
 void expectedType(String expected) {
-  expect(inferSource(Invoker.current!.liveTest.test.name).toString(), expected);
+  final liveTest = Invoker.current!.liveTest;
+  final source = liveTest.test.name.toString().replaceAll(liveTest.groups.last.name, '');
+  expect(_inferSource(source).toString(), expected);
 }

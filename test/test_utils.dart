@@ -21,6 +21,7 @@ List<Statement> parse(String source) {
 }
 
 MonoType inferSource(String source) {
+  if (!source.contains(';')) source = '$source;';
   final program = parse(source);
   final lambdaCalculus = transformStatements(program);
   return infer(lambdaCalculus);
