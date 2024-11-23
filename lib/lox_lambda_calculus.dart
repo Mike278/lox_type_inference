@@ -38,12 +38,13 @@ LambdaCalculusExpression transformStatements(List<Statement> statements) {
             ),
 
     LetDeclaration(:final name, :final initializer) =>
+      Let(
+        name.lexeme,
+        toLambdaCalculus(initializer),
         rest.isEmpty
-          ? toLambdaCalculus(initializer)
-          : _bind(
-              _continue(toLambdaCalculus(initializer)),
-              Abs('value', Let(name.lexeme, Var('value'), transformStatements(rest))),
-            ),
+          ? Var(name.lexeme)
+          : transformStatements(rest),
+      ),
 
     IfStatement(
       :final condition,
