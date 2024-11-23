@@ -53,9 +53,14 @@ LambdaCalculusExpression transformStatements(List<Statement> statements) {
     ) =>
         App(func: App(func: App(func: Var('?'),
             arg: toLambdaCalculus(condition)),
-            arg: transformStatements([thenBranch])),
             arg: transformStatements([
-              if (elseBranch != null) elseBranch,
+              if (thenBranch case Block(:final statements))...statements
+              else thenBranch,
+              ...rest,
+            ])),
+            arg: transformStatements([
+              if (elseBranch case Block(:final statements))...statements
+              else if (elseBranch != null) elseBranch,
               ...rest,
             ])),
 

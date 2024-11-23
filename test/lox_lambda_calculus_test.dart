@@ -113,6 +113,78 @@ void main() {
       expect(toLC(source).toString(),  expectedType, reason: source);
     });
   }
+
+  test('transform polymorphic statements', () {
+    final source = r'''
+      let id = \x -> x;
+      let a = id(1);
+      let b = id("b");
+    ''';
+    final program = parse(source);
+    final lambdaCalculus = transformStatements(program);
+    final type = infer(lambdaCalculus);
+    expect(type.toString(), r'String');
+  });
+
+  test('transform recursive functions', () {
+    final source = r'let factorial = \n -> n > 0 ? n * factorial(n - 1) : 1;';
+    final program = parse(source);
+    final lambdaCalculus = transformStatements(program);
+    final type = infer(lambdaCalculus);
+    expect(type.toString(), r'Num -> Num');
+  });
+
+  test('transform recursive function calls', () {
+    final source = r'let factorial = \n -> n > 0 ? n * factorial(n - 1) : 1; factorial(2);';
+    final program = parse(source);
+    final lambdaCalculus = transformStatements(program);
+    final type = infer(lambdaCalculus);
+    expect(type.toString(), r'Num');
+  });
+
+  test('if then block', () {
+    final source = r'''
+    let fn = \x { 
+      if true then {
+        print 1;
+      } 
+      return "ok"; 
+    };
+    ''';
+    final program = parse(source);
+    final lambdaCalculus = transformStatements(program);
+    final type = infer(lambdaCalculus);
+    expect(type.toString(), r't0 -> String');
+  });
+
+  test('if then', () {
+    final source = r'''
+    let fn = \x { 
+      if true then print 1;
+      return "ok"; 
+    };
+    ''';
+    final program = parse(source);
+    final lambdaCalculus = transformStatements(program);
+    final type = infer(lambdaCalculus);
+    expect(type.toString(), r't0 -> String');
+  });
+
+  test('if then else', () {
+    final source = r'''
+    let fn = \x { 
+      if true then {
+        return "ok"; 
+      } else {
+        return "ko"; 
+      } 
+    };
+    ''';
+    final program = parse(source);
+    final lambdaCalculus = transformStatements(program);
+    final type = infer(lambdaCalculus);
+    expect(type.toString(), r't0 -> String');
+  });
 }
 
 LambdaCalculusExpression toLC(String source) {

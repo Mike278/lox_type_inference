@@ -531,27 +531,85 @@ void main() {
 
   group('statements', () {
 
-    test(r'''
-    let fn = \ {};
-    ''', () => expectedType('t0 -> Unit'));
-    test(r'''
-    let fn = \x {};
-    ''', () => expectedType('t0 -> Unit'));
-    test(r'''
-    let fn = \x { return x; };
-    ''', () => expectedType('t0 -> t0'));
-    test(r'''
-    let fn = \x { return [x]; };
-    ''', () => expectedType('t0 -> List[t0]'));
-    test(r'''
-    let fn = \x { return "a"; };
-    ''', () => expectedType('t0 -> String'));
-    test(r'''
-    let fn = \x { return ["a"]; };
-    ''', () => expectedType('t0 -> List[String]'));
-    test(r'''
-    let fn = \x { return [x, "a"]; };
-    ''', () => expectedType('String -> List[String]'));
+    test(r'let fn = \ {};', () => expectedType('t0 -> Unit'));
+    test(r'let fn = \x {};', () => expectedType('t0 -> Unit'));
+    test(r'let fn = \x { return x; };', () => expectedType('t0 -> t0'));
+    test(r'let fn = \x { return [x]; };', () => expectedType('t0 -> List[t0]'));
+    test(r'let fn = \x { return "a"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { return ["a"]; };', () => expectedType('t0 -> List[String]'));
+    test(r'let fn = \x { return [x, "a"]; };', () => expectedType('String -> List[String]'));
+
+    test(r'let fn = \ { print 1; };', () => expectedType('t0 -> Unit'));
+    test(r'let fn = \x { print 1; };', () => expectedType('t0 -> Unit'));
+    test(r'let fn = \x { print 1; return x; };', () => expectedType('t0 -> t0'));
+    test(r'let fn = \x { print 1; return [x]; };', () => expectedType('t0 -> List[t0]'));
+    test(r'let fn = \x { print 1; return "a"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { print 1; return ["a"]; };', () => expectedType('t0 -> List[String]'));
+    test(r'let fn = \x { print 1; return [x, "a"]; };', () => expectedType('String -> List[String]'));
+
+    test(r'let fn = \ { let a = 1; };', () => expectedType('t0 -> Unit'));
+    test(r'let fn = \x { let a = 1; };', () => expectedType('t0 -> Unit'));
+    test(r'let fn = \x { let a = 1; return x; };', () => expectedType('t0 -> t0'));
+    test(r'let fn = \x { let a = 1; return [x]; };', () => expectedType('t0 -> List[t0]'));
+    test(r'let fn = \x { let a = 1; return "a"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { let a = 1; return ["a"]; };', () => expectedType('t0 -> List[String]'));
+    test(r'let fn = \x { let a = 1; return [x, "a"]; };', () => expectedType('String -> List[String]'));
+
+    test(r'let fn = \ {};                    fn();',  () => expectedType('Unit'));
+    test(r'let fn = \x {};                   fn(1);', () => expectedType('Unit'));
+    test(r'let fn = \x { return x; };        fn(1);', () => expectedType('Num'));
+    test(r'let fn = \x { return [x]; };      fn(1);', () => expectedType('List[Num]'));
+    test(r'let fn = \x { return "a"; };      fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { return ["a"]; };    fn(1);', () => expectedType('List[String]'));
+    test(r'let fn = \x { return [x, "a"]; }; fn("1");', () => expectedType('List[String]'));
+
+    test(r'let fn = \  { print 1; };                  fn();',  () => expectedType('Unit'));
+    test(r'let fn = \x { print 1; };                  fn(1);', () => expectedType('Unit'));
+    test(r'let fn = \x { print 1; return x; };        fn(1);', () => expectedType('Num'));
+    test(r'let fn = \x { print 1; return [x]; };      fn(1);', () => expectedType('List[Num]'));
+    test(r'let fn = \x { print 1; return "a"; };      fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { print 1; return ["a"]; };    fn(1);', () => expectedType('List[String]'));
+    test(r'let fn = \x { print 1; return [x, "a"]; }; fn("1");', () => expectedType('List[String]'));
+
+    test(r'let fn = \  { let a = 1; };                  fn();',  () => expectedType('Unit'));
+    test(r'let fn = \x { let a = 1; };                  fn(1);', () => expectedType('Unit'));
+    test(r'let fn = \x { let a = 1; return x; };        fn(1);', () => expectedType('Num'));
+    test(r'let fn = \x { let a = 1; return [x]; };      fn(1);', () => expectedType('List[Num]'));
+    test(r'let fn = \x { let a = 1; return "a"; };      fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { let a = 1; return ["a"]; };    fn(1);', () => expectedType('List[String]'));
+    test(r'let fn = \x { let a = 1; return [x, "a"]; }; fn("1");', () => expectedType('List[String]'));
+
+
+    test(r'let fn = \x { if true then { print 1;      } return "ok"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then { return "yep"; } return "ok"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then { print 1; return "yep"; } return "ok"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then  print 1;         return "ok"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then  return "yep";    return "ok"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then  return "yep";    print 1; return "ok"; };', () => expectedType('t0 -> String'));
+
+    test(r'let fn = \x { if true then { print 1;      } else { print 2;     } return "ok"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then { print 1;      } else { print "2";   } return "ok"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then { return "yep"; } else { return "ok"; }              };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then { print 1; return "yep"; } else { return "ok"; }     };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then { print 1; return "yep"; } else { print 1; return "ok"; }     };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then { return "yep"; } else { print 1; return "ok"; }     };', () => expectedType('t0 -> String'));
+
+    test(r'let fn = \x { if true then  print 1;       else  print 2;      return "ok"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then  print 1;       else  print "2";    return "ok"; };', () => expectedType('t0 -> String'));
+    test(r'let fn = \x { if true then  return "yep";  else  return "ok";               };', () => expectedType('t0 -> String'));
+
+
+    test(r'let fn = \x { if true then { print 1;      } return "ok"; }; fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { if true then { return "yep"; } return "ok"; }; fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { if true then { print 1;      } else { print 2;     } return "ok"; }; fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { if true then { print 1;      } else { print "2";   } return "ok"; }; fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { if true then { return "yep"; } else { return "ok"; }              }; fn(1);', () => expectedType('String'));
+
+    test(r'let fn = \x { if true then print 1;       return "ok"; }; fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { if true then return "yep";  return "ok"; }; fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { if true then print 1;       else  print 2;      return "ok"; }; fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { if true then print 1;       else  print "2";    return "ok"; }; fn(1);', () => expectedType('String'));
+    test(r'let fn = \x { if true then return "yep";  else  return "ok";               }; fn(1);', () => expectedType('String'));
 
 
     test(r'''
