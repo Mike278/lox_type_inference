@@ -108,6 +108,19 @@ print friends
     \> where(_, kneesProbablyHurt)
     \> map(_, \friend -> friend.name);
     
+print "";
+print "side effects:";
+print "";
+let fx = map(friends, \friend {
+    print "side effect!";
+    if friend.name == "bob" then {
+        print "hey bob :)";
+        print friend;
+    }
+    else print friend;
+    return friend;
+});
+    
 ''';
 
 String exec(String source) {
@@ -167,7 +180,7 @@ final loxMode = {
     {'token': "property",                   'regex': r'([a-zA-Z_]\w*)(?=\s*:)'},
     {'token': "string",                     'regex': r'"(?:[^\\]|\\.)*?(?:"|$)'},
     {'token': ["keyword", null, "def"],     'regex': r'(let)(\s+)([a-z$][\w$]*)'},
-    {'token': "keyword",                    'regex': r'(?:let|print)\b'},
+    {'token': "keyword",                    'regex': r'(?:let|print|if|then|else|return)\b'},
     {'token': "attribute",                  'regex': r'List'},
     {'token': "bracket",                    'regex': r'[{}\[\]()]'},
     {'token': "atom",                       'regex': r'true|false|nil'},
@@ -278,12 +291,13 @@ MarkText runInference(Token token, List<LetDeclaration> lets, Expr loxExpr) {
     final (substitution, t) = w(expr, context);
     final type = substitution.appliedTo(t);
     final normalized = normalizeTypeVariableIds(type);
+    final unwrapped = unwrapResults(normalized);
     return (
       from: from,
       to: to,
       MarkTextOptions(
         className: 'type-info',
-        title: '${token.lexeme}: $normalized',
+        title: '${token.lexeme}: $unwrapped',
       ),
     );
   } catch (e) {
