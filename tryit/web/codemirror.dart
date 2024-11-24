@@ -37,10 +37,12 @@ extension type TextMarker._(JSObject _) implements JSObject {
 @anonymous
 extension type MarkTextOptions._(JSObject _) implements JSObject {
   external String className;
-  external String title;
+  external String? title;
+  external JSAny? attributes;
 
   external factory MarkTextOptions({
     required String className,
-    required String title,
+    String? title,
+    JSAny? attributes,
   });
 }

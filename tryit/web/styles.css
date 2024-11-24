@@ -46,3 +46,30 @@ body {
 .type-error {
   border-bottom: 2px solid #EF5350;
 }
+
+.cm-tooltip-marker {
+  position: relative;
+}
+
+.cm-tooltip-marker:before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  padding: 6px 12px;
+  background: rgba(66, 66, 66);
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 9999;
+  margin-bottom: 5px;
+  overflow-wrap: break-word;
+}
+
+.cm-tooltip-marker:hover:before {
+  visibility: visible;
+  opacity: 1;
+}
+

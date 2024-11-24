@@ -296,8 +296,10 @@ MarkText runInference(Token token, List<LetDeclaration> lets, Expr loxExpr) {
       from: from,
       to: to,
       MarkTextOptions(
-        className: 'type-info',
-        title: '${token.lexeme}: $unwrapped',
+        className: 'type-info cm-tooltip-marker',
+        attributes: {
+          'data-tooltip': '${token.lexeme}: $unwrapped',
+        }.jsify(),
       ),
     );
   } catch (e) {
