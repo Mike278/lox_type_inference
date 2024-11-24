@@ -185,6 +185,32 @@ void main() {
     final type = infer(lambdaCalculus);
     expect(type.toString(), r't0 -> String');
   });
+
+  test('nested functions', () {
+    final source = r'''
+    let fn = \x { 
+      let inner = \y {
+        print x;
+        print y;
+        return x + y;
+      }; 
+      let sum = inner(5);
+      print "sum: "; 
+      print sum;
+      return sum;
+    };
+    ''';
+    final program = parse(source);
+    final lambdaCalculus = transformStatements(program);
+    final type = infer(lambdaCalculus);
+    expect(type.toString(), r'Num -> Num');
+    {
+      final program = parse('$source let result = fn(6);');
+      final lambdaCalculus = transformStatements(program);
+      final type = infer(lambdaCalculus);
+      expect(type.toString(), r'Num');
+    }
+  });
 }
 
 LambdaCalculusExpression toLC(String source) {

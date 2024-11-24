@@ -31,7 +31,7 @@ LambdaCalculusExpression transformStatements(List<Statement> statements) {
     AssertStatement(:final expr) ||
     ExpressionStatement(:final expr) =>
         rest.isEmpty
-          ? toLambdaCalculus(expr)
+          ? _continue(toLambdaCalculus(expr))
           : _bind(
               _continue(toLambdaCalculus(expr)),
               Abs('_', transformStatements(rest)),
@@ -54,12 +54,12 @@ LambdaCalculusExpression transformStatements(List<Statement> statements) {
         App(func: App(func: App(func: Var('?'),
             arg: toLambdaCalculus(condition)),
             arg: transformStatements([
-              if (thenBranch case Block(:final statements))...statements
+              if (thenBranch case Block(:final statements)) ...statements
               else thenBranch,
               ...rest,
             ])),
             arg: transformStatements([
-              if (elseBranch case Block(:final statements))...statements
+              if (elseBranch case Block(:final statements)) ...statements
               else if (elseBranch != null) elseBranch,
               ...rest,
             ])),
