@@ -290,7 +290,7 @@ MarkText runInference(Token token, List<LetDeclaration> lets, Expr loxExpr) {
   try {
     final (substitution, t) = w(expr, context);
     final type = substitution.appliedTo(t);
-    final normalized = normalizeTypeVariableIds(type);
+    final normalized = normalizeTypeVariableIds(type, displayAlpha);
     final unwrapped = unwrapResults(normalized);
     return (
       from: from,

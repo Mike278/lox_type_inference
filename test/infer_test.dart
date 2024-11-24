@@ -226,7 +226,7 @@ void main() {
 
     expect(
       _inferSource(fold),
-      'List[t1], t0, (t0, t1 -> t0) -> t0',
+      'List[t0], t1, (t1, t0 -> t1) -> t1',
     );
     expect(
       _inferSource(fold + r' fold([1,2,3], false, \state, element -> "wat");'),
@@ -241,7 +241,7 @@ void main() {
       fold(["a", "b", "c"], 0, \state, str -> str == "a" ? state+1 : state);
     '''), 'Num');
 
-    expect(_inferSource(map), 'List[t1], (t1 -> t0) -> List[t0]');
+    expect(_inferSource(map), 'List[t0], (t0 -> t1) -> List[t1]');
     expect(_inferSource(map + r'''
       map([1,2,3], \x -> x > 1);
     '''), 'List[Bool]');
@@ -355,7 +355,7 @@ void main() {
     print withRecord({a: "one", b: 2});
     print withRecord({a: "one", b: 2, c: 4});
     print withRecord;
-    '''), 't1, (t1 -> t0) -> t0');
+    '''), 't0, (t0 -> t1) -> t1');
 
     expect(_inferSource(r'let f = \rec -> rec.first + (rec.second ? 1 : 0);'), '{..t0, second = Bool, first = Num} -> Num');
 

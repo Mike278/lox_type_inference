@@ -310,25 +310,23 @@ final Context loxStandardLibraryContext = {
   'bind': forall('a', forall('b', function_t(result_t(a), function_t(function_t(a, result_t(b)), result_t(b))))),
 };
 
+typedef DisplayTypeVariable = String Function(int index);
 
-MonoType normalizeTypeVariableIds(MonoType t) {
+String displayIndexed(int i) => 't$i';
+String displayAlpha(int i) => String.fromCharCode(97 + i % 26) * (i ~/ 26 + 1);
+
+MonoType normalizeTypeVariableIds(
+  MonoType t, [
+  DisplayTypeVariable display = displayIndexed,
+]) {
   final namesSorted =
     collectTypeVariables({}, t)
-      .map(
-        (name) => switch (extractTypeVariableId(name)) {
-          null => null,
-          final id => (name, id),
-        },
-      )
-      .whereNotNull()
-      .toList()
-      .sorted((a, b) => a.$2.compareTo(b.$2))
-      .map((x) => x.$1)
+      .where((name) => extractTypeVariableId(name) != null)
       .toList();
 
   String lookup(String name) =>
     namesSorted.contains(name)
-      ? 't${namesSorted.indexOf(name)}'
+      ? display(namesSorted.indexOf(name))
       : name;
 
   return rename(t, lookup);
@@ -378,8 +376,8 @@ Set<String> collectTypeVariables(Set<String> state, MonoType t) => {
     },
     TypeRowEmpty() => { },
     TypeRowExtend(:final type, :final row) => {
-      ...collectTypeVariables(state, type),
       ...collectTypeVariables(state, row),
+      ...collectTypeVariables(state, type),
     }
   }
 };
