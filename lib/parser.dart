@@ -89,9 +89,9 @@ class Parser {
 
   ParseError newParseError(Token token, String message) {
     if (token.type == TokenType.EOF) {
-      _errorReporter(formatError(token.line, ' at end', message));
+      _errorReporter(formatError(token.line, token.offset, ' at end', message));
     } else {
-      _errorReporter(formatError(token.line, " at '${token.lexeme}'", message));
+      _errorReporter(formatError(token.line, token.offset, " at '${token.lexeme}'", message));
     }
     return ParseError();
   }

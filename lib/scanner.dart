@@ -47,19 +47,14 @@ RunResult run(
   );
 }
 
-String formatError(int line, String atToken, String message) {
-  return "[line $line] Error$atToken: $message";
+String formatError(int line, int offset, String atToken, String message) {
+  return "[line $line:$offset] Error$atToken: $message";
 }
 
 (List<Token>, {bool hadError}) scanTokens(
   String source,
   ErrorReporter errorReporter,
 ) {
-  var hadError = false;
-  void error(int line, String message) {
-    hadError = true;
-    errorReporter(formatError(line, '', message));
-  }
 
   final tokens = <Token>[];
 
@@ -67,6 +62,12 @@ String formatError(int line, String atToken, String message) {
   int current = 0;
   int line = 1;
   int offset = 0;
+
+  var hadError = false;
+  void error(String message) {
+    hadError = true;
+    errorReporter(formatError(line, offset, '', message));
+  }
 
   void addToken(TokenType type, [Object? literal]) {
     final text = source.substring(start, current);
@@ -92,7 +93,7 @@ String formatError(int line, String atToken, String message) {
     }
 
     if (current >= source.length) {
-      error(line, "Unterminated string.");
+      error("Unterminated string.");
       return;
     }
 
@@ -171,7 +172,7 @@ String formatError(int line, String atToken, String message) {
         } else {
           addToken(TokenType.SLASH);
         }
-      default: error(line, 'Unexpected character $c');
+      default: error('Unexpected character $c');
     }
   }
 

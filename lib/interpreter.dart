@@ -54,7 +54,7 @@ class LoxRuntime {
       }
     } on LoxRuntimeException catch (e) {
       if (e.token case final token?) {
-        reportError(formatError(token.line, ' at $token', e.message));
+        reportError(formatError(token.line, token.offset, ' at $token', e.message));
       }
       hadRuntimeError = true;
     }
