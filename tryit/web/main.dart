@@ -24,7 +24,13 @@ void main() {
 
   final outputElement = web.document.getElementById('output-area')!;
   web.document.getElementById('run-button')!.onClick.listen((_) {
-    outputElement.text = exec(editor.getDoc().getValue().trim());
+    outputElement.text = exec(editor.getDoc().getValue());
+  });
+  web.document.getElementById('sample1-button')!.onClick.listen((_) {
+    editor.getDoc().setValue(aoc2024day1Sample);
+  });
+  web.document.getElementById('sample2-button')!.onClick.listen((_) {
+    editor.getDoc().setValue(sample);
   });
 
   final clearMarks = <void Function()>[];
@@ -36,7 +42,7 @@ void main() {
         clear();
       }
       clearMarks.clear();
-      final (summary, marks) = typecheck(editor.getDoc().getValue().trim());
+      final (summary, marks) = typecheck(editor.getDoc().getValue());
       outputElement.text = summary;
       final doc = editor.getDoc();
       for (final (:from, :to, options) in marks) {
@@ -82,9 +88,9 @@ let fold = \list, state, fn ->
 
 let map = \list, fn ->
     fold(list, [], \state, element -> [..state, fn(element)]);
-    
+
 let reduce = \list, fn ->
-    fold(list, List.first(list), fn);
+    fold(List.rest(list), List.first(list), fn);
 
 let max = \x, y -> x > y ? x : y;
 
@@ -94,20 +100,20 @@ print friends
 print "";
 
 
-    
+
 print "friends who probably grunt when they stand up:";
 
 let where = \list, fn ->
     fold(list, [], \state, element -> 
         fn(element) ? [..state, element] : state);
-    
+
 let kneesProbablyHurt = \friend ->
      ageOf(friend, {currentYear: 2024}) >= 30;
-     
+
 print friends
     \> where(_, kneesProbablyHurt)
     \> map(_, \friend -> friend.name);
-    
+
 print "";
 print "side effects:";
 print "";
@@ -120,7 +126,78 @@ let fx = map(friends, \friend {
     else print friend;
     return friend;
 });
-    
+
+''';
+
+final aoc2024day1Sample = r'''
+// advent of code 2024 day 1
+
+let empty = List.empty;
+let first = List.first;
+let rest = List.rest;
+
+let fold = \list, state, fn ->
+    list \> empty ? state : 
+    fold(list \> rest, fn(state, list \> first), fn);
+
+let map = \list, fn ->
+    fold(list, [], \state, element -> [..state, fn(element)]);
+
+let reduce = \list, fn ->
+    fold(list \> rest, list \> first, fn);
+
+let where = \list, fn ->
+    fold(list, [], \state, element -> 
+        fn(element) ? [..state, element] : state);
+
+let sort = \list -> list \> empty ? [] : [
+    ..list \> rest \> where (_, \e -> e < (list \> first)) \> sort,
+    list \> first,
+    ..list \> rest \> where (_, \e -> e >= (list \> first)) \> sort
+];
+
+let zip = \l1, l2, fn -> 
+    (l1 \> empty) or 
+    (l2 \> empty) ? [] :
+    [
+        fn(l1 \> first, l2 \> first),
+        ..zip(l1 \> rest, l2 \> rest, fn)
+    ];
+
+
+let absDiff = \a, b -> a > b ? a - b : b - a;
+let plus = \a, b -> a + b;
+let sum = \list -> reduce(list, plus);
+
+let input = [
+    [3, 4],
+    [4, 3],
+    [2, 5],
+    [1, 3],
+    [3, 9],
+    [3, 3]
+];
+
+let lists = fold(
+    input,
+    {l1: [], l2: []},
+    \state, pair -> {
+        l1: [..state.l1, pair \> first],
+        l2: [..state.l2, pair \> rest \> first]
+    }
+);
+print lists;
+
+let diffs = zip(
+  lists.l1 \> sort,
+  lists.l2 \> sort,
+  absDiff
+);
+print diffs;
+
+let ans = sum(diffs);
+print ans;
+assert ans == 11;
 ''';
 
 String exec(String source) {
@@ -182,14 +259,14 @@ final loxMode = {
     {'token': ["keyword", null, "def"],     'regex': r'(let)(\s+)([a-z$][\w$]*)'},
     {'token': "keyword",                    'regex': r'(?:let|print|if|then|else|return)\b'},
     {'token': "attribute",                  'regex': r'List'},
-    {'token': "bracket", 'indent': true,    'regex': r'[\{\[\(]', },
-    {'token': "bracket", 'dedent': true,    'regex': r'[\}\]\)]', },
+    {'token': "bracket",                    'regex': r'[\{\[\(]', },
+    {'token': "bracket",                    'regex': r'[\}\]\)]', },
     {'token': "atom",                       'regex': r'true|false|nil'},
     {'token': "punctuation",                'regex': r'[,;]'},
     {'token': "number",                     'regex': r'\d'},
     {'token': "comment",                    'regex': r'\/\/.*'},
     {'token': "comment", 'next': "comment", 'regex': r'\/\*'},
-    {'token': "operator", 'indent': true,   'regex': r'->'},
+    {'token': "operator",                   'regex': r'->'},
     {'token': "operator",                   'regex': r'->|\\>|\?|:|\.\.'},
     {'token': "variable-3",                 'regex': r'[a-z$][\w$]*'},
   ],
@@ -200,7 +277,7 @@ final loxMode = {
 };
 
 final codeMirrorOptions = {
-  'value': sample,
+  'value': aoc2024day1Sample,
   'mode': 'lox',
   'lineNumbers': true,
   'theme': 'ambiance',
@@ -288,6 +365,7 @@ MarkText runInference(Token token, List<LetDeclaration> lets, Expr loxExpr) {
       ? toLambdaCalculus(loxExpr)
       : toLet(lets);
   try {
+    TypeVariable.counter = 0;
     final (substitution, t) = w(expr, context);
     final type = substitution.appliedTo(t);
     final normalized = normalizeTypeVariableIds(type, displayAlpha);
@@ -307,8 +385,10 @@ MarkText runInference(Token token, List<LetDeclaration> lets, Expr loxExpr) {
       from: from,
       to: to,
       MarkTextOptions(
-        className: 'type-error',
-        title: '${token.lexeme}: $e',
+        className: 'type-error cm-tooltip-marker',
+        attributes: {
+          'data-tooltip': '${token.lexeme}: $e',
+        }.jsify(),
       ),
     );
   }
