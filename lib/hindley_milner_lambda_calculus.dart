@@ -196,7 +196,24 @@ String prettyPrintApp(App expr) {
     args.add(func.arg);
     func = func.func;
   }
-  return '${prettyPrint(func)}(${args.reversed.map(prettyPrint).join(', ')})';
+
+  switch (func) {
+    case Var(:final name) when const {
+      '+', '-', '*', '/',
+      'or', 'and',
+      '>', '>=', '<', '<=',
+      '!=', '==',
+    }.contains(name):
+        final [rhs, lhs] = args;
+        return '${prettyPrint(lhs)} $name ${prettyPrint(rhs)}';
+
+    case Var(name: '?'):
+      final [elseBranch, thenBranch, condition] = args;
+      return '${prettyPrint(condition)} ? ${prettyPrint(thenBranch)} : ${prettyPrint(elseBranch)}';
+
+    default:
+      return '${prettyPrint(func)}(${args.reversed.map(prettyPrint).join(', ')})';
+  }
 }
 
 String prettyPrintAbs(Abs expr) {
