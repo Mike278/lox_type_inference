@@ -32,8 +32,7 @@ MonoType infer(LambdaCalculusExpression expr) {
   final (substitution, type) = w(expr, newDefaultContext());
   final inferred = substitution.appliedTo(type);
   final normalized = normalizeTypeVariableIds(inferred);
-  final unwrapped = unwrapResults(normalized);
-  return unwrapped;
+  return normalized;
 }
 
 Map<String, PolyType> newDefaultContext() => {

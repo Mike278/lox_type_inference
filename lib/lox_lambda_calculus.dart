@@ -17,23 +17,23 @@ Token _synthesizeNewIdentifier(int line, int offset) {
 
 
 LambdaCalculusExpression transformStatements(List<Statement> statements) {
-  if (statements.isEmpty) return _continue(Lit(unit_t));
+  if (statements.isEmpty) return Lit(unit_t);
   final [first, ...rest] = statements;
 
   return switch (first) {
     ReturnStatement(:final expr?) =>
-        _return(toLambdaCalculus(expr)),
+        toLambdaCalculus(expr),
 
     ReturnStatement(expr: null) =>
-        _return(toLambdaCalculus(NilLiteral())),
+        toLambdaCalculus(NilLiteral()),
 
     PrintStatement(:final expr) ||
     AssertStatement(:final expr) ||
     ExpressionStatement(:final expr) =>
         rest.isEmpty
-          ? _continue(toLambdaCalculus(expr))
-          : _bind(
-              _continue(toLambdaCalculus(expr)),
+          ? toLambdaCalculus(expr)
+          : _continue(
+              toLambdaCalculus(expr),
               Abs('_', transformStatements(rest)),
             ),
 
@@ -68,8 +68,8 @@ LambdaCalculusExpression transformStatements(List<Statement> statements) {
     Block(:final statements) =>
       rest.isEmpty
         ? transformStatements(statements)
-        : _bind(
-            _continue(transformStatements(statements)),
+        : _continue(
+            transformStatements(statements),
             Abs('_', transformStatements(rest)),
           ),
   };
@@ -246,16 +246,8 @@ LambdaCalculusExpression normalizeListElement(ListElement element) =>
     ),
   };
 
-App _return(LambdaCalculusExpression expr) => App(
-  func: Var('Return'),
-  arg: expr,
-);
-App _continue(LambdaCalculusExpression expr) => App(
-  func: Var('Continue'),
-  arg: expr,
-);
-App _bind(LambdaCalculusExpression m, LambdaCalculusExpression f) => App(
-  func: App(func: Var('bind'), arg: m),
+App _continue(LambdaCalculusExpression m, LambdaCalculusExpression f) => App(
+  func: App(func: Var('#continuation'), arg: m),
   arg: f,
 );
 
@@ -277,11 +269,6 @@ final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
       row: row,
     )
 );
-
-final result_t = (MonoType ty) => TypeFunctionApplication('Result', [ty]);
-final result_continue_t = result_t;
-final result_return_t = result_t;
-
 
 final a = var_t('a');
 final b = var_t('b');
@@ -305,9 +292,7 @@ final Context loxStandardLibraryContext = {
     'rest': function_t(list_t(b), list_t(b)),
     'empty': function_t(list_t(c), bool_t),
   })))),
-  'Return': forall('a', function_t(a, result_return_t(a))),
-  'Continue': forall('a', function_t(a, result_continue_t(a))),
-  'bind': forall('a', forall('b', function_t(result_t(a), function_t(function_t(a, result_t(b)), result_t(b))))),
+  '#continuation': forall('a', forall('b', function_t(a, function_t(function_t(a, b), b)))),
 };
 
 typedef DisplayTypeVariable = String Function(int index);
@@ -331,26 +316,6 @@ MonoType normalizeTypeVariableIds(
 
   return rename(t, lookup);
 }
-
-MonoType unwrapResults(MonoType t) => switch (t) {
-  TypeFunctionApplication(name: 'Result', :final monoTypes) =>
-      unwrapResults(monoTypes.single),
-
-  TypeFunctionApplication(:final name, :final monoTypes) =>
-      TypeFunctionApplication(
-        name,
-        [ for (final t in monoTypes) unwrapResults(t) ]
-      ),
-
-  TypeRowExtend(:final label, :final type, :final row) =>
-      TypeRowExtend(
-        newEntry: (label, unwrapResults(type)),
-        row: unwrapResults(row),
-      ),
-
-  TypeVariable() || TypeRowEmpty() =>
-      t,
-};
 
 MonoType rename(MonoType t, String Function(String) lookup) => switch (t) {
   TypeVariable(:final name) => TypeVariable(lookup(name)),

@@ -221,6 +221,12 @@ void main() {
         fold(list, List.first(list), fn);
   ''';
 
+  final where = fold + r'''
+  let where = \list, fn ->
+      fold(list, [], \state, element -> 
+          fn(element) ? [..state, element] : state);
+  ''';
+
 
   test('recursive polymorphic functions', () {
 
@@ -287,6 +293,19 @@ void main() {
           \highest, age -> age > highest ? age : highest
       );
     '''), 'Num');
+
+    expect(_inferSource(where + r'''
+    let sort = \list {
+      if List.empty(list) then return [];
+      let first = List.first(list);
+      let rest = List.rest(list);
+      return [
+        ..rest \> where (_, \e -> e < first) \> sort,
+        first,
+        ..rest \> where (_, \e -> e >= first) \> sort
+      ];
+    };
+    '''), 'List[Num] -> List[Num]');
   });
 
   final testInferRecord = testInferSource.partial('infer record');
@@ -657,6 +676,15 @@ void main() {
     print r1;
     print r2;
     ''', () => expectedType('Bool'));
+
+    test('use return', () {
+      final source  = r'''
+      let id = \x { return x; };
+      id(1) + 1;
+      ''';
+      expect(_inferSource(source), 'Num');
+    });
+
   });
 }
 

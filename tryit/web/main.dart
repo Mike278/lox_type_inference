@@ -369,14 +369,13 @@ MarkText runInference(Token token, List<LetDeclaration> lets, Expr loxExpr) {
     final (substitution, t) = w(expr, context);
     final type = substitution.appliedTo(t);
     final normalized = normalizeTypeVariableIds(type, displayAlpha);
-    final unwrapped = unwrapResults(normalized);
     return (
       from: from,
       to: to,
       MarkTextOptions(
         className: 'type-info cm-tooltip-marker',
         attributes: {
-          'data-tooltip': '${token.lexeme}: $unwrapped',
+          'data-tooltip': '${token.lexeme}: $normalized',
         }.jsify(),
       ),
     );
