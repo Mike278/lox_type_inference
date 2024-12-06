@@ -4,11 +4,11 @@ import 'dart:js_interop';
 import 'package:lox/env.dart';
 import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_api.dart';
-import 'package:lox/hindley_milner_lambda_calculus.dart';
 import 'package:lox/interpreter.dart';
 import 'package:lox/lox_lambda_calculus.dart';
 import 'package:lox/parser.dart';
 import 'package:lox/scanner.dart';
+import 'package:lox/utils.dart';
 import 'package:web/web.dart' as web;
 
 import './codemirror.dart';
@@ -45,7 +45,7 @@ void main() {
       final (summary, marks) = typecheck(editor.getDoc().getValue());
       outputElement.text = summary;
       final doc = editor.getDoc();
-      for (final (:from, :to, options) in marks) {
+      for (final ((:from, :to), options) in marks) {
         final mark = doc.markText(from, to, options);
         clearMarks.add(() => mark.clear());
       }
@@ -292,103 +292,283 @@ final codeMirrorOptions = {
 };
 
 
+typedef CodeSpan = ({Position from, Position to});
+typedef MarkText = (CodeSpan, MarkTextOptions);
+
 (String, List<MarkText>) typecheck(String source) {
 
-  final marks = <MarkText>[];
   final output = [];
   reportError(kind) => (err) => output.add('$kind:\n$err');
 
   final (tokens, hadError: hadScanError) = scanTokens(source, reportError('scan error'));
   final (statements, hadError: hadParseError) = Parser(tokens, reportError('parse error')).parse();
 
-  if (!hadParseError && !hadScanError) {
+  if (hadParseError || hadScanError) return (output.join('\n'), []);
 
-    unsupported(token, kind) {
-      final msg = 'type checking $kind statements is not supported';
-      final (:from, :to) = toCodeMirrorPositions(token);
+  final marks = <MarkText>[];
+  try {
+    final lookup = runInference(statements);
+    final typeOf = (Expr expr) {
+      final type = lookup[expr];
+      return type != null
+        ? normalizeTypeVariableIds(type, displayAlpha)
+        : null;
+    };
+    final hovers = buildHoverInfo(statements, typeOf);
+    for (final (span, :display, :style) in hovers) {
       marks.add((
-        from: from,
-        to: to,
+        span,
         MarkTextOptions(
-          className: 'type-error',
-          title: msg,
-        ),
+          className: '${style ?? ''} cm-tooltip-marker',
+          attributes: {'data-tooltip': display}.jsify(),
+        )
       ));
     }
 
-    final lets = <LetDeclaration>[];
-
-    for (final statement in statements) {
-      switch (statement) {
-        case LetDeclaration(:final initializer, :final name):
-          lets.add(statement);
-          marks.add(runInference(name, lets, initializer));
-        case ExpressionStatement(:final expr, :final semicolon):
-          lets.add(LetDeclaration(semicolon, expr));
-          marks.add(runInference(semicolon, lets, expr));
-        case PrintStatement(:final expr, :final keyword):
-          lets.add(LetDeclaration(keyword, expr));
-          marks.add(runInference(keyword, lets, expr));
-        case AssertStatement(:final expr, :final keyword):
-          lets.add(LetDeclaration(keyword, expr));
-          marks.add(runInference(keyword, lets, expr));
-        case ReturnStatement(:final keyword):
-          unsupported(keyword, 'return');
-        case Block(:final openBrace):
-          unsupported(openBrace, 'block');
-        case IfStatement(:final keyword):
-          unsupported(keyword, 'if');
-      }
-    }
-  }
-
-  return (output.join('\n'), marks);
-}
-
-typedef MarkText = (
-  MarkTextOptions options, {
-  Position from,
-  Position to,
-});
-
-({Position from, Position to}) toCodeMirrorPositions(Token token) {
-  final from = Position(line: token.line-1, ch: token.offset);
-  final to = Position(line: token.line-1, ch: token.offset + token.lexeme.length);
-  return (from: from, to: to);
-}
-
-MarkText runInference(Token token, List<LetDeclaration> lets, Expr loxExpr) {
-  final (:from ,:to) = toCodeMirrorPositions(token);
-
-  final context = {...loxStandardLibraryContext};
-  final expr = lets.length == 1
-      ? toLambdaCalculus(loxExpr)
-      : toLet(lets);
-  try {
-    TypeVariable.counter = 0;
-    final (substitution, t) = w(expr, context);
-    final type = substitution.appliedTo(t);
-    final normalized = normalizeTypeVariableIds(type, displayAlpha);
-    return (
-      from: from,
-      to: to,
-      MarkTextOptions(
-        className: 'type-info cm-tooltip-marker',
-        attributes: {
-          'data-tooltip': '${token.lexeme}: $normalized',
-        }.jsify(),
-      ),
-    );
   } catch (e) {
-    return (
-      from: from,
-      to: to,
-      MarkTextOptions(
-        className: 'type-error cm-tooltip-marker',
-        attributes: {
-          'data-tooltip': '${token.lexeme}: $e',
-        }.jsify(),
-      ),
-    );
+    reportError('typecheck error')(e);
   }
+
+  return (
+    output.join('\n'),
+    marks,
+  );
+}
+
+extension on Token {
+  CodeSpan get span {
+    final from = Position(line: line-1, ch: offset);
+    final to = Position(line: line-1, ch: offset + lexeme.length);
+    return (from: from, to: to);
+  }
+}
+
+typedef TypeOf = MonoType? Function(Expr);
+
+List<(CodeSpan, {String display, String? style})> buildHoverInfo(
+  List<Statement> program,
+  TypeOf typeOf,
+) => [
+  for (final statement in program)
+    for (final (span, display) in displayStatement(statement, typeOf))
+      (
+        span,
+        display: display,
+        style: null //'type-info',
+      )
+];
+
+
+List<(CodeSpan, String)> displayStatement(
+  Statement statement,
+  TypeOf typeOf,
+) => switch (statement) {
+
+  ExpressionStatement(:final expr) =>
+      displayExpression(expr, typeOf),
+
+  AssertStatement(:final keyword, :final expr) ||
+  PrintStatement(:final keyword, :final expr) => [
+      (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
+      ...displayExpression(expr, typeOf),
+  ],
+
+  LetDeclaration(:final name, :final initializer) => [
+      (name.span, '${name.lexeme}: ${typeOf(initializer)}'),
+      ...displayExpression(initializer, typeOf),
+  ],
+
+  Block(:final statements) => [
+      for (final s in statements)
+        ...displayStatement(s, typeOf)
+  ],
+
+  ReturnStatement(:final keyword, expr: null) => [
+      (keyword.span, '${keyword.lexeme}: nil')
+  ],
+
+  ReturnStatement(:final keyword, :final expr?) => [
+      (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
+      ...displayExpression(expr, typeOf),
+  ],
+
+  IfStatement(
+    :final condition,
+    :final thenBranch,
+    :final elseBranch,
+  ) => [
+      ...displayExpression(condition, typeOf),
+      ...displayStatement(thenBranch, typeOf),
+      if (elseBranch != null) ...displayStatement(elseBranch, typeOf),
+  ],
+};
+
+List<(CodeSpan, String)> displayExpression(
+  Expr expr,
+  TypeOf typeOf,
+) => switch (expr) {
+
+
+  Variable(:final name) => [
+    (name.span, '${name.lexeme}: ${displayType(typeOf(expr))}')
+  ],
+
+
+  StringLiteral() ||
+  NumberLiteral() ||
+  FalseLiteral() ||
+  TrueLiteral() ||
+  NilLiteral() => [],
+
+
+  Grouping(:final expr) => displayExpression(expr, typeOf),
+
+  Lambda(
+    :final params,
+    body: ArrowExpression(
+      :final body,
+      :final arrow,
+    ),
+  ) => [
+    (arrow.span, displayType(typeOf(expr))),
+    ...displayExpression(body, typeOf),
+    ...zip(
+      params,
+      _uncurry(typeOf(expr) as TypeFunctionApplication),
+      (param, type) => (param.span, '${param.lexeme}: $type'),
+    ),
+  ],
+
+
+  Lambda(
+    :final params,
+    body: FunctionBody(
+      body: Block(
+        :final statements,
+        :final openBrace,
+        :final closeBrace,
+      )
+    )
+  ) =>[
+    (openBrace.span, displayType(typeOf(expr))),
+    (closeBrace.span, displayType(typeOf(expr))),
+    ...zip(
+      params,
+      _uncurry(typeOf(expr) as TypeFunctionApplication),
+      (param, type) => (param.span, '${param.lexeme}: $type'),
+    ),
+    for (final s in statements)
+      ...displayStatement(s, typeOf),
+  ],
+
+
+  Call(
+    :final callee,
+    args: ExpressionArgs(exprs: final args),
+    :final closingParen,
+  ) => [
+    (closingParen.span, displayType(typeOf(expr))),
+    ...displayExpression(callee, typeOf),
+    for (final arg in args) ...displayExpression(arg, typeOf),
+  ],
+
+
+  Call(
+    :final callee,
+    args: ArgsWithPlaceholder(:final before, :final placeholder, :final after),
+    :final closingParen,
+  ) => [
+    (closingParen.span, displayType(typeOf(expr))),
+    (placeholder.span, '${placeholder.lexeme}: TODO'),
+    for (final e in before) ...displayExpression(e, typeOf),
+    for (final e in after) ...displayExpression(e, typeOf),
+    ...displayExpression(callee, typeOf),
+  ],
+
+
+  ListLiteral(
+    :final closingBracket,
+    :final elements,
+  ) => [
+    (closingBracket.span, '[...]: ${displayType(typeOf(expr))}'),
+    for (final e in elements) ...switch (e) {
+        ExpressionListElement(:final expr) || SpreadListElement(:final expr) =>
+          displayExpression(expr, typeOf)
+      }
+  ],
+
+
+  Ternary(
+    :final questionMark,
+    :final condition,
+    :final ifTrue,
+    :final ifFalse,
+  ) => [
+    (questionMark.span, '?: ${displayType(typeOf(expr))}'),
+    ...displayExpression(condition, typeOf),
+    ...displayExpression(ifTrue, typeOf),
+    ...displayExpression(ifFalse, typeOf),
+  ],
+
+
+  LogicalAnd(:final left, :final keyword, :final right) ||
+  LogicalOr(:final left, :final keyword, :final right) ||
+  Binary(:final left, operator: final keyword, :final right) => [
+    (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
+    ...displayExpression(left, typeOf),
+    ...displayExpression(right, typeOf),
+  ],
+
+
+  Record(:final fields, :final closingBrace) => [
+    (closingBrace.span, '{...}: ${displayType(typeOf(expr))}'),
+    for (final (name, field) in fields.pairs()) ...[
+      (name.span, '${name.lexeme}: ${displayType(typeOf(field))}'),
+      ...displayExpression(field, typeOf),
+    ]
+  ],
+
+
+  RecordGet(:final name, :final record) => [
+    (name.span, '${name.lexeme}: ${displayType(typeOf(expr))}'),
+    ...displayExpression(record, typeOf),
+  ],
+
+
+  RecordUpdate(
+    :final record,
+    :final newFields,
+    :final closingBrace,
+  ) => [
+    (closingBrace.span, '{...}: ${displayType(typeOf(expr))}'),
+    ...displayExpression(record, typeOf),
+    for (final (name, field) in newFields.pairs()) ...[
+      (name.span, '${name.lexeme}: ${displayType(typeOf(field))}'),
+      ...displayExpression(field, typeOf),
+    ]
+  ],
+
+
+  UnaryMinus(:final operator, :final expr) ||
+  UnaryBang(:final operator, :final expr) => [
+    (operator.span, '${operator.lexeme}: ${displayType(typeOf(expr))}'),
+    ...displayExpression(expr, typeOf),
+  ],
+};
+
+String displayType(MonoType? type) =>
+  type == null ? '<unknown>' : '$type';
+
+Iterable<MonoType> _uncurry(TypeFunctionApplication fn) sync* {
+  assert(fn.name == 'Function');
+  var [parameter, body] = fn.monoTypes;
+  yield parameter;
+
+  while (true) if (body case TypeFunctionApplication(
+    name: 'Function',
+    monoTypes: [final input, final output],
+  )) {
+    yield input;
+    body = output;
+  } else return;
 }

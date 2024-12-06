@@ -29,8 +29,8 @@ MonoType inferSource(String source) {
 
 MonoType infer(LambdaCalculusExpression expr) {
   TypeVariable.counter = 0;
-  final (substitution, type) = w(expr, newDefaultContext());
-  final inferred = substitution.appliedTo(type);
+  final (substitution, :overallType, :subExpressionTypes) = w(expr, newDefaultContext());
+  final inferred = substitution.appliedTo(overallType);
   final normalized = normalizeTypeVariableIds(inferred);
   return normalized;
 }

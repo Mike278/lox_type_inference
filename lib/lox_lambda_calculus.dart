@@ -15,6 +15,19 @@ Token _synthesizeNewIdentifier(int line, int offset) {
   return Token(TokenType.IDENTIFIER, id, id, line, offset);
 }
 
+Map<Expr, MonoType> runInference(List<Statement> statements) {
+  TypeVariable.counter = 0;
+  final context = {...loxStandardLibraryContext};
+  final expr = transformStatements(statements);
+  final (sub, :overallType, :subExpressionTypes) = w(expr, context);
+  final typeOf = {
+    for (final (expr, lc) in _exprLog.pairs())
+      if (subExpressionTypes[lc] case final type?)
+        expr: type,
+  };
+  _exprLog.clear();
+  return typeOf;
+}
 
 LambdaCalculusExpression transformStatements(List<Statement> statements) {
   if (statements.isEmpty) return Lit(unit_t);
@@ -75,11 +88,18 @@ LambdaCalculusExpression transformStatements(List<Statement> statements) {
   };
 }
 
-LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) => switch (loxExpression) {
+final _exprLog = <Expr, LambdaCalculusExpression>{};
+LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) {
+  final lc = _toLambdaCalculus(loxExpression);
+  _exprLog[loxExpression] = lc;
+  return lc;
+}
 
-    StringLiteral()                   => Lit(string_t),
-    NumberLiteral()                   => Lit(num_t),
-    NilLiteral()                      => Lit(unit_t),
+LambdaCalculusExpression _toLambdaCalculus(Expr loxExpression) => switch (loxExpression) {
+
+    StringLiteral()       => Lit(string_t),
+    NumberLiteral()       => Lit(num_t),
+    NilLiteral()          => Lit(unit_t),
     FalseLiteral() || TrueLiteral()   => Lit(bool_t),
     ListLiteral(elements: [])         => Lit(emptyList_t),
 
@@ -199,28 +219,6 @@ App toApp(Expr callee, List<Expr> args) {
   };
 }
 
-LambdaCalculusExpression toLet(List<LetDeclaration> statements) {
-  final body = Var(statements.last.name.lexeme);
-  final lets = [
-    for (final statement in statements.reversed) (
-      name: statement.name.lexeme,
-      expr: toLambdaCalculus(statement.initializer),
-    )
-  ];
-  return switch (lets) {
-    [] => body,
-    [(:final name, :final expr)] => Let(name, expr, body),
-    [(:final name, :final expr), ...final rest] =>
-      rest.fold(
-        Let(name, expr, body),
-        (let, statement) => Let(
-          statement.name,
-          statement.expr,
-          let,
-        ),
-      ),
-  };
-}
 
 LambdaCalculusExpression toList(
   List<ListElement> elements,
