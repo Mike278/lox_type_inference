@@ -150,11 +150,18 @@ let where = \list, fn ->
     fold(list, [], \state, element -> 
         fn(element) ? [..state, element] : state);
 
-let sort = \list -> list \> empty ? [] : [
-    ..list \> rest \> where (_, \e -> e < (list \> first)) \> sort,
-    list \> first,
-    ..list \> rest \> where (_, \e -> e >= (list \> first)) \> sort
-];
+let sort = \list {
+  if list \> empty then return [];
+  let x = list \> first;
+  let xs = list \> rest;
+  let isBefore = \e -> e < x;
+  let isAfter = \e -> e >= x;
+  return [
+    ..xs \> where(_, isBefore) \> sort,
+    x,
+    ..xs \> where(_, isAfter) \> sort
+  ];
+}; 
 
 let zip = \l1, l2, fn -> 
     (l1 \> empty) or 
