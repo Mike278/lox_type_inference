@@ -501,7 +501,7 @@ void main() {
     let f = \r -> {..r, one: "one", two: 2};
     f({one: "hello"}).one;
     '''), 'String');
-    expect(_inferSource(r'let f = \r -> true ? {..r, x: 2} : {..r, y: 2};'), isException(contains('recursive row type')));
+    expect(_inferSource(r'let f = \r -> true ? {..r, x: 2} : {..r, y: 2};'), contains('recursive row type'));
 
     expect(_inferSource(r'''
     let named = \r, name -> {..r, name: name};

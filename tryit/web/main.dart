@@ -318,17 +318,6 @@ typedef MarkText = (CodeSpan, MarkTextOptions);
     final typeOf = (Expr expr) {
       final type = lookup[expr];
       return type;
-      return type != null
-        // todo: need to do this higher up - scope is too small here - leaf expressions always have type variable `a`.
-        // e.g. let fn = \x, y, f -> [x, f(y)];
-        //                |  ^  ^        ^ ^
-        //                |  |  |        | |-incorrectly a
-        //                |  |  |        |-incorrectly a -> b
-        //                |  |  |-correctly b -> a
-        //                |  |-correctly b
-        //                |-correctly a
-        ? normalizeTypeVariableIds(type, displayAlpha)
-        : null;
     };
     final hovers = buildHoverInfo(statements, typeOf);
     for (final (span, :display, :style) in hovers) {
@@ -359,7 +348,7 @@ extension on Token {
   }
 }
 
-typedef TypeOf = MonoType? Function(Expr);
+typedef TypeOf = Ty? Function(Expr);
 
 List<(CodeSpan, {String display, String? style})> buildHoverInfo(
   List<Statement> program,
@@ -450,7 +439,7 @@ List<(CodeSpan, String)> displayExpression(
     ...displayExpression(body, typeOf),
     ...zip(
       params,
-      _uncurry(typeOf(expr) as TypeFunctionApplication),
+      _uncurry(typeOf(expr) as TyFunctionApplication),
       (param, type) => (param.span, '${param.lexeme}: $type'),
     ),
   ],
@@ -470,7 +459,7 @@ List<(CodeSpan, String)> displayExpression(
     (closeBrace.span, displayType(typeOf(expr))),
     ...zip(
       params,
-      _uncurry(typeOf(expr) as TypeFunctionApplication),
+      _uncurry(typeOf(expr) as TyFunctionApplication),
       (param, type) => (param.span, '${param.lexeme}: $type'),
     ),
     for (final s in statements)
@@ -572,15 +561,15 @@ List<(CodeSpan, String)> displayExpression(
   ],
 };
 
-String displayType(MonoType? type) =>
+String displayType(Ty? type) =>
   type == null ? '<unknown>' : '$type';
 
-Iterable<MonoType> _uncurry(TypeFunctionApplication fn) sync* {
+Iterable<Ty> _uncurry(TyFunctionApplication fn) sync* {
   assert(fn.name == 'Function');
   var [parameter, body] = fn.monoTypes;
   yield parameter;
 
-  while (true) if (body case TypeFunctionApplication(
+  while (true) if (body case TyFunctionApplication(
     name: 'Function',
     monoTypes: [final input, final output],
   )) {

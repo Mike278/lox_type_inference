@@ -20,21 +20,20 @@ List<Statement> parse(String source) {
   return statements;
 }
 
-MonoType inferSource(String source) {
+Ty inferSource(String source) {
   if (!source.contains(';')) source = '$source;';
   final program = parse(source);
   final lambdaCalculus = transformStatements(program);
   return infer(lambdaCalculus);
 }
 
-MonoType infer(LambdaCalculusExpression expr) {
-  TypeVariable.counter = 0;
-  final (substitution, :overallType, :subExpressionTypes) = w(expr, newDefaultContext());
-  final inferred = substitution.appliedTo(overallType);
-  final normalized = normalizeTypeVariableIds(inferred);
+Ty infer(LambdaCalculusExpression expr) {
+  TyVariable.counter = 0;
+  final (:overallType, :subExpressionTypes) = algorithmW(expr, newDefaultContext());
+  final normalized = normalizeTypeVariableIds(overallType);
   return normalized;
 }
 
-Map<String, PolyType> newDefaultContext() => {
+Map<String, Ty> newDefaultContext() => {
   ...loxStandardLibraryContext,
 };

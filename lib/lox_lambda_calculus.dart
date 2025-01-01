@@ -15,11 +15,11 @@ Token _synthesizeNewIdentifier(int line, int offset) {
   return Token(TokenType.IDENTIFIER, id, id, line, offset);
 }
 
-Map<Expr, MonoType> runInference(List<Statement> statements) {
-  TypeVariable.counter = 0;
+Map<Expr, Ty> runInference(List<Statement> statements) {
+  TyVariable.counter = 0;
   final context = {...loxStandardLibraryContext};
   final expr = transformStatements(statements);
-  final (sub, :overallType, :subExpressionTypes) = w(expr, context);
+  final (:overallType, :subExpressionTypes) = algorithmW(expr, context);
   final typeOf = {
     for (final (expr, lc) in _exprLog.pairs())
       if (subExpressionTypes[lc] case final type?)
@@ -250,100 +250,94 @@ App _continue(LambdaCalculusExpression m, LambdaCalculusExpression f) => App(
 );
 
 
-const bool_t = TypeFunctionApplication('Bool', []);
-const num_t = TypeFunctionApplication('Num', []);
-const string_t = TypeFunctionApplication('String', []);
-const unit_t = TypeFunctionApplication('Unit', []);
-final list_t = (MonoType of) => TypeFunctionApplication('List', [of]);
-final function_t = (MonoType from, MonoType to) => TypeFunctionApplication('Function', [from, to]);
-final var_t = TypeVariable.new;
-final forall = TypeQuantifier.new;
-final emptyList_t = forall('a', list_t(var_t('a')));
-final record_empty_t = TypeRowEmpty();
-final record_t = (Map<String, MonoType> fields) => fields.fold<MonoType>(
+final bool_t = TyFunctionApplication('Bool', []);
+final num_t = TyFunctionApplication('Num', []);
+final string_t = TyFunctionApplication('String', []);
+final unit_t = TyFunctionApplication('Unit', []);
+final list_t = (Ty of) => TyFunctionApplication('List', [of]);
+final function_t = (Ty from, Ty to) => TyFunctionApplication('Function', [from, to]);
+final emptyList_t = list_t(a);
+final record_empty_t = TyRowEmpty();
+final record_t = (Map<String, Ty> fields) => fields.fold<Ty>(
     record_empty_t,
-    (row, label, type) => TypeRowExtend(
+    (row, label, type) => TyRowExtend(
       newEntry: (label, type),
       row: row,
     )
 );
 
-final a = var_t('a');
-final b = var_t('b');
-final c = var_t('c');
+final a = TyVariable.freshGeneric();
+final b = TyVariable.freshGeneric();
+final c = TyVariable.freshGeneric();
 
 final Context loxStandardLibraryContext = {
   for (final symbol in {'+', '-', '*', '/'})   symbol : function_t(num_t, function_t(num_t, num_t)),
   for (final symbol in {'or', 'and'})          symbol : function_t(bool_t, function_t(bool_t, bool_t)),
   for (final symbol in {'>', '>=', '<', '<='}) symbol : function_t(num_t, function_t(num_t, bool_t)),
-  for (final symbol in {'!=', '=='})           symbol : forall('a', function_t(a, function_t(a, bool_t))),
+  for (final symbol in {'!=', '=='})           symbol : function_t(a, function_t(a, bool_t)),
   '!': function_t(bool_t, bool_t),
-  '?': forall('a', function_t(bool_t, function_t(a, function_t(a, a)))),
+  '?': function_t(bool_t, function_t(a, function_t(a, a))),
   '[]': emptyList_t,
   'nil': unit_t,
   'true': bool_t,
   'false': bool_t,
-  'List#Add': forall('a', function_t(list_t(a), function_t(a, list_t(a)))),
-  'List#Concat': forall('a', function_t(list_t(a), function_t(list_t(a), list_t(a)))),
-  'List' : forall('a', forall('b', forall('c', record_t({
+  'List#Add': function_t(list_t(a), function_t(a, list_t(a))),
+  'List#Concat': function_t(list_t(a), function_t(list_t(a), list_t(a))),
+  'List' : record_t({
     'first': function_t(list_t(a), a),
     'rest': function_t(list_t(b), list_t(b)),
     'empty': function_t(list_t(c), bool_t),
-  })))),
-  '#continuation': forall('a', forall('b', function_t(a, function_t(function_t(a, b), b)))),
+  }),
+  '#continuation': function_t(a, function_t(function_t(a, b), b)),
 };
-
-typedef DisplayTypeVariable = String Function(int index);
 
 String displayIndexed(int i) => 't$i';
 String displayAlpha(int i) => String.fromCharCode(97 + i % 26) * (i ~/ 26 + 1);
 
-MonoType normalizeTypeVariableIds(
-  MonoType t, [
-  DisplayTypeVariable display = displayIndexed,
-]) {
-  final namesSorted =
-    collectTypeVariables({}, t)
-      .where((name) => extractTypeVariableId(name) != null)
-      .toList();
+Ty normalizeTypeVariableIds(Ty t) {
+  final namesSorted = collectTypeVariables({}, t).toList();
 
-  String lookup(String name) =>
+  int lookup(int name) =>
     namesSorted.contains(name)
-      ? display(namesSorted.indexOf(name))
+      ? namesSorted.indexOf(name)
       : name;
 
   return rename(t, lookup);
 }
 
-MonoType rename(MonoType t, String Function(String) lookup) => switch (t) {
-  TypeVariable(:final name) => TypeVariable(lookup(name)),
-  TypeFunctionApplication(:final name, :final monoTypes) => TypeFunctionApplication(
-    lookup(name),
-    [ for (final t in monoTypes) rename(t, lookup) ]
-  ),
-  TypeRowEmpty() => t,
-  TypeRowExtend(:final label, :final type, :final row) => TypeRowExtend(
-    newEntry: (label, rename(type, lookup)),
-    row: rename(row, lookup),
-  ),
-};
 
-Set<String> collectTypeVariables(Set<String> state, MonoType t) => {
+Ty rename(Ty t, int Function(int) replace) =>
+  switch (t) {
+    TyVariable(:final mutableRef) => TyVariable(switch (mutableRef) {
+        Unresolved(:final id, :final level) => Unresolved(id: replace(id), level: level),
+        Resolved(:final type) => Resolved(rename(type, replace)),
+      }),
+    TyFunctionApplication(:final name, :final monoTypes) => TyFunctionApplication(
+      name,
+      [ for (final t in monoTypes) rename(t, replace) ]
+    ),
+    TyRowEmpty() => t,
+    TyRowExtend(:final label, :final type, :final row) => TyRowExtend(
+      newEntry: (label, rename(type, replace)),
+      row: rename(row, replace),
+    )
+  };
+
+Set<int> collectTypeVariables(Set<int> state, Ty t) => {
   ...state,
   ...switch (t) {
-    TypeVariable(:final name) => {name},
-    TypeFunctionApplication(:final name, :final monoTypes) => {
-      name,
+    TyVariable(:final mutableRef) => switch (mutableRef) {
+      Unresolved(:final id) => {id},
+      Resolved(:final type) => collectTypeVariables(state, type),
+    },
+    TyFunctionApplication(:final monoTypes) => {
       for (final t in monoTypes)
         ...collectTypeVariables(state, t),
     },
-    TypeRowEmpty() => { },
-    TypeRowExtend(:final type, :final row) => {
+    TyRowEmpty() => { },
+    TyRowExtend(:final type, :final row) => {
       ...collectTypeVariables(state, row),
       ...collectTypeVariables(state, type),
     }
   }
 };
-
-int? extractTypeVariableId(String s) =>
-  s.startsWith('t') ? int.parse(s.substring(1)) : null;

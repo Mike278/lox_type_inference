@@ -1,10 +1,9 @@
 import 'package:lox/hindley_milner_api.dart';
-import 'package:lox/utils.dart';
 
 sealed class LambdaCalculusExpression {}
 
 class Lit extends LambdaCalculusExpression {
-  final PolyType type;
+  final Ty type;
   Lit(this.type);
   @override String toString() => prettyPrint(this);
 }
@@ -64,126 +63,104 @@ class RecordExtension extends LambdaCalculusExpression {
 }
 
 
-final function = ({required MonoType from, required MonoType to}) => TypeFunctionApplication('Function', [from, to]);
+final function = ({required Ty from, required Ty to}) => TyFunctionApplication('Function', [from, to]);
+final unit = TyFunctionApplication('Unit', []);
 
-typedef AlgorithmWResult = (
-  Substitution, {
-  MonoType overallType,
-  Map<LambdaCalculusExpression, MonoType> subExpressionTypes,
+typedef AlgorithmWResult = ({
+  Ty overallType,
+  Map<LambdaCalculusExpression, Ty> subExpressionTypes,
 });
 
-AlgorithmWResult w(LambdaCalculusExpression expr, Context context) {
-  final (sub, overallType) = _w(expr, context);
-  final subExpressions = _log.mapValues(sub.appliedTo);
+AlgorithmWResult algorithmW(LambdaCalculusExpression expr, Context context) {
+  final overallType = generalize(-1, _infer(0, expr, context));
+  final subExpressions = {..._log};
   _log.clear();
   return (
-    sub,
     overallType: overallType,
     subExpressionTypes: subExpressions,
   );
 }
 
-final _log = <LambdaCalculusExpression, MonoType>{};
-MonoType _output(LambdaCalculusExpression expr, MonoType type) {
+final _log = <LambdaCalculusExpression, Ty>{};
+Ty _output(LambdaCalculusExpression expr, Ty type) {
   _log[expr] = type;
   return type;
 }
 
-(Substitution, MonoType) _w(LambdaCalculusExpression expr, Context context) {
+Ty _infer(int level, LambdaCalculusExpression expr, Context context) {
   switch (expr) {
     case Lit(:final type):
-      return ({}, _output(expr, instantiate(type)));
+      return _output(expr, instantiate(level, type));
     case Var(:final name):
       final type = context[name];
       if (type == null) throw Exception('Undefined variable $name');
-      return ({}, _output(expr, instantiate(type)));
+      return _output(expr, instantiate(level, type));
     case Abs(:final param, :final body):
-      final paramType = TypeVariable.fresh();
-      final (bodySubstitution, bodyReturnType) = _w(body, {
-        ...context,
-        param: paramType,
-      });
-      final funcType = bodySubstitution.appliedTo(function(from: paramType, to: bodyReturnType));
-      return (bodySubstitution, _output(expr, funcType));
+      final paramType = TyVariable.fresh(level);
+      final bodyReturnType = _infer(level, body, {...context, param: paramType});
+      final funcType = function(from: paramType, to: bodyReturnType);
+      return _output(expr, funcType);
     case App(:final func, :final arg):
-      final (funcSubstitution, funcType) = _w(func, context);
-      final (argSubstitution, argType) = _w(arg, funcSubstitution.appliedToContext(context));
-      final evaluatesToType = TypeVariable.fresh();
-      final unifiedSubstitution = unify(
-        argSubstitution.appliedTo(funcType),
+      final funcType = _infer(level, func, context);
+      final argType = _infer(level, arg, context);
+      final evaluatesToType = TyVariable.fresh(level);
+      unify(
+        funcType,
         function(from: argType, to: evaluatesToType),
       );
-      final overallType = unifiedSubstitution.appliedTo(evaluatesToType);
-      final substitutionsCombined = combine([funcSubstitution, argSubstitution, unifiedSubstitution]);
-      return (substitutionsCombined, _output(expr, overallType));
+      return _output(expr, evaluatesToType);
     case Let(:final name, :final assignment, :final body):
-      final maybeRecursive = TypeVariable.fresh();
-      final (assignmentSub, assignmentType) = _w(assignment, {
+      final maybeRecursive = TyVariable.fresh(level+1);
+      final assignmentType = _infer(level+1, assignment, {
         ...context,
         // [assignment] might reference [name], so add it to the context with a fresh type variable and let it get resolved normally
         name: maybeRecursive,
       });
-      final finalAssignmentSub = combine([
-        assignmentSub,
-        // tie together the self reference (if any)
-        unify(assignmentSub.appliedTo(maybeRecursive), assignmentType),
-      ]);
 
-      final contextWithAssignment = finalAssignmentSub.appliedToContext(context);
-      final generalizedAssignmentType = generalize(contextWithAssignment, finalAssignmentSub.appliedTo(assignmentType));
-      final (bodySub, bodyType) = _w(body, {
-        ...contextWithAssignment,
+      // tie together the self reference (if any)
+      unify(maybeRecursive, assignmentType);
+
+      final generalizedAssignmentType = generalize(level, assignmentType);
+      final bodyType = _infer(level, body, {
+        ...context,
         name: generalizedAssignmentType,
       });
-      final combined = combine([finalAssignmentSub, bodySub]);
-      return (combined, _output(expr, bodyType));
+      return _output(expr, bodyType);
     case RecordEmpty():
-      return ({}, _output(expr, instantiate(TypeRowEmpty())));
+      return _output(expr, TyRowEmpty());
     case RecordSelection(:final label, :final record):
-      final (recordSubstitution, recordType) = _w(record, context);
-      final restRowType = TypeVariable.fresh();
-      final fieldType = TypeVariable.fresh();
-      final paramType = recordSubstitution.appliedTo(TypeRowExtend(
-          newEntry: (label, fieldType),
-          row: restRowType,
-      ));
-      final unifiedSubstitution = unify(
-        paramType,
-        recordType,
+      final restRowType = TyVariable.fresh(level);
+      final fieldType = TyVariable.fresh(level);
+      final paramType = TyRowExtend(
+        newEntry: (label, fieldType),
+        row: restRowType,
       );
-      final allSubstitutions = combine([recordSubstitution, unifiedSubstitution]);
-      final returnType = unifiedSubstitution.appliedTo(fieldType);
-      return (allSubstitutions, _output(expr, returnType));
+      final returnType = fieldType;
+      unify(
+        paramType,
+        _infer(level, record, context),
+      );
+      return _output(expr, returnType);
 
     case RecordExtension(:final label, :final newField, :final record):
-      final (fieldSubstitution, fieldType) = _w(newField, context);
-      final (recordSubstitution, recordType) = _w(record, fieldSubstitution.appliedToContext(context));
-
-      final restRowType = TypeVariable.fresh();
-      final param1Type = TypeVariable.fresh();
-      final returnType = recordSubstitution.appliedTo(TypeRowExtend(
+      final restRowType = TyVariable.fresh(level);
+      final param1Type = TyVariable.fresh(level);
+      final returnType = TyRowExtend(
         newEntry: (label, param1Type),
         row: restRowType,
-      ));
+      );
 
-      final sub1 = unify(
+      unify(
         param1Type,
-        fieldType,
+        _infer(level, newField, context),
       );
-      final sub2 = unify(
+
+      unify(
         restRowType,
-        recordType,
+        _infer(level, record, context),
       );
 
-      final substitutionsCombined = combine([
-        sub2,
-        sub1,
-        recordSubstitution,
-        fieldSubstitution,
-      ]);
-
-      final overallType = substitutionsCombined.appliedTo(returnType);
-      return (substitutionsCombined, _output(expr, overallType));
+      return _output(expr, returnType);
   }
 }
 

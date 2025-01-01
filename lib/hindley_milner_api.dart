@@ -2,217 +2,159 @@
 import 'package:equatable/equatable.dart';
 import 'package:lox/utils.dart';
 
-//                                     <PolyType>
-//                                    /          \
-//  |----------------------------------|          \
-//  | TypeQuantifier(String, PolyType) |       <MonoType>_____.|----------------------|
-//  |----------------------------------|            |          | TypeVariable(String) |
-//  | <a> List [a]                     |            |          |----------------------|
-//  | <a> Function [List [a], a]       |            |          | a                    |
-//  |----------------------------------|            |          |----------------------|
-//                                                  |
-//                                                  |_________.|------------------------------------------------------|
-//                                                  |          |TypeFunctionApplication(TypeFunction, List<MonoType>) |
-//                                                  |          |------------------------------------------------------|
-//                                                  |          | String []                                            |
-//                                                  |          | List [Int]                                           |
-//                                                  |          | Function [Bool, Int]                                 |
-//                                                  |          |------------------------------------------------------|
-//                                                  |
-//                                                  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//                                                  |
-//                                                  | Extend HM with records, based on https://www.microsoft.com/en-us/research/publication/extensible-records-with-scoped-labels/
-//                                                  |
-//                                                  |---------.|-------------------------------------------|
-//                                                  |          | TypeRowExtend((String, MonoType), MonoType) |
-//                                                  |          |-------------------------------------------|
-//                                                  |          | {..{}, a = 1}                             |
-//                                                  |          | {..r, a = 1}                              |
-//                                                  |          | {..{..r, a = 1}, b = "b"}                 |
-//                                                  |          |-------------------------------------------|
-//                                                  |
-//                                                  |---------.|----------------|
-//                                                  |          | TypeRowEmpty() |
-//                                                  |          |----------------|
-//                                                  |          | {}             |
-//                                                  |          |----------------|
-//
+/// One of:
+///   - [TyFunctionApplication] `(String, List<Ty>)`
+///     - String []
+///     - List [Int]
+///     - Function [Bool, Int]
+///   - [TyVariable].[Unresolved] `(int id, int level)`
+///     - id=t0, level=1
+///     - id=t0, level=null (if quantified)
+///     - id=t2, level=1
+///     -  see https://okmij.org/ftp/ML/generalization.html
+///   - [TyVariable].[Resolved] `(Ty)`
+///     - List [String]
+///     - Bool
+///
+///   Extend HM with records, based on https://www.microsoft.com/en-us/research/publication/extensible-records-with-scoped-labels/
+///   - [TyRowExtend] `((String, MonoType), MonoType)`
+///     - {..{}, a = 1}
+///     - {..r, a = 1}
+///     - {..{..r, a = 1}, b = "b"}
+///   - [TyRowEmpty]
+///     - {}
+sealed class Ty with EquatableMixin {}
 
-
-sealed class PolyType {
-  const PolyType();
-}
-
-class TypeQuantifier extends PolyType with EquatableMixin {
-  final String a;
-  final PolyType sigma;
-
-  const TypeQuantifier(this.a, this.sigma);
-
-  @override
-  String toString() => '(∀$a. $sigma)';
-
-  @override get props => [a, sigma];
-}
-
-sealed class MonoType extends PolyType {
-  const MonoType();
-}
-
-class TypeVariable extends MonoType with EquatableMixin {
-  final String name;
-  const TypeVariable(this.name);
+// Based on https://okmij.org/ftp/ML/generalization.html
+class TyVariable extends Ty with EquatableMixin { // ignore: must_be_immutable
+  TyVariableState mutableRef;
+  TyVariable(this.mutableRef);
 
   static int counter = 0;
-  TypeVariable.fresh() : name = "t${counter++}";
+  static TyVariable freshGeneric() => TyVariable(Unresolved(id: counter++, level: null));
+  static TyVariable fresh(int level) => TyVariable(Unresolved(id: counter++, level: level));
 
   @override String toString() => prettyPrint(this);
 
-  @override get props => [name];
+  @override get props => [mutableRef];
 }
 
-class TypeFunctionApplication extends MonoType with EquatableMixin {
-  final String name;
-  final List<MonoType> monoTypes;
+sealed class TyVariableState with EquatableMixin {}
+class Unresolved extends TyVariableState with EquatableMixin {
+  final int id;
+  final int? level;
+  late final quantified = level == null;
+  Unresolved({required this.id, required this.level});
 
-  const TypeFunctionApplication(this.name, this.monoTypes);
+  @override get props => [id, level];
+}
+class Resolved extends TyVariableState with EquatableMixin {
+  final Ty type;
+  Resolved(this.type);
+  @override get props => [type];
+}
+
+class TyFunctionApplication extends Ty with EquatableMixin {
+  final String name;
+  final List<Ty> monoTypes;
+
+  TyFunctionApplication(this.name, this.monoTypes);
 
   @override String toString() => prettyPrint(this);
   @override get props => [name, monoTypes];
 }
 
-class TypeRowEmpty extends MonoType with EquatableMixin {
+class TyRowEmpty extends Ty with EquatableMixin {
   @override get props => [];
   @override String toString() => prettyPrint(this);
 }
-class TypeRowExtend extends MonoType with EquatableMixin {
+class TyRowExtend extends Ty with EquatableMixin {
   final String label;
-  final MonoType type;
-  final MonoType row;
-  TypeRowExtend({required (String, MonoType) newEntry, required this.row}) :
+  final Ty type;
+  final Ty row;
+  TyRowExtend({required (String, Ty) newEntry, required this.row}) :
         label = newEntry.$1,
         type = newEntry.$2;
   @override get props => [label, type, row];
   @override String toString() => prettyPrint(this);
 }
 
-(Substitution, MonoType) rewriteRow(
-  MonoType row2,
+Ty rewriteRow(
+  Ty row2,
   String label1,
-  MonoType fieldType1,
+  Ty fieldType1,
 ) {
   switch (row2) {
-    case TypeRowExtend(
+    case TyRowExtend(
       label: final label2,
       type: final fieldType2,
       row: final restRow2,
     ):
         if (label1 == label2) {
-          return (unify(fieldType1, fieldType2), restRow2);
+          unify(fieldType1, fieldType2);
+          return restRow2;
         }
-        final (s, t) = rewriteRow(restRow2, label1, fieldType1);
-        return (s, TypeRowExtend(newEntry: (label2, fieldType2), row: t));
+        final t = rewriteRow(restRow2, label1, fieldType1);
+        return TyRowExtend(newEntry: (label2, fieldType2), row: t);
 
-    case TypeVariable(:final name):
-        final restRow2 = TypeVariable.fresh();
-        final type2 = TypeRowExtend(
+    case TyVariable(mutableRef: Resolved(type: final row2)):
+        return rewriteRow(row2, label1, fieldType1);
+    case TyVariable(mutableRef: Unresolved(:final level?)):
+        final restRow2 = TyVariable.fresh(level);
+        final type2 = TyRowExtend(
           newEntry: (label1, fieldType1),
           row: restRow2,
         );
-        return ({name: type2}, restRow2);
+        row2.mutableRef = Resolved(type2);
+        return restRow2;
 
-    case TypeFunctionApplication():
+    case TyFunctionApplication()
+      || TyVariable(mutableRef: Unresolved(level: null)):
         throw Exception('row type expected, got $row2');
-    case TypeRowEmpty():
+    case TyRowEmpty():
         throw Exception('row does not contain label $label1');
   }
 }
 
-extension PolyTypeAPI on PolyType {
-  Set<String> freeVars() =>
-    switch (this) {
-      TypeVariable(name:final a) =>
-          { a },
-    
-      TypeFunctionApplication(:final monoTypes) => 
-          { for (final type in monoTypes) ...type.freeVars() },
-    
-      TypeQuantifier(:final a, :final sigma) =>
-          sigma.freeVars().difference({ a }),
+typedef Context = Map<String, Ty>;
 
-      TypeRowEmpty() => {},
+void _verifyNoSelfReferenceAndAdjustLevels(int id, int level, Ty ty) {
+  void verify(Ty ty) => switch (ty) {
+    TyVariable(:final Unresolved mutableRef) when mutableRef.id == id =>
+        throw 'recursive types',
 
-      TypeRowExtend(:final type, :final row) => {
-        ...type.freeVars(),
-        ...row.freeVars(),
-      },
-    };
+    TyVariable(:final Unresolved mutableRef) when mutableRef.level! > level =>
+        ty.mutableRef = Unresolved(id: mutableRef.id, level: level),
 
-}
-
-typedef Context = Map<String, PolyType>;
-typedef Substitution = Map<String, MonoType>;
-Substitution combine(List<Substitution> ss) => ss.reduce((a, b) => {
-  ...b,
-  for (final (k, v) in a.pairs())
-    k: b.appliedTo(v)
-});
-
-extension ContextAPI on Context {
-  Set<String> freeVars() => { for (final type in values) ...type.freeVars() };
-}
-
-extension SubstitutionAPI on Substitution {
-
-  MonoType appliedTo(MonoType mono) => switch (mono) {
-      TypeVariable(:final name) => this[name] ?? mono,
-      TypeFunctionApplication(:final name, :final monoTypes) =>
-        TypeFunctionApplication(
-          name,
-          monoTypes.map(appliedTo).toList(),
-        ),
-      TypeRowEmpty() => mono,
-      TypeRowExtend(:final label, :final type, :final row) => TypeRowExtend(
-        newEntry: (label, appliedTo(type)),
-        row: appliedTo(row),
-      ),
+    TyVariable(mutableRef: Unresolved()) => null,
+    TyVariable(mutableRef: Resolved(:final type)) => verify(type),
+    TyFunctionApplication(:final monoTypes) => monoTypes.forEach(verify),
+    TyRowExtend(:final type, :final row) => [verify(type), verify(row)],
+    TyRowEmpty() => null,
   };
-
-  Context appliedToContext(Context context) =>
-    context.mapValues(_applyPoly);
-
-  PolyType _applyPoly(PolyType poly) =>
-    switch (poly) {
-      MonoType m => appliedTo(m),
-      TypeQuantifier(:final a, :final sigma) => TypeQuantifier(a, _applyPoly(sigma))
-    };
-
+  verify(ty);
 }
 
-bool contains(MonoType type1, TypeVariable type2) =>
-  switch (type1) {
-    TypeVariable() => type1 == type2,
-    TypeFunctionApplication(:final monoTypes) => monoTypes.any((ty) => contains(ty, type2)),
-    TypeRowEmpty() => false,
-    TypeRowExtend(:final type, :final row) =>
-        contains(type, type2) ||
-        contains(row, type2),
-  };
+void unify(Ty t1, Ty t2) {
+  if (t1 == t2) return;
 
-Substitution unify(MonoType t1, MonoType t2) {
-  if (t1 == t2) return {};
+  switch ((t1, t2)) {
+    case (final t1, TyVariable(mutableRef: Resolved(type: final t2)))
+      || (TyVariable(mutableRef: Resolved(type: final t1)), final t2):
+      unify(t1, t2);
+      return;
 
-  if (t1 is TypeVariable) {
-    if (contains(t2, t1)) throw 'Type unification error: $t2 contains $t1';
-    return {t1.name: t2};
+    case (final ty, final TyVariable tvar && TyVariable(mutableRef: Unresolved(:final id, :final level?)))
+      || (final TyVariable tvar && TyVariable(mutableRef: Unresolved(:final id, :final level?)), final ty):
+      _verifyNoSelfReferenceAndAdjustLevels(id, level, ty);
+      tvar.mutableRef = Resolved(ty);
+      return;
+
+    default:
   }
 
-  if (t2 is TypeVariable) {
-    return unify(t2, t1);
-  }
-
-  if (t1 is TypeFunctionApplication &&
-      t2 is TypeFunctionApplication) {
+  if (t1 is TyFunctionApplication &&
+      t2 is TyFunctionApplication) {
     if (t1.name != t2.name) {
       throw 'Type unification error:\n$t1\n$t2';
     }
@@ -221,116 +163,137 @@ Substitution unify(MonoType t1, MonoType t2) {
       throw 'Type unification error: $t1 has ${t1.monoTypes.length}, $t2 has ${t2.monoTypes.length}';
     }
 
-    Substitution substitution = {};
-
-    for (final (a, b) in zip(t1.monoTypes, t2.monoTypes, makePair)) {
-      final a1 = substitution.appliedTo(a);
-      final b1 = substitution.appliedTo(b);
-      final unified = unify(a1, b1);
-      substitution = combine([substitution, unified]);
-    }
-
-    return substitution;
+    zip(t1.monoTypes, t2.monoTypes, unify)
+      .toList(); // force evaluation because zip is lazy
+    return;
   }
 
-  if (t1 is TypeRowEmpty &&
-      t2 is TypeRowEmpty) {
-    return {};
+  if (t1 is TyRowEmpty &&
+      t2 is TyRowEmpty) {
+    return;
   }
 
-  if (t1 is TypeRowExtend &&
-      t2 is TypeRowExtend) {
-    final TypeRowExtend(
+  if (t1 is TyRowExtend &&
+      t2 is TyRowExtend) {
+    final TyRowExtend(
       label: label1,
       type: fieldType1,
       row: restRow1,
     ) = t1;
-    final (rowSubstitution, restRow2) = rewriteRow(t2, label1, fieldType1);
 
-    // from `uni-row` rule: tail(r) !∈ dom(θ`)
-    final tailVar = findTailTypeVariableName(restRow1);
-    if (tailVar != null && rowSubstitution.containsKey(tailVar)) {
-      throw Exception('recursive row type');
-    }
+    final wasUnresolved = switch (restRow1) {
+      TyVariable(mutableRef: Unresolved()) => true,
+      _ => false
+    };
 
-    final unifiedSubstitution = unify(rowSubstitution.appliedTo(restRow1), restRow2);
-    return combine([rowSubstitution, unifiedSubstitution]);
+    final restRow2 = rewriteRow(t2, label1, fieldType1);
+
+    final isResolved = switch (restRow1) {
+      TyVariable(mutableRef: Resolved()) => true,
+      _ => false
+    };
+
+    if (wasUnresolved && isResolved) throw 'recursive row type';
+
+    unify(restRow1, restRow2);
+    return;
   }
 
   throw 'Type unification error: $t1 != $t2';
 }
 
-
-String? findTailTypeVariableName(MonoType row) => switch (row) {
-  TypeVariable(:final name) => name,
-  TypeRowEmpty() => null,
-  TypeRowExtend(:final row) => findTailTypeVariableName(row),
-  TypeFunctionApplication() => throw '$row is not a row type',
-};
-
-MonoType instantiate(
-  PolyType type, [
-  Map<String, TypeVariable>? mappings,
+Ty instantiate(
+  int level,
+  Ty type, [
+  Map<int, TyVariable>? mappings,
 ]) {
   mappings ??= {};
   return switch (type) {
-    TypeQuantifier(:final a, :final sigma) =>
-        instantiate(sigma, mappings..[a] = TypeVariable.fresh()),
-    MonoType type => switch (type) {
-        TypeVariable(:final name) =>
-            mappings[name] ?? type,
-        TypeFunctionApplication(:final name, :final monoTypes) =>
-            TypeFunctionApplication(name, [for (final ty in monoTypes) instantiate(ty, mappings)]),
-        TypeRowEmpty() =>
-            type,
-        TypeRowExtend(:final label, :final type, :final row) =>
-            TypeRowExtend(
-              newEntry: (label, instantiate(type, mappings)),
-              row: instantiate(row, mappings),
-            ),
-    }
+    TyVariable() => switch (type.mutableRef) {
+      Unresolved(quantified: true, :final id) =>
+        mappings[id] ??= TyVariable.fresh(level),
+
+      Unresolved(quantified: false) =>
+        type,
+
+      Resolved(:final type) =>
+        instantiate(level, type),
+    },
+    TyFunctionApplication(:final name, :final monoTypes) =>
+        TyFunctionApplication(name, [
+          for (final ty in monoTypes) instantiate(level, ty, mappings)
+        ]),
+    TyRowEmpty() =>
+        type,
+    TyRowExtend(:final label, :final type, :final row) =>
+        TyRowExtend(
+          newEntry: (label, instantiate(level, type, mappings)),
+          row: instantiate(level, row, mappings),
+        ),
   };
 }
 
-PolyType generalize(Context context, MonoType type) {
-  final freeVars = type.freeVars().difference(context.freeVars());
-  return freeVars.fold(type, (sigma, a) => TypeQuantifier(a, sigma));
-}
+Ty generalize(int level, Ty type) => switch (type) {
+  TyVariable(mutableRef: Resolved(:final type)) =>
+    generalize(level, type),
+
+  TyVariable(mutableRef: Unresolved(:final id, level: final otherLevel?))
+    when otherLevel > level =>
+        TyVariable(Unresolved(id: id, level: null)),
+
+  TyFunctionApplication() => TyFunctionApplication(
+    type.name,
+    type.monoTypes.map(generalize.partial(level)).toList(),
+  ),
+
+  TyRowExtend() => TyRowExtend(
+    newEntry: (type.label, generalize(level, type.type)),
+    row: generalize(level, type.row),
+  ),
+
+  TyRowEmpty() ||
+  TyVariable(mutableRef: Unresolved()) =>
+    type,
+};
 
 
-String prettyPrint(MonoType type) => switch (type) {
-  TypeVariable(:final name)
+String prettyPrint(Ty type) => switch (type) {
+  TyVariable(:final mutableRef) =>
+    switch (mutableRef) {
+      Resolved(:final type) => prettyPrint(type),
+      Unresolved(:final id, quantified: false) => '_$id',
+      Unresolved(:final id, quantified: true) => 't$id',
+    },
+
+  TyFunctionApplication(:final name, monoTypes: [])
       => name,
 
-  TypeFunctionApplication(:final name, monoTypes: [])
-      => name,
-
-  TypeFunctionApplication(name: 'List', monoTypes: [final typeArg])
+  TyFunctionApplication(name: 'List', monoTypes: [final typeArg])
       => 'List[$typeArg]',
 
-  TypeFunctionApplication(name: 'Result', monoTypes: [final typeArg])
+  TyFunctionApplication(name: 'Result', monoTypes: [final typeArg])
       => 'Result[$typeArg]',
 
-  TypeFunctionApplication(name: 'Function', monoTypes: [final input, final output])
+  TyFunctionApplication(name: 'Function', monoTypes: [final input, final output])
       => prettyPrintFunction(input, output),
 
-  TypeFunctionApplication(:final name)
+  TyFunctionApplication(:final name)
       => throw 'unknown TypeFunctionApplication $name',
 
-  TypeRowExtend(:final label, :final type, :final row)
+  TyRowExtend(:final label, :final type, :final row)
       => prettyPrintRecord(label, type, row),
 
-  TypeRowEmpty()
+  TyRowEmpty()
       => '{}',
 };
 
 
-String prettyPrintFunction(MonoType parameter, MonoType body) {
+String prettyPrintFunction(Ty parameter, Ty body) {
 
   final parameters = [parameter];
 
   // https://github.com/dart-lang/language/issues/2536
-  while (true) if (body case TypeFunctionApplication(
+  while (true) if (body case TyFunctionApplication(
     name: 'Function',
     monoTypes: [final input, final output],
   )) {
@@ -340,7 +303,7 @@ String prettyPrintFunction(MonoType parameter, MonoType body) {
 
   final prettyParameters = [
     for (final param in parameters)
-      if (param case TypeFunctionApplication(name: 'Function'))
+      if (param case TyFunctionApplication(name: 'Function'))
         prettyPrint(param).parenthesized
       else
         prettyPrint(param)
@@ -350,15 +313,15 @@ String prettyPrintFunction(MonoType parameter, MonoType body) {
 }
 
 
-String prettyPrintRecord(String label, MonoType type, MonoType tail) {
+String prettyPrintRecord(String label, Ty type, Ty tail) {
   final rows = ['$label = ${prettyPrint(type)}'];
-  while (tail is TypeRowExtend) {
+  while (tail is TyRowExtend) {
     rows.add('${tail.label} = ${prettyPrint(tail.type)}');
     tail = tail.row;
   }
   final pairs = rows.reversed.join(', ');
 
-  if (tail is TypeRowEmpty) {
+  if (tail is TyRowEmpty) {
     return '{$pairs}';
   } else {
     return '{..${prettyPrint(tail)}, $pairs}';
