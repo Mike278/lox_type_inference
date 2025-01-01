@@ -216,7 +216,7 @@ Ty _infer(int level, LambdaCalculusExpression expr, Context context) {
       }
       final variantType = _infer(level, matchTarget, context);
       unify(variantType, TyVariant(casesRow));
-      return expectedReturnType;
+      return _output(expr, expectedReturnType);
   }
 }
 
