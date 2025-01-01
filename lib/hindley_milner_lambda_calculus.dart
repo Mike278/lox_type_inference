@@ -87,7 +87,7 @@ typedef AlgorithmWResult = ({
 
 AlgorithmWResult algorithmW(LambdaCalculusExpression expr, Context context) {
   final overallType = generalize(-1, _infer(0, expr, context));
-  final subExpressions = {..._log};
+  final subExpressions = _log.mapValues(generalize.partial(-1));
   _log.clear();
   return (
     overallType: overallType,
