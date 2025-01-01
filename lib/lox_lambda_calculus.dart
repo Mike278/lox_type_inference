@@ -185,6 +185,8 @@ LambdaCalculusExpression _toLambdaCalculus(Expr loxExpression) => switch (loxExp
             ReturnStatement(closeBrace, NilLiteral()),
         ]),
       ),
+    TagConstructor() => throw UnimplementedError(),
+    TagMatch() => throw UnimplementedError(),
   }
 ;
 

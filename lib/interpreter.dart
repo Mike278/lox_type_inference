@@ -20,6 +20,11 @@ typedef LoxFunction = ({
   Object? Function(List<Object?> args) impl,
 });
 
+typedef LoxTag = ({
+  Token tag,
+  Object? payload,
+});
+
 typedef RuntimeIO = ({
   void Function(Object?) print,
 });
@@ -145,7 +150,35 @@ class LoxRuntime {
           label.lexeme: eval(value, env),
       },
       Lambda(:final params, :final body) => newLoxFunction(() => env, params, body),
+      TagConstructor(:final tag, :final payload?) => (tag: tag, payload: eval(payload, env)),
+      TagConstructor(:final tag, payload: null) => (tag: tag, payload: null),
+      TagMatch() => evalMatch(expr, env),
     };
+  }
+
+  Object? evalMatch(
+    TagMatch match,
+    Env env,
+  ) {
+    final TagMatch(
+      :keyword,
+      tag: target,
+      :cases,
+      braces: (_, closingBrace),
+    ) = match;
+    final LoxTag(
+      tag: actualTag,
+      payload: actualPayload,
+    ) = evalAs(target, keyword, env);
+    for (final TagMatchCase(:tag, :payload, :result) in cases) {
+      if (tag.lexeme == actualTag.lexeme) {
+        if (payload != null) {
+          env = env.defining(payload, actualPayload);
+        }
+        return eval(result, env);
+      }
+    }
+    throw LoxRuntimeException(closingBrace, 'No match was found');
   }
   
   T evalAs<T extends Object>(Expr expr, Token errorOnToken, Env env) {

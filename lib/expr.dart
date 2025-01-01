@@ -161,6 +161,28 @@ class SpreadListElement with EquatableMixin implements ListElement {
   @override get props => [dotdot, expr];
 }
 
+class TagConstructor extends Expr with EquatableMixin {
+  final Token tag;
+  final Expr? payload;
+  TagConstructor(this.tag, this.payload);
+  @override get props => [tag, payload];
+}
+
+class TagMatch extends Expr with EquatableMixin {
+  final Token keyword;
+  final Expr tag;
+  final (Token, Token) braces;
+  final List<TagMatchCase> cases;
+  TagMatch(this.keyword, this.tag, this.braces, this.cases);
+  @override get props => [keyword, tag, braces, cases];
+}
+
+typedef TagMatchCase = ({
+  Token tag,
+  Token? payload,
+  Token arrow,
+  Expr result,
+});
 
 sealed class Statement {}
 class ExpressionStatement extends Statement {

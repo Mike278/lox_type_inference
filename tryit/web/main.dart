@@ -559,6 +559,8 @@ List<(CodeSpan, String)> displayExpression(
     (operator.span, '${operator.lexeme}: ${displayType(typeOf(expr))}'),
     ...displayExpression(expr, typeOf),
   ],
+  TagConstructor() => [],
+  TagMatch() => [],
 };
 
 String displayType(Ty? type) =>

@@ -42,6 +42,9 @@ import 'package:lox/utils.dart';
 // listLiteral    → "[" listElement ( "," listElement )* "]"
 // listElement    → ".." expression
 //                | expression
+// tagConstructor → "." IDENTIFIER ( "(" expression ")" ) ? ;
+// tagMatch       → "match" expression "{" tagMatchCase ("," tagMatchCase )* "}"
+// tagMatchCase   → "." IDENTIFIER (IDENTIFIER)? "->" expression
 // call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 // arguments      → argument ( "," argument )* ;
 // argument       → "_" | expression;
@@ -346,6 +349,12 @@ class Parser {
     if (matchFirst(TokenType.OPEN_BRACE)) {
       return recordLiteral();
     }
+    if (matchFirst(TokenType.DOT)) {
+      return tagConstructor();
+    }
+    if (matchFirst(TokenType.MATCH)) {
+      return tagMatch();
+    }
 
     return call();
   }
@@ -397,6 +406,39 @@ class Parser {
       }
     }
     return expr;
+  }
+
+  Expr tagConstructor() {
+    final tagName = consume(TokenType.IDENTIFIER, "Expected tag name");
+    final Expr? payload;
+    if (matchFirst(TokenType.OPEN_PAREN)) {
+      payload = expression();
+      consume(TokenType.CLOSE_PAREN, "Expected close paren");
+    } else {
+      payload = null;
+    }
+    return TagConstructor(tagName, payload);
+  }
+
+  Expr tagMatch() {
+    final keyword = previous();
+    final tag = expression();
+    final openBrace = consume(TokenType.OPEN_BRACE, "Expected open brace");
+    final cases = <({Token tag, Token? payload, Token arrow, Expr result})>[];
+    var first = true;
+    do {
+      if (!first) consume(TokenType.COMMA, 'Expected comma between match cases.');
+      if (check(TokenType.CLOSE_BRACE)) break;
+      first = false;
+      consume(TokenType.DOT, "Expected dot before tag name");
+      final tag = consume(TokenType.IDENTIFIER, "Expected tag name");
+      final payload = matchFirst(TokenType.IDENTIFIER) ? previous() : null;
+      final arrow = consume(TokenType.ARROW, "Expected arrow");
+      final result = expression();
+      cases.add((tag: tag, payload: payload, arrow: arrow, result: result));
+    } while (!check(TokenType.CLOSE_BRACE) && !isAtEnd());
+    final closeBrace = consume(TokenType.CLOSE_BRACE, "Expected close brace");
+    return TagMatch(keyword, tag, (openBrace, closeBrace), cases);
   }
 
   // record         → "{" recordField ( "," recordField )* "}"

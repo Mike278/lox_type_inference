@@ -186,6 +186,7 @@ String formatError(int line, int offset, String atToken, String message) {
 }
 
 final keywords = {
+  'match' : TokenType.MATCH,
   'assert' : TokenType.ASSERT,
   'and' :    TokenType.AND,
   'class' :  TokenType.CLASS,
@@ -221,7 +222,7 @@ enum TokenType {
   IDENTIFIER, STRING, NUMBER,
 
   // Keywords.
-  ASSERT, AND, CLASS, ELSE, FALSE, FOR, IF, NIL, OR,
+  ASSERT, AND, CLASS, ELSE, FALSE, FOR, IF, MATCH, NIL, OR,
   PRINT, RETURN, SUPER, THEN, THIS, TRUE, LET, WHILE,
 
   EOF;
