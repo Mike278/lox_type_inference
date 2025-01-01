@@ -26,11 +26,15 @@ void main() {
   web.document.getElementById('run-button')!.onClick.listen((_) {
     outputElement.text = exec(editor.getDoc().getValue());
   });
-  web.document.getElementById('sample1-button')!.onClick.listen((_) {
-    editor.getDoc().setValue(aoc2024day1Sample);
-  });
-  web.document.getElementById('sample2-button')!.onClick.listen((_) {
-    editor.getDoc().setValue(sample);
+
+  <String, String>{
+    'sample1-button': aoc2024day1Sample,
+    'sample2-button': sample,
+    'sample3-button': tagsSample,
+  }.forEach((id, code) {
+    web.document.getElementById(id)!.onClick.listen((_) {
+      editor.getDoc().setValue(code);
+    });
   });
 
   final clearMarks = <void Function()>[];
@@ -205,6 +209,52 @@ print diffs;
 let ans = sum(diffs);
 print ans;
 assert ans == 11;
+''';
+
+final tagsSample = r'''
+let empty = List.empty;
+let first = List.first;
+let rest = List.rest;
+
+let fold = \list, state, fn ->
+    list \> empty ? state : 
+    fold(list \> rest, fn(state, list \> first), fn);
+
+let map = \list, fn ->
+    fold(list, [], \state, element -> [..state, fn(element)]);
+
+//////////////////////////////////////////////////////
+
+let colorToStr = \color -> match color {
+  .Red -> "r",
+  .RedAndYellow -> "r&y",
+  .Yellow -> "y",
+  .Green -> "g",
+};
+
+let na = [.Green, .Yellow, .Red];
+let eu = [.Green, .Yellow, .Red, .RedAndYellow];
+let current = true ? na : eu;
+
+let colorsToStr = map(_, colorToStr);
+print colorsToStr(na);
+print colorsToStr(eu);
+print colorsToStr(current);
+
+//////////////////////////////////////////////////////
+
+let tab = .Key("\t");
+let center = .Mouse({x: 50, y: 50});
+let keyOrMouse = false ? tab : center;
+
+let fn = \e -> match e {
+    .Key char -> char,
+    .Mouse coords -> coords.x > 50 ? "top" : "bottom",
+};
+
+print fn(tab);
+print fn(center);
+print fn(keyOrMouse);
 ''';
 
 String exec(String source) {
