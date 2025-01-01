@@ -7,7 +7,6 @@ environment:
   sdk: ^3.3.4
 
 dependencies:
-  analyzer:
   path:
   collection:
   equatable:
