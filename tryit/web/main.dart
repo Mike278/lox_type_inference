@@ -317,7 +317,16 @@ typedef MarkText = (CodeSpan, MarkTextOptions);
     final lookup = runInference(statements);
     final typeOf = (Expr expr) {
       final type = lookup[expr];
+      return type;
       return type != null
+        // todo: need to do this higher up - scope is too small here - leaf expressions always have type variable `a`.
+        // e.g. let fn = \x, y, f -> [x, f(y)];
+        //                |  ^  ^        ^ ^
+        //                |  |  |        | |-incorrectly a
+        //                |  |  |        |-incorrectly a -> b
+        //                |  |  |-correctly b -> a
+        //                |  |-correctly b
+        //                |-correctly a
         ? normalizeTypeVariableIds(type, displayAlpha)
         : null;
     };
