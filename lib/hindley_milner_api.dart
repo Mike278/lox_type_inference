@@ -16,13 +16,16 @@ import 'package:lox/utils.dart';
 ///     - List [String]
 ///     - Bool
 ///
-///   Extend HM with records, based on https://www.microsoft.com/en-us/research/publication/extensible-records-with-scoped-labels/
-///   - [TyRowExtend] `((String, MonoType), MonoType)`
+///   Extend HM with records and variants, based on https://www.microsoft.com/en-us/research/publication/extensible-records-with-scoped-labels/
+///   - [TyRowExtend] `((String, Ty), Ty)`
 ///     - {..{}, a = 1}
 ///     - {..r, a = 1}
 ///     - {..{..r, a = 1}, b = "b"}
 ///   - [TyRowEmpty]
 ///     - {}
+///   - [TyVariant]
+///     - <{..{}, .A(1)}>
+///     - <{..{..{}, .A(1)}, .B("b")}>
 sealed class Ty with EquatableMixin {}
 
 // Based on https://okmij.org/ftp/ML/generalization.html
@@ -78,6 +81,12 @@ class TyRowExtend extends Ty with EquatableMixin {
   @override get props => [label, type, row];
   @override String toString() => prettyPrint(this);
 }
+class TyVariant extends Ty with EquatableMixin {
+  final Ty type;
+  TyVariant(this.type);
+  @override get props => [type];
+  @override String toString() => prettyPrint(this);
+}
 
 Ty rewriteRow(
   Ty row2,
@@ -109,6 +118,7 @@ Ty rewriteRow(
         return restRow2;
 
     case TyFunctionApplication()
+      || TyVariant()
       || TyVariable(mutableRef: Unresolved(level: null)):
         throw Exception('row type expected, got $row2');
     case TyRowEmpty():
@@ -130,6 +140,7 @@ void _verifyNoSelfReferenceAndAdjustLevels(int id, int level, Ty ty) {
     TyVariable(mutableRef: Resolved(:final type)) => verify(type),
     TyFunctionApplication(:final monoTypes) => monoTypes.forEach(verify),
     TyRowExtend(:final type, :final row) => [verify(type), verify(row)],
+    TyVariant(:final type) => verify(type),
     TyRowEmpty() => null,
   };
   verify(ty);
@@ -199,6 +210,12 @@ void unify(Ty t1, Ty t2) {
     return;
   }
 
+  if (t1 is TyVariant &&
+      t2 is TyVariant) {
+    unify(t1.type, t2.type);
+    return;
+  }
+
   throw 'Type unification error: $t1 != $t2';
 }
 
@@ -230,6 +247,7 @@ Ty instantiate(
           newEntry: (label, instantiate(level, type, mappings)),
           row: instantiate(level, row, mappings),
         ),
+    TyVariant(:final type) => TyVariant(instantiate(level, type)),
   };
 }
 
@@ -250,6 +268,8 @@ Ty generalize(int level, Ty type) => switch (type) {
     newEntry: (type.label, generalize(level, type.type)),
     row: generalize(level, type.row),
   ),
+
+  TyVariant() => TyVariant(generalize(level, type.type)),
 
   TyRowEmpty() ||
   TyVariable(mutableRef: Unresolved()) =>
@@ -285,6 +305,12 @@ String prettyPrint(Ty type) => switch (type) {
 
   TyRowEmpty()
       => '{}',
+
+  TyVariant(type: TyRowExtend(:final label, :final type, :final row))
+      => prettyPrintVariant(label, type, row),
+
+  TyVariant(:final type)
+      => '<${prettyPrint(type)}>',
 };
 
 
@@ -326,4 +352,19 @@ String prettyPrintRecord(String label, Ty type, Ty tail) {
   } else {
     return '{..${prettyPrint(tail)}, $pairs}';
   }
+}
+
+String _formatTag(String tag, Ty payload) => switch (payload) {
+  TyFunctionApplication(name: 'Unit') => '.$tag',
+  _ => '.$tag(${prettyPrint(payload)})',
+};
+
+String prettyPrintVariant(String tag, Ty payload, Ty tail) {
+  final rows = [_formatTag(tag, payload)];
+  while (tail is TyRowExtend) {
+    rows.add(_formatTag(tail.label, tail.type));
+    tail = tail.row;
+  }
+  final pairs = rows.sorted().join(' ');
+  return '<$pairs>';
 }

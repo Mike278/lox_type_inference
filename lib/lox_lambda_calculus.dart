@@ -185,8 +185,27 @@ LambdaCalculusExpression _toLambdaCalculus(Expr loxExpression) => switch (loxExp
             ReturnStatement(closeBrace, NilLiteral()),
         ]),
       ),
-    TagConstructor() => throw UnimplementedError(),
-    TagMatch() => throw UnimplementedError(),
+    TagConstructor(
+      :final tag,
+      :final payload,
+    ) =>
+        VariantConstructor(
+          tag.lexeme,
+          payload == null
+              ? null
+              : toLambdaCalculus(payload),
+        ),
+    TagMatch(
+      :final tag,
+      :final cases,
+    ) => VariantMatch(toLambdaCalculus(tag), [
+      for (final TagMatchCase(:tag, :payload, :result) in cases)
+        (
+          tag: tag.lexeme,
+          payload: payload?.lexeme,
+          result: toLambdaCalculus(result),
+        ),
+    ])
   }
 ;
 
@@ -322,6 +341,9 @@ Ty rename(Ty t, int Function(int) replace) =>
     TyRowExtend(:final label, :final type, :final row) => TyRowExtend(
       newEntry: (label, rename(type, replace)),
       row: rename(row, replace),
+    ),
+    TyVariant(:final type) => TyVariant(
+      rename(type, replace),
     )
   };
 
@@ -340,6 +362,7 @@ Set<int> collectTypeVariables(Set<int> state, Ty t) => {
     TyRowExtend(:final type, :final row) => {
       ...collectTypeVariables(state, row),
       ...collectTypeVariables(state, type),
-    }
+    },
+    TyVariant(:final type) => collectTypeVariables(state, type),
   }
 };

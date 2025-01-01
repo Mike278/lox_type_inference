@@ -686,6 +686,118 @@ void main() {
     });
 
   });
+
+  group('variants', () {
+    test('construct', () {
+      expect(_inferSource(r'let x = .Green;'), '<.Green>');
+      expect(_inferSource(r'let x = .Green(1);'), '<.Green(Num)>');
+      expect(_inferSource(r'''
+      let x = .Green;
+      let y = .Red;
+      let z = true ? x : y;
+      '''), '<.Green .Red>');
+      expect(_inferSource(r'''
+      \x {
+        if x == .Green then return 1;
+        if x == .Red then return 2;
+        return 3;
+      };
+      '''), '<.Green .Red> -> Num');
+    });
+
+    test('match', () {
+      expect(_inferSource(r'''
+      \z -> match z {
+         .Green -> 1,
+         .Red -> 2,
+      };
+      '''), '<.Green .Red> -> Num');
+      expect(_inferSource(r'''
+      \z -> match z {
+         .Green g -> 1 + g,
+         .Red r -> 2 + r,
+      };
+      '''), '<.Green(Num) .Red(Num)> -> Num');
+      expect(_inferSource(r'''
+      let fn = \z -> match z {
+         .Green -> 1,
+         .Red -> 2,
+      };
+      fn(.Green);
+      '''), 'Num');
+      expect(_inferSource(r'''
+      let fn = \z -> match z {
+         .Green g -> 1 + g,
+         .Red r -> 2 + r,
+      };
+      fn(.Green(1));
+      '''), 'Num');
+      expect(_inferSource(r'''
+      let fn = \z -> match z {
+         .Green g -> 1 + g,
+         .Red r -> 2 + r,
+      };
+      fn(.Yellow(1));
+      '''), contains('Type unification error'));
+      expect(_inferSource(r'''
+      \z -> match z {
+         .Green -> 1,
+         .Red -> false,
+      };
+      '''), contains('Type unification error'));
+    });
+
+    test('match returning payload', () {
+      expect(_inferSource(r'''match .A(1) { .A a -> a };'''), ('Num'));
+      expect(_inferSource(r'''match .A([]) { .A a -> a };'''), ('List[t0]'));
+      expect(_inferSource(r'''\x -> match .A(x) { .A a -> a };'''), ('t0 -> t0'));
+      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A a -> a, .B b -> b };'''), 'Num');
+      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A a -> a, .B b -> "no" };'''), contains('Type unification error'));
+      expect(_inferSource(r'''match true ? .A(1) : .B("no") { .A a -> a, .B b -> b };'''), contains('Type unification error'));
+    });
+
+    test('match returning tags', () {
+      expect(_inferSource(r'''
+      \z -> match z {
+         .InGreen -> .OutGreen,
+         .InRed -> .OutRed,
+      };
+      '''), '<.InGreen .InRed> -> <.OutGreen .OutRed>');
+    });
+
+    test('open vs closed', () {
+      expect(_inferSource(r'''
+      let fn = \z -> match z {
+         .InGreen -> .OutGreen,
+         .InRed -> .OutRed,
+      };
+      match fn(.InGreen) {
+        .OutGreen -> 1,
+        .OutRed -> 2,
+      };
+      '''), 'Num');
+      expect(_inferSource(r'''
+      let fn = \z -> match z {
+         .InGreen -> .OutGreen,
+         .InRed -> .OutRed,
+      };
+      match fn(.InGreen) {
+        .OutGreen -> 1,
+        .OutRed -> 2,
+        .SomeExtraTag -> 3,
+      };
+      '''), 'Num');
+      expect(_inferSource(r'''
+      let fn = \z -> match z {
+         .InGreen -> .OutGreen,
+         .InRed -> .OutRed,
+      };
+      match fn(.InGreen) {
+        .OutGreen -> 1
+      };
+      '''), contains('Type unification error'));
+    });
+  });
 }
 
 String? get mainStackTrace =>

@@ -1,4 +1,5 @@
 import 'package:lox/hindley_milner_api.dart';
+import 'package:lox/utils.dart';
 
 sealed class LambdaCalculusExpression {}
 
@@ -61,7 +62,20 @@ class RecordExtension extends LambdaCalculusExpression {
 
   @override String toString() => prettyPrint(this);
 }
+class VariantConstructor extends LambdaCalculusExpression {
+  final String tag;
+  final LambdaCalculusExpression? payload;
+  VariantConstructor(this.tag, this.payload);
 
+  @override String toString() => prettyPrint(this);
+}
+class VariantMatch extends LambdaCalculusExpression {
+  final LambdaCalculusExpression variant;
+  final List<({String tag, String? payload, LambdaCalculusExpression result})> cases;
+  VariantMatch(this.variant, this.cases);
+
+  @override String toString() => prettyPrint(this);
+}
 
 final function = ({required Ty from, required Ty to}) => TyFunctionApplication('Function', [from, to]);
 final unit = TyFunctionApplication('Unit', []);
@@ -161,6 +175,48 @@ Ty _infer(int level, LambdaCalculusExpression expr, Context context) {
       );
 
       return _output(expr, returnType);
+    case VariantConstructor(:final tag, :final payload):
+      final expectedPayloadType = payload == null
+          ? unit
+          : TyVariable.fresh(level);
+      final restRowType = TyVariable.fresh(level);
+      final expectedVariantType = TyVariant(TyRowExtend(
+        newEntry: (tag, expectedPayloadType),
+        row: restRowType,
+      ));
+
+      if (payload != null) {
+        unify(
+          expectedPayloadType,
+          _infer(level, payload, context),
+        );
+      }
+      return _output(expr, expectedVariantType);
+    case VariantMatch(variant: final matchTarget, :final cases):
+      final expectedReturnType = TyVariable.fresh(level);
+      Ty casesRow = TyRowEmpty();
+      for (final (:tag, :payload, :result) in cases) {
+        final Ty payloadType;
+        final Context env;
+        if (payload == null) {
+          payloadType = unit;
+          env = context;
+        } else {
+          payloadType = TyVariable.fresh(level);
+          env = {
+            ...context,
+            payload: payloadType,
+          };
+        }
+        unify(expectedReturnType, _infer(level, result, env));
+        casesRow = TyRowExtend(
+          newEntry: (tag, payloadType),
+          row: casesRow,
+        );
+      }
+      final variantType = _infer(level, matchTarget, context);
+      unify(variantType, TyVariant(casesRow));
+      return expectedReturnType;
   }
 }
 
@@ -188,6 +244,21 @@ String prettyPrint(LambdaCalculusExpression expr) => switch (expr) {
 
   RecordExtension() =>
       prettyPrintRecord(expr),
+
+  VariantConstructor(:final tag, :final payload) =>
+      '.$tag $payload',
+
+  VariantMatch(
+    :final variant,
+    :final cases,
+  ) =>
+    'match ${prettyPrint(variant)} { ${[
+      for (final (:tag, :payload, :result) in cases)
+        payload == null
+            ? '.$tag => ${prettyPrint(result)}'
+            : '.$tag $payload => ${prettyPrint(result)}'
+      ].sorted().join(', ')
+    } }',
 };
 
 String prettyPrintApp(App expr) {

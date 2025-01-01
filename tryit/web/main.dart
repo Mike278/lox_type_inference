@@ -559,8 +559,16 @@ List<(CodeSpan, String)> displayExpression(
     (operator.span, '${operator.lexeme}: ${displayType(typeOf(expr))}'),
     ...displayExpression(expr, typeOf),
   ],
-  TagConstructor() => [],
-  TagMatch() => [],
+  TagConstructor(:final tag, :final payload) => [
+    (tag.span, '${tag.lexeme}: ${displayType(typeOf(expr))}'),
+    if (payload != null) ...displayExpression(payload, typeOf)
+  ],
+  TagMatch(:final tag, :final keyword, :final cases) => [
+    (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
+    ...displayExpression(tag, typeOf),
+    for (final TagMatchCase(:result) in cases)
+      ...displayExpression(result, typeOf)
+  ],
 };
 
 String displayType(Ty? type) =>
