@@ -310,7 +310,7 @@ String prettyPrint(Ty type) => switch (type) {
       => prettyPrintVariant(label, type, row),
 
   TyVariant(:final type)
-      => '<${prettyPrint(type)}>',
+      => prettyPrint(type),
 };
 
 
@@ -365,6 +365,6 @@ String prettyPrintVariant(String tag, Ty payload, Ty tail) {
     rows.add(_formatTag(tail.label, tail.type));
     tail = tail.row;
   }
-  final pairs = rows.sorted().join(' ');
-  return '<$pairs>';
+  final pairs = rows.sorted().join(' | ');
+  return pairs;
 }

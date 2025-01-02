@@ -689,20 +689,20 @@ void main() {
 
   group('variants', () {
     test('construct', () {
-      expect(_inferSource(r'let x = .Green;'), '<.Green>');
-      expect(_inferSource(r'let x = .Green(1);'), '<.Green(Num)>');
+      expect(_inferSource(r'let x = .Green;'), '.Green');
+      expect(_inferSource(r'let x = .Green(1);'), '.Green(Num)');
       expect(_inferSource(r'''
       let x = .Green;
       let y = .Red;
       let z = true ? x : y;
-      '''), '<.Green .Red>');
+      '''), '.Green | .Red');
       expect(_inferSource(r'''
       \x {
         if x == .Green then return 1;
         if x == .Red then return 2;
         return 3;
       };
-      '''), '<.Green .Red> -> Num');
+      '''), '.Green | .Red -> Num');
     });
 
     test('match', () {
@@ -711,13 +711,13 @@ void main() {
          .Green -> 1,
          .Red -> 2,
       };
-      '''), '<.Green .Red> -> Num');
+      '''), '.Green | .Red -> Num');
       expect(_inferSource(r'''
       \z -> match z {
          .Green g -> 1 + g,
          .Red r -> 2 + r,
       };
-      '''), '<.Green(Num) .Red(Num)> -> Num');
+      '''), '.Green(Num) | .Red(Num) -> Num');
       expect(_inferSource(r'''
       let fn = \z -> match z {
          .Green -> 1,
@@ -762,7 +762,7 @@ void main() {
          .InGreen -> .OutGreen,
          .InRed -> .OutRed,
       };
-      '''), '<.InGreen .InRed> -> <.OutGreen .OutRed>');
+      '''), '.InGreen | .InRed -> .OutGreen | .OutRed');
     });
 
     test('open vs closed', () {
