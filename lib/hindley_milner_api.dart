@@ -26,7 +26,7 @@ import 'package:lox/utils.dart';
 ///   - [TyVariant]
 ///     - <{..{}, .A(1)}>
 ///     - <{..{..{}, .A(1)}, .B("b")}>
-sealed class Ty with EquatableMixin {}
+sealed class Ty {}
 
 // Based on https://okmij.org/ftp/ML/generalization.html
 class TyVariable extends Ty with EquatableMixin { // ignore: must_be_immutable
