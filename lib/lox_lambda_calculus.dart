@@ -326,7 +326,6 @@ Ty normalizeTypeVariableIds(Ty t) {
   return rename(t, lookup);
 }
 
-// A value of type 'Object' can't be returned from the function 'rename' because it has a return type of 'Ty'.
 Ty rename(Ty t, int Function(int) replace) =>
   switch (t) {
     TyVariable(:final mutableRef) => TyVariable(switch (mutableRef) {
