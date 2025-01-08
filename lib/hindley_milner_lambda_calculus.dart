@@ -176,7 +176,7 @@ Ty _infer(int level, LambdaCalculusExpression expr, Context context) {
 
       return _output(expr, returnType);
     case VariantConstructor(:final tag, :final payload):
-      final /*inferred as `Object`, expected it to be `Ty`*/ expectedPayloadType = payload == null
+      final Ty expectedPayloadType = payload == null
           ? unit
           : TyVariable.fresh(level);
       final restRowType = TyVariable.fresh(level);
