@@ -374,6 +374,7 @@ class Parser {
           // 0-arg function
         } else {
           while (true) {
+            if (check(TokenType.CLOSE_PAREN)) break; // trailing comma
             if (matchFirst(TokenType.UNDERSCORE)) {
               if (placeholder != null) {
                 throw newParseError(previous(), 'Can only have 1 placeholder arg');
@@ -449,6 +450,7 @@ class Parser {
     ({Token dotdot, Expr record})? update;
     while (!check(TokenType.CLOSE_BRACE) && !isAtEnd()) {
       if (!first) consume(TokenType.COMMA, 'Expected comma between record field declarations.');
+      if (check(TokenType.CLOSE_BRACE)) break; // trailing comma
       if (matchFirst(TokenType.DOTDOT)) {
 
         // todo: relax these constraints and transform into multiple record updates?
@@ -487,6 +489,7 @@ class Parser {
     while (!check(TokenType.CLOSE_BRACKET) && !isAtEnd()) {
       if (!first) consume(TokenType.COMMA, 'Expected comma between list elements.');
       first = false;
+      if (check(TokenType.CLOSE_BRACKET)) break; // trailing comma
       if (matchFirst(TokenType.DOTDOT)) {
         final dotdot = previous();
         final expr = expression();
@@ -508,6 +511,7 @@ class Parser {
       // 0-param function
     } else {
       while (true) {
+        if (check(TokenType.ARROW)) break; // trailing comma
         final param = consume(TokenType.IDENTIFIER, "Expected parameter name");
         params.add(param);
         if (!matchFirst(TokenType.COMMA)) {
