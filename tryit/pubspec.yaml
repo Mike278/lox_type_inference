@@ -1,12 +1,11 @@
 name: tryit
 description: An absolute bare-bones web app.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+publish_to: none
 
 environment:
   sdk: ^3.6.0-edge.b775d296845664837faf5adf2f2bf44c1448412b
 
-# Add regular dependencies here.
 dependencies:
   web: ^0.5.1
   lox:

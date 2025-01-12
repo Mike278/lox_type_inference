@@ -238,7 +238,7 @@ class Token with EquatableMixin {
   Token(this.type, this.lexeme, this.literal, this.line, this.offset);
 
   @override
-  String toString() => [type.name, lexeme, if (literal != null) literal, '(ln$line:${offset})'].join(' ');
+  String toString() => [type.name, lexeme, if (literal != null) literal, '(ln$line:$offset)'].join(' ');
 
   @override get props => [type, lexeme, literal, line, offset];
 }
