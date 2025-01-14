@@ -121,19 +121,21 @@ let kneesProbablyHurt = \friend ->
 print friends
     \> where(_, kneesProbablyHurt)
     \> map(_, \friend -> friend.name);
+    
+let withCoolStatus = \friend -> { ..friend, isCool: friend.name == "bob" };
 
 print "";
 print "side effects:";
 print "";
-let fx = map(friends, \friend {
+let updatedFriends = map(friends, \friend {
     print "side effect!";
-    if friend.name == "bob" then {
-        print "hey bob :)";
-        print friend;
-    }
-    else print friend;
-    return friend;
+    let updated = friend \> withCoolStatus;
+    if updated.isCool then print "nice";
+    return updated;
 });
+
+print updatedFriends;
+print map(updatedFriends, \f -> f.isCool ? f.birthYear : 0);
 
 ''';
 
