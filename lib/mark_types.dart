@@ -22,19 +22,48 @@ extension on Token {
   final output = [];
   reportError(kind) => (err) => output.add('$kind:\n$err');
 
+  final sw = Stopwatch()..start();
+  justSpentTime(msg) => print('$msg took ${sw.elapsedMilliseconds}ms');
+
   final (tokens, hadError: hadScanError) = scanTokens(source, reportError('scan error'));
+  justSpentTime('scanning');
   final (statements, hadError: hadParseError) = Parser(tokens, reportError('parse error')).parse();
+  justSpentTime('parsing');
 
   if (hadParseError || hadScanError) return (errorOutput: output.join('\n'), []);
 
   final marks = <MarkText>[];
   try {
     final lookup = runInference(statements);
-    final typeOf = (Expr expr) {
-      final type = lookup[expr];
-      return type;
-    };
+    justSpentTime('type checking');
+
+    for (final statement in statements) {
+      final expr = switch (statement) {
+        ExpressionStatement(:final expr)   => expr,
+        PrintStatement(:final expr)        => expr,
+        AssertStatement(:final expr)       => expr,
+        LetDeclaration(:final initializer) => initializer,
+        Block()                            => null,
+        IfStatement()                      => null,
+        ReturnStatement()                  => null,
+      };
+      final ty = lookup[expr];
+      if (ty == null) continue;
+      final typeVariablesSorted = collectTypeVariables({}, ty).toList();
+      int normalize(int id) =>
+        typeVariablesSorted.contains(id)
+          ? typeVariablesSorted.indexOf(id)
+          : id;
+
+      for (final (lox, ty) in lookup.pairs()) {
+        lookup[lox] = rename(ty, normalize);
+      }
+    }
+    justSpentTime('normalizing type variables');
+
+    final typeOf = (Expr expr) => lookup[expr];
     final hovers = buildHoverInfo(statements, typeOf);
+    justSpentTime('building hovers');
     for (final (span, :display) in hovers) {
       marks.add((
         span,
@@ -46,6 +75,7 @@ extension on Token {
     reportError('typecheck error')(e);
   }
 
+  sw.stop();
   return (
     errorOutput: output.join('\n'),
     marks,
@@ -82,7 +112,7 @@ List<(CodeSpan, String)> displayStatement(
   ],
 
   LetDeclaration(:final name, :final initializer) => [
-      (name.span, '${name.lexeme}: ${typeOf(initializer)}'),
+      (name.span, '${name.lexeme}: ${displayType(typeOf(initializer))}'),
       ...displayExpression(initializer, typeOf),
   ],
 
@@ -143,7 +173,7 @@ List<(CodeSpan, String)> displayExpression(
     ...zip(
       params,
       _uncurry(typeOf(expr) as TyFunctionApplication),
-      (param, type) => (param.span, '${param.lexeme}: $type'),
+      (param, type) => (param.span, '${param.lexeme}: ${displayType(type)}'),
     ),
   ],
 
@@ -163,7 +193,7 @@ List<(CodeSpan, String)> displayExpression(
     ...zip(
       params,
       _uncurry(typeOf(expr) as TyFunctionApplication),
-      (param, type) => (param.span, '${param.lexeme}: $type'),
+      (param, type) => (param.span, '${param.lexeme}: ${displayType(type)}'),
     ),
     for (final s in statements)
       ...displayStatement(s, typeOf),
@@ -275,7 +305,12 @@ List<(CodeSpan, String)> displayExpression(
 };
 
 String displayType(Ty? type) =>
-  type == null ? '<unknown>' : '$type';
+  type == null ? '<unknown>' : prettyPrint(type, displayTypeVariable);
+
+String displayTypeVariable(({int id, bool quantified}) args) {
+  final name = displayAlpha(args.id);
+  return args.quantified ? name : '`$name';
+}
 
 Iterable<Ty> _uncurry(TyFunctionApplication fn) sync* {
   assert(fn.name == 'Function');
