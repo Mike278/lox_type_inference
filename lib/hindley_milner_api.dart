@@ -276,45 +276,49 @@ Ty generalize(int level, Ty type) => switch (type) {
     type,
 };
 
+typedef DisplayTypeVariable = String Function(({int id, bool quantified}));
 
-String prettyPrint(Ty type) => switch (type) {
+String prettyPrint(
+  Ty type, [
+  DisplayTypeVariable displayTypeVariable = _default,
+]) => switch (type) {
   TyVariable(:final mutableRef) =>
     switch (mutableRef) {
-      Resolved(:final type) => prettyPrint(type),
-      Unresolved(:final id, quantified: false) => '_$id',
-      Unresolved(:final id, quantified: true) => 't$id',
+      Resolved(:final type) => prettyPrint(type, displayTypeVariable),
+      Unresolved(:final id, :final quantified) =>
+        displayTypeVariable((id: id, quantified: quantified)),
     },
 
   TyFunctionApplication(:final name, monoTypes: [])
       => name,
 
   TyFunctionApplication(name: 'List', monoTypes: [final typeArg])
-      => 'List[$typeArg]',
+      => 'List[${prettyPrint(typeArg, displayTypeVariable)}]',
 
   TyFunctionApplication(name: 'Result', monoTypes: [final typeArg])
-      => 'Result[$typeArg]',
+      => 'Result[${prettyPrint(typeArg, displayTypeVariable)}]',
 
   TyFunctionApplication(name: 'Function', monoTypes: [final input, final output])
-      => prettyPrintFunction(input, output),
+      => prettyPrintFunction(input, output, displayTypeVariable),
 
   TyFunctionApplication(:final name)
       => throw 'unknown TypeFunctionApplication $name',
 
   TyRowExtend(:final label, :final type, :final row)
-      => prettyPrintRecord(label, type, row),
+      => prettyPrintRecord(label, type, row, displayTypeVariable),
 
   TyRowEmpty()
       => '{}',
 
   TyVariant(type: TyRowExtend(:final label, :final type, :final row))
-      => prettyPrintVariant(label, type, row),
+      => prettyPrintVariant(label, type, row, displayTypeVariable),
 
   TyVariant(:final type)
-      => prettyPrint(type),
+      => prettyPrint(type, displayTypeVariable),
 };
 
 
-String prettyPrintFunction(Ty parameter, Ty body) {
+String prettyPrintFunction(Ty parameter, Ty body, DisplayTypeVariable displayTypeVariable) {
 
   final parameters = [parameter];
 
@@ -330,19 +334,19 @@ String prettyPrintFunction(Ty parameter, Ty body) {
   final prettyParameters = [
     for (final param in parameters)
       if (param case TyFunctionApplication(name: 'Function'))
-        prettyPrint(param).parenthesized
+        prettyPrint(param, displayTypeVariable).parenthesized
       else
-        prettyPrint(param)
+        prettyPrint(param, displayTypeVariable)
   ].join(', ');
 
-  return '$prettyParameters -> ${prettyPrint(body)}';
+  return '$prettyParameters -> ${prettyPrint(body, displayTypeVariable)}';
 }
 
 
-String prettyPrintRecord(String label, Ty type, Ty tail) {
-  final rows = ['$label = ${prettyPrint(type)}'];
+String prettyPrintRecord(String label, Ty type, Ty tail, DisplayTypeVariable displayTypeVariable) {
+  final rows = ['$label = ${prettyPrint(type, displayTypeVariable)}'];
   while (tail is TyRowExtend) {
-    rows.add('${tail.label} = ${prettyPrint(tail.type)}');
+    rows.add('${tail.label} = ${prettyPrint(tail.type, displayTypeVariable)}');
     tail = tail.row;
   }
   final pairs = rows.reversed.join(', ');
@@ -350,21 +354,26 @@ String prettyPrintRecord(String label, Ty type, Ty tail) {
   if (tail is TyRowEmpty) {
     return '{$pairs}';
   } else {
-    return '{..${prettyPrint(tail)}, $pairs}';
+    return '{..${prettyPrint(tail, displayTypeVariable)}, $pairs}';
   }
 }
 
-String _formatTag(String tag, Ty payload) => switch (payload) {
+String _formatTag(String tag, Ty payload, DisplayTypeVariable displayTypeVariable) => switch (payload) {
   TyFunctionApplication(name: 'Unit') => '.$tag',
-  _ => '.$tag(${prettyPrint(payload)})',
+  _ => '.$tag(${prettyPrint(payload, displayTypeVariable)})',
 };
 
-String prettyPrintVariant(String tag, Ty payload, Ty tail) {
-  final rows = [_formatTag(tag, payload)];
+String prettyPrintVariant(String tag, Ty payload, Ty tail, DisplayTypeVariable displayTypeVariable) {
+  final rows = [_formatTag(tag, payload, displayTypeVariable)];
   while (tail is TyRowExtend) {
-    rows.add(_formatTag(tail.label, tail.type));
+    rows.add(_formatTag(tail.label, tail.type, displayTypeVariable));
     tail = tail.row;
   }
   final pairs = rows.sorted().join(' | ');
   return pairs;
 }
+
+String _default(({int id, bool quantified}) args) =>
+  args.quantified
+    ? 't${args.id}'
+    : '_${args.id}';

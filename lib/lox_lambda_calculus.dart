@@ -312,7 +312,6 @@ final Context loxStandardLibraryContext = {
   '#continuation': function_t(a, function_t(function_t(a, b), b)),
 };
 
-String displayIndexed(int i) => 't$i';
 String displayAlpha(int i) => String.fromCharCode(97 + i % 26) * (i ~/ 26 + 1);
 
 Ty normalizeTypeVariableIds(Ty t) {
