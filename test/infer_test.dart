@@ -285,7 +285,7 @@ void main() {
                   ? employee
                   : highest
       );
-    '''), '{name = String, age = Num}');
+    '''), '{name: String, age: Num}');
 
     expect(_inferSource(map + reduce + employees + r'''
       let maxAge = reduce(
@@ -310,11 +310,11 @@ void main() {
 
   final testInferRecord = testInferSource.partial('infer record');
   testInferRecord('let y = {};', '{}');
-  testInferRecord('let y = {foo: "foo"};', '{foo = String}');
+  testInferRecord('let y = {foo: "foo"};', '{foo: String}');
   testInferRecord('let y = {foo: "foo"}; let x = y.foo;', 'String');
-  testInferRecord(r'let double = \x -> x * 2; let y = {foo: "foo", bar: double(4)};', '{foo = String, bar = Num}');
-  testInferRecord('let y = {foo: "foo"}; let x = {a: 1, ok: y.foo};', '{a = Num, ok = String}');
-  testInferRecord(r'let y = \x -> {foo: 1};', 't0 -> {foo = Num}');
+  testInferRecord(r'let double = \x -> x * 2; let y = {foo: "foo", bar: double(4)};', '{foo: String, bar: Num}');
+  testInferRecord('let y = {foo: "foo"}; let x = {a: 1, ok: y.foo};', '{a: Num, ok: String}');
+  testInferRecord(r'let y = \x -> {foo: 1};', 't0 -> {foo: Num}');
   testInferRecord(r'let r = {id: \x -> x}; let a = r.id(1);', 'Num');
   testInferRecord(r'let r = {id: \x -> x}; let a = r.id(1); let b = r.id("b");', 'String');
   testInferRecord(r'List.empty([]);', 'Bool');
@@ -327,9 +327,9 @@ void main() {
   testInferRecord(r'let f = \x -> {a: x}; f(5).a; f("hi").a;', 'String');
 
   test('infer accessing field of record thats passed in as a parameter', () {
-    expect(_inferSource(r'\someRecord -> someRecord.bar'), '{..t0, bar = t1} -> t1');
-    expect(_inferSource(r'\someRecord -> someRecord.bar + 1'), '{..t0, bar = Num} -> Num');
-    expect(_inferSource(r'\someRecord, someNum -> someRecord.bar + someNum'), '{..t0, bar = Num}, Num -> Num');
+    expect(_inferSource(r'\someRecord -> someRecord.bar'), '{bar: t1} -> t1');
+    expect(_inferSource(r'\someRecord -> someRecord.bar + 1'), '{bar: Num} -> Num');
+    expect(_inferSource(r'\someRecord, someNum -> someRecord.bar + someNum'), '{bar: Num}, Num -> Num');
     expect(_inferSource(r'''
     let getAge = \person -> person.age;
     let bob = {age: 100};
@@ -338,7 +338,7 @@ void main() {
     expect(_inferSource(r'''
     let getAge = \person -> person.age;
     let getBirthYear = \currentYear, person -> currentYear - getAge(person);
-    '''), 'Num, {..t0, age = Num} -> Num');
+    '''), 'Num, {age: Num} -> Num');
     expect(_inferSource(r'''
     let getAge = \person -> person.age;
     let getBirthYear = \currentYear, person -> currentYear - getAge(person);
@@ -361,13 +361,13 @@ void main() {
     expect(_inferSource(r'''
     let withRecord = \x -> \f -> f(x);
     print withRecord({a: "one", b: 2});
-    '''), '({a = String, b = Num} -> t0) -> t0');
+    '''), '({a: String, b: Num} -> t0) -> t0');
 
     expect(_inferSource(r'''
     let withRecord = \x -> \f -> f(x);
     print withRecord({a: "one", b: 2});
     print withRecord({a: "one", b: 2, c: 4});
-    '''), '({a = String, b = Num, c = Num} -> t0) -> t0');
+    '''), '({a: String, b: Num, c: Num} -> t0) -> t0');
 
     expect(_inferSource(r'''
     let withRecord = \x -> \f -> f(x);
@@ -376,7 +376,7 @@ void main() {
     print withRecord;
     '''), 't0, (t0 -> t1) -> t1');
 
-    expect(_inferSource(r'let f = \rec -> rec.first + (rec.second ? 1 : 0);'), '{..t0, second = Bool, first = Num} -> Num');
+    expect(_inferSource(r'let f = \rec -> rec.first + (rec.second ? 1 : 0);'), '{second: Bool, first: Num} -> Num');
 
     expect(_inferSource(r'''
     let f = \rec -> rec.first + (rec.second ? 1 : 0);
@@ -456,33 +456,33 @@ void main() {
     expect(_inferSource(r'''
       let r1 = {a: "a"};
       let r2 = {..r1, b: false};
-    '''), '{a = String, b = Bool}');
+    '''), '{a: String, b: Bool}');
     expect(_inferSource(r'''
       let r1 = {a: "a"};
       let r2 = {..r1, b: false};
       let r3 = {..r1, b: true, c: 1};
-    '''), '{a = String, b = Bool, c = Num}');
+    '''), '{a: String, b: Bool, c: Num}');
     expect(_inferSource(r'''
       let r1 = {a: "a"};
       let r2 = {..r1, b: false};
       let r3 = {..r1, b: true, c: 1};
       let r4 = {..r1};
-    '''), '{a = String}');
+    '''), '{a: String}');
     expect(_inferSource(r'''
       let r1 = {};
       let r2 = {..r1};
     '''), '{}');
-    expect(_inferSource(r'\r -> {..r, one: "one"}'), 't0 -> {..t0, one = String}');
-    expect(_inferSource(r'\r -> {..r, one: "one", two: 2}'), 't0 -> {..t0, one = String, two = Num}');
+    expect(_inferSource(r'\r -> {..r, one: "one"}'), 't0 -> {one: String}');
+    expect(_inferSource(r'\r -> {..r, one: "one", two: 2}'), 't0 -> {one: String, two: Num}');
     expect(_inferSource(r'''
     let f = \r -> {..r, one: "one", two: 2};
     f({hello: 1});
-    '''), '{hello = Num, one = String, two = Num}');
+    '''), '{hello: Num, one: String, two: Num}');
     expect(_inferSource(r'''
     let f = \r -> {..r, one: "one", two: 2};
     f({hello: 1});
     f({a: false});
-    '''), '{a = Bool, one = String, two = Num}');
+    '''), '{a: Bool, one: String, two: Num}');
     expect(_inferSource(r'''
     let f = \r -> {..r, one: "one", two: 2};
     f({hello: 1}).one;
@@ -507,7 +507,7 @@ void main() {
     let named = \r, name -> {..r, name: name};
     let x = {title: "a", name: "some name"};
     let y = named(x, "updated");
-    '''), '{title = String, name = String, name = String}');
+    '''), '{title: String, name: String, name: String}');
     expect(_inferSource(r'''
     let named = \r, name -> {..r, name: name};
     let x = {title: "a", name: "some name"};
@@ -531,7 +531,7 @@ void main() {
     let point1 = {y: 1, x: 0};
     let point2 = incrX(point1);
     let point3 = incrX(point2);'''),
-        '{y = Num, x = Num, x = Num, x = Num}',
+        '{y: Num, x: Num, x: Num, x: Num}',
     );
     expect(_inferSource(r'''
     let takesInt = \x -> x+1;

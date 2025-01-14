@@ -344,14 +344,14 @@ String prettyPrintFunction(Ty parameter, Ty body, DisplayTypeVariable displayTyp
 
 
 String prettyPrintRecord(String label, Ty type, Ty tail, DisplayTypeVariable displayTypeVariable) {
-  final rows = ['$label = ${prettyPrint(type, displayTypeVariable)}'];
+  final rows = ['$label: ${prettyPrint(type, displayTypeVariable)}'];
   while (tail is TyRowExtend) {
-    rows.add('${tail.label} = ${prettyPrint(tail.type, displayTypeVariable)}');
+    rows.add('${tail.label}: ${prettyPrint(tail.type, displayTypeVariable)}');
     tail = tail.row;
   }
   final pairs = rows.reversed.join(', ');
 
-  if (tail is TyRowEmpty) {
+  if (tail is TyRowEmpty || tail is TyVariable) {
     return '{$pairs}';
   } else {
     return '{..${prettyPrint(tail, displayTypeVariable)}, $pairs}';
