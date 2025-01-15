@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:js_interop';
 
+import 'package:http/http.dart';
 import 'package:lox/env.dart';
 import 'package:lox/interpreter.dart';
 import 'package:lox/mark_types.dart';
@@ -60,7 +62,10 @@ void main() {
     });
   }
 
-  editor.on('change', (JSAny? _, JSAny? __) { queueTypecheck(); }.toJS);
+  editor.on('change', (JSAny? _, JSAny? __) {
+    queueTypecheck();
+    _maybeLog(editor.getDoc().getValue());
+  }.toJS);
   queueTypecheck();
 }
 
@@ -354,3 +359,25 @@ final codeMirrorOptions = {
   },
 };
 
+Timer? debounce;
+Future<void> _maybeLog(String source) async {
+  if (source.isEmpty) return;
+  debounce?.cancel();
+  debounce = Timer(const Duration(seconds: 2), () => _log(source));
+}
+
+final _url = Uri.parse('https://firestore.googleapis.com/v1/projects/loxtypeinference/databases/(default)/documents/tryit');
+Future<void> _log(String source) => post(
+  _url,
+  headers: const {'Content-Type': 'application/json'},
+  body: jsonEncode({
+    "fields": {
+      "source": {
+        "stringValue": source
+      },
+      "ts": {
+        "timestampValue": DateTime.now().toUtc().toIso8601String(),
+      },
+    }
+  })
+);
