@@ -26,15 +26,7 @@ void main() {
     outputElement.text = exec(editor.getDoc().getValue());
   });
 
-  <String, String>{
-    'sample1-button': aoc2024day1Sample,
-    'sample2-button': sample,
-    'sample3-button': tagsSample,
-  }.forEach((id, code) {
-    web.document.getElementById(id)!.onClick.listen((_) {
-      editor.getDoc().setValue(code);
-    });
-  });
+  editor.getDoc().setValue(sample);
 
   final clearMarks = <void Function()>[];
   Timer? debounce;
@@ -70,203 +62,96 @@ void main() {
 }
 
 final sample = r'''
-print "all friends:";
-
-let friends = [
-    {name: "alice", birthYear: 1996},
-    {name: "bob", birthYear: 1984},
-    {name: "charlie", birthYear: 1990},
-    {name: "devin", birthYear: 1995}
-];
-print friends;
-print "";
-
-
-
-print "age of oldest friend (as of 2024):";
-
-let ageOf = \friend, now -> 
-    now.currentYear - friend.birthYear;
-
-// have to define a bit of a standard library ourselves :)
-
-let fold = \list, state, fn ->
-    List.empty(list)
-        ? state
-        : fold(
-            List.rest(list),
-            fn(state, List.first(list)),
-            fn
-        );
-
-let map = \list, fn ->
-    fold(list, [], \state, element -> [..state, fn(element)]);
-
-let reduce = \list, fn ->
-    fold(List.rest(list), List.first(list), fn);
-
-let max = \x, y -> x > y ? x : y;
-
-print friends
-    \> map(_, ageOf(_, {currentYear: 2024}))
-    \> reduce(_, max);
-print "";
-
-
-
-print "friends who probably grunt when they stand up:";
-
-let where = \list, fn ->
-    fold(list, [], \state, element -> 
-        fn(element) ? [..state, element] : state);
-
-let kneesProbablyHurt = \friend ->
-     ageOf(friend, {currentYear: 2024}) >= 30;
-
-print friends
-    \> where(_, kneesProbablyHurt)
-    \> map(_, \friend -> friend.name);
-    
-let withCoolStatus = \friend -> { ..friend, isCool: friend.name == "bob" };
-
-print "";
-print "side effects:";
-print "";
-let updatedFriends = map(friends, \friend {
-    print "side effect!";
-    let updated = friend \> withCoolStatus;
-    if updated.isCool then print "nice";
-    return updated;
-});
-
-print updatedFriends;
-print map(updatedFriends, \f -> f.isCool ? f.birthYear : 0);
-
-''';
-
-final aoc2024day1Sample = r'''
-// advent of code 2024 day 1
-
+// Built-ins
 let empty = List.empty;
 let first = List.first;
 let rest = List.rest;
 
-let fold = \list, state, fn ->
-    list \> empty ? state : 
-    fold(list \> rest, fn(state, list \> first), fn);
+//
+// Lists
+//
+let friends = ["alice", "bob"];
+let family = ["charlie", "devin"];
+let people = ["joe", ..friends, "john", ..family];
+print rest(people);
 
-let map = \list, fn ->
-    fold(list, [], \state, element -> [..state, fn(element)]);
+//
+// Records
+//
+let boss = {
+    name: "Bob Vance",
+    company: "Vance Refrigeration",
+};
+let updated = {..boss, lineOfWork: .Refrigeration};
+print boss;
+print updated.company;
 
-let reduce = \list, fn ->
-    fold(list \> rest, list \> first, fn);
+//
+// Variants
+//
+let green = .Green;
+let red = .Red;
+let either = true ? green : red;
+print match either {
+    .Green -> 0,
+    .Red -> 1,
+};
 
-let where = \list, fn ->
-    fold(list, [], \state, element -> 
-        fn(element) ? [..state, element] : state);
-
-let sort = \list {
-  if list \> empty then return [];
-  let x = list \> first;
-  let xs = list \> rest;
-  let isBefore = \e -> e < x;
-  let isAfter = \e -> e >= x;
-  return [
-    ..xs \> where(_, isBefore) \> sort,
-    x,
-    ..xs \> where(_, isAfter) \> sort
-  ];
-}; 
-
-let zip = \l1, l2, fn -> 
-    (l1 \> empty) or 
-    (l2 \> empty) ? [] :
-    [
-        fn(l1 \> first, l2 \> first),
-        ..zip(l1 \> rest, l2 \> rest, fn)
-    ];
-
-
-let absDiff = \a, b -> a > b ? a - b : b - a;
-let plus = \a, b -> a + b;
-let sum = \list -> reduce(list, plus);
-
-let input = [
-    [3, 4],
-    [4, 3],
-    [2, 5],
-    [1, 3],
-    [3, 9],
-    [3, 3]
-];
-
-let lists = fold(
-    input,
-    {l1: [], l2: []},
-    \state, pair -> {
-        l1: [..state.l1, pair \> first],
-        l2: [..state.l2, pair \> rest \> first]
-    }
-);
-print lists;
-
-let diffs = zip(
-  lists.l1 \> sort,
-  lists.l2 \> sort,
-  absDiff
-);
-print diffs;
-
-let ans = sum(diffs);
-print ans;
-assert ans == 11;
-''';
-
-final tagsSample = r'''
-let empty = List.empty;
-let first = List.first;
-let rest = List.rest;
-
-let fold = \list, state, fn ->
-    list \> empty ? state : 
-    fold(list \> rest, fn(state, list \> first), fn);
-
-let map = \list, fn ->
-    fold(list, [], \state, element -> [..state, fn(element)]);
-
-//////////////////////////////////////////////////////
-
-let colorToStr = \color -> match color {
+let na = [green, .Yellow, red];
+let eu = [green, .Yellow, red, .RedAndYellow];
+let current = true ? na : eu;
+let nextUp = first(current);
+let description = match nextUp {
   .Red -> "r",
   .RedAndYellow -> "r&y",
   .Yellow -> "y",
   .Green -> "g",
 };
 
-let na = [.Green, .Yellow, .Red];
-let eu = [.Green, .Yellow, .Red, .RedAndYellow];
-let current = true ? na : eu;
-
-let colorsToStr = map(_, colorToStr);
-print colorsToStr(na);
-print colorsToStr(eu);
-print colorsToStr(current);
-
-//////////////////////////////////////////////////////
-
 let tab = .Key("\t");
 let center = .Mouse({x: 50, y: 50});
 let keyOrMouse = false ? tab : center;
-
-let fn = \e -> match e {
+print match keyOrMouse {
     .Key char -> char,
     .Mouse coords -> coords.x > 50 ? "top" : "bottom",
 };
 
-print fn(tab);
-print fn(center);
-print fn(keyOrMouse);
+
+//
+// Functions
+//
+let sub = \x, y -> x - y;
+print sub(7, 2);
+
+let oneMinusX = sub(1, _);
+let xMinusOne = sub(_, 1);
+print oneMinusX(3);
+print xMinusOne(3);
+
+let numbers = [1,2,3];
+print numbers \> first \> sub(_, 1);
+
+let makeUser = \data {
+    if data.name == "null" then {
+        print "hmm";
+        return .Anonymous;
+    }
+    let randomId = 123;
+    return .User({
+        userId: randomId,
+        name: data.name,
+        birthYear: data.birthYear,
+        ageAsOf: \currentYear -> currentYear - data.birthYear,
+    });
+};
+let user = makeUser({name: "Bob", birthYear: 1974});
+print match user {
+    .User u -> u.ageAsOf(2025),
+    .Anonymous -> 0,
+};
+
 ''';
+
 
 String exec(String source) {
 
@@ -345,7 +230,7 @@ final loxMode = {
 };
 
 final codeMirrorOptions = {
-  'value': aoc2024day1Sample,
+  'value': sample,
   'mode': 'lox',
   'lineNumbers': true,
   'theme': 'ambiance',
