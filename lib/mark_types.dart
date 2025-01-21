@@ -296,11 +296,14 @@ List<(CodeSpan, String)> displayExpression(
     (tag.span, '${tag.lexeme}: ${displayType(typeOf(expr))}'),
     if (payload != null) ...displayExpression(payload, typeOf)
   ],
-  TagMatch(:final tag, :final keyword, :final cases) => [
+  TagMatch(:final tag, :final keyword, :final cases, :final defaultCase) => [
     (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
     ...displayExpression(tag, typeOf),
     for (final TagMatchCase(:result) in cases)
-      ...displayExpression(result, typeOf)
+      ...displayExpression(result, typeOf),
+    if (defaultCase case DefaultMatchCase(:final variable, :final result)?)
+      (variable.span, '${variable.lexeme}: ${displayType(typeOf(result))}'),
+
   ],
 };
 

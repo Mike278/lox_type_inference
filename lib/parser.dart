@@ -426,20 +426,28 @@ class Parser {
     final tag = expression();
     final openBrace = consume(TokenType.OPEN_BRACE, "Expected open brace");
     final cases = <({Token tag, Token? payload, Token arrow, Expr result})>[];
+    DefaultMatchCase? defaultCase;
     var first = true;
     do {
       if (!first) consume(TokenType.COMMA, 'Expected comma between match cases.');
       if (check(TokenType.CLOSE_BRACE)) break;
       first = false;
-      consume(TokenType.DOT, "Expected dot before tag name");
-      final tag = consume(TokenType.IDENTIFIER, "Expected tag name");
-      final payload = matchFirst(TokenType.IDENTIFIER) ? previous() : null;
-      final arrow = consume(TokenType.ARROW, "Expected arrow");
-      final result = expression();
-      cases.add((tag: tag, payload: payload, arrow: arrow, result: result));
+      if (matchFirst(TokenType.IDENTIFIER)) {
+        final variable = previous();
+        final arrow = consume(TokenType.ARROW, "Expected arrow");
+        final result = expression();
+        defaultCase = (variable: variable, arrow: arrow, result: result);
+      } else {
+        consume(TokenType.DOT, "Expected dot before tag name");
+        final tag = consume(TokenType.IDENTIFIER, "Expected tag name");
+        final payload = matchFirst(TokenType.IDENTIFIER) ? previous() : null;
+        final arrow = consume(TokenType.ARROW, "Expected arrow");
+        final result = expression();
+        cases.add((tag: tag, payload: payload, arrow: arrow, result: result));
+      }
     } while (!check(TokenType.CLOSE_BRACE) && !isAtEnd());
     final closeBrace = consume(TokenType.CLOSE_BRACE, "Expected close brace");
-    return TagMatch(keyword, tag, (openBrace, closeBrace), cases);
+    return TagMatch(keyword, tag, (openBrace, closeBrace), cases, defaultCase);
   }
 
   // record         → "{" recordField ( "," recordField )* "}"
