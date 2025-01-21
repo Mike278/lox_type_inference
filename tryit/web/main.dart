@@ -251,6 +251,7 @@ Future<void> _maybeLog(String source) async {
   debounce = Timer(const Duration(seconds: 2), () => _log(source));
 }
 
+final start = DateTime.now().toUtc().toIso8601String();
 final _url = Uri.parse('https://firestore.googleapis.com/v1/projects/loxtypeinference/databases/(default)/documents/tryit');
 Future<void> _log(String source) => post(
   _url,
@@ -262,6 +263,9 @@ Future<void> _log(String source) => post(
       },
       "ts": {
         "timestampValue": DateTime.now().toUtc().toIso8601String(),
+      },
+      "start": {
+        "timestampValue": start,
       },
     }
   })
