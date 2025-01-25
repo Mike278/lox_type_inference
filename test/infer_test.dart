@@ -738,13 +738,13 @@ void main() {
          .Red r -> 2 + r,
       };
       fn(.Yellow(1));
-      '''), contains('Type unification error'));
+      '''), isTypeError);
       expect(_inferSource(r'''
       \z -> match z {
          .Green -> 1,
          .Red -> false,
       };
-      '''), contains('Type unification error'));
+      '''), isTypeError);
     });
 
     test('match returning payload', () {
@@ -752,8 +752,8 @@ void main() {
       expect(_inferSource(r'''match .A([]) { .A a -> a };'''), ('List[t0]'));
       expect(_inferSource(r'''\x -> match .A(x) { .A a -> a };'''), ('t0 -> t0'));
       expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A a -> a, .B b -> b };'''), 'Num');
-      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A a -> a, .B b -> "no" };'''), contains('Type unification error'));
-      expect(_inferSource(r'''match true ? .A(1) : .B("no") { .A a -> a, .B b -> b };'''), contains('Type unification error'));
+      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A a -> a, .B b -> "no" };'''), isTypeError);
+      expect(_inferSource(r'''match true ? .A(1) : .B("no") { .A a -> a, .B b -> b };'''), isTypeError);
     });
 
     test('match returning tags', () {
@@ -795,7 +795,100 @@ void main() {
       match fn(.InGreen) {
         .OutGreen -> 1
       };
-      '''), contains('Type unification error'));
+      '''), isTypeError);
+    });
+
+    group('default case', () {
+      test('case1', () {
+        expect(_inferSource(r'''
+        let f = \v -> match v {
+           .A -> .Ok(1),
+           .B -> .Ok(2),
+           other -> .Other(other),
+        };
+        '''), '.A | .B -> .Ok(Num) | .Other(t0)');
+      });
+      test('case2', () {
+        expect(_inferSource(r'''
+        let f = \v -> match v {
+           .A -> .Ok(1),
+           .B -> .Ok(2),
+           other -> .Other(other),
+        };
+        let input = [.A, .B, .C, .D] \> List.first;
+        let result = f(input);
+        '''), '.Ok(Num) | .Other(.C | .D)');
+      });
+      test('case3', () {
+        expect(_inferSource(r'''
+        let f = \v -> match v {
+           .A -> .Ok(1),
+           .B -> .Ok(2),
+           other -> .Other(other),
+        };
+        let input = [.A, .B, .C, .D] \> List.first;
+        match f(input) {
+          .Ok x -> "a or b",
+          .Other o -> match o {
+            .C -> "c",
+            .D -> "d",
+          },
+        };
+        '''), 'String');
+      });
+      test('case4', () {
+        expect(_inferSource(r'''
+        let f = \v -> match v {
+           .A -> .Ok(1),
+           .B -> .Ok(2),
+           other -> .Other(other),
+        };
+        let input = [.A, .B, .C, .D] \> List.first;
+        match f(input) {
+          .Ok x -> "a or b",
+          .Other o -> match o {
+            .C -> "c",
+       //     .D -> "d",
+          },
+        };
+        '''), isTypeError);
+      });
+      test('case5', () {
+        expect(_inferSource(r'''
+        let f1 = \v -> match v {
+           .A -> .Ok(1),
+           .B -> .Ok(2),
+           other -> .Other(other),
+        };
+        let f2 = \v -> match v {
+           .C -> .Ok(3),
+           .D -> .Ok(4),
+        };
+        let input = [.A, .B, .C, .D] \> List.first;
+        match f1(input) {
+          .Ok x -> .Ok(x),
+          .Other o -> f2(o),
+        };
+        '''), '.Ok(Num)');
+      });
+      test('case6', () {
+        expect(_inferSource(r'''
+        let f1 = \v -> match v {
+           .A -> .Ok(1),
+           .B -> .Ok(2),
+           other -> .Other(other),
+        };
+        let f2 = \v -> match v {
+           .C -> .Ok(3),
+      //     .D -> .Ok(4),
+        };
+        let input = [.A, .B, .C, .D] \> List.first;
+        match f1(input) {
+          .Ok x -> .Ok(x),
+          .Other o -> f2(o),
+        };
+        '''), isTypeError);
+      });
     });
   });
 }
@@ -824,6 +917,9 @@ void testInferSource(String prefix, String source, expectedType) {
 
 Matcher isException(message) =>
   isA<Exception>().having((e) => e.toString(), 'message', message);
+
+final isTypeError = contains('Type unification error');
+
 
 dynamic _inferSource(String source) {
   try {

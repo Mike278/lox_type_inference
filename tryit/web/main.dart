@@ -97,25 +97,17 @@ print match either {
     .Red -> 1,
 };
 
-let na = [green, .Yellow, red];
-let eu = [green, .Yellow, red, .RedAndYellow];
-let current = true ? na : eu;
-let nextUp = first(current);
-let description = match nextUp {
-  .Red -> "r",
-  .RedAndYellow -> "r&y",
-  .Yellow -> "y",
-  .Green -> "g",
+let sendEmail = \x {
+  if x == "a" then return .FileError(123);
+  if x == "b" then return .NetworkError;
+  if x == "c" then return .OOM;
+  return .Sent;
 };
-
-let tab = .Key("\t");
-let center = .Mouse({x: 50, y: 50});
-let keyOrMouse = false ? tab : center;
-print match keyOrMouse {
-    .Key char -> char,
-    .Mouse coords -> coords.x > 50 ? "top" : "bottom",
+let result = match sendEmail("a") {
+  .Sent         -> .Log("success"),
+  .NetworkError -> .Log("will retry later"),
+  somethingBad  -> .Popup({error: somethingBad, title: "oops"}),
 };
-
 
 //
 // Functions

@@ -219,12 +219,13 @@ void unify(Ty t1, Ty t2) {
   throw 'Type unification error: $t1 != $t2';
 }
 
-Ty instantiate(
+Ty instantiate(int level, Ty type) => _instantiate(level, type, {});
+
+Ty _instantiate(
   int level,
-  Ty type, [
-  Map<int, TyVariable>? mappings,
-]) {
-  mappings ??= {};
+  Ty type,
+  Map<int, TyVariable> mappings,
+) {
   return switch (type) {
     TyVariable() => switch (type.mutableRef) {
       Unresolved(quantified: true, :final id) =>
@@ -234,20 +235,20 @@ Ty instantiate(
         type,
 
       Resolved(:final type) =>
-        instantiate(level, type),
+        _instantiate(level, type, mappings),
     },
     TyFunctionApplication(:final name, :final monoTypes) =>
         TyFunctionApplication(name, [
-          for (final ty in monoTypes) instantiate(level, ty, mappings)
+          for (final ty in monoTypes) _instantiate(level, ty, mappings)
         ]),
     TyRowEmpty() =>
         type,
     TyRowExtend(:final label, :final type, :final row) =>
         TyRowExtend(
-          newEntry: (label, instantiate(level, type, mappings)),
-          row: instantiate(level, row, mappings),
+          newEntry: (label, _instantiate(level, type, mappings)),
+          row: _instantiate(level, row, mappings),
         ),
-    TyVariant(:final type) => TyVariant(instantiate(level, type)),
+    TyVariant(:final type) => TyVariant(_instantiate(level, type, mappings)),
   };
 }
 

@@ -72,7 +72,8 @@ class VariantConstructor extends LambdaCalculusExpression {
 class VariantMatch extends LambdaCalculusExpression {
   final LambdaCalculusExpression variant;
   final List<({String tag, String? payload, LambdaCalculusExpression result})> cases;
-  VariantMatch(this.variant, this.cases);
+  final (String, LambdaCalculusExpression)? defaultCase;
+  VariantMatch(this.variant, this.cases, this.defaultCase);
 
   @override String toString() => prettyPrint(this);
 }
@@ -192,9 +193,20 @@ Ty _infer(int level, LambdaCalculusExpression expr, Context context) {
         );
       }
       return _output(expr, expectedVariantType);
-    case VariantMatch(variant: final matchTarget, :final cases):
-      final expectedReturnType = TyVariable.fresh(level);
-      Ty casesRow = TyRowEmpty();
+    case VariantMatch(variant: final matchTarget, :final cases, :final defaultCase):
+      final Ty expectedReturnType;
+      Ty casesRow;
+      if (defaultCase case (final variable, final result)?) {
+        final defaultType = TyVariable.fresh(level);
+        expectedReturnType = _infer(level, result, {
+          ...context,
+          variable: TyVariant(defaultType)
+        });
+        casesRow = defaultType;
+      } else {
+        expectedReturnType = TyVariable.fresh(level);
+        casesRow = TyRowEmpty();
+      }
       for (final (:tag, :payload, :result) in cases) {
         final Ty payloadType;
         final Context env;
@@ -251,12 +263,15 @@ String prettyPrint(LambdaCalculusExpression expr) => switch (expr) {
   VariantMatch(
     :final variant,
     :final cases,
+    :final defaultCase,
   ) =>
     'match ${prettyPrint(variant)} { ${[
       for (final (:tag, :payload, :result) in cases)
         payload == null
             ? '.$tag => ${prettyPrint(result)}'
-            : '.$tag $payload => ${prettyPrint(result)}'
+            : '.$tag $payload => ${prettyPrint(result)}',
+      if (defaultCase case (final variable, final result)?)
+        '$variable => ${prettyPrint(result)}',
       ].sorted().join(', ')
     } }',
 };

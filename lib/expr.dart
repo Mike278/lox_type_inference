@@ -173,13 +173,19 @@ class TagMatch extends Expr with EquatableMixin {
   final Expr tag;
   final (Token, Token) braces;
   final List<TagMatchCase> cases;
-  TagMatch(this.keyword, this.tag, this.braces, this.cases);
-  @override get props => [keyword, tag, braces, cases];
+  final DefaultMatchCase? defaultCase;
+  TagMatch(this.keyword, this.tag, this.braces, this.cases, this.defaultCase);
+  @override get props => [keyword, tag, braces, cases, defaultCase];
 }
 
 typedef TagMatchCase = ({
   Token tag,
   Token? payload,
+  Token arrow,
+  Expr result,
+});
+typedef DefaultMatchCase = ({
+  Token variable,
   Token arrow,
   Expr result,
 });

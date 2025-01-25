@@ -157,26 +157,27 @@ class LoxRuntime {
   }
 
   Object? evalMatch(
-    TagMatch match,
-    Env env,
+    final TagMatch match,
+    final Env env,
   ) {
     final TagMatch(
       :keyword,
       tag: target,
       :cases,
+      :defaultCase,
       braces: (_, closingBrace),
     ) = match;
-    final LoxTag(
-      tag: actualTag,
-      payload: actualPayload,
-    ) = evalAs(target, keyword, env);
+    final LoxTag actual = evalAs(target, keyword, env);
     for (final TagMatchCase(:tag, :payload, :result) in cases) {
-      if (tag.lexeme == actualTag.lexeme) {
+      if (tag.lexeme == actual.tag.lexeme) {
         if (payload != null) {
-          env = env.defining(payload, actualPayload);
+          return eval(result, env.defining(payload, actual.payload));
         }
         return eval(result, env);
       }
+    }
+    if (defaultCase case DefaultMatchCase(:final variable, :final result)?) {
+      return eval(result, env.defining(variable, actual));
     }
     throw LoxRuntimeException(closingBrace, 'No match was found');
   }

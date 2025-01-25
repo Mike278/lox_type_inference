@@ -198,14 +198,29 @@ LambdaCalculusExpression _toLambdaCalculus(Expr loxExpression) => switch (loxExp
     TagMatch(
       :final tag,
       :final cases,
-    ) => VariantMatch(toLambdaCalculus(tag), [
-      for (final TagMatchCase(:tag, :payload, :result) in cases)
-        (
-          tag: tag.lexeme,
-          payload: payload?.lexeme,
-          result: toLambdaCalculus(result),
-        ),
-    ])
+      :final defaultCase,
+    ) =>
+      VariantMatch(
+        toLambdaCalculus(tag),
+        [
+          for (final TagMatchCase(:tag, :payload, :result) in cases)
+            (
+              tag: tag.lexeme,
+              payload: payload?.lexeme,
+              result: toLambdaCalculus(result),
+            ),
+        ],
+        switch (defaultCase) {
+          null => null,
+          DefaultMatchCase(
+            :final variable,
+            :final result,
+          ) => (
+            variable.lexeme,
+            toLambdaCalculus(result),
+          ),
+        }
+      )
   }
 ;
 
