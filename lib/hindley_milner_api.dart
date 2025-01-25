@@ -234,7 +234,7 @@ Ty instantiate(
         type,
 
       Resolved(:final type) =>
-        instantiate(level, type),
+        instantiate(level, type, mappings),
     },
     TyFunctionApplication(:final name, :final monoTypes) =>
         TyFunctionApplication(name, [
@@ -247,7 +247,7 @@ Ty instantiate(
           newEntry: (label, instantiate(level, type, mappings)),
           row: instantiate(level, row, mappings),
         ),
-    TyVariant(:final type) => TyVariant(instantiate(level, type)),
+    TyVariant(:final type) => TyVariant(instantiate(level, type, mappings)),
   };
 }
 
