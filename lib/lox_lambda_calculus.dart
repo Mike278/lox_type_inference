@@ -38,7 +38,7 @@ LambdaCalculusExpression transformStatements(List<Statement> statements) {
         toLambdaCalculus(expr),
 
     ReturnStatement(expr: null) =>
-        toLambdaCalculus(NilLiteral()),
+        Lit(unit_t),
 
     PrintStatement(:final expr) ||
     AssertStatement(:final expr) ||
@@ -136,8 +136,8 @@ LambdaCalculusExpression _toLambdaCalculus(Expr loxExpression) => switch (loxExp
     || Binary(:final left, :final right, operator: final keyword) =>
         toApp(Variable(keyword), [left, right]),
 
-    UnaryMinus(:final operator, :final expr) =>
-        toApp(Variable(operator), [NumberLiteral(0), expr]),
+    UnaryMinus(:final expr) =>
+        App(func: Var('#-'), arg: toLambdaCalculus(expr)),
 
     UnaryBang(:final operator, :final expr) =>
         toApp(Variable(operator), [expr]),
@@ -148,8 +148,8 @@ LambdaCalculusExpression _toLambdaCalculus(Expr loxExpression) => switch (loxExp
     Grouping(:final expr) =>
         toLambdaCalculus(expr),
 
-    ListLiteral(:final elements, :final closingBracket) =>
-        toList(elements, closingBracket),
+    ListLiteral(:final elements) =>
+        toList(elements),
 
     Record(:final fields) =>
         fields.fold(
@@ -182,7 +182,7 @@ LambdaCalculusExpression _toLambdaCalculus(Expr loxExpression) => switch (loxExp
         transformStatements([
           ...statements,
           if (!endsWithReturn(statements))
-            ReturnStatement(closeBrace, NilLiteral()),
+            ReturnStatement(closeBrace, NilLiteral(closeBrace)),
         ]),
       ),
     TagConstructor(
@@ -258,7 +258,6 @@ App toApp(Expr callee, List<Expr> args) {
 
 LambdaCalculusExpression toList(
   List<ListElement> elements,
-  Token closingBracket,
 ) =>
     // Normalize to list of lists, then concat them all:
     // [1, ..[2, 3], 4]  ->  [[1], [2, 3], [4]]  ->  [1, 2, 3, 4]
@@ -311,6 +310,7 @@ final Context loxStandardLibraryContext = {
   for (final symbol in {'or', 'and'})          symbol : function_t(bool_t, function_t(bool_t, bool_t)),
   for (final symbol in {'>', '>=', '<', '<='}) symbol : function_t(num_t, function_t(num_t, bool_t)),
   for (final symbol in {'!=', '=='})           symbol : function_t(a, function_t(a, bool_t)),
+  '#-': function_t(num_t, num_t),
   '!': function_t(bool_t, bool_t),
   '?': function_t(bool_t, function_t(a, function_t(a, a))),
   '[]': emptyList_t,

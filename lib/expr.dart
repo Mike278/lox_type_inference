@@ -4,25 +4,31 @@ import 'package:lox/scanner.dart';
 sealed class Expr {}
 
 sealed class Literal extends Expr with EquatableMixin {
-  final Object? value;
-  Literal(this.value);
+  final Token token;
+  late final Object? value = token.literal;
+  Literal(this.token);
   @override get props => [value];
 }
 
 class StringLiteral extends Literal {
-  StringLiteral(String super.value);
+  StringLiteral(super.token);
+  @override String get value => super.value as String;
 }
 class NumberLiteral extends Literal {
-  NumberLiteral(num super.value);
+  NumberLiteral(super.token);
+  @override num get value => super.value as num;
 }
 class FalseLiteral extends Literal {
-  FalseLiteral() : super(false);
+  FalseLiteral(super.token);
+  @override bool get value => false;
 }
 class TrueLiteral extends Literal {
-  TrueLiteral() : super(true);
+  TrueLiteral(super.token);
+  @override bool get value => true;
 }
 class NilLiteral extends Literal {
-  NilLiteral() : super(null);
+  NilLiteral(super.token);
+  @override Null get value => null;
 }
 
 sealed class Unary extends Expr with EquatableMixin {

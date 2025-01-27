@@ -548,11 +548,11 @@ class Parser {
   //                | IDENTIFIER
   //                ;
   Expr primary() {
-    if (matchFirst(TokenType.NUMBER)) return NumberLiteral(previous().literal as num);
-    if (matchFirst(TokenType.STRING)) return StringLiteral(previous().literal as String);
-    if (matchFirst(TokenType.TRUE)) return TrueLiteral();
-    if (matchFirst(TokenType.FALSE)) return FalseLiteral();
-    if (matchFirst(TokenType.NIL)) return NilLiteral();
+    if (matchFirst(TokenType.NUMBER)) return NumberLiteral(previous());
+    if (matchFirst(TokenType.STRING)) return StringLiteral(previous());
+    if (matchFirst(TokenType.TRUE)) return TrueLiteral(previous());
+    if (matchFirst(TokenType.FALSE)) return FalseLiteral(previous());
+    if (matchFirst(TokenType.NIL)) return NilLiteral(previous());
     if (matchFirst(TokenType.IDENTIFIER)) return Variable(previous());
 
     if (matchFirst(TokenType.OPEN_PAREN)) {
