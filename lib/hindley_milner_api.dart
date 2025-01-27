@@ -88,6 +88,44 @@ class TyVariant extends Ty with EquatableMixin {
   @override String toString() => prettyPrint(this);
 }
 
+sealed class TypeCheckException implements Exception {}
+class NotARow implements TypeCheckException {
+  final Ty actual;
+  NotARow(this.actual);
+  @override toString() => 'row type expected, got $actual';
+}
+class RowMissingLabel implements TypeCheckException {
+  final String label;
+  RowMissingLabel(this.label);
+  @override toString() => 'row does not contain label $label';
+}
+class RecursiveRowTypes implements TypeCheckException {
+  final Ty t1;
+  final Ty t2;
+  RecursiveRowTypes(this.t1, this.t2);
+  @override toString() => 'Recursive row types:\n$t1\n$t2';
+}
+class TypeMismatch implements TypeCheckException {
+  final Ty t1;
+  final Ty t2;
+  TypeMismatch(this.t1, this.t2);
+  @override toString() => 'Type mismatch:\n$t1\n$t2';
+}
+class TypeCardinalityMismatch implements TypeCheckException {
+  final TyFunctionApplication t1;
+  final TyFunctionApplication t2;
+  TypeCardinalityMismatch(this.t1, this.t2);
+  @override toString() =>
+      'Type cardinality mismatch:\n'
+      '$t1 has ${t1.monoTypes.length}\n'
+      '$t2 has ${t2.monoTypes.length}';
+}
+class UndefinedVariable implements TypeCheckException {
+  final String name;
+  UndefinedVariable(this.name);
+  @override toString() => 'Undefined variable $name';
+}
+
 Ty rewriteRow(
   Ty row2,
   String label1,
@@ -120,30 +158,10 @@ Ty rewriteRow(
     case TyFunctionApplication()
       || TyVariant()
       || TyVariable(mutableRef: Unresolved(level: null)):
-        throw Exception('row type expected, got $row2');
+        throw NotARow(row2);
     case TyRowEmpty():
-        throw Exception('row does not contain label $label1');
+        throw RowMissingLabel(label1);
   }
-}
-
-typedef Context = Map<String, Ty>;
-
-void _verifyNoSelfReferenceAndAdjustLevels(int id, int level, Ty ty) {
-  void verify(Ty ty) => switch (ty) {
-    TyVariable(:final Unresolved mutableRef) when mutableRef.id == id =>
-        throw 'recursive types',
-
-    TyVariable(:final Unresolved mutableRef) when mutableRef.level! > level =>
-        ty.mutableRef = Unresolved(id: mutableRef.id, level: level),
-
-    TyVariable(mutableRef: Unresolved()) => null,
-    TyVariable(mutableRef: Resolved(:final type)) => verify(type),
-    TyFunctionApplication(:final monoTypes) => monoTypes.forEach(verify),
-    TyRowExtend(:final type, :final row) => [verify(type), verify(row)],
-    TyVariant(:final type) => verify(type),
-    TyRowEmpty() => null,
-  };
-  verify(ty);
 }
 
 void unify(Ty t1, Ty t2) {
@@ -157,7 +175,22 @@ void unify(Ty t1, Ty t2) {
 
     case (final ty, final TyVariable tvar && TyVariable(mutableRef: Unresolved(:final id, :final level?)))
       || (final TyVariable tvar && TyVariable(mutableRef: Unresolved(:final id, :final level?)), final ty):
-      _verifyNoSelfReferenceAndAdjustLevels(id, level, ty);
+
+      void verify(Ty ty) => switch (ty) {
+        TyVariable(:final Unresolved mutableRef) when mutableRef.id == id =>
+          throw RecursiveRowTypes(t1, t2),
+
+        TyVariable(:final Unresolved mutableRef) when mutableRef.level! > level =>
+          ty.mutableRef = Unresolved(id: mutableRef.id, level: level),
+
+        TyVariable(mutableRef: Unresolved()) => null,
+        TyVariable(mutableRef: Resolved(:final type)) => verify(type),
+        TyFunctionApplication(:final monoTypes) => monoTypes.forEach(verify),
+        TyRowExtend(:final type, :final row) => [verify(type), verify(row)],
+        TyVariant(:final type) => verify(type),
+        TyRowEmpty() => null,
+      };
+      verify(ty);
       tvar.mutableRef = Resolved(ty);
       return;
 
@@ -167,11 +200,11 @@ void unify(Ty t1, Ty t2) {
   if (t1 is TyFunctionApplication &&
       t2 is TyFunctionApplication) {
     if (t1.name != t2.name) {
-      throw 'Type unification error:\n$t1\n$t2';
+      throw TypeMismatch(t1, t2);
     }
 
     if (t1.monoTypes.length != t2.monoTypes.length) {
-      throw 'Type unification error: $t1 has ${t1.monoTypes.length}, $t2 has ${t2.monoTypes.length}';
+      throw TypeCardinalityMismatch(t1, t2);
     }
 
     zip(t1.monoTypes, t2.monoTypes, unify)
@@ -204,7 +237,7 @@ void unify(Ty t1, Ty t2) {
       _ => false
     };
 
-    if (wasUnresolved && isResolved) throw 'recursive row type';
+    if (wasUnresolved && isResolved) throw RecursiveRowTypes(t1, t2);
 
     unify(restRow1, restRow2);
     return;
@@ -216,7 +249,7 @@ void unify(Ty t1, Ty t2) {
     return;
   }
 
-  throw 'Type unification error: $t1 != $t2';
+  throw TypeMismatch(t1, t2);
 }
 
 Ty instantiate(int level, Ty type) => _instantiate(level, type, {});

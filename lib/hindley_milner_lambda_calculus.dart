@@ -81,6 +81,8 @@ class VariantMatch extends LambdaCalculusExpression {
 final function = ({required Ty from, required Ty to}) => TyFunctionApplication('Function', [from, to]);
 final unit = TyFunctionApplication('Unit', []);
 
+typedef Context = Map<String, Ty>;
+
 typedef AlgorithmWResult = ({
   Ty overallType,
   Map<LambdaCalculusExpression, Ty> subExpressionTypes,
@@ -108,7 +110,7 @@ Ty _infer(int level, LambdaCalculusExpression expr, Context context) {
       return _output(expr, instantiate(level, type));
     case Var(:final name):
       final type = context[name];
-      if (type == null) throw Exception('Undefined variable $name');
+      if (type == null) throw UndefinedVariable(name);
       return _output(expr, instantiate(level, type));
     case Abs(:final param, :final body):
       final paramType = TyVariable.fresh(level);
