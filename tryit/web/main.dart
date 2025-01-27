@@ -40,12 +40,12 @@ void main() {
       final (:errorOutput, marks) = markTypes(editor.getDoc().getValue());
       outputElement.text = errorOutput;
       final doc = editor.getDoc();
-      for (final ((:from, :to), :display) in marks) {
+      for (final ((:from, :to), :display, :style) in marks) {
         final mark = doc.markText(
           Position(line: from.line, ch: from.offset),
           Position(line: to.line, ch: to.offset),
           MarkTextOptions(
-            className: 'cm-tooltip-marker',
+            className: 'cm-tooltip-marker ${style ?? ''}',
             attributes: {'data-tooltip': display}.jsify(),
           ),
         );

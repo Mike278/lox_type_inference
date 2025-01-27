@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/lox_lambda_calculus.dart';
@@ -5,17 +7,34 @@ import 'package:lox/parser.dart';
 import 'package:lox/scanner.dart';
 import 'package:lox/utils.dart';
 
-typedef MarkText = (CodeSpan, {String display});
+typedef MarkText = (CodeSpan, {String display, String? style});
 typedef CodeSpan = ({CodePosition from, CodePosition to});
 typedef CodePosition = ({int line, int offset});
 
 extension on Token {
-  CodeSpan get span {
-    final from = (line: line-1, offset: offset);
-    final to = (line: line-1, offset: offset + lexeme.length);
-    return (from: from, to: to);
-  }
+  CodeSpan get span => toSpan(this);
 }
+
+CodeSpan toSpan(Token token) {
+  final from = (line: token.line-1, offset: token.offset);
+  final to = (line: token.line-1, offset: token.offset + token.lexeme.length);
+  return (from: from, to: to);
+}
+
+extension on CodeSpan {
+  CodeSpan extendedBy(CodeSpan other) => extend(this, other);
+}
+
+CodeSpan extend(CodeSpan a, CodeSpan b) => (
+  from: (
+    line: min(a.from.line, b.from.line),
+    offset: min(a.from.offset, b.from.offset),
+  ),
+  to: (
+    line: max(a.from.line, b.from.line),
+    offset: max(a.from.offset, b.from.offset),
+  ),
+);
 
 (List<MarkText>, {String errorOutput}) markTypes(String source) {
 
@@ -68,11 +87,26 @@ extension on Token {
       marks.add((
         span,
         display: display,
+        style: null,
       ));
     }
 
   } catch (e) {
-    reportError('typecheck error')(e);
+    if (e case (Expr expr, TypeCheckException typeError)) {
+      final span = locationForErrorUnderline(expr);
+      if (span != null) {
+        marks.add((
+          span,
+          display: '$typeError',
+          style: 'type-error'
+        ));
+        reportError('typecheck error')(typeError);
+      } else {
+        reportError('typecheck error caused by $expr')(typeError);
+      }
+    } else {
+      reportError('typecheck error')(e);
+    }
   }
 
   sw.stop();
@@ -314,6 +348,106 @@ String displayTypeVariable(({int id, bool quantified}) args) {
   final name = displayAlpha(args.id);
   return args.quantified ? name : '`$name';
 }
+
+CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
+
+  Variable(:final name) =>
+      name.span,
+
+
+  Literal(:final token) =>
+      token.span,
+
+
+  Grouping(:final expr) =>
+      locationForErrorUnderline(expr),
+
+
+  Lambda(
+    :final params,
+    body: ArrowExpression(:final arrow),
+  ) =>
+      params
+        .map(toSpan)
+        .reduce(extend)
+        .extendedBy(arrow.span),
+
+
+  Lambda(
+    :final params,
+    body: FunctionBody(body: Block(:final openBrace)),
+  ) =>
+      params
+        .map(toSpan)
+        .reduce(extend)
+        .extendedBy(openBrace.span),
+
+
+  Call(:final callee) =>
+      locationForErrorUnderline(callee),
+
+
+  ListLiteral(:final openBracket, :final closingBracket) =>
+      openBracket.span.extendedBy(closingBracket.span),
+
+
+  Ternary(
+    :final questionMark,
+    :final condition,
+    :final ifTrue,
+    :final ifFalse,
+  ) =>
+      [
+        locationForErrorUnderline(condition),
+        questionMark.span,
+        locationForErrorUnderline(ifTrue),
+        locationForErrorUnderline(ifFalse),
+      ].whereNotNull().reduce(extend),
+
+
+  LogicalAnd(:final left, :final keyword, :final right) ||
+  LogicalOr(:final left, :final keyword, :final right) ||
+  Binary(:final left, operator: final keyword, :final right) =>
+      [
+        locationForErrorUnderline(left),
+        keyword.span,
+        locationForErrorUnderline(right),
+      ].whereNotNull().reduce(extend),
+
+
+  Record(:final closingBrace) =>
+      closingBrace.span, // todo
+
+
+  RecordGet(:final name, :final record) =>
+      [
+        locationForErrorUnderline(record),
+        name.span,
+      ].whereNotNull().reduce(extend),
+
+
+  RecordUpdate(:final closingBrace) =>
+      closingBrace.span, // todo
+
+
+  UnaryMinus(:final operator, :final expr) ||
+  UnaryBang(:final operator, :final expr) =>
+      [
+        operator.span,
+        locationForErrorUnderline(expr),
+      ].whereNotNull().reduce(extend),
+
+
+  TagConstructor(:final tag, :final payload) =>
+      [
+        tag.span,
+        if (payload != null) locationForErrorUnderline(payload),
+      ].whereNotNull().reduce(extend),
+
+
+  TagMatch(:final keyword) =>
+      keyword.span,
+};
 
 Iterable<Ty> _uncurry(TyFunctionApplication fn) sync* {
   assert(fn.name == 'Function');

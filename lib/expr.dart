@@ -149,10 +149,11 @@ class RecordUpdate extends Expr with EquatableMixin {
   @override get props => [dotdot, record, newFields, closingBrace];
 }
 class ListLiteral extends Expr with EquatableMixin {
+  final Token openBracket;
   final Token closingBracket;
   final List<ListElement> elements;
-  ListLiteral(this.closingBracket, this.elements);
-  @override get props => [closingBracket, elements];
+  ListLiteral(this.openBracket, this.closingBracket, this.elements);
+  @override get props => [openBracket, closingBracket, elements];
 }
 sealed class ListElement {}
 class ExpressionListElement with EquatableMixin implements ListElement {

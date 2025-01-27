@@ -105,7 +105,7 @@ Ty _output(LambdaCalculusExpression expr, Ty type) {
 }
 
 Ty _infer(int level, LambdaCalculusExpression expr, Context context) {
-  switch (expr) {
+  try { switch (expr) {
     case Lit(:final type):
       return _output(expr, instantiate(level, type));
     case Var(:final name):
@@ -231,6 +231,8 @@ Ty _infer(int level, LambdaCalculusExpression expr, Context context) {
       final variantType = _infer(level, matchTarget, context);
       unify(variantType, TyVariant(casesRow));
       return _output(expr, expectedReturnType);
+  } } on TypeCheckException catch (e) {
+    throw (expr, e);
   }
 }
 

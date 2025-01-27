@@ -492,6 +492,7 @@ class Parser {
   // listElement    → ".." expression
   //                | expression
   Expr listLiteral() {
+    final openBracket = previous();
     final elements = <ListElement>[];
     var first = true;
     while (!check(TokenType.CLOSE_BRACKET) && !isAtEnd()) {
@@ -508,7 +509,7 @@ class Parser {
       }
     }
     final closingBracket = consume(TokenType.CLOSE_BRACKET, "Expected ']' after list literal.");
-    return ListLiteral(closingBracket, elements);
+    return ListLiteral(openBracket, closingBracket, elements);
   }
 
   // lambda          → "\" parameters? (block | ("->" expression)) ;

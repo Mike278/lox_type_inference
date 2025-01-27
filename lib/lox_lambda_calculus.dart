@@ -19,14 +19,25 @@ Map<Expr, Ty> runInference(List<Statement> statements) {
   TyVariable.counter = 0;
   final context = {...loxStandardLibraryContext};
   final expr = transformStatements(statements);
-  final (:overallType, :subExpressionTypes) = algorithmW(expr, context);
-  final typeOf = {
-    for (final (expr, lc) in _exprLog.pairs())
-      if (subExpressionTypes[lc] case final type?)
-        expr: type,
-  };
+  final exprLog = {..._exprLog};
   _exprLog.clear();
-  return typeOf;
+  try {
+    final (:overallType, :subExpressionTypes) = algorithmW(expr, context);
+    final typeOf = {
+      for (final (expr, lc) in exprLog.pairs())
+        if (subExpressionTypes[lc] case final type?)
+          expr: type,
+    };
+    return typeOf;
+  } on (LambdaCalculusExpression, TypeCheckException) catch (e) {
+    final (causedByLc, exception) = e;
+    for (final (lox, lc) in exprLog.pairs()) {
+      if (causedByLc == lc) {
+        throw (lox, exception);
+      }
+    }
+    throw exception;
+  }
 }
 
 LambdaCalculusExpression transformStatements(List<Statement> statements) {
