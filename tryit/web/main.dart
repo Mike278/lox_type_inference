@@ -98,15 +98,15 @@ print match either {
 };
 
 let sendEmail = \x {
-  if x == "a" then return .FileError(123);
-  if x == "b" then return .NetworkError;
+  if x == "a" then return .MissingSubject;
+  if x == "b" then return .NetworkError(123);
   if x == "c" then return .OOM;
   return .Sent;
 };
 let result = match sendEmail("a") {
-  .Sent         -> .Log("success"),
-  .NetworkError -> .Log("will retry later"),
-  somethingBad  -> .Popup({error: somethingBad, title: "oops"}),
+  .Sent           -> .Alert("success"),
+  .MissingSubject -> .Alert("missing subject line"),
+  somethingBad    -> somethingBad,
 };
 
 //
