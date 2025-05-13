@@ -1,3 +1,4 @@
+import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/hindley_milner_lambda_calculus.dart';
 import 'package:lox/lox_lambda_calculus.dart';
 import 'package:lox/utils.dart';
@@ -236,7 +237,9 @@ void main() {
     );
     expect(
       _inferSource(fold + r' fold([1,2,3], false, \state, element -> "wat");'),
-      'Type unification error:\nBool\nString',
+      isA<TypeMismatch>()
+        .having((e) => e.t1.toString(), 'lhs', 'Bool')
+        .having((e) => e.t2.toString(), 'rhs', 'String')
     );
 
     expect(_inferSource(fold + r'''
@@ -501,7 +504,7 @@ void main() {
     let f = \r -> {..r, one: "one", two: 2};
     f({one: "hello"}).one;
     '''), 'String');
-    expect(_inferSource(r'let f = \r -> true ? {..r, x: 2} : {..r, y: 2};'), contains('recursive row type'));
+    expect(_inferSource(r'let f = \r -> true ? {..r, x: 2} : {..r, y: 2};'), isA<RecursiveRowTypes>());
 
     expect(_inferSource(r'''
     let named = \r, name -> {..r, name: name};
@@ -915,16 +918,14 @@ void testInferSource(String prefix, String source, expectedType) {
 }
 
 
-Matcher isException(message) =>
-  isA<Exception>().having((e) => e.toString(), 'message', message);
-
-final isTypeError = contains('Type unification error');
-
+final isTypeError = isA<TypeCheckException>();
 
 dynamic _inferSource(String source) {
   try {
     if (!source.contains(';')) source = '$source;';
     return inferSource(source).toString();
+  } on (LambdaCalculusExpression, TypeCheckException) catch (e) {
+    return e.$2;
   } catch (e) {
     return e;
   }
