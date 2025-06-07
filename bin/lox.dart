@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:lox/env.dart';
+import 'package:lox/coordinator.dart';
 import 'package:lox/interpreter.dart';
-import 'package:lox/scanner.dart';
 
 void main(List<String> args) {
   if (args.length > 1) {
@@ -10,43 +9,44 @@ void main(List<String> args) {
     exit(64);
   } else if (args case [final path]) {
     if (path.endsWith('.lox')) {
-      runFile(path);
+      _runFile(path);
     } else {
       Directory(path)
           .listSync(recursive: true)
           .whereType<File>()
           .map((f) => f.path)
-          .forEach(runFile);
+          .forEach(_runFile);
     }
   } else {
-    runPrompt();
+    _runPrompt();
   }
 }
 
+final _io = (print: print);
 
-RunResult _run(String source, Env env) =>
-  run(source, env, print, defaultLoxAssert, (print: print));
-
-void runPrompt() {
+void _runPrompt() {
   var env = Env.global();
   while (true) {
     print('> ');
     final line = stdin.readLineSync();
     if (line == null) break;
-    RunResult($1: env) = _run(line, env);
+    env = run(
+      Directory.current.path,
+      Source(line),
+      env,
+      defaultLoxAssert,
+      _io,
+      (path) => Source(File(path).readAsStringSync()),
+    );
   }
 }
 
-void runFile(String path) {
-  final RunResult(
-    :hadScanError,
-    :hadParseError,
-    :hadRuntimeError,
-  ) = _run(
-    File(path).readAsStringSync(),
+void _runFile(String path) {
+  runFile(
+    path,
     Env.global(),
+    defaultLoxAssert,
+    _io,
+    (path) => Source(File(path).readAsStringSync())
   );
-  if (hadScanError) exit(65);
-  if (hadParseError) exit(66);
-  if (hadRuntimeError) exit(70);
 }

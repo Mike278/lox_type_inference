@@ -15,7 +15,7 @@ print fn(keyOrMouse);
 let colors = [.Green, .Gold, .Red];
 let favColor = colors \> List.first;
 print match favColor {
-    //.Green -> "green",
+    .Green -> "green",
     .Gold -> "gold",
     .Red -> "red",
 };

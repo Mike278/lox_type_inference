@@ -15,6 +15,9 @@ include: package:lints/recommended.yaml
 
 # Uncomment the following section to specify additional rules.
 
+formatter:
+  trailing_commas: preserve
+
 linter:
   rules:
     prefer_function_declarations_over_variables: false

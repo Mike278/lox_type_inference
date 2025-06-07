@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:lox/env.dart';
+import 'package:lox/coordinator.dart';
 import 'package:lox/interpreter.dart';
-import 'package:lox/parser.dart';
-import 'package:lox/scanner.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 
@@ -21,10 +19,13 @@ void main() {
 
     final allPrints = <String>[];
     for (final file in exampleFiles) {
-      final source = file.readAsStringSync();
-      final (env, :prints, :runtimeErrors) = evalSource(source);
-      expect(runtimeErrors, isEmpty);
-      allPrints.addAll(prints.map((x) => '$x'));
+      try {
+        final (env, :prints) = eval(file);
+        allPrints.add('====== ${basename(file.path)} =====');
+        allPrints.addAll(prints.map((x) => '$x'));
+      } catch (e, s) {
+        fail('failed on $file\n$e\n$s');
+      }
     }
 
     expect(
@@ -35,22 +36,19 @@ void main() {
   });
 }
 
-(Env, {List<Object?> prints, List<String> runtimeErrors}) evalSource(String source) {
-  final (tokens, hadError: _) = scanTokens(source, fail);
-  final (statements, hadError: _) = Parser(tokens, fail).parse();
-  final errors = <String>[];
+(Env, {List<Object?> prints}) eval(File file) {
   final prints = [];
-  final (env, :hadRuntimeError) = LoxRuntime(
-    errors.add,
-    (keyword, source, value) => expect(
-      value,
-      isTrue,
-      reason: 'lox `assert` failed: $source',
-    ),
-    (print: prints.add),
-  ).interpret(
-    statements,
+  final env = runFile(
+    file.path,
     Env.global(),
+    (keyword, source, value) =>
+      expect(
+        value,
+        isTrue,
+        reason: 'lox `assert` failed: $source',
+      ),
+    (print: prints.add),
+    (path) => Source(File(path).readAsStringSync()),
   );
-  return (env, runtimeErrors: errors, prints: prints);
+  return (env, prints: prints);
 }

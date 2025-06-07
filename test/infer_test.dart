@@ -1,3 +1,4 @@
+import 'package:lox/coordinator.dart';
 import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/hindley_milner_lambda_calculus.dart';
 import 'package:lox/lox_lambda_calculus.dart';
@@ -894,6 +895,23 @@ void main() {
       });
     });
   });
+
+  test('imports', () {
+    expect(
+      _inferSource(
+        'let foo = import "foo.lox";',
+        {'foo.lox': 'let x = 1;'}
+      ),
+      '{x: Num}',
+    );
+    expect(
+      _inferSource(
+        'let y = (import "foo.lox").x;',
+        {'foo.lox': 'let x = 1;'}
+      ),
+      'Num',
+    );
+  });
 }
 
 String? get mainStackTrace =>
@@ -920,10 +938,10 @@ void testInferSource(String prefix, String source, expectedType) {
 
 final isTypeError = isA<TypeCheckException>();
 
-dynamic _inferSource(String source) {
+dynamic _inferSource(String source, [Map<String, String> files = const {}]) {
   try {
     if (!source.contains(';')) source = '$source;';
-    return inferSource(source).toString();
+    return inferSource(source, (path) => Source(files[path]!)).toString();
   } on (LambdaCalculusExpression, TypeCheckException) catch (e) {
     return e.$2;
   } catch (e) {

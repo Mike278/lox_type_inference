@@ -4,7 +4,7 @@
 
 import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_api.dart';
-import 'package:lox/scanner.dart';
+import 'package:lox/token.dart';
 import 'package:lox/utils.dart';
 
 import 'hindley_milner_lambda_calculus.dart';
@@ -15,280 +15,310 @@ Token _synthesizeNewIdentifier(int line, int offset) {
   return Token(TokenType.IDENTIFIER, id, id, line, offset);
 }
 
-Map<Expr, Ty> runInference(List<Statement> statements) {
-  TyVariable.counter = 0;
-  final context = {...loxStandardLibraryContext};
-  final expr = transformStatements(statements);
-  final exprLog = {..._exprLog};
-  _exprLog.clear();
-  try {
-    final (:overallType, :subExpressionTypes) = algorithmW(expr, context);
-    final typeOf = {
-      for (final (expr, lc) in exprLog.pairs())
-        if (subExpressionTypes[lc] case final type?)
-          expr: type,
-    };
-    return typeOf;
-  } on (LambdaCalculusExpression, TypeCheckException) catch (e) {
-    final (causedByLc, exception) = e;
-    for (final (lox, lc) in exprLog.pairs()) {
-      if (causedByLc == lc) {
-        throw (lox, exception);
+Map<Expr, Ty> runInference(
+  List<Statement> statements,
+  ResolveImport import,
+) =>
+  _TypeSystem(import).runInference(statements);
+
+
+LambdaCalculusExpression transformStatements(
+  List<Statement> statements,
+  ResolveImport import,
+) =>
+  _TypeSystem(import).transformStatements(statements);
+
+LambdaCalculusExpression toLambdaCalculus(
+  Expr loxExpression,
+  ResolveImport import,
+) =>
+  _TypeSystem(import).toLambdaCalculus(loxExpression);
+
+
+class _TypeSystem {
+  final ResolveImport import;
+  _TypeSystem(this.import);
+
+  Map<Expr, Ty> runInference(List<Statement> statements) {
+    TyVariable.counter = 0;
+    final context = {...loxStandardLibraryContext};
+    final expr = transformStatements(statements);
+    final exprLog = {..._exprLog};
+    _exprLog.clear();
+    try {
+      final (:overallType, :subExpressionTypes) = algorithmW(expr, context);
+      final typeOf = {
+        for (final (expr, lc) in exprLog.pairs())
+          if (subExpressionTypes[lc] case final type?)
+            expr: type,
+      };
+      return typeOf;
+    } on (LambdaCalculusExpression, TypeCheckException) catch (e) {
+      final (causedByLc, exception) = e;
+      for (final (lox, lc) in exprLog.pairs()) {
+        if (causedByLc == lc) {
+          throw (lox, exception);
+        }
       }
+      throw exception;
     }
-    throw exception;
   }
-}
 
-LambdaCalculusExpression transformStatements(List<Statement> statements) {
-  if (statements.isEmpty) return Lit(unit_t);
-  final [first, ...rest] = statements;
+  LambdaCalculusExpression transformStatements(List<Statement> statements) {
+    if (statements.isEmpty) return Lit(unit_t);
+    final [first, ...rest] = statements;
 
-  return switch (first) {
-    ReturnStatement(:final expr?) =>
-        toLambdaCalculus(expr),
+    return switch (first) {
+      ReturnStatement(:final expr?) =>
+          toLambdaCalculus(expr),
 
-    ReturnStatement(expr: null) =>
-        Lit(unit_t),
+      ReturnStatement(expr: null) =>
+          Lit(unit_t),
 
-    PrintStatement(:final expr) ||
-    AssertStatement(:final expr) ||
-    ExpressionStatement(:final expr) =>
+      PrintStatement(:final expr) ||
+      AssertStatement(:final expr) ||
+      ExpressionStatement(:final expr) =>
+          rest.isEmpty
+            ? toLambdaCalculus(expr)
+            : _continue(
+                toLambdaCalculus(expr),
+                Abs('_', transformStatements(rest)),
+              ),
+
+      LetDeclaration(:final name, :final initializer) =>
+        Let(
+          name.lexeme,
+          toLambdaCalculus(initializer),
+          rest.isEmpty
+            ? Var(name.lexeme)
+            : transformStatements(rest),
+        ),
+
+      IfStatement(
+        :final condition,
+        :final thenBranch,
+        :final elseBranch,
+      ) =>
+          App(func: App(func: App(func: Var('?'),
+              arg: toLambdaCalculus(condition)),
+              arg: transformStatements([
+                if (thenBranch case Block(:final statements)) ...statements
+                else thenBranch,
+                ...rest,
+              ])),
+              arg: transformStatements([
+                if (elseBranch case Block(:final statements)) ...statements
+                else if (elseBranch != null) elseBranch,
+                ...rest,
+              ])),
+
+      Block(statements: []) => transformStatements([]),
+      Block(:final statements) =>
         rest.isEmpty
-          ? toLambdaCalculus(expr)
+          ? transformStatements(statements)
           : _continue(
-              toLambdaCalculus(expr),
+              transformStatements(statements),
               Abs('_', transformStatements(rest)),
             ),
+    };
+  }
 
-    LetDeclaration(:final name, :final initializer) =>
-      Let(
-        name.lexeme,
-        toLambdaCalculus(initializer),
-        rest.isEmpty
-          ? Var(name.lexeme)
-          : transformStatements(rest),
-      ),
+  final _exprLog = <Expr, LambdaCalculusExpression>{};
+  LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) {
+    final lc = _toLambdaCalculus(loxExpression);
+    _exprLog[loxExpression] = lc;
+    return lc;
+  }
 
-    IfStatement(
-      :final condition,
-      :final thenBranch,
-      :final elseBranch,
-    ) =>
-        App(func: App(func: App(func: Var('?'),
-            arg: toLambdaCalculus(condition)),
-            arg: transformStatements([
-              if (thenBranch case Block(:final statements)) ...statements
-              else thenBranch,
-              ...rest,
-            ])),
-            arg: transformStatements([
-              if (elseBranch case Block(:final statements)) ...statements
-              else if (elseBranch != null) elseBranch,
-              ...rest,
-            ])),
+  LambdaCalculusExpression _toLambdaCalculus(Expr loxExpression) => switch (loxExpression) {
 
-    Block(statements: []) => transformStatements([]),
-    Block(:final statements) =>
-      rest.isEmpty
-        ? transformStatements(statements)
-        : _continue(
-            transformStatements(statements),
-            Abs('_', transformStatements(rest)),
+      StringLiteral()       => Lit(string_t),
+      NumberLiteral()       => Lit(num_t),
+      NilLiteral()          => Lit(unit_t),
+      FalseLiteral() || TrueLiteral()   => Lit(bool_t),
+      ListLiteral(elements: [])         => Lit(emptyList_t),
+
+      Variable(name: Token(lexeme: final name)) =>
+          Var(name),
+
+      Lambda(:final params, body: ArrowExpression(:final body)) =>
+          toAbs(params, body),
+
+      Call(
+        :final callee,
+        args: ArgsWithPlaceholder(:final before, :final after),
+        :final closingParen,
+      ) =>
+          switch (_synthesizeNewIdentifier(closingParen.line, closingParen.offset)) {
+            final param => toAbs(
+                [param],
+                Call(
+                  callee,
+                  ExpressionArgs([...before, Variable(param), ...after]),
+                  closingParen,
+                ),
+              )
+          },
+
+      Call(:final callee, args: ExpressionArgs(exprs: final args)) =>
+          toApp(callee, args),
+
+      Binary(:final left, :final right, operator: Token(type: TokenType.PIPELINE)) =>
+          toApp(right, [left]),
+
+      LogicalAnd(:final left, :final right, :final keyword)
+      || LogicalOr(:final left, :final right, :final keyword)
+      || Binary(:final left, :final right, operator: final keyword) =>
+          toApp(Variable(keyword), [left, right]),
+
+      UnaryMinus(:final expr) =>
+          App(func: Var('#-'), arg: toLambdaCalculus(expr)),
+
+      UnaryBang(:final operator, :final expr) =>
+          toApp(Variable(operator), [expr]),
+
+      Ternary(:final condition, :final ifTrue, :final ifFalse, :final questionMark) =>
+          toApp(Variable(questionMark), [condition, ifTrue, ifFalse]),
+
+      Grouping(:final expr) =>
+          toLambdaCalculus(expr),
+
+      ListLiteral(:final elements) =>
+          toList(elements),
+
+      Record(:final fields) =>
+          fields.fold(
+            RecordEmpty(),
+            (record, label, field) => RecordExtension(
+              label.lexeme,
+              toLambdaCalculus(field),
+              record,
+            ),
           ),
-  };
-}
+      RecordGet(:final record, :final name) =>
+          RecordSelection(
+            name.lexeme,
+            toLambdaCalculus(record),
+          ),
 
-final _exprLog = <Expr, LambdaCalculusExpression>{};
-LambdaCalculusExpression toLambdaCalculus(Expr loxExpression) {
-  final lc = _toLambdaCalculus(loxExpression);
-  _exprLog[loxExpression] = lc;
-  return lc;
-}
-
-LambdaCalculusExpression _toLambdaCalculus(Expr loxExpression) => switch (loxExpression) {
-
-    StringLiteral()       => Lit(string_t),
-    NumberLiteral()       => Lit(num_t),
-    NilLiteral()          => Lit(unit_t),
-    FalseLiteral() || TrueLiteral()   => Lit(bool_t),
-    ListLiteral(elements: [])         => Lit(emptyList_t),
-
-    Variable(name: Token(lexeme: final name)) =>
-        Var(name),
-
-    Lambda(:final params, body: ArrowExpression(:final body)) =>
-        toAbs(params, body),
-
-    Call(
-      :final callee,
-      args: ArgsWithPlaceholder(:final before, :final after),
-      :final closingParen,
-    ) =>
-        switch (_synthesizeNewIdentifier(closingParen.line, closingParen.offset)) {
-          final param => toAbs(
-              [param],
-              Call(
-                callee,
-                ExpressionArgs([...before, Variable(param), ...after]),
-                closingParen,
-              ),
-            )
-        },
-
-    Call(:final callee, args: ExpressionArgs(exprs: final args)) =>
-        toApp(callee, args),
-
-    Binary(:final left, :final right, operator: Token(type: TokenType.PIPELINE)) =>
-        toApp(right, [left]),
-
-    LogicalAnd(:final left, :final right, :final keyword)
-    || LogicalOr(:final left, :final right, :final keyword)
-    || Binary(:final left, :final right, operator: final keyword) =>
-        toApp(Variable(keyword), [left, right]),
-
-    UnaryMinus(:final expr) =>
-        App(func: Var('#-'), arg: toLambdaCalculus(expr)),
-
-    UnaryBang(:final operator, :final expr) =>
-        toApp(Variable(operator), [expr]),
-
-    Ternary(:final condition, :final ifTrue, :final ifFalse, :final questionMark) =>
-        toApp(Variable(questionMark), [condition, ifTrue, ifFalse]),
-
-    Grouping(:final expr) =>
-        toLambdaCalculus(expr),
-
-    ListLiteral(:final elements) =>
-        toList(elements),
-
-    Record(:final fields) =>
-        fields.fold(
-          RecordEmpty(),
+      RecordUpdate(:final record, :final newFields) =>
+        newFields.fold(
+          toLambdaCalculus(record),
           (record, label, field) => RecordExtension(
             label.lexeme,
             toLambdaCalculus(field),
             record,
           ),
         ),
-    RecordGet(:final record, :final name) =>
-        RecordSelection(
-          name.lexeme,
-          toLambdaCalculus(record),
-        ),
 
-    RecordUpdate(:final record, :final newFields) =>
-      newFields.fold(
-        toLambdaCalculus(record),
-        (record, label, field) => RecordExtension(
-          label.lexeme,
-          toLambdaCalculus(field),
-          record,
+      Lambda(:final params, body: FunctionBody(body: Block(:final statements, :final closeBrace))) =>
+        _toAbs(
+          [for (final p in params) p.lexeme],
+          transformStatements([
+            ...statements,
+            if (!endsWithReturn(statements))
+              ReturnStatement(closeBrace, NilLiteral(closeBrace)),
+          ]),
         ),
-      ),
-
-    Lambda(:final params, body: FunctionBody(body: Block(:final statements, :final closeBrace))) =>
-      _toAbs(
-        [for (final p in params) p.lexeme],
-        transformStatements([
-          ...statements,
-          if (!endsWithReturn(statements))
-            ReturnStatement(closeBrace, NilLiteral(closeBrace)),
-        ]),
-      ),
-    TagConstructor(
-      :final tag,
-      :final payload,
-    ) =>
-        VariantConstructor(
-          tag.lexeme,
-          payload == null
-              ? null
-              : toLambdaCalculus(payload),
-        ),
-    TagMatch(
-      :final tag,
-      :final cases,
-      :final defaultCase,
-    ) =>
-      VariantMatch(
-        toLambdaCalculus(tag),
-        [
-          for (final TagMatchCase(:tag, :payload, :result) in cases)
-            (
-              tag: tag.lexeme,
-              payload: payload?.lexeme,
-              result: toLambdaCalculus(result),
-            ),
-        ],
-        switch (defaultCase) {
-          null => null,
-          DefaultMatchCase(
-            :final variable,
-            :final result,
-          ) => (
-            variable.lexeme,
-            toLambdaCalculus(result),
+      TagConstructor(
+        :final tag,
+        :final payload,
+      ) =>
+          VariantConstructor(
+            tag.lexeme,
+            payload == null
+                ? null
+                : toLambdaCalculus(payload),
           ),
-        }
-      )
+      TagMatch(
+        :final tag,
+        :final cases,
+        :final defaultCase,
+      ) =>
+        VariantMatch(
+          toLambdaCalculus(tag),
+          [
+            for (final TagMatchCase(:tag, :payload, :result) in cases)
+              (
+                tag: tag.lexeme,
+                payload: payload?.lexeme,
+                result: toLambdaCalculus(result),
+              ),
+          ],
+          switch (defaultCase) {
+            null => null,
+            DefaultMatchCase(
+              :final variable,
+              :final result,
+            ) => (
+              variable.lexeme,
+              toLambdaCalculus(result),
+            ),
+          }
+        ),
+      Import(
+        :final keyword,
+        :final path,
+      ) =>
+          toLambdaCalculus(Record(keyword, import(path))),
+    }
+  ;
+
+  bool endsWithReturn(List<Statement> statements) => switch (statements) {
+    [..., ReturnStatement()] => true,
+    [..., Block(:final statements)] => endsWithReturn(statements),
+    _ => false,
+  };
+
+  Abs toAbs(List<Token> params, Expr body) =>
+    _toAbs([for (final p in params) p.lexeme], toLambdaCalculus(body));
+
+  Abs _toAbs(List<String> params, LambdaCalculusExpression body) =>
+    switch (params.reversed.toList()) {
+      [] => Abs('_', body),
+      [final one] => Abs(one, body),
+      [final first, ...final rest] => rest.fold(
+        Abs(first, body),
+        (body, param) => Abs(param, body),
+      ),
+    };
+
+  App toApp(Expr callee, List<Expr> args) {
+    final lcFunc = toLambdaCalculus(callee);
+    return switch (args.map(toLambdaCalculus).toList()) {
+      [] => App(func: lcFunc, arg: Lit(unit_t)),
+      [final one] => App(func: lcFunc, arg: one),
+      [final first, ...final rest] => rest.fold(
+        App(func: lcFunc, arg: first),
+        (app, arg) => App(func: app, arg: arg),
+      ),
+    };
   }
-;
 
-bool endsWithReturn(List<Statement> statements) => switch (statements) {
-  [..., ReturnStatement()] => true,
-  [..., Block(:final statements)] => endsWithReturn(statements),
-  _ => false,
-};
 
-Abs toAbs(List<Token> params, Expr body) =>
-  _toAbs([for (final p in params) p.lexeme], toLambdaCalculus(body));
+  LambdaCalculusExpression toList(
+    List<ListElement> elements,
+  ) =>
+      // Normalize to list of lists, then concat them all:
+      // [1, ..[2, 3], 4]  ->  [[1], [2, 3], [4]]  ->  [1, 2, 3, 4]
+      elements
+        .map(normalizeListElement)
+        .fold(
+          Var('[]'),
+          (list, element) =>
+            // ((List#Concat list) element)
+            App(func: App(func: Var('List#Concat'), arg: list), arg: element),
+        );
 
-Abs _toAbs(List<String> params, LambdaCalculusExpression body) =>
-  switch (params.reversed.toList()) {
-    [] => Abs('_', body),
-    [final one] => Abs(one, body),
-    [final first, ...final rest] => rest.fold(
-      Abs(first, body),
-      (body, param) => Abs(param, body),
-    ),
-  };
-
-App toApp(Expr callee, List<Expr> args) {
-  final lcFunc = toLambdaCalculus(callee);
-  return switch (args.map(toLambdaCalculus).toList()) {
-    [] => App(func: lcFunc, arg: Lit(unit_t)),
-    [final one] => App(func: lcFunc, arg: one),
-    [final first, ...final rest] => rest.fold(
-      App(func: lcFunc, arg: first),
-      (app, arg) => App(func: app, arg: arg),
-    ),
-  };
+  LambdaCalculusExpression normalizeListElement(ListElement element) =>
+    switch (element) {
+      SpreadListElement(:final expr) => toLambdaCalculus(expr),
+      ExpressionListElement(:final expr) => App(
+        func: App(func: Var('List#Add'), arg: Var('[]')),
+        arg: toLambdaCalculus(expr),
+      ),
+    };
 }
-
-
-LambdaCalculusExpression toList(
-  List<ListElement> elements,
-) =>
-    // Normalize to list of lists, then concat them all:
-    // [1, ..[2, 3], 4]  ->  [[1], [2, 3], [4]]  ->  [1, 2, 3, 4]
-    elements
-      .map(normalizeListElement)
-      .fold(
-        Var('[]'),
-        (list, element) =>
-          // ((List#Concat list) element)
-          App(func: App(func: Var('List#Concat'), arg: list), arg: element),
-      );
-
-LambdaCalculusExpression normalizeListElement(ListElement element) =>
-  switch (element) {
-    SpreadListElement(:final expr) => toLambdaCalculus(expr),
-    ExpressionListElement(:final expr) => App(
-      func: App(func: Var('List#Add'), arg: Var('[]')),
-      arg: toLambdaCalculus(expr),
-    ),
-  };
 
 App _continue(LambdaCalculusExpression m, LambdaCalculusExpression f) => App(
   func: App(func: Var('#continuation'), arg: m),

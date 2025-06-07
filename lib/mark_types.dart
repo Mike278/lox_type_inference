@@ -1,10 +1,10 @@
 import 'dart:math';
 
+import 'package:lox/coordinator.dart';
 import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/lox_lambda_calculus.dart';
-import 'package:lox/parser.dart';
-import 'package:lox/scanner.dart';
+import 'package:lox/token.dart';
 import 'package:lox/utils.dart';
 
 typedef MarkText = (CodeSpan, {String display, String? style});
@@ -36,7 +36,11 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
   ),
 );
 
-(List<MarkText>, {String errorOutput}) markTypes(String source) {
+(List<MarkText>, {String errorOutput}) markTypes(
+  String relativeToDir,
+  Source source,
+  ReadFile readFile,
+) {
 
   final output = [];
   reportError(kind) => (err) => output.add('$kind:\n$err');
@@ -44,16 +48,11 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
   final sw = Stopwatch()..start();
   justSpentTime(msg) => print('$msg took ${sw.elapsedMilliseconds}ms');
 
-  final (tokens, hadError: hadScanError) = scanTokens(source, reportError('scan error'));
-  justSpentTime('scanning');
-  final (statements, hadError: hadParseError) = Parser(tokens, reportError('parse error')).parse();
-  justSpentTime('parsing');
-
-  if (hadParseError || hadScanError) return (errorOutput: output.join('\n'), []);
+  final (statements, resolveImport) = parseSourceAndResolveImports(relativeToDir, source, readFile);
 
   final marks = <MarkText>[];
   try {
-    final lookup = runInference(statements);
+    final lookup = runInference(statements, resolveImport);
     justSpentTime('type checking');
 
     for (final statement in statements) {
@@ -339,6 +338,10 @@ List<(CodeSpan, String)> displayExpression(
       ...displayExpression(result, typeOf),
 
   ],
+  Import(:final keyword, :final target, :final path) => [
+    (keyword.span, '$path: ${displayType(typeOf(expr))}'),
+    (target.span, '$path: ${displayType(typeOf(expr))}'),
+  ],
 };
 
 String displayType(Ty? type) =>
@@ -446,6 +449,9 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
 
 
   TagMatch(:final keyword) =>
+      keyword.span,
+
+  Import(:final keyword) =>
       keyword.span,
 };
 

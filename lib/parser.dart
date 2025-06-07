@@ -1,5 +1,5 @@
 import 'package:lox/expr.dart';
-import 'package:lox/scanner.dart';
+import 'package:lox/token.dart';
 import 'package:lox/utils.dart';
 
 //
@@ -34,7 +34,11 @@ import 'package:lox/utils.dart';
 //                | lambda
 //                | recordLiteral
 //                | listLiteral
-//                | call ;
+//                | tagConstructor
+//                | tagMatch
+//                | import
+//                | call
+//                ;
 // lambda         → "\" parameters? (block | ("->" expression)) ;
 // parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 // recordLiteral  → "{" recordField ( "," recordField )* "}"
@@ -45,6 +49,7 @@ import 'package:lox/utils.dart';
 // tagConstructor → "." IDENTIFIER ( "(" expression ")" ) ? ;
 // tagMatch       → "match" expression "{" tagMatchCase ("," tagMatchCase )* "}"
 // tagMatchCase   → "." IDENTIFIER (IDENTIFIER)? "->" expression
+// import         → "import" STRING
 // call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 // arguments      → argument ( "," argument )* ;
 // argument       → "_" | expression;
@@ -57,9 +62,8 @@ import 'package:lox/utils.dart';
 
 class Parser {
   final List<Token> tokens;
-  final ErrorReporter _errorReporter;
   var current = 0;
-  Parser(this.tokens, this._errorReporter);
+  Parser(this.tokens);
 
   Token previous() => tokens[current-1];
   Token peek() => tokens[current];
@@ -87,16 +91,11 @@ class Parser {
 
   Token consume(TokenType type, String message) {
     if (check(type)) return advance();
-    throw newParseError(peek(), message);
+    throwParseError(peek(), message);
   }
 
-  ParseError newParseError(Token token, String message) {
-    if (token.type == TokenType.EOF) {
-      _errorReporter(formatError(token.line, token.offset, ' at end', message));
-    } else {
-      _errorReporter(formatError(token.line, token.offset, " at '${token.lexeme}'", message));
-    }
-    return ParseError();
+  Never throwParseError(Token token, String message) {
+    throw (token, message: message);
   }
 
   void synchronize() {
@@ -119,17 +118,10 @@ class Parser {
     }
   }
 
-  (List<Statement>, {bool hadError}) parse() {
-    try {
-      final statements = [
-        for (;!isAtEnd();)
-          declaration()
-      ];
-      return (statements, hadError: false);
-    } on ParseError {
-      return ([], hadError: true);
-    }
-  }
+  List<Statement> parse() => [
+    for (;!isAtEnd();)
+      declaration()
+  ];
 
   // declaration    → letDecl
   //                | funDecl
@@ -355,6 +347,9 @@ class Parser {
     if (matchFirst(TokenType.MATCH)) {
       return tagMatch();
     }
+    if (matchFirst(TokenType.IMPORT)) {
+      return import();
+    }
 
     return call();
   }
@@ -377,7 +372,7 @@ class Parser {
             if (check(TokenType.CLOSE_PAREN)) break; // trailing comma
             if (matchFirst(TokenType.UNDERSCORE)) {
               if (placeholder != null) {
-                throw newParseError(previous(), 'Can only have 1 placeholder arg');
+                throwParseError(previous(), 'Can only have 1 placeholder arg');
               }
               placeholder = previous();
             } else {
@@ -450,6 +445,12 @@ class Parser {
     return TagMatch(keyword, tag, (openBrace, closeBrace), cases, defaultCase);
   }
 
+  Expr import() {
+    final keyword = previous();
+    final path = consume(TokenType.STRING, 'Expected path to import from.');
+    return Import(keyword: keyword, target: path);
+  }
+
   // record         → "{" recordField ( "," recordField )* "}"
   // recordField    → IDENTIFIER ":" expression
   Expr recordLiteral() {
@@ -462,8 +463,8 @@ class Parser {
       if (matchFirst(TokenType.DOTDOT)) {
 
         // todo: relax these constraints and transform into multiple record updates?
-        if (update != null) throw newParseError(previous(), 'Can only update 1 record');
-        if (!first) throw newParseError(previous(), 'The record being updated must be the first entry.');
+        if (update != null) throwParseError(previous(), 'Can only update 1 record');
+        if (!first) throwParseError(previous(), 'The record being updated must be the first entry.');
 
         first = false;
         update = (
@@ -474,7 +475,7 @@ class Parser {
         first = false;
         final name = consume(TokenType.IDENTIFIER, 'Expected field name.');
         if (fields.containsKey(name)) {
-          throw newParseError(name, 'Duplicate field name');
+          throwParseError(name, 'Duplicate field name');
         }
         consume(TokenType.COLON, "Expected ':' between field name and value.");
         final value = expression();
@@ -562,9 +563,9 @@ class Parser {
       return Grouping(expr);
     }
 
-    throw newParseError(peek(), 'Expected expression.');
+    throwParseError(peek(), 'Expected expression.');
   }
 
 }
 
-class ParseError implements Exception {}
+typedef ParserError = (Token, {String message});

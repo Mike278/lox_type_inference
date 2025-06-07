@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:http/http.dart';
-import 'package:lox/env.dart';
+import 'package:lox/coordinator.dart';
 import 'package:lox/interpreter.dart';
 import 'package:lox/mark_types.dart';
-import 'package:lox/parser.dart';
-import 'package:lox/scanner.dart';
 import 'package:web/web.dart' as web;
 
 import './codemirror.dart';
@@ -20,10 +18,11 @@ void main() {
     web.document.getElementById('code-input')!,
     codeMirrorOptions.jsify()
   )..setSize('100%', '100%');
+  getSource() => Source(editor.getDoc().getValue());
 
   final outputElement = web.document.getElementById('output-area')!;
   web.document.getElementById('run-button')!.onClick.listen((_) {
-    outputElement.text = exec(editor.getDoc().getValue());
+    outputElement.text = exec(getSource());
   });
 
   editor.getDoc().setValue(sample);
@@ -37,7 +36,7 @@ void main() {
         clear();
       }
       clearMarks.clear();
-      final (:errorOutput, marks) = markTypes(editor.getDoc().getValue());
+      final (:errorOutput, marks) = markTypes('', getSource(), webImportFile);
       outputElement.text = errorOutput;
       final doc = editor.getDoc();
       for (final ((:from, :to), :display, :style) in marks) {
@@ -145,32 +144,32 @@ print match user {
 ''';
 
 
-String exec(String source) {
+String exec(Source source) {
 
   final output = [];
   printMessage(msg) => output.add(msg);
-  reportError(kind) => (err) => output.add('$kind:\n$err');
   runAssert(keyword, source, value) {
     try { defaultLoxAssert(keyword, source, value); }
     catch (e) { output.add(e); }
   }
 
-  final (tokens, hadError: hadScanError) = scanTokens(source, reportError('scan error'));
-  final (statements, hadError: hadParseError) = Parser(tokens, reportError('parse error')).parse();
-
-  if (!hadParseError && !hadScanError) {
-    LoxRuntime(
-      reportError('runtime error'),
+  try {
+    run(
+      '',
+      source,
+      Env.global(),
       runAssert,
       (print: printMessage),
-    ).interpret(
-      statements,
-      Env.global(),
+      webImportFile,
     );
+  } catch (e) {
+    output.add(e);
   }
 
   return output.join('\n');
 }
+
+final webImportFile = (_) => throw 'file imports arent supported on web';
 
 
 // keyword

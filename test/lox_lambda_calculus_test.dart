@@ -120,25 +120,19 @@ void main() {
       let a = id(1);
       let b = id("b");
     ''';
-    final program = parse(source);
-    final lambdaCalculus = transformStatements(program);
-    final type = infer(lambdaCalculus);
+    final type = inferSource(source);
     expect(type.toString(), r'String');
   });
 
   test('transform recursive functions', () {
     final source = r'let factorial = \n -> n > 0 ? n * factorial(n - 1) : 1;';
-    final program = parse(source);
-    final lambdaCalculus = transformStatements(program);
-    final type = infer(lambdaCalculus);
+    final type = inferSource(source);
     expect(type.toString(), r'Num -> Num');
   });
 
   test('transform recursive function calls', () {
     final source = r'let factorial = \n -> n > 0 ? n * factorial(n - 1) : 1; factorial(2);';
-    final program = parse(source);
-    final lambdaCalculus = transformStatements(program);
-    final type = infer(lambdaCalculus);
+    final type = inferSource(source);
     expect(type.toString(), r'Num');
   });
 
@@ -151,9 +145,7 @@ void main() {
       return "ok"; 
     };
     ''';
-    final program = parse(source);
-    final lambdaCalculus = transformStatements(program);
-    final type = infer(lambdaCalculus);
+    final type = inferSource(source);
     expect(type.toString(), r't0 -> String');
   });
 
@@ -164,9 +156,7 @@ void main() {
       return "ok"; 
     };
     ''';
-    final program = parse(source);
-    final lambdaCalculus = transformStatements(program);
-    final type = infer(lambdaCalculus);
+    final type = inferSource(source);
     expect(type.toString(), r't0 -> String');
   });
 
@@ -180,9 +170,7 @@ void main() {
       } 
     };
     ''';
-    final program = parse(source);
-    final lambdaCalculus = transformStatements(program);
-    final type = infer(lambdaCalculus);
+    final type = inferSource(source);
     expect(type.toString(), r't0 -> String');
   });
 
@@ -200,14 +188,11 @@ void main() {
       return sum;
     };
     ''';
-    final program = parse(source);
-    final lambdaCalculus = transformStatements(program);
-    final type = infer(lambdaCalculus);
+    final type = inferSource(source);
     expect(type.toString(), r'Num -> Num');
     {
-      final program = parse('$source let result = fn(6);');
-      final lambdaCalculus = transformStatements(program);
-      final type = infer(lambdaCalculus);
+
+      final type = inferSource('$source let result = fn(6);');
       expect(type.toString(), r'Num');
     }
   });
@@ -215,5 +200,5 @@ void main() {
 
 LambdaCalculusExpression toLC(String source) {
   final expr = parseExpression(source);
-  return toLambdaCalculus(expr);
+  return toLambdaCalculus(expr, (_) => fail('not testing imports'));
 }

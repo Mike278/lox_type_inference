@@ -1,3 +1,4 @@
+====== basic_test.lox =====
 null
 1
 null
@@ -25,12 +26,19 @@ true
 === true and isGreat(); ===
 side effect!
 true
+====== if.lox =====
 a
 b
 1
 2
 3
 b
+====== imports.lox =====
+[2, 4, 6]
+{helloFromRelative: yep}
+yep
+1
+====== lambdas.lox =====
 11
 111
 222
@@ -51,6 +59,7 @@ hello
 123
 30
 1994
+====== lists.lox =====
 [1, 2, 3]
 [3, 2, 1]
 []
@@ -73,9 +82,11 @@ hello
 0
 [false]
 [false]
+====== make_counter.lox =====
 1
 2
 3
+====== records.lox =====
 {a: one, b: 2, c: false, d: (arity: 0, impl: Closure: (List<Object?>) => Object?)}
 one
 (arity: 0, impl: Closure: (List<Object?>) => Object?)
@@ -92,5 +103,11 @@ null
 1
 {}
 {}
+====== scoping.lox =====
 global
 global
+====== tags.lox =====
+\t
+bottom
+bottom
+green

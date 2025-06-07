@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:lox/scanner.dart';
+import 'package:lox/token.dart';
 
 sealed class Expr {}
 
@@ -197,6 +197,17 @@ typedef DefaultMatchCase = ({
   Expr result,
 });
 
+class Import extends Expr with EquatableMixin {
+  final Token keyword;
+  final Token target;
+  late final path = ImportPath(target.literal as String);
+  Import({required this.keyword, required this.target});
+  @override get props => [keyword, target];
+}
+extension type ImportPath(String literal) {}
+typedef Exports = Map<Token, Expr>;
+typedef ResolveImport = Exports Function(ImportPath);
+
 sealed class Statement {}
 class ExpressionStatement extends Statement {
   final Expr expr;
@@ -236,4 +247,94 @@ class IfStatement extends Statement {
   final Statement thenBranch;
   final Statement? elseBranch;
   IfStatement(this.keyword, this.condition, this.thenBranch, this.elseBranch);
+}
+
+extension StatementAPI on Statement {
+  Iterable<Expr> allExpressions() sync* {
+    switch (this) {
+      case PrintStatement(:final expr):
+      case AssertStatement(:final expr):
+      case ExpressionStatement(:final expr):
+        yield* expr.subExpressions();
+      case LetDeclaration(:final initializer):
+        yield* initializer.subExpressions();
+      case Block(:final statements):
+        for (final statement in statements) {
+          yield* statement.allExpressions();
+        }
+      case ReturnStatement(:final expr):
+        if (expr != null) yield* expr.subExpressions();
+      case IfStatement(:final condition, :final thenBranch, :final elseBranch):
+        yield* condition.subExpressions();
+        yield* thenBranch.allExpressions();
+        if (elseBranch != null) yield* elseBranch.allExpressions();
+    }
+  }
+}
+
+extension ExprAPI on Expr {
+  Iterable<Expr> subExpressions() sync* {
+    yield this;
+    switch (this) {
+      case Binary(:final left, :final right):
+      case LogicalAnd(:final left, :final right):
+      case LogicalOr(:final left, :final right):
+        yield* left.subExpressions();
+        yield* right.subExpressions();
+      case UnaryMinus(:final expr):
+      case UnaryBang(:final expr):
+      case Grouping(:final expr):
+        yield* expr.subExpressions();
+      case Lambda(:final body): switch (body) {
+        case ArrowExpression(:final body):
+          yield* body.subExpressions();
+        case FunctionBody(:final body):
+          for (final statement in body.statements) {
+            yield* statement.allExpressions();
+          }
+      }
+      case Call(:final callee, :final args):
+        yield* callee.subExpressions();
+        switch (args) {
+          case ArgsWithPlaceholder(:final before, :final after):
+            for (final expr in before) yield* expr.subExpressions();
+            for (final expr in after) yield* expr.subExpressions();
+          case ExpressionArgs(:final exprs):
+            for (final expr in exprs) yield* expr.subExpressions();
+        }
+      case Ternary(:final condition, :final ifTrue, :final ifFalse):
+        yield* condition.subExpressions();
+        yield* ifTrue.subExpressions();
+        yield* ifFalse.subExpressions();
+      case TagConstructor(:final payload):
+        if (payload != null)
+        yield* payload.subExpressions();
+      case Record(:final fields):
+        for (final expr in fields.values) yield* expr.subExpressions();
+      case RecordGet(:final record):
+        yield* record.subExpressions();
+      case RecordUpdate(:final record, :final newFields):
+        yield* record.subExpressions();
+        for (final expr in newFields.values) yield* expr.subExpressions();
+      case ListLiteral(:final elements):
+        for (final e in elements) {
+          switch (e) {
+            case ExpressionListElement(:final expr):
+            case SpreadListElement(:final expr):
+              yield* expr.subExpressions();
+          }
+        }
+      case TagMatch(:final tag, :final cases, :final defaultCase):
+        yield* tag.subExpressions();
+        for (final case_ in cases) yield* case_.result.subExpressions();
+        if (defaultCase != null) yield* defaultCase.result.subExpressions();
+      case Import():
+      case Variable():
+      case StringLiteral():
+      case NumberLiteral():
+      case FalseLiteral():
+      case TrueLiteral():
+      case NilLiteral():
+    }
+  }
 }

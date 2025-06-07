@@ -1,60 +1,10 @@
 
-import 'package:equatable/equatable.dart';
-import 'package:lox/interpreter.dart';
-import 'package:lox/parser.dart';
+import 'package:lox/token.dart';
 
-import '../env.dart';
-// ignore_for_file: constant_identifier_names
 
-typedef ErrorReporter = void Function(String);
+typedef ScanError = ({int line, int offset, String message});
 
-typedef RunResult = (Env, {bool hadScanError, bool hadParseError, bool hadRuntimeError});
-
-RunResult run(
-  String source,
-  Env env,
-  ErrorReporter errorReporter,
-  LoxAssertion runAssert,
-  RuntimeIO io,
-) {
-  final (tokens, hadError: hadScanError) = scanTokens(source, errorReporter);
-
-  final parser = Parser(tokens, errorReporter);
-  final (statements, hadError: hadParseError) = parser.parse();
-
-  if (hadParseError || hadScanError) {
-    return (
-      env,
-      hadParseError: hadParseError,
-      hadScanError: hadScanError,
-      hadRuntimeError: false,
-    );
-  }
-
-  final (
-    newEnv,
-    :hadRuntimeError,
-  ) = LoxRuntime(errorReporter, runAssert, io).interpret(
-    statements,
-    env,
-  );
-
-  return (
-    newEnv,
-    hadParseError: false,
-    hadScanError: false,
-    hadRuntimeError: hadRuntimeError,
-  );
-}
-
-String formatError(int line, int offset, String atToken, String message) {
-  return "[line $line:$offset] Error$atToken: $message";
-}
-
-(List<Token>, {bool hadError}) scanTokens(
-  String source,
-  ErrorReporter errorReporter,
-) {
+(List<Token>, {List<ScanError> errors}) scanTokens(String source) {
 
   final tokens = <Token>[];
 
@@ -63,10 +13,9 @@ String formatError(int line, int offset, String atToken, String message) {
   int line = 1;
   int offset = 0;
 
-  var hadError = false;
+  final errors = <({int line, int offset, String message})>[];
   void error(String message) {
-    hadError = true;
-    errorReporter(formatError(line, offset, '', message));
+    errors.add((line: line, offset: offset, message: message));
   }
 
   void addToken(TokenType type, [Object? literal]) {
@@ -182,7 +131,7 @@ String formatError(int line, int offset, String atToken, String message) {
   }
 
   tokens.add(Token(TokenType.EOF, '', null, line, 0));
-  return (tokens, hadError: hadError);
+  return (tokens, errors: errors);
 }
 
 final keywords = {
@@ -194,6 +143,7 @@ final keywords = {
   'false' :  TokenType.FALSE,
   'for' :    TokenType.FOR,
   'if' :     TokenType.IF,
+  'import' : TokenType.IMPORT,
   'let' :    TokenType.LET,
   'nil' :    TokenType.NIL,
   'or' :     TokenType.OR,
@@ -206,42 +156,6 @@ final keywords = {
   'while' :  TokenType.WHILE,
 };
 
-enum TokenType {
-  // Single-character tokens.
-  OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE, OPEN_BRACKET, CLOSE_BRACKET,
-  BACKSLASH, COLON, COMMA, DOT, MINUS, PIPE, PLUS, QUESTION, SEMICOLON, SLASH, STAR, UNDERSCORE,
-
-  // One or two character tokens.
-  ARROW, BANG, BANG_EQUAL, DOTDOT,
-  EQUAL, EQUAL_EQUAL,
-  GREATER, GREATER_EQUAL,
-  LESS, LESS_EQUAL,
-  PIPELINE,
-
-  // Literals.
-  IDENTIFIER, STRING, NUMBER,
-
-  // Keywords.
-  ASSERT, AND, CLASS, ELSE, FALSE, FOR, IF, MATCH, NIL, OR,
-  PRINT, RETURN, SUPER, THEN, THIS, TRUE, LET, WHILE,
-
-  EOF;
-}
-
-class Token with EquatableMixin {
-  final TokenType type;
-  final String lexeme;
-  final Object? literal;
-  final int line;
-  final int offset;
-
-  Token(this.type, this.lexeme, this.literal, this.line, this.offset);
-
-  @override
-  String toString() => [type.name, lexeme, if (literal != null) literal, '(ln$line:$offset)'].join(' ');
-
-  @override get props => [type, lexeme, literal, line, offset];
-}
 
 const zero = 48;
 const nine = 57;

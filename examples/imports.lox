@@ -1,0 +1,10 @@
+let map = (import "lists.lox").map;
+
+let x = map([1,2,3], \n -> n * 2);
+print x;
+
+print import "foo/relative.lox";
+let rel = import "foo/relative.lox";
+print rel.helloFromRelative;
+
+print (import "foo/up.lox").a;
