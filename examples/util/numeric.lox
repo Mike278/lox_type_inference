@@ -1,0 +1,3 @@
+
+let absDiff = \a, b -> a > b ? a - b : b - a;
+let plus = \a, b -> a + b;

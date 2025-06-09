@@ -84,6 +84,12 @@ let boss = {
 let updated = {..boss, lineOfWork: .Refrigeration};
 print boss;
 print updated.company;
+let { 
+  name, 
+  lineOfWork: subtitle,
+} = updated;
+print name;
+print subtitle;
 
 //
 // Variants

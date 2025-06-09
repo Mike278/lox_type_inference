@@ -1,21 +1,4 @@
-let fold = \list, state, fn ->
-    List.empty(list)
-        ? state
-        : fold(
-            List.rest(list),
-            fn(state, List.first(list)),
-            fn
-        );
-
-
-let map = \list, fn ->
-    fold(list, [], \state, element -> [..state, fn(element)]);
-
-let reduce = \list, fn ->
-    fold(list, List.first(list), fn);
-
-let reverse = \list ->
-    fold(list, [], \state, element -> [element, ..state]);
+let {map, reverse, reduce} = import "util/lists.lox";
 
 let xs = [1, 2, 3];
 print xs;

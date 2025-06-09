@@ -230,6 +230,31 @@ class LetDeclaration extends Statement {
   final Expr initializer;
   LetDeclaration(this.name, this.initializer);
 }
+class Destructuring extends Statement {
+  final List<DestructuringElement> elements;
+  final Token equals;
+  final Expr initializer;
+  Destructuring(this.elements, this.equals, this.initializer);
+}
+sealed class DestructuringElement {}
+
+// let {x} = {x: 1};
+class InheritName implements DestructuringElement {
+  final Token name;
+  InheritName(this.name);
+}
+// let {x: y} = {x: 1};
+class Redeclare implements DestructuringElement {
+  final Token original;
+  final Token redeclared;
+  Redeclare(this.original, this.redeclared);
+}
+// let {x: {y: z}} = {x: {y: 1}};
+class Nested implements DestructuringElement {
+  final Token name;
+  final List<DestructuringElement> inner;
+  Nested(this.name, this.inner);
+}
 class Block extends Statement {
   final Token openBrace;
   final List<Statement> statements;
@@ -257,6 +282,7 @@ extension StatementAPI on Statement {
       case ExpressionStatement(:final expr):
         yield* expr.subExpressions();
       case LetDeclaration(:final initializer):
+      case Destructuring(:final initializer):
         yield* initializer.subExpressions();
       case Block(:final statements):
         for (final statement in statements) {
@@ -337,4 +363,29 @@ extension ExprAPI on Expr {
       case NilLiteral():
     }
   }
+}
+
+extension DesugarDestructuring on Destructuring {
+  List<LetDeclaration> desugar() => [
+    for (final e in elements) ...switch (e) {
+      InheritName(:final name) => [
+        LetDeclaration(name, RecordGet(initializer, name)),
+      ],
+      Redeclare(:final redeclared, :final original) => [
+        LetDeclaration(redeclared, RecordGet(initializer, original)),
+      ],
+      Nested(:final name, :final inner) =>
+        Destructuring(inner, equals, RecordGet(initializer, name)).desugar(),
+    }
+  ];
+}
+
+extension DesugarStatements on List<Statement> {
+  List<Statement> desugar() => [
+    for (final statement in this)
+      if (statement case Destructuring d)
+        ...d.desugar()
+      else
+        statement
+  ];
 }

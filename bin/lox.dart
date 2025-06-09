@@ -30,14 +30,19 @@ void _runPrompt() {
     print('> ');
     final line = stdin.readLineSync();
     if (line == null) break;
-    env = run(
-      Directory.current.path,
-      Source(line),
-      env,
-      defaultLoxAssert,
-      _io,
-      (path) => Source(File(path).readAsStringSync()),
-    );
+    try {
+      env = run(
+        Directory.current.path,
+        Source(line),
+        env,
+        defaultLoxAssert,
+        _io,
+        (path) => Source(File(path).readAsStringSync()),
+      );
+    } catch (e, s) {
+      print(e);
+      print(s);
+    }
   }
 }
 

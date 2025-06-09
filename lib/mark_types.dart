@@ -61,6 +61,7 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
         PrintStatement(:final expr)        => expr,
         AssertStatement(:final expr)       => expr,
         LetDeclaration(:final initializer) => initializer,
+        Destructuring(:final initializer)  => initializer,
         Block()                            => null,
         IfStatement()                      => null,
         ReturnStatement()                  => null,
@@ -147,6 +148,11 @@ List<(CodeSpan, String)> displayStatement(
   LetDeclaration(:final name, :final initializer) => [
       (name.span, '${name.lexeme}: ${displayType(typeOf(initializer))}'),
       ...displayExpression(initializer, typeOf),
+  ],
+
+  Destructuring d => [
+    for (final let in d.desugar())
+      ...displayStatement(let, typeOf),
   ],
 
   Block(:final statements) => [

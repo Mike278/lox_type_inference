@@ -1,4 +1,4 @@
-let map = (import "lists.lox").map;
+let {map} = import "lists.lox";
 
 let x = map([1,2,3], \n -> n * 2);
 print x;

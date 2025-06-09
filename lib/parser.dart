@@ -5,9 +5,13 @@ import 'package:lox/utils.dart';
 //
 // program        → declaration* EOF ;
 // declaration    → letDecl
+//                | destructuringDecl
 //                | statement
 //                ;
 // letDecl        → "let" IDENTIFIER "=" expression ";" ;
+// destructuringDecl → "let" destructuring "="  expression ";" ;
+// destructuring     → "{" destructElement ( "," destructElement )* "}";
+// destructElement   → IDENTIFIER (":" ( IDENTIFIER | destructuring ) )?;
 // statement      → exprStmt
 //                | printStmt
 //                | ifStmt
@@ -124,11 +128,17 @@ class Parser {
   ];
 
   // declaration    → letDecl
-  //                | funDecl
+  //                | destructuringDecl
   //                | statement
   //
   Statement declaration() {
-    if (matchFirst(TokenType.LET)) return letDeclaration();
+    if (matchFirst(TokenType.LET)) {
+      if (matchFirst(TokenType.OPEN_BRACE)) {
+        return destructuringDecl();
+      } else {
+        return letDeclaration();
+      }
+    }
     return statement();
   }
 
@@ -139,6 +149,48 @@ class Parser {
     final initializer = expression();
     consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
     return LetDeclaration(name, initializer);
+  }
+
+
+  // destructuringDecl → "let" destructuring "="  expression ";" ;
+  // destructuring     → "{" destructElement ( "," destructElement )* "}";
+  // destructElement   → IDENTIFIER (":" ( IDENTIFIER | destructuring ) )?;
+  Statement destructuringDecl() {
+
+    DestructuringElement destructElement() {
+      final name = consume(TokenType.IDENTIFIER, 'Expected variable name');
+      if (matchFirst(TokenType.COLON)) {
+        if (matchFirst(TokenType.OPEN_BRACE)) {
+          final elements = <DestructuringElement>[];
+          while (!check(TokenType.CLOSE_BRACE) && !isAtEnd()) {
+            if (elements.isNotEmpty) consume(TokenType.COMMA, 'Expected comma between record field declarations.');
+            if (check(TokenType.CLOSE_BRACE)) break; // trailing comma
+            elements.add(destructElement());
+          }
+          consume(TokenType.CLOSE_BRACE, "Expected '}' after destructuring.");
+          return Nested(name, elements);
+        } else {
+          final redeclaredName = consume(TokenType.IDENTIFIER, 'Expected name of new variable');
+          return Redeclare(name, redeclaredName);
+        }
+      } else {
+        return InheritName(name);
+      }
+    }
+
+    final elements = <DestructuringElement>[];
+    while (!check(TokenType.CLOSE_BRACE) && !isAtEnd()) {
+      if (elements.isNotEmpty) consume(TokenType.COMMA, 'Expected comma between record field declarations.');
+      if (check(TokenType.CLOSE_BRACE)) break; // trailing comma
+      elements.add(destructElement());
+    }
+
+    consume(TokenType.CLOSE_BRACE, "Expected '}' after destructuring.");
+
+    final equals = consume(TokenType.EQUAL, "Expected '=' before variable declaration.");
+    final initializer = expression();
+    consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
+    return Destructuring(elements, equals, initializer);
   }
 
   // statement      → printStmt

@@ -56,7 +56,7 @@ class LoxRuntime {
   LoxRuntime(this.runAssert, this.io, this.import);
   
   Env interpret(List<Statement> statements, Env env) =>
-    statements.fold(env, execute);
+    statements.desugar().fold(env, execute);
   
   Env execute(Env env, Statement statement) {
     switch (statement) {
@@ -68,6 +68,8 @@ class LoxRuntime {
         eval(expr, env);
       case LetDeclaration(:final name, :final initializer):
         return define(env, name, initializer);
+      case Destructuring():
+        throw 'bug; destructuring shouldve been desugared';
       case Block(:final statements):
         var newEnv = Env(env);
         for (final statement in statements) {

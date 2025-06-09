@@ -1,0 +1,42 @@
+let {plus} = import "numeric.lox";
+let {empty, first, rest} = List;
+
+let fold = \list, state, fn ->
+    list \> empty ? state :
+    fold(list \> rest, fn(state, list \> first), fn);
+
+let map = \list, fn ->
+    fold(list, [], \state, element -> [..state, fn(element)]);
+
+let reduce = \list, fn ->
+    fold(list \> rest, list \> first, fn);
+
+let reverse = \list ->
+    fold(list, [], \state, element -> [element, ..state]);
+
+let where = \list, fn ->
+    fold(list, [], \state, element ->
+        fn(element) ? [..state, element] : state);
+
+let sort = \list {
+  if list \> empty then return [];
+  let x = list \> first;
+  let xs = list \> rest;
+  let isBefore = \e -> e < x;
+  let isAfter = \e -> e >= x;
+  return [
+    ..xs \> where(_, isBefore) \> sort,
+    x,
+    ..xs \> where(_, isAfter) \> sort
+  ];
+};
+
+let zip = \l1, l2, fn ->
+    (l1 \> empty) or
+    (l2 \> empty) ? [] :
+    [
+        fn(l1 \> first, l2 \> first),
+        ..zip(l1 \> rest, l2 \> rest, fn)
+    ];
+
+let sum = reduce(_, plus);

@@ -912,6 +912,39 @@ void main() {
       'Num',
     );
   });
+
+  test('destructuring', () {
+    expect(
+      _inferSource('let {a} = {a: 1}; a;'),
+      'Num',
+    );
+    expect(
+      _inferSource('let {a: b} = {a: 1}; b;'),
+      'Num',
+    );
+    expect(
+      _inferSource('let {a: x} = {a: {b: 1}}; x;'),
+      '{b: Num}',
+    );
+    expect(
+      _inferSource('let {a: {b}} = {a: {b: 1}}; b;'),
+      'Num',
+    );
+    expect(
+      _inferSource('let {a: {b: x}} = {a: {b: 1}}; x;'),
+      'Num',
+    );
+    expect(
+      _inferSource(
+        '''
+        let {x, y} = import "foo.lox"; 
+        x + y;
+        ''',
+        {'foo.lox': 'let x = 1; let y = 2;'}
+      ),
+      'Num',
+    );
+  });
 }
 
 String? get mainStackTrace =>

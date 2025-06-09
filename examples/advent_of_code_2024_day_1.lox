@@ -1,0 +1,31 @@
+let {fold, zip, sort, sum, first, rest, empty} = import "util/lists.lox";
+let {absDiff} = import "util/numeric.lox";
+
+let input = [
+    [3, 4],
+    [4, 3],
+    [2, 5],
+    [1, 3],
+    [3, 9],
+    [3, 3]
+];
+
+let lists = fold(
+    input,
+    {l1: [], l2: []},
+    \state, pair -> {
+        l1: [..state.l1, pair \> first],
+        l2: [..state.l2, pair \> rest \> first]
+    }
+);
+print lists;
+
+let diffs = zip(
+  lists.l1 \> sort,
+  lists.l2 \> sort,
+  absDiff
+);
+print diffs;
+
+let ans = sum(diffs);
+assert ans == 11;

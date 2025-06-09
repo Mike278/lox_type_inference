@@ -60,7 +60,7 @@ Env run(
 List<Statement> parse(Source source) {
   final (tokens, :errors) = scanTokens(source.literal);
   if (errors.isNotEmpty) throw errors;
-  return Parser(tokens).parse();
+  return Parser(tokens).parse().desugar();
 }
 
 Map<ImportPath, Exports> findAndResolveImports(

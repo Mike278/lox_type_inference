@@ -19,14 +19,14 @@ Map<Expr, Ty> runInference(
   List<Statement> statements,
   ResolveImport import,
 ) =>
-  _TypeSystem(import).runInference(statements);
+  _TypeSystem(import).runInference(statements.desugar());
 
 
 LambdaCalculusExpression transformStatements(
   List<Statement> statements,
   ResolveImport import,
 ) =>
-  _TypeSystem(import).transformStatements(statements);
+  _TypeSystem(import).transformStatements(statements.desugar());
 
 LambdaCalculusExpression toLambdaCalculus(
   Expr loxExpression,
@@ -93,6 +93,8 @@ class _TypeSystem {
             ? Var(name.lexeme)
             : transformStatements(rest),
         ),
+
+      Destructuring() => throw 'bug; destructuring shouldve been desugared',
 
       IfStatement(
         :final condition,
