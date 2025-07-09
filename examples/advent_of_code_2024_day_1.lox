@@ -1,5 +1,6 @@
-let {fold, zip, sort, sum, first, rest, empty} = import "util/lists.lox";
+let {fold, countWhere, zip, sort, sum, first, rest} = import "util/lists.lox";
 let {absDiff} = import "util/numeric.lox";
+let {eq} = import "util/functions.lox";
 
 let input = [
     [3, 4],
@@ -10,22 +11,35 @@ let input = [
     [3, 3]
 ];
 
-let lists = fold(
+let { list1, list2 } = fold(
     input,
-    {l1: [], l2: []},
+    {list1: [], list2: []},
     \state, pair -> {
-        l1: [..state.l1, pair \> first],
-        l2: [..state.l2, pair \> rest \> first]
+        list1: [..state.list1, pair \> first],
+        list2: [..state.list2, pair \> rest \> first],
     }
 );
-print lists;
+print list1;
+print list2;
 
-let diffs = zip(
-  lists.l1 \> sort,
-  lists.l2 \> sort,
+/////// Part 1 ///////
+
+let answer1 = zip(
+  list1 \> sort,
+  list2 \> sort,
   absDiff
-);
-print diffs;
+) \> sum;
 
-let ans = sum(diffs);
-assert ans == 11;
+assert answer1 == 11;
+
+/////// Part 2 ///////
+
+let frequencyOfNumberInList2 = \n ->
+    list2 \> countWhere(_, n \> eq);
+
+let answer2 = list1 \> fold(_, 0, \running, n {
+    let value = n * frequencyOfNumberInList2(n);
+    return running + value;
+});
+
+assert answer2 == 31;

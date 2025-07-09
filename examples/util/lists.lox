@@ -18,6 +18,9 @@ let where = \list, fn ->
     fold(list, [], \state, element ->
         fn(element) ? [..state, element] : state);
 
+let countWhere = \list, predicate ->
+    fold(list, 0, \count, element -> predicate(element) ? count + 1 : count);
+
 let sort = \list {
   if list \> empty then return [];
   let x = list \> first;
