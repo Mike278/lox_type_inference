@@ -1,3 +1,11 @@
 
 let absDiff = \a, b -> a > b ? a - b : b - a;
+let abs = \a -> a >= 0 ? a : a * -1;
 let plus = \a, b -> a + b;
+let minus = \a, b -> a - b;
+let sign = \n {
+    if n == 0 then return 0;
+    if n < 0 then return -1;
+    assert n > 0;
+    return 1;
+};

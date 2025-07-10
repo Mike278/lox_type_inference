@@ -42,4 +42,37 @@ let zip = \l1, l2, fn ->
         ..zip(l1 \> rest, l2 \> rest, fn)
     ];
 
+let zipWithTail = \list, fn ->
+    zip(list, list \> rest, fn);
+
 let sum = reduce(_, plus);
+
+
+
+let foldUntil = \list, state, fn {
+    if list \> empty then return state;
+    return match fn(state, list \> first) {
+        .Continue newState -> foldUntil(list \> rest, newState, fn),
+        .Break finalState -> finalState,
+    };
+};
+
+let any = \list, predicate ->
+    foldUntil(
+        list,
+        false,
+        \state, element ->
+            predicate(element)
+                ? .Break(true)
+                : .Continue(state)
+    );
+
+let all = \list, predicate ->
+    foldUntil(
+        list,
+        true,
+        \state, element ->
+            predicate(element)
+                ? .Continue(state)
+                : .Break(false)
+    );
