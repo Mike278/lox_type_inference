@@ -411,3 +411,55 @@ String _default(({int id, bool quantified}) args) =>
   args.quantified
     ? 't${args.id}'
     : '_${args.id}';
+
+
+Ty normalizeTypeVariableIds(Ty t) {
+  final namesSorted = collectTypeVariables({}, t).toList();
+
+  int lookup(int name) =>
+    namesSorted.contains(name)
+      ? namesSorted.indexOf(name)
+      : name;
+
+  return rename(t, lookup);
+}
+
+Ty rename(Ty t, int Function(int) replace) =>
+  switch (t) {
+    TyVariable(:final mutableRef) => TyVariable(switch (mutableRef) {
+        Unresolved(:final id, :final level) => Unresolved(id: replace(id), level: level),
+        Resolved(:final type) => Resolved(rename(type, replace)),
+      }),
+    TyFunctionApplication(:final name, :final monoTypes) => TyFunctionApplication(
+      name,
+      [ for (final t in monoTypes) rename(t, replace) ]
+    ),
+    TyRowEmpty() => t,
+    TyRowExtend(:final label, :final type, :final row) => TyRowExtend(
+      newEntry: (label, rename(type, replace)),
+      row: rename(row, replace),
+    ),
+    TyVariant(:final type) => TyVariant(
+      rename(type, replace),
+    )
+  };
+
+Set<int> collectTypeVariables(Set<int> state, Ty t) => {
+  ...state,
+  ...switch (t) {
+    TyVariable(:final mutableRef) => switch (mutableRef) {
+      Unresolved(:final id) => {id},
+      Resolved(:final type) => collectTypeVariables(state, type),
+    },
+    TyFunctionApplication(:final monoTypes) => {
+      for (final t in monoTypes)
+        ...collectTypeVariables(state, t),
+    },
+    TyRowEmpty() => { },
+    TyRowExtend(:final type, :final row) => {
+      ...collectTypeVariables(state, row),
+      ...collectTypeVariables(state, type),
+    },
+    TyVariant(:final type) => collectTypeVariables(state, type),
+  }
+};
