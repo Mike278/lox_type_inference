@@ -69,7 +69,7 @@ class LoxRuntime {
       case LetDeclaration(:final name, :final initializer):
         return define(env, name, initializer);
       case Destructuring():
-        throw 'bug; destructuring shouldve been desugared';
+        throw StateError('bug; destructuring shouldve been desugared');
       case Block(:final statements):
         var newEnv = Env(env);
         for (final statement in statements) {

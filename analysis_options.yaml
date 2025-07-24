@@ -22,8 +22,11 @@ linter:
   rules:
     prefer_function_declarations_over_variables: false
     curly_braces_in_flow_control_structures: false
+    always_use_package_imports: true
 
 analyzer:
+  enable-experiment:
+    - dot-shorthands
 
 # For more information about the core and recommended set of lints, see
 # https://dart.dev/go/core-lints

@@ -394,4 +394,4 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.9.0-edge.c4c9854b9bff0ac1213dbce917a0c9d3a9e5f713 <4.0.0"
+  dart: ">=3.10.0-edge.0176bcc73f80c6b174575ff53f80f33e1bac5421 <4.0.0"

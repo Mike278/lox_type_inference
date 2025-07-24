@@ -4,7 +4,7 @@ version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: ^3.9.0-edge.c4c9854b9bff0ac1213dbce917a0c9d3a9e5f713
+  sdk: ^3.10.0-edge.0176bcc73f80c6b174575ff53f80f33e1bac5421
 
 dependencies:
   path:

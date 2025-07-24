@@ -1,13 +1,19 @@
 import 'package:equatable/equatable.dart';
+import 'package:lox/hindley_milner_lox.dart' show LoxType;
 import 'package:lox/token.dart';
 
-sealed class Expr {}
+// ignore_for_file: must_be_immutable
+
+sealed class Expr with EquatableMixin  {
+  LoxType? type;
+  @override get props => [type];
+}
 
 sealed class Literal extends Expr with EquatableMixin {
   final Token token;
   late final Object? value = token.literal;
   Literal(this.token);
-  @override get props => [value];
+  @override get props => [...super.props, value];
 }
 
 class StringLiteral extends Literal {
@@ -35,7 +41,7 @@ sealed class Unary extends Expr with EquatableMixin {
   final Token operator;
   final Expr expr;
   Unary(this.operator, this.expr);
-  @override get props => [operator, expr];
+  @override get props => [...super.props, operator, expr];
 }
 class UnaryMinus extends Unary {
   UnaryMinus(super.operator, super.expr);
@@ -49,7 +55,7 @@ class Binary extends Expr with EquatableMixin {
   final Token operator;
   final Expr right;
   Binary(this.left, this.operator, this.right);
-  @override get props => [left, operator, right];
+  @override get props => [...super.props, left, operator, right];
 }
 
 class LogicalAnd extends Expr with EquatableMixin {
@@ -57,7 +63,7 @@ class LogicalAnd extends Expr with EquatableMixin {
   final Token keyword;
   final Expr right;
   LogicalAnd(this.left, this.keyword, this.right);
-  @override get props => [left, keyword, right];
+  @override get props => [...super.props, left, keyword, right];
 }
 
 class LogicalOr extends Expr with EquatableMixin {
@@ -65,7 +71,7 @@ class LogicalOr extends Expr with EquatableMixin {
   final Token keyword;
   final Expr right;
   LogicalOr(this.left, this.keyword, this.right);
-  @override get props => [left, keyword, right];
+  @override get props => [...super.props, left, keyword, right];
 }
 
 sealed class LambdaBody {}
@@ -84,34 +90,35 @@ class Lambda extends Expr with EquatableMixin {
   final List<Token> params;
   final LambdaBody body;
   Lambda(this.params, this.body);
-  @override get props => [params, body];
+  @override get props => [...super.props, params, body];
 }
 
 class Grouping extends Expr with EquatableMixin {
   final Expr expr;
   Grouping(this.expr);
-  @override get props => [expr];
+  @override get props => [...super.props, expr];
 }
 
 class Variable extends Expr with EquatableMixin {
   final Token name;
   Variable(this.name);
-  @override get props => [name];
+  @override get props => [...super.props, name];
 }
 class Call extends Expr with EquatableMixin {
   final Expr callee;
   final CallArgs args;
   final Token closingParen;
   Call(this.callee, this.args, this.closingParen);
-  @override get props => [callee, args, closingParen];
+  @override get props => [...super.props, callee, args, closingParen];
 }
 sealed class CallArgs {}
 class ArgsWithPlaceholder with EquatableMixin implements CallArgs {
   final List<Expr> before;
   final Token placeholder;
+  LoxType? placeholderType;
   final List<Expr> after;
   ArgsWithPlaceholder(this.before, this.placeholder, this.after);
-  @override get props => [before, placeholder, after];
+  @override get props => [before, placeholder, placeholderType, after];
 }
 class ExpressionArgs with EquatableMixin implements CallArgs {
   final List<Expr> exprs;
@@ -125,20 +132,20 @@ class Ternary extends Expr with EquatableMixin {
   final Expr ifTrue;
   final Expr ifFalse;
   Ternary(this.questionMark, this.condition, this.ifTrue, this.ifFalse);
-  @override get props => [questionMark, condition, ifTrue, ifFalse];
+  @override get props => [...super.props, questionMark, condition, ifTrue, ifFalse];
 }
 
 class Record extends Expr with EquatableMixin {
   final Token closingBrace;
   final Map<Token, Expr> fields;
   Record(this.closingBrace, this.fields);
-  @override get props => [closingBrace, fields];
+  @override get props => [...super.props, closingBrace, fields];
 }
 class RecordGet extends Expr with EquatableMixin {
   final Expr record;
   final Token name;
   RecordGet(this.record, this.name);
-  @override get props => [record, name];
+  @override get props => [...super.props, record, name];
 }
 class RecordUpdate extends Expr with EquatableMixin {
   final Token dotdot;
@@ -146,14 +153,14 @@ class RecordUpdate extends Expr with EquatableMixin {
   final Map<Token, Expr> newFields;
   final Token closingBrace;
   RecordUpdate(this.dotdot, this.record, this.newFields, this.closingBrace);
-  @override get props => [dotdot, record, newFields, closingBrace];
+  @override get props => [...super.props, dotdot, record, newFields, closingBrace];
 }
 class ListLiteral extends Expr with EquatableMixin {
   final Token openBracket;
   final Token closingBracket;
   final List<ListElement> elements;
   ListLiteral(this.openBracket, this.closingBracket, this.elements);
-  @override get props => [openBracket, closingBracket, elements];
+  @override get props => [...super.props, openBracket, closingBracket, elements];
 }
 sealed class ListElement {}
 class ExpressionListElement with EquatableMixin implements ListElement {
@@ -172,7 +179,7 @@ class TagConstructor extends Expr with EquatableMixin {
   final Token tag;
   final Expr? payload;
   TagConstructor(this.tag, this.payload);
-  @override get props => [tag, payload];
+  @override get props => [...super.props, tag, payload];
 }
 
 class TagMatch extends Expr with EquatableMixin {
@@ -182,7 +189,7 @@ class TagMatch extends Expr with EquatableMixin {
   final List<TagMatchCase> cases;
   final DefaultMatchCase? defaultCase;
   TagMatch(this.keyword, this.tag, this.braces, this.cases, this.defaultCase);
-  @override get props => [keyword, tag, braces, cases, defaultCase];
+  @override get props => [...super.props, keyword, tag, braces, cases, defaultCase];
 }
 
 typedef TagMatchCase = ({
@@ -202,7 +209,7 @@ class Import extends Expr with EquatableMixin {
   final Token target;
   late final path = ImportPath(target.literal as String);
   Import({required this.keyword, required this.target});
-  @override get props => [keyword, target];
+  @override get props => [...super.props, keyword, target];
 }
 extension type ImportPath(String literal) {}
 typedef Exports = Map<Token, Expr>;

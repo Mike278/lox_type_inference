@@ -125,6 +125,9 @@ class UndefinedVariable implements TypeCheckException {
   UndefinedVariable(this.name);
   @override toString() => 'Undefined variable $name';
 }
+class TopLevelReturn implements TypeCheckException {
+  @override toString() => 'Return statements must be defined inside functions, not at the top level.';
+}
 
 Ty rewriteRow(
   Ty row2,
