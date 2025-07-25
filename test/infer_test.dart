@@ -1,7 +1,7 @@
 import 'package:lox/coordinator.dart';
+import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_api.dart';
-import 'package:lox/hindley_milner_lambda_calculus.dart';
-import 'package:lox/lox_lambda_calculus.dart';
+import 'package:lox/hindley_milner_lox.dart';
 import 'package:lox/utils.dart';
 import 'package:test/test.dart';
 import 'package:test_api/src/backend/invoker.dart'; // ignore: depend_on_referenced_packages
@@ -102,21 +102,6 @@ void main() {
   testInferCall(r'(\x, y, z -> x(y and false, z + 1)) (\a, b -> b, true, 1)', 'Num');
   testInferCall(r'(\x -> \y -> \z -> x(y and false)(z + 1)) (\a -> \b -> b)(true)(1)', 'Num');
   testInferCall(r'(\x -> x(1, 1)) (\a, b -> "h")',  'String');
-
-  test('manual', () {
-    // (x 1)
-    final x1 = App(func: Var('x'), arg: Lit(num_t));
-    // ((x 1) 1)
-    final x11 = App(func: x1, arg: Lit(num_t));
-    // \x -> ((x 1) 1)
-    final abs = Abs('x', x11);
-    // \a -> \b -> "h"
-    final arg = Abs('a', Abs('b', Lit(string_t)));
-    // (\x -> ((x 1) 1))(\a -> \b -> "h")
-    final expr = App(func: abs, arg: arg);
-    final result = infer(expr).toString();
-    expect(result, 'String');
-  });
 
 
   final testInferListLiteral = testInferSource.partial('infer list');
@@ -974,14 +959,38 @@ final isTypeError = isA<TypeCheckException>();
 dynamic _inferSource(String source, [Map<String, String> files = const {}]) {
   try {
     if (!source.contains(';')) source = '$source;';
-    return inferSource(source, (path) => Source(files[path]!)).toString();
-  } on (LambdaCalculusExpression, TypeCheckException) catch (e) {
-    return e.$2;
-  } catch (e) {
+    final statements = inferSource(source, (path) => Source(files[path]!));
+    return statements.typeOfLastStatement.toString();
+  } on TypeCheckException catch (e) {
+    return e;
+  } catch (e, s) {
+    print(s);
     return e;
   }
 }
 
+extension on List<Statement> {
+  LoxType? get typeOfLastStatement => switch (lastOrNull) {
+    null => null,
+    ExpressionStatement(:final expr)
+    || PrintStatement(:final expr)
+    || AssertStatement(:final expr)
+      => expr.type,
+
+    Destructuring(:final initializer)
+    || LetDeclaration(:final initializer)
+      => initializer.type,
+
+    Block(:final statements)
+      => statements.typeOfLastStatement,
+
+    ReturnStatement(:final expr)
+      => expr?.type,
+
+    IfStatement()
+      => fail('doesnt make sense'),
+  };
+}
 
 void expectedType(String expected) {
   final liveTest = Invoker.current!.liveTest;
