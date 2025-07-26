@@ -123,7 +123,7 @@ class TypeCardinalityMismatch implements TypeCheckException {
 class UndefinedVariable implements TypeCheckException {
   final String name;
   UndefinedVariable(this.name);
-  @override toString() => 'Undefined variable $name';
+  @override toString() => 'Undefined variable `$name`';
 }
 class TopLevelReturn implements TypeCheckException {
   @override toString() => 'Return statements must be defined inside functions, not at the top level.';

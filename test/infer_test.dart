@@ -896,6 +896,26 @@ void main() {
       ),
       'Num',
     );
+
+    expect(
+      _inferSource(
+        r'''
+        let module = import "some_module.lox";
+        print module.x(1);
+        ''',
+        {'some_module.lox': r'let x = \a -> [a];'}
+      ),
+      'List[Num]',
+    );
+    expect(
+      _inferSource(r'''
+        let module = import "some_module.lox";
+        print module.x;
+        ''',
+        {'some_module.lox': r' let a = 1; let x = a;'}
+      ),
+      'Num',
+    );
   });
 
   test('destructuring', () {

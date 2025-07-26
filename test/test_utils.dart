@@ -1,7 +1,6 @@
 
 import 'package:lox/coordinator.dart';
 import 'package:lox/expr.dart';
-import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/hindley_milner_lox.dart';
 import 'package:test/test.dart';
 
@@ -22,13 +21,7 @@ List<Statement> inferSource(String source, [ReadFile? readFile]) {
     Source(source),
     readFile,
   );
-  inferProgramTypes(statements);
-  for (final statement in statements) {
-    for (final expr in statement.allExpressions()) {
-      if (expr.type case final type?) {
-        expr.type = LoxType(normalizeTypeVariableIds(type));
-      }
-    }
-  }
+  TypeInference(resolveImport).inferProgramTypes(statements);
+  normalizeProgramTypeVariableIds(statements);
   return statements;
 }
