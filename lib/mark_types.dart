@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:lox/coordinator.dart';
 import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_api.dart';
-import 'package:lox/lox_lambda_calculus.dart';
+import 'package:lox/hindley_milner_lox.dart';
 import 'package:lox/token.dart';
 import 'package:lox/utils.dart';
 
@@ -52,35 +52,12 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
 
   final marks = <MarkText>[];
   try {
-    final lookup = runInference(statements, resolveImport);
+    TypeInference(resolveImport).inferProgramTypes(statements);
     justSpentTime('type checking');
-
-    for (final statement in statements) {
-      final expr = switch (statement) {
-        ExpressionStatement(:final expr)   => expr,
-        PrintStatement(:final expr)        => expr,
-        AssertStatement(:final expr)       => expr,
-        LetDeclaration(:final initializer) => initializer,
-        Destructuring(:final initializer)  => initializer,
-        Block()                            => null,
-        IfStatement()                      => null,
-        ReturnStatement()                  => null,
-      };
-      final ty = lookup[expr];
-      if (ty == null) continue;
-      final typeVariablesSorted = collectTypeVariables({}, ty).toList();
-      int normalize(int id) =>
-        typeVariablesSorted.contains(id)
-          ? typeVariablesSorted.indexOf(id)
-          : id;
-
-      for (final (lox, ty) in lookup.pairs()) {
-        lookup[lox] = rename(ty, normalize);
-      }
-    }
+    normalizeProgramTypeVariableIds(statements);
     justSpentTime('normalizing type variables');
 
-    final typeOf = (Expr expr) => lookup[expr];
+    final typeOf = (Expr expr) => expr.type;
     final hovers = buildHoverInfo(statements, typeOf);
     justSpentTime('building hovers');
     for (final (span, :display) in hovers) {
@@ -252,11 +229,11 @@ List<(CodeSpan, String)> displayExpression(
 
   Call(
     :final callee,
-    args: ArgsWithPlaceholder(:final before, :final placeholder, :final after),
+    args: ArgsWithPlaceholder(:final before, :final placeholder, :final placeholderType, :final after),
     :final closingParen,
   ) => [
     (closingParen.span, displayType(typeOf(expr))),
-    (placeholder.span, '${placeholder.lexeme}: TODO'),
+    (placeholder.span, '${placeholder.lexeme}: ${displayType(placeholderType)}'),
     for (final e in before) ...displayExpression(e, typeOf),
     for (final e in after) ...displayExpression(e, typeOf),
     ...displayExpression(callee, typeOf),
@@ -357,6 +334,8 @@ String displayTypeVariable(({int id, bool quantified}) args) {
   final name = displayAlpha(args.id);
   return args.quantified ? name : '`$name';
 }
+
+String displayAlpha(int i) => String.fromCharCode(97 + i % 26) * (i ~/ 26 + 1);
 
 CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
 
