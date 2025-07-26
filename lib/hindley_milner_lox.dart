@@ -534,6 +534,7 @@ final loxStandardLibraryEnv = <String, LoxType>{
     'rest': .function(from: [.list(of: b)], to: .list(of: b)),
     'empty': .function(from: [.list(of: c)], to: .bool),
   }),
+  'clock': .function(from: [a], to: .num),
 };
 
 void normalizeProgramTypeVariableIds(List<Statement> statements) {

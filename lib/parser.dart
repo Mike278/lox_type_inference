@@ -487,7 +487,7 @@ class Parser {
       } else {
         consume(TokenType.DOT, "Expected dot before tag name");
         final tag = consume(TokenType.IDENTIFIER, "Expected tag name");
-        final payload = matchFirst(TokenType.IDENTIFIER) ? previous() : null;
+        final payload = matchFirst(TokenType.IDENTIFIER, .UNDERSCORE) ? previous() : null;
         final arrow = consume(TokenType.ARROW, "Expected arrow");
         final result = expression();
         cases.add((tag: tag, payload: payload, arrow: arrow, result: result));

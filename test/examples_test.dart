@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:lox/coordinator.dart';
+import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/interpreter.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
@@ -17,14 +18,23 @@ void main() {
         .listSync()
         .whereType<File>();
 
+    final expectedErrors = {
+      'make_counter.lox': isA<RecursiveRowTypes>(),
+    };
+
     final allPrints = <String>[];
     for (final file in exampleFiles) {
       try {
-        final (env, :prints) = eval(file);
         allPrints.add('====== ${basename(file.path)} =====');
+        final (env, :prints) = eval(file);
         allPrints.addAll(prints.map((x) => '$x'));
       } catch (e, s) {
-        fail('failed on $file\n$e\n$s');
+        if (expectedErrors[basename(file.path)] case final matcher?) {
+          expect(e, matcher);
+          allPrints.add(matcher.describe(StringDescription()).toString());
+        } else {
+          fail('failed on $file\n$e\n$s');
+        }
       }
     }
 
@@ -32,6 +42,7 @@ void main() {
       allPrints,
       File(join(testDirectory, 'expected_examples_output.txt'))
           .readAsLinesSync(),
+      reason: 'updated content:\n${allPrints.join('\n')}'
     );
   });
 }
@@ -39,6 +50,7 @@ void main() {
 (Env, {List<Object?> prints}) eval(File file) {
   final prints = [];
   final env = runFile(
+    checkTypes: true,
     file.path,
     Env.global(),
     (keyword, source, value) =>

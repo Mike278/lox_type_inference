@@ -167,6 +167,7 @@ String exec(Source source) {
       runAssert,
       (print: printMessage),
       webImportFile,
+      checkTypes: false,
     );
   } catch (e) {
     output.add(e);

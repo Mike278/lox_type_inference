@@ -23,23 +23,6 @@ print someRecord.e();
 
 print (\x { return x; })(1);
 
-let makeCounter = \i, fn {
-  let count = \ {
-    fn(i + 1);
-    return makeCounter(i+1, fn);
-  };
-
-  return count;
-};
-
-makeCounter(0, \value { print value*value; })
-()
-()
-()
-()
-()
-()
-;
 
 let id = \x -> x;
 print id("hello");

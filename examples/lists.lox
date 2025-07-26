@@ -10,13 +10,19 @@ print ys;
 let zs = [1];
 print zs;
 
-let mixed = [1, {two: "three"}];
-print mixed;
+let mixed = [.Hello(1), .Tags({two: "three"})];
+print map(mixed, \x -> match x {
+    .Hello _ -> "its a `.Hello` tag",
+    .Tags _ -> "its not",
+});
 
 
 
 print map([1,2,3], \x -> x == 1);
-print map(mixed, \x -> x == 1);
+print map(mixed, \x -> match x {
+    .Hello n -> n == 1,
+    .Tags _ -> false,
+});
 
 
 let employees = [

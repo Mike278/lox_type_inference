@@ -218,6 +218,28 @@ void main() {
   test('recursive polymorphic functions', () {
 
     expect(
+      _inferSource(r'''
+let makeCounter = \i, fn {
+  let count = \ {
+    fn(i + 1);
+    return makeCounter(i+1, fn);
+  };
+
+  return count;
+};
+
+makeCounter(0, \value { print value*value; })
+()
+()
+()
+()
+()
+()
+;
+      '''),
+      'idk but it shouldnt throw',
+    );
+    expect(
       _inferSource(fold),
       'List[t0], t1, (t1, t0 -> t1) -> t1',
     );
@@ -707,6 +729,12 @@ void main() {
          .Red r -> 2 + r,
       };
       '''), '.Green(Num) | .Red(Num) -> Num');
+      expect(_inferSource(r'''
+      \z -> match z {
+         .Green g -> 1 + g,
+         .Red _ -> 2,
+      };
+      '''), '.Green(Num) | .Red(t0) -> Num');
       expect(_inferSource(r'''
       let fn = \z -> match z {
          .Green -> 1,

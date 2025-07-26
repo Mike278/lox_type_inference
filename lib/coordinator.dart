@@ -1,3 +1,4 @@
+import 'package:lox/hindley_milner_lox.dart';
 import 'package:lox/interpreter.dart';
 import 'package:lox/parser.dart';
 import 'package:lox/scanner.dart';
@@ -14,8 +15,9 @@ Env runFile(
   Env env,
   LoxAssertion runAssert,
   RuntimeIO io,
-  ReadFile readFile,
-) {
+  ReadFile readFile, {
+  required bool checkTypes,
+}) {
   return run(
     dirname(path),
     readFile(path),
@@ -23,6 +25,7 @@ Env runFile(
     runAssert,
     io,
     readFile,
+    checkTypes: checkTypes,
   );
 }
 
@@ -32,13 +35,17 @@ Env run(
   Env env,
   LoxAssertion runAssert,
   RuntimeIO io,
-  ReadFile readFile,
-) {
+  ReadFile readFile, {
+  required bool checkTypes,
+}) {
   final (statements, resolveImport) = parseSourceAndResolveImports(
     relativeToDir,
     source,
     readFile,
   );
+  if (checkTypes) {
+    TypeInference(resolveImport).inferProgramTypes(statements);
+  }
   return LoxRuntime(runAssert, io, resolveImport).interpret(
     statements,
     env,

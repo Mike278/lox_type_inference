@@ -38,6 +38,7 @@ void _runPrompt() {
         defaultLoxAssert,
         _io,
         (path) => Source(File(path).readAsStringSync()),
+        checkTypes: true,
       );
     } catch (e, s) {
       print(e);
@@ -48,6 +49,7 @@ void _runPrompt() {
 
 void _runFile(String path) {
   runFile(
+    checkTypes: true,
     path,
     Env.global(),
     defaultLoxAssert,
