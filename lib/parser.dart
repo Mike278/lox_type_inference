@@ -71,7 +71,7 @@ class Parser {
 
   Token previous() => tokens[current-1];
   Token peek() => tokens[current];
-  bool isAtEnd() => peek().type == TokenType.EOF;
+  bool isAtEnd() => peek().type == .eof;
   bool check(TokenType type) => !isAtEnd() && peek().type == type;
   Token advance() {
     if (!isAtEnd()) current++;
@@ -106,15 +106,15 @@ class Parser {
     advance();
 
     while (!isAtEnd()) {
-      if (previous().type == TokenType.SEMICOLON) return;
+      if (previous().type == .semicolon) return;
       switch (peek().type) {
-        case TokenType.CLASS:
-        case TokenType.LET:
-        case TokenType.FOR:
-        case TokenType.IF:
-        case TokenType.WHILE:
-        case TokenType.PRINT:
-        case TokenType.RETURN:
+        case .class_:
+        case .let:
+        case .for_:
+        case .if_:
+        case .while_:
+        case .print:
+        case .return_:
           return;
         default:
           advance();
@@ -132,8 +132,8 @@ class Parser {
   //                | statement
   //
   Statement declaration() {
-    if (matchFirst(TokenType.LET)) {
-      if (matchFirst(TokenType.OPEN_BRACE)) {
+    if (matchFirst(.let)) {
+      if (matchFirst(.openBrace)) {
         return destructuringDecl();
       } else {
         return letDeclaration();
@@ -144,10 +144,10 @@ class Parser {
 
   // letDecl        → "let" IDENTIFIER "=" expression ";" ;
   Statement letDeclaration() {
-    final name = consume(TokenType.IDENTIFIER, 'Expected variable name.');
-    consume(TokenType.EQUAL, "Expected '=' before variable declaration.");
+    final name = consume(.identifier, 'Expected variable name.');
+    consume(.equal, "Expected '=' before variable declaration.");
     final initializer = expression();
-    consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
+    consume(.semicolon, "Expected ';' after variable declaration.");
     return LetDeclaration(name, initializer);
   }
 
@@ -158,19 +158,19 @@ class Parser {
   Statement destructuringDecl() {
 
     DestructuringElement destructElement() {
-      final name = consume(TokenType.IDENTIFIER, 'Expected variable name');
-      if (matchFirst(TokenType.COLON)) {
-        if (matchFirst(TokenType.OPEN_BRACE)) {
+      final name = consume(.identifier, 'Expected variable name');
+      if (matchFirst(.colon)) {
+        if (matchFirst(.openBrace)) {
           final elements = <DestructuringElement>[];
-          while (!check(TokenType.CLOSE_BRACE) && !isAtEnd()) {
-            if (elements.isNotEmpty) consume(TokenType.COMMA, 'Expected comma between record field declarations.');
-            if (check(TokenType.CLOSE_BRACE)) break; // trailing comma
+          while (!check(.closeBrace) && !isAtEnd()) {
+            if (elements.isNotEmpty) consume(.comma, 'Expected comma between record field declarations.');
+            if (check(.closeBrace)) break; // trailing comma
             elements.add(destructElement());
           }
-          consume(TokenType.CLOSE_BRACE, "Expected '}' after destructuring.");
+          consume(.closeBrace, "Expected '}' after destructuring.");
           return Nested(name, elements);
         } else {
-          final redeclaredName = consume(TokenType.IDENTIFIER, 'Expected name of new variable');
+          final redeclaredName = consume(.identifier, 'Expected name of new variable');
           return Redeclare(name, redeclaredName);
         }
       } else {
@@ -179,17 +179,17 @@ class Parser {
     }
 
     final elements = <DestructuringElement>[];
-    while (!check(TokenType.CLOSE_BRACE) && !isAtEnd()) {
-      if (elements.isNotEmpty) consume(TokenType.COMMA, 'Expected comma between record field declarations.');
-      if (check(TokenType.CLOSE_BRACE)) break; // trailing comma
+    while (!check(.closeBrace) && !isAtEnd()) {
+      if (elements.isNotEmpty) consume(.comma, 'Expected comma between record field declarations.');
+      if (check(.closeBrace)) break; // trailing comma
       elements.add(destructElement());
     }
 
-    consume(TokenType.CLOSE_BRACE, "Expected '}' after destructuring.");
+    consume(.closeBrace, "Expected '}' after destructuring.");
 
-    final equals = consume(TokenType.EQUAL, "Expected '=' before variable declaration.");
+    final equals = consume(.equal, "Expected '=' before variable declaration.");
     final initializer = expression();
-    consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
+    consume(.semicolon, "Expected ';' after variable declaration.");
     return Destructuring(elements, equals, initializer);
   }
 
@@ -199,10 +199,10 @@ class Parser {
   //                | returnStmt
   //                | exprStmt
   Statement statement() {
-    if (matchFirst(TokenType.ASSERT)) return assertStatement();
-    if (matchFirst(TokenType.PRINT)) return printStatement();
-    if (matchFirst(TokenType.OPEN_BRACE)) return block();
-    if (matchFirst(TokenType.IF)) return ifStatement();
+    if (matchFirst(.assert_)) return assertStatement();
+    if (matchFirst(.print)) return printStatement();
+    if (matchFirst(.openBrace)) return block();
+    if (matchFirst(.if_)) return ifStatement();
     return expressionStatement();
   }
 
@@ -211,10 +211,10 @@ class Parser {
   Block block() {
     final openBrace = previous();
     final statements = [
-      for (;!check(TokenType.CLOSE_BRACE) && !isAtEnd();)
+      for (;!check(.closeBrace) && !isAtEnd();)
         declaration()
     ];
-    final closeBrace = consume(TokenType.CLOSE_BRACE, "Expected '}' after block.");
+    final closeBrace = consume(.closeBrace, "Expected '}' after block.");
     return Block(openBrace, statements, closeBrace);
   }
 
@@ -223,16 +223,16 @@ class Parser {
   Statement ifStatement() {
     final keyword = previous();
     final condition = expression();
-    consume(TokenType.THEN, "Expected 'then' after if condition.");
+    consume(.then, "Expected 'then' after if condition.");
     final thenBranch = statement();
-    final elseBranch = matchFirst(TokenType.ELSE) ? statement() : null;
+    final elseBranch = matchFirst(.else_) ? statement() : null;
     return IfStatement(keyword, condition, thenBranch, elseBranch);
   }
 
   Statement printStatement() {
     final keyword = previous();
     final value = expression();
-    consume(TokenType.SEMICOLON, "Expected ';' after value.");
+    consume(.semicolon, "Expected ';' after value.");
     return PrintStatement(value, keyword);
   }
 
@@ -240,7 +240,7 @@ class Parser {
     var start = current;
     final keyword = previous();
     final value = expression();
-    consume(TokenType.SEMICOLON, "Expected ';' after value.");
+    consume(.semicolon, "Expected ';' after value.");
     var end = current;
     final source = tokens.sublist(start, end).map((t) => t.lexeme).join();
     return AssertStatement(keyword, source, value);
@@ -248,7 +248,7 @@ class Parser {
 
   Statement expressionStatement() {
     final value = expression();
-    final semicolon = consume(TokenType.SEMICOLON, "Expected ';' after value.");
+    final semicolon = consume(.semicolon, "Expected ';' after value.");
     return ExpressionStatement(value, semicolon);
   }
 
@@ -256,7 +256,7 @@ class Parser {
   Expr expression() => return_();
 
   Expr return_() {
-    if (matchFirst(TokenType.RETURN)) {
+    if (matchFirst(.return_)) {
       final keyword = previous();
       Expr? value;
       try {
@@ -272,10 +272,10 @@ class Parser {
   // ternary        → pipeline "?" expression ":" expression ";";
   Expr ternary() {
     final condition = pipeline();
-    if (matchFirst(TokenType.QUESTION)) {
+    if (matchFirst(.question)) {
       final questionMark = previous();
       final ifTrue = expression();
-      consume(TokenType.COLON, "Expected ':' before last ternary expression");
+      consume(.colon, "Expected ':' before last ternary expression");
       final ifFalse = expression();
       return Ternary(questionMark, condition, ifTrue, ifFalse);
     }
@@ -285,7 +285,7 @@ class Parser {
   // pipeline       → logical_or ( "|>" logical_or )* ;
   Expr pipeline() {
     var expr = or();
-    while (matchFirst(TokenType.PIPELINE)) {
+    while (matchFirst(.pipeline)) {
       final operator = previous();
       final right = or();
       expr = Binary(expr, operator, right);
@@ -296,7 +296,7 @@ class Parser {
   // logical_or     → logical_and ( "or" logical_and)* ;
   Expr or() {
     var expr = and();
-    while (matchFirst(TokenType.OR)) {
+    while (matchFirst(.or)) {
       final operator = previous();
       final right = and();
       expr = LogicalOr(expr, operator, right);
@@ -307,7 +307,7 @@ class Parser {
   // logical_and    → equality ( "and" equality)* ;
   Expr and() {
     var expr = equality();
-    while (matchFirst(TokenType.AND)) {
+    while (matchFirst(.and)) {
       final operator = previous();
       final right = equality();
       expr = LogicalAnd(expr, operator, right);
@@ -320,8 +320,8 @@ class Parser {
   Expr equality() {
     var expr = comparison();
     while (matchFirst(
-      TokenType.BANG_EQUAL,
-      TokenType.EQUAL_EQUAL,
+      .bangEqual,
+      .equalEqual,
     )) {
       final operator = previous();
       final right = comparison();
@@ -334,10 +334,10 @@ class Parser {
   Expr comparison() {
     var expr = term();
     while (matchFirst(
-        TokenType.GREATER,
-        TokenType.GREATER_EQUAL,
-        TokenType.LESS,
-        TokenType.LESS_EQUAL,
+        .greater,
+        .greaterEqual,
+        .less,
+        .lessEqual,
     )) {
       final operator = previous();
       final right = term();
@@ -350,8 +350,8 @@ class Parser {
   Expr term() {
     var expr = factor();
     while (matchFirst(
-      TokenType.MINUS,
-      TokenType.PLUS,
+      .minus,
+      .plus,
     )) {
       final operator = previous();
       final right = factor();
@@ -364,8 +364,8 @@ class Parser {
   Expr factor() {
     var expr = unary();
     while (matchFirst(
-      TokenType.SLASH,
-      TokenType.STAR,
+      .slash,
+      .star,
     )) {
       final operator = previous();
       final right = unary();
@@ -380,32 +380,32 @@ class Parser {
   //                | listLiteral
   //                | call ;
   Expr unary() {
-    if (matchFirst(TokenType.BANG)) {
+    if (matchFirst(.bang)) {
       final operator = previous();
       final right = unary();
       return UnaryBang(operator, right);
     }
-    if (matchFirst(TokenType.MINUS)) {
+    if (matchFirst(.minus)) {
       final operator = previous();
       final right = unary();
       return UnaryMinus(operator, right);
     }
-    if (matchFirst(TokenType.BACKSLASH)) {
+    if (matchFirst(.backslash)) {
       return lambda();
     }
-    if (matchFirst(TokenType.OPEN_BRACKET)) {
+    if (matchFirst(.openBracket)) {
       return listLiteral();
     }
-    if (matchFirst(TokenType.OPEN_BRACE)) {
+    if (matchFirst(.openBrace)) {
       return recordLiteral();
     }
-    if (matchFirst(TokenType.DOT)) {
+    if (matchFirst(.dot)) {
       return tagConstructor();
     }
-    if (matchFirst(TokenType.MATCH)) {
+    if (matchFirst(.match)) {
       return tagMatch();
     }
-    if (matchFirst(TokenType.IMPORT)) {
+    if (matchFirst(.import)) {
       return import();
     }
 
@@ -419,16 +419,16 @@ class Parser {
     final callee = primary();
     var expr = callee;
     while (true) {
-      if (matchFirst(TokenType.OPEN_PAREN)) {
+      if (matchFirst(.openParen)) {
         final before = <Expr>[];
         final after = <Expr>[];
         Token? placeholder;
-        if (check(TokenType.CLOSE_PAREN)) {
+        if (check(.closeParen)) {
           // 0-arg function
         } else {
           while (true) {
-            if (check(TokenType.CLOSE_PAREN)) break; // trailing comma
-            if (matchFirst(TokenType.UNDERSCORE)) {
+            if (check(.closeParen)) break; // trailing comma
+            if (matchFirst(.underscore)) {
               if (placeholder != null) {
                 throwParseError(previous(), 'Can only have 1 placeholder arg');
               }
@@ -440,20 +440,20 @@ class Parser {
                 after.add(expression());
               }
             }
-            if (!matchFirst(TokenType.COMMA)) {
+            if (!matchFirst(.comma)) {
               break;
             }
           }
         }
-        final closingParen = consume(TokenType.CLOSE_PAREN, "Expected ')' after arguments");
+        final closingParen = consume(.closeParen, "Expected ')' after arguments");
         if (placeholder != null) {
           expr = Call(expr, ArgsWithPlaceholder(before, placeholder, after), closingParen);
         } else {
           if (after.isNotEmpty) throw 'bug';
           expr = Call(expr, ExpressionArgs(before), closingParen);
         }
-      } else if (matchFirst(TokenType.DOT)) {
-        final fieldName = consume(TokenType.IDENTIFIER, "Expected field name");
+      } else if (matchFirst(.dot)) {
+        final fieldName = consume(.identifier, "Expected field name");
         expr = RecordGet(expr, fieldName);
       } else {
         break;
@@ -463,11 +463,11 @@ class Parser {
   }
 
   Expr tagConstructor() {
-    final tagName = consume(TokenType.IDENTIFIER, "Expected tag name");
+    final tagName = consume(.identifier, "Expected tag name");
     final Expr? payload;
-    if (matchFirst(TokenType.OPEN_PAREN)) {
+    if (matchFirst(.openParen)) {
       payload = expression();
-      consume(TokenType.CLOSE_PAREN, "Expected close paren");
+      consume(.closeParen, "Expected close paren");
     } else {
       payload = null;
     }
@@ -477,35 +477,35 @@ class Parser {
   Expr tagMatch() {
     final keyword = previous();
     final tag = expression();
-    final openBrace = consume(TokenType.OPEN_BRACE, "Expected open brace");
+    final openBrace = consume(.openBrace, "Expected open brace");
     final cases = <({Token tag, Token? payload, Token arrow, Expr result})>[];
     DefaultMatchCase? defaultCase;
     var first = true;
     do {
-      if (!first) consume(TokenType.COMMA, 'Expected comma between match cases.');
-      if (check(TokenType.CLOSE_BRACE)) break;
+      if (!first) consume(.comma, 'Expected comma between match cases.');
+      if (check(.closeBrace)) break;
       first = false;
-      if (matchFirst(TokenType.IDENTIFIER)) {
+      if (matchFirst(.identifier)) {
         final variable = previous();
-        final arrow = consume(TokenType.ARROW, "Expected arrow");
+        final arrow = consume(.arrow, "Expected arrow");
         final result = expression();
         defaultCase = (variable: variable, arrow: arrow, result: result);
       } else {
-        consume(TokenType.DOT, "Expected dot before tag name");
-        final tag = consume(TokenType.IDENTIFIER, "Expected tag name");
-        final payload = matchFirst(TokenType.IDENTIFIER, .UNDERSCORE) ? previous() : null;
-        final arrow = consume(TokenType.ARROW, "Expected arrow");
+        consume(.dot, "Expected dot before tag name");
+        final tag = consume(.identifier, "Expected tag name");
+        final payload = matchFirst(.identifier, .underscore) ? previous() : null;
+        final arrow = consume(.arrow, "Expected arrow");
         final result = expression();
         cases.add((tag: tag, payload: payload, arrow: arrow, result: result));
       }
-    } while (!check(TokenType.CLOSE_BRACE) && !isAtEnd());
-    final closeBrace = consume(TokenType.CLOSE_BRACE, "Expected close brace");
+    } while (!check(.closeBrace) && !isAtEnd());
+    final closeBrace = consume(.closeBrace, "Expected close brace");
     return TagMatch(keyword, tag, (openBrace, closeBrace), cases, defaultCase);
   }
 
   Expr import() {
     final keyword = previous();
-    final path = consume(TokenType.STRING, 'Expected path to import from.');
+    final path = consume(.string, 'Expected path to import from.');
     return Import(keyword: keyword, target: path);
   }
 
@@ -515,10 +515,10 @@ class Parser {
     final fields = <Token, Expr>{};
     var first = true;
     ({Token dotdot, Expr record})? update;
-    while (!check(TokenType.CLOSE_BRACE) && !isAtEnd()) {
-      if (!first) consume(TokenType.COMMA, 'Expected comma between record field declarations.');
-      if (check(TokenType.CLOSE_BRACE)) break; // trailing comma
-      if (matchFirst(TokenType.DOTDOT)) {
+    while (!check(.closeBrace) && !isAtEnd()) {
+      if (!first) consume(.comma, 'Expected comma between record field declarations.');
+      if (check(.closeBrace)) break; // trailing comma
+      if (matchFirst(.dotdot)) {
 
         // todo: relax these constraints and transform into multiple record updates?
         if (update != null) throwParseError(previous(), 'Can only update 1 record');
@@ -531,16 +531,16 @@ class Parser {
         );
       } else {
         first = false;
-        final name = consume(TokenType.IDENTIFIER, 'Expected field name.');
+        final name = consume(.identifier, 'Expected field name.');
         if (fields.containsKey(name)) {
           throwParseError(name, 'Duplicate field name');
         }
-        consume(TokenType.COLON, "Expected ':' between field name and value.");
+        consume(.colon, "Expected ':' between field name and value.");
         final value = expression();
         fields[name] = value;
       }
     }
-    final closingBrace = consume(TokenType.CLOSE_BRACE, "Expected '}' after record literal.");
+    final closingBrace = consume(.closeBrace, "Expected '}' after record literal.");
     if (update case (:final dotdot, :final record)?) {
       return RecordUpdate(dotdot, record, fields, closingBrace);
     }
@@ -554,11 +554,11 @@ class Parser {
     final openBracket = previous();
     final elements = <ListElement>[];
     var first = true;
-    while (!check(TokenType.CLOSE_BRACKET) && !isAtEnd()) {
-      if (!first) consume(TokenType.COMMA, 'Expected comma between list elements.');
+    while (!check(.closeBracket) && !isAtEnd()) {
+      if (!first) consume(.comma, 'Expected comma between list elements.');
       first = false;
-      if (check(TokenType.CLOSE_BRACKET)) break; // trailing comma
-      if (matchFirst(TokenType.DOTDOT)) {
+      if (check(.closeBracket)) break; // trailing comma
+      if (matchFirst(.dotdot)) {
         final dotdot = previous();
         final expr = expression();
         elements.add(SpreadListElement(dotdot, expr));
@@ -567,7 +567,7 @@ class Parser {
         elements.add(ExpressionListElement(expr));
       }
     }
-    final closingBracket = consume(TokenType.CLOSE_BRACKET, "Expected ']' after list literal.");
+    final closingBracket = consume(.closeBracket, "Expected ']' after list literal.");
     return ListLiteral(openBracket, closingBracket, elements);
   }
 
@@ -575,25 +575,25 @@ class Parser {
   // parameters      → IDENTIFIER ( "," IDENTIFIER )* ;
   Expr lambda() {
     final params = <Token>[];
-    if (check(TokenType.OPEN_BRACE) || check(TokenType.ARROW)) {
+    if (check(.openBrace) || check(.arrow)) {
       // 0-param function
     } else {
       while (true) {
-        if (check(TokenType.ARROW)) break; // trailing comma
-        final param = consume(TokenType.IDENTIFIER, "Expected parameter name");
+        if (check(.arrow)) break; // trailing comma
+        final param = consume(.identifier, "Expected parameter name");
         params.add(param);
-        if (!matchFirst(TokenType.COMMA)) {
+        if (!matchFirst(.comma)) {
           break;
         }
       }
     }
 
     final LambdaBody body;
-    if (matchFirst(TokenType.ARROW)) {
+    if (matchFirst(.arrow)) {
       final arrow = previous();
       body = ArrowExpression(arrow, expression());
     } else {
-      consume(TokenType.OPEN_BRACE, "Expected '{' before body.");
+      consume(.openBrace, "Expected '{' before body.");
       body = FunctionBody(block());
     }
 
@@ -608,16 +608,16 @@ class Parser {
   //                | IDENTIFIER
   //                ;
   Expr primary() {
-    if (matchFirst(TokenType.NUMBER)) return NumberLiteral(previous());
-    if (matchFirst(TokenType.STRING)) return StringLiteral(previous());
-    if (matchFirst(TokenType.TRUE)) return TrueLiteral(previous());
-    if (matchFirst(TokenType.FALSE)) return FalseLiteral(previous());
-    if (matchFirst(TokenType.NIL)) return NilLiteral(previous());
-    if (matchFirst(TokenType.IDENTIFIER)) return Variable(previous());
+    if (matchFirst(.number)) return NumberLiteral(previous());
+    if (matchFirst(.string)) return StringLiteral(previous());
+    if (matchFirst(.true_)) return TrueLiteral(previous());
+    if (matchFirst(.false_)) return FalseLiteral(previous());
+    if (matchFirst(.nil)) return NilLiteral(previous());
+    if (matchFirst(.identifier)) return Variable(previous());
 
-    if (matchFirst(TokenType.OPEN_PAREN)) {
+    if (matchFirst(.openParen)) {
       final expr = expression();
-      consume(TokenType.CLOSE_PAREN, "Expected ')' after expression.");
+      consume(.closeParen, "Expected ')' after expression.");
       return Grouping(expr);
     }
 

@@ -1,27 +1,26 @@
 
 import 'package:equatable/equatable.dart';
 
-// ignore_for_file: constant_identifier_names
 enum TokenType {
   // Single-character tokens.
-  OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE, OPEN_BRACKET, CLOSE_BRACKET,
-  BACKSLASH, COLON, COMMA, DOT, MINUS, PIPE, PLUS, QUESTION, SEMICOLON, SLASH, STAR, UNDERSCORE,
+  openParen, closeParen, openBrace, closeBrace, openBracket, closeBracket,
+  backslash, colon, comma, dot, minus, pipe, plus, question, semicolon, slash, star, underscore,
 
-  // One or two character tokens.
-  ARROW, BANG, BANG_EQUAL, DOTDOT,
-  EQUAL, EQUAL_EQUAL,
-  GREATER, GREATER_EQUAL,
-  LESS, LESS_EQUAL,
-  PIPELINE,
+  // one or two character tokens.
+  arrow, bang, bangEqual, dotdot,
+  equal, equalEqual,
+  greater, greaterEqual,
+  less, lessEqual,
+  pipeline,
 
-  // Literals.
-  IDENTIFIER, STRING, NUMBER,
+  // literals.
+  identifier, string, number,
 
-  // Keywords.
-  ASSERT, AND, CLASS, ELSE, FALSE, FOR, IF, IMPORT, MATCH, NIL, OR,
-  PRINT, RETURN, SUPER, THEN, THIS, TRUE, LET, WHILE,
+  // keywords.
+  assert_, and, class_, else_, false_, for_, if_, import, match, nil, or,
+  print, return_, super_, then, this_, true_, let, while_,
 
-  EOF;
+  eof;
 }
 
 class Token with EquatableMixin {

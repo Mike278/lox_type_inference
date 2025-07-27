@@ -104,7 +104,7 @@ class TypeInference {
       Import()         => inferImport(env, level, expr),
       UnaryMinus()     => inferUnaryOperation(env, level, expr),
       UnaryBang()      => inferUnaryOperation(env, level, expr),
-      Binary(operator: Token(type: .PIPELINE)) => inferPipeline(env, level, expr),
+      Binary(operator: Token(type: .pipeline)) => inferPipeline(env, level, expr),
       Binary(:final left, :final right, operator: final keyword)
       || LogicalOr(:final left, :final right, :final keyword)
       || LogicalAnd(:final left, :final right, :final keyword) =>
@@ -483,7 +483,7 @@ class TypeInference {
     final function = Lambda(
         [args.placeholder],
         ArrowExpression(
-          Token(.ARROW, '->', null, args.placeholder.line, args.placeholder.offset),
+          Token(.arrow, '->', null, args.placeholder.line, args.placeholder.offset),
           functionBody,
         ),
     );

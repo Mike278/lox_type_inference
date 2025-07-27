@@ -52,7 +52,7 @@ typedef ScanError = ({int line, int offset, String message});
 
     // Trim the surrounding quotes.
     final stringValue = source.substring(start + 1, current - 1);
-    addToken(TokenType.STRING, stringValue);
+    addToken(.string, stringValue);
   }
 
   void consumeDigits() {
@@ -70,7 +70,7 @@ typedef ScanError = ({int line, int offset, String message});
       consumeDigits();
     }
     final n = num.parse(source.substring(start, current));
-    addToken(TokenType.NUMBER, n);
+    addToken(.number, n);
   }
 
   void identifier() {
@@ -79,34 +79,34 @@ typedef ScanError = ({int line, int offset, String message});
       offset++;
     }
     final text = source.substring(start, current);
-    addToken(keywords[text] ?? TokenType.IDENTIFIER);
+    addToken(keywords[text] ?? .identifier);
   }
 
   void scanToken() {
     final c = source[current++];
     offset++;
     switch (c) {
-      case '_': addToken(TokenType.UNDERSCORE);
-      case '(': addToken(TokenType.OPEN_PAREN);
-      case ')': addToken(TokenType.CLOSE_PAREN);
-      case '{': addToken(TokenType.OPEN_BRACE);
-      case '}': addToken(TokenType.CLOSE_BRACE);
-      case '[': addToken(TokenType.OPEN_BRACKET);
-      case ']': addToken(TokenType.CLOSE_BRACKET);
-      case r'\': addToken(match('>') ? TokenType.PIPELINE : TokenType.BACKSLASH);
-      case ':': addToken(TokenType.COLON);
-      case ',': addToken(TokenType.COMMA);
-      case '.': addToken(match('.') ? TokenType.DOTDOT : TokenType.DOT);
-      case '-': addToken(match('>') ? TokenType.ARROW : TokenType.MINUS);
-      case '+': addToken(TokenType.PLUS);
-      case '|': addToken(TokenType.PIPE);
-      case ';': addToken(TokenType.SEMICOLON);
-      case '*': addToken(TokenType.STAR);
-      case '?': addToken(TokenType.QUESTION);
-      case '!': addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
-      case '=': addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
-      case '<': addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
-      case '>': addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+      case '_': addToken(.underscore);
+      case '(': addToken(.openParen);
+      case ')': addToken(.closeParen);
+      case '{': addToken(.openBrace);
+      case '}': addToken(.closeBrace);
+      case '[': addToken(.openBracket);
+      case ']': addToken(.closeBracket);
+      case r'\': addToken(match('>') ? .pipeline : .backslash);
+      case ':': addToken(.colon);
+      case ',': addToken(.comma);
+      case '.': addToken(match('.') ? .dotdot : .dot);
+      case '-': addToken(match('>') ? .arrow : .minus);
+      case '+': addToken(.plus);
+      case '|': addToken(.pipe);
+      case ';': addToken(.semicolon);
+      case '*': addToken(.star);
+      case '?': addToken(.question);
+      case '!': addToken(match('=') ? .bangEqual : .bang);
+      case '=': addToken(match('=') ? .equalEqual : .equal);
+      case '<': addToken(match('=') ? .lessEqual : .less);
+      case '>': addToken(match('=') ? .greaterEqual : .greater);
       case '"': string();
       case '\n': line++; offset = 0;
       case ' ' || '\r' || '\t': break;
@@ -119,7 +119,7 @@ typedef ScanError = ({int line, int offset, String message});
             offset++;
           }
         } else {
-          addToken(TokenType.SLASH);
+          addToken(.slash);
         }
       default: error('Unexpected character $c');
     }
@@ -130,30 +130,30 @@ typedef ScanError = ({int line, int offset, String message});
     scanToken();
   }
 
-  tokens.add(Token(TokenType.EOF, '', null, line, 0));
+  tokens.add(Token(.eof, '', null, line, 0));
   return (tokens, errors: errors);
 }
 
-final keywords = {
-  'match' : TokenType.MATCH,
-  'assert' : TokenType.ASSERT,
-  'and' :    TokenType.AND,
-  'class' :  TokenType.CLASS,
-  'else' :   TokenType.ELSE,
-  'false' :  TokenType.FALSE,
-  'for' :    TokenType.FOR,
-  'if' :     TokenType.IF,
-  'import' : TokenType.IMPORT,
-  'let' :    TokenType.LET,
-  'nil' :    TokenType.NIL,
-  'or' :     TokenType.OR,
-  'print' :  TokenType.PRINT,
-  'return' : TokenType.RETURN,
-  'super' :  TokenType.SUPER,
-  'this' :   TokenType.THIS,
-  'then' :   TokenType.THEN,
-  'true' :   TokenType.TRUE,
-  'while' :  TokenType.WHILE,
+final keywords = <String, TokenType>{
+  'match' : .match,
+  'assert' : .assert_,
+  'and' :    .and,
+  'class' :  .class_,
+  'else' :   .else_,
+  'false' :  .false_,
+  'for' :    .for_,
+  'if' :     .if_,
+  'import' : .import,
+  'let' :    .let,
+  'nil' :    .nil,
+  'or' :     .or,
+  'print' :  .print,
+  'return' : .return_,
+  'super' :  .super_,
+  'this' :   .this_,
+  'then' :   .then,
+  'true' :   .true_,
+  'while' :  .while_,
 };
 
 
