@@ -1,4 +1,4 @@
-let fromUp = import "../lists.lox";
-print fromUp.id("id");
+let from_up = import "../lists.lox";
+print from_up.id("id");
 
 let a = 1;

@@ -1,49 +1,49 @@
-let zeroArgsEmptyBody = \ { };
-let zeroArgsNoReturn = \ { print 1; };
-let zeroArgsWithReturn = \ { return 1; };
-let zeroArgsExprBody = \ -> 1;
+let zero_args_empty_body = \ { };
+let zero_args_no_return = \ { print 1; };
+let zero_args_with_return = \ { return 1; };
+let zero_args_expr_body = \ -> 1;
 
-let oneArgEmptyBody = \a { };
-let oneArgNoReturn = \a { print a; };
-let oneArgWithReturn = \a { return a; };
-let oneArgsExprBody = \a -> a;
+let one_arg_empty_body = \a { };
+let one_arg_no_return = \a { print a; };
+let one_arg_with_return = \a { return a; };
+let one_args_expr_body = \a -> a;
 
-let twoArgsEmptyBody = \a, b { };
-let twoArgsNoReturn = \a, b { print a; print b; };
-let twoArgsWithReturn = \a, b { return a + b; };
-let twoArgsExprBody = \a, b -> a + b;
+let two_args_empty_body = \a, b { };
+let two_args_no_return = \a, b { print a; print b; };
+let two_args_with_return = \a, b { return a + b; };
+let two_args_expr_body = \a, b -> a + b;
 
-print zeroArgsEmptyBody();
-print zeroArgsNoReturn();
-print zeroArgsWithReturn();
-print zeroArgsExprBody();
+print zero_args_empty_body();
+print zero_args_no_return();
+print zero_args_with_return();
+print zero_args_expr_body();
 
-print oneArgEmptyBody(1);
-print oneArgNoReturn(1);
-print oneArgWithReturn(1);
-print oneArgsExprBody(1);
+print one_arg_empty_body(1);
+print one_arg_no_return(1);
+print one_arg_with_return(1);
+print one_args_expr_body(1);
 
-print twoArgsEmptyBody(1, 2);
-print twoArgsNoReturn(1, 2);
-print twoArgsWithReturn(1, 2);
-print twoArgsExprBody(1, 2);
+print two_args_empty_body(1, 2);
+print two_args_no_return(1, 2);
+print two_args_with_return(1, 2);
+print two_args_expr_body(1, 2);
 
 let assignment = "assignment!";
 print assignment;
 
-let isGreat = \ {
+let is_great = \ {
     print "side effect!";
     return true;
 };
 
-print "=== false or isGreat(); ===";
-print false or isGreat();
+print "=== false or is_great(); ===";
+print false or is_great();
 
-print "=== false and isGreat(); ===";
-print false and isGreat();
+print "=== false and is_great(); ===";
+print false and is_great();
 
-print "=== true or isGreat(); ===";
-print true or isGreat();
+print "=== true or is_great(); ===";
+print true or is_great();
 
-print "=== true and isGreat(); ===";
-print true and isGreat();
+print "=== true and is_great(); ===";
+print true and is_great();

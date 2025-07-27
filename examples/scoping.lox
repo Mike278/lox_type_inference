@@ -1,11 +1,11 @@
 
 let a = "global";
 {
-  let showA = \ {
+  let show_a = \ {
     print a;
   };
 
-  showA();
+  show_a();
   let a = "block";
-  showA();
+  show_a();
 }

@@ -219,16 +219,16 @@ void main() {
 
     expect(
       _inferSource(r'''
-let makeCounter = \i, fn {
+let make_counter = \i, fn {
   let count = \ {
     fn(i + 1);
-    return makeCounter(i+1, fn);
+    return make_counter(i+1, fn);
   };
 
   return count;
 };
 
-makeCounter(0, \value { print value*value; })
+make_counter(0, \value { print value*value; })
 ()
 ()
 ()
@@ -290,7 +290,7 @@ makeCounter(0, \value { print value*value; })
     ''';
 
     expect(_inferSource(reduce + employees + r'''
-      let employeeWithMaxAge = reduce(
+      let employee_with_max_age = reduce(
           employees,
           \highest, employee ->
               employee.age > highest.age
@@ -300,7 +300,7 @@ makeCounter(0, \value { print value*value; })
     '''), '{name: String, age: Num}');
 
     expect(_inferSource(map + reduce + employees + r'''
-      let maxAge = reduce(
+      let max_age = reduce(
           map(employees, \e -> e.age),
           \highest, age -> age > highest ? age : highest
       );
@@ -339,53 +339,53 @@ makeCounter(0, \value { print value*value; })
   testInferRecord(r'let f = \x -> {a: x}; f(5).a; f("hi").a;', 'String');
 
   test('infer accessing field of record thats passed in as a parameter', () {
-    expect(_inferSource(r'\someRecord -> someRecord.bar'), '{bar: t1} -> t1');
-    expect(_inferSource(r'\someRecord -> someRecord.bar + 1'), '{bar: Num} -> Num');
-    expect(_inferSource(r'\someRecord, someNum -> someRecord.bar + someNum'), '{bar: Num}, Num -> Num');
+    expect(_inferSource(r'\some_record -> some_record.bar'), '{bar: t1} -> t1');
+    expect(_inferSource(r'\some_record -> some_record.bar + 1'), '{bar: Num} -> Num');
+    expect(_inferSource(r'\some_record, some_num -> some_record.bar + some_num'), '{bar: Num}, Num -> Num');
     expect(_inferSource(r'''
-    let getAge = \person -> person.age;
+    let get_age = \person -> person.age;
     let bob = {age: 100};
-    let age = getAge(bob);
+    let age = get_age(bob);
     '''), 'Num');
     expect(_inferSource(r'''
-    let getAge = \person -> person.age;
-    let getBirthYear = \currentYear, person -> currentYear - getAge(person);
+    let get_age = \person -> person.age;
+    let get_birth_year = \current_year, person -> current_year - get_age(person);
     '''), 'Num, {age: Num} -> Num');
     expect(_inferSource(r'''
-    let getAge = \person -> person.age;
-    let getBirthYear = \currentYear, person -> currentYear - getAge(person);
+    let get_age = \person -> person.age;
+    let get_birth_year = \current_year, person -> current_year - get_age(person);
     let bob = {age: 100};
-    let bornIn = getBirthYear(2024, bob);
+    let born_in = get_birth_year(2024, bob);
     '''), 'Num');
 
     expect(_inferSource(r'''
-    let getAge = \person -> person.age;
-    let getBirthYear = \args -> args.currentYear - getAge(args.person);
-    let bornIn = getBirthYear({currentYear: 2024, person: {age: 100}});
+    let get_age = \person -> person.age;
+    let get_birth_year = \args -> args.current_year - get_age(args.person);
+    let born_in = get_birth_year({current_year: 2024, person: {age: 100}});
     '''), 'Num');
 
     expect(_inferSource(r'''
-    let getAge = \person -> person.age;
-    let getBirthYear = \args -> args.currentYear - getAge(args.person);
-    let bornIn = getBirthYear({currentYear: 2024, person: {age: 100, someExtraArg: "hi"}});
+    let get_age = \person -> person.age;
+    let get_birth_year = \args -> args.current_year - get_age(args.person);
+    let born_in = get_birth_year({current_year: 2024, person: {age: 100, some_extra_arg: "hi"}});
     '''), 'Num');
 
     expect(_inferSource(r'''
-    let withRecord = \x -> \f -> f(x);
-    print withRecord({a: "one", b: 2});
+    let with_record = \x -> \f -> f(x);
+    print with_record({a: "one", b: 2});
     '''), '({a: String, b: Num} -> t0) -> t0');
 
     expect(_inferSource(r'''
-    let withRecord = \x -> \f -> f(x);
-    print withRecord({a: "one", b: 2});
-    print withRecord({a: "one", b: 2, c: 4});
+    let with_record = \x -> \f -> f(x);
+    print with_record({a: "one", b: 2});
+    print with_record({a: "one", b: 2, c: 4});
     '''), '({a: String, b: Num, c: Num} -> t0) -> t0');
 
     expect(_inferSource(r'''
-    let withRecord = \x -> \f -> f(x);
-    print withRecord({a: "one", b: 2});
-    print withRecord({a: "one", b: 2, c: 4});
-    print withRecord;
+    let with_record = \x -> \f -> f(x);
+    print with_record({a: "one", b: 2});
+    print with_record({a: "one", b: 2, c: 4});
+    print with_record;
     '''), 't0, (t0 -> t1) -> t1');
 
     expect(_inferSource(r'let f = \rec -> rec.first + (rec.second ? 1 : 0);'), '{second: Bool, first: Num} -> Num');
@@ -415,47 +415,47 @@ makeCounter(0, \value { print value*value; })
     final source = map + r'''
     
     let Shapes = {
-      calcArea: \shape -> shape.getArea(),
+      calc_area: \shape -> shape.get_area(),
       
-      newSquare: \side -> {
+      new_square: \side -> {
         side: side,
-        getArea: \ -> side * side
+        get_area: \ -> side * side
       },
       
-      newRectangle: \w, h -> {
+      new_rectangle: \w, h -> {
         width: w,
         height: h,
-        getArea: \ -> w * h
+        get_area: \ -> w * h
       },
       
-      newTriangle: \base, height -> {
+      new_triangle: \base, height -> {
         base: base,
         height: height,
-        getArea: \ -> 0.5 * base * height
+        get_area: \ -> 0.5 * base * height
       },
       
-      newCircle: \radius -> {
+      new_circle: \radius -> {
         radius: radius,
-        getArea: \ -> 3.14 * radius * radius
+        get_area: \ -> 3.14 * radius * radius
       }
     };
     
-    let square = Shapes.newSquare(1);
-    let rect = Shapes.newRectangle(2, 4);
-    let tri = Shapes.newTriangle(2, 10);
-    let circle = Shapes.newCircle(10);
+    let square = Shapes.new_square(1);
+    let rect = Shapes.new_rectangle(2, 4);
+    let tri = Shapes.new_triangle(2, 10);
+    let circle = Shapes.new_circle(10);
     
-    print Shapes.calcArea(square);
-    print Shapes.calcArea(rect);
-    print Shapes.calcArea(tri);
-    print Shapes.calcArea(circle);
-    print Shapes.calcArea({getArea: \ -> 42});
+    print Shapes.calc_area(square);
+    print Shapes.calc_area(rect);
+    print Shapes.calc_area(tri);
+    print Shapes.calc_area(circle);
+    print Shapes.calc_area({get_area: \ -> 42});
     
-    map([square], Shapes.calcArea);
-    map([square, square], Shapes.calcArea);
-    map([square.getArea, rect.getArea, tri.getArea, circle.getArea], \f -> f());
+    map([square], Shapes.calc_area);
+    map([square, square], Shapes.calc_area);
+    map([square.get_area, rect.get_area, tri.get_area, circle.get_area], \f -> f());
     
-    // let areas = map([square, rect, tri, circle], Shapes.calcArea); 
+    // let areas = map([square, rect, tri, circle], Shapes.calc_area); 
     //                          ^ need variants?
     ''';
 
@@ -539,23 +539,23 @@ makeCounter(0, \value { print value*value; })
     print y.name;
     '''), 'Num');
     expect(_inferSource(r'''
-    let incrX = \r -> {..r, x: r.x+1};
+    let incr_x = \r -> {..r, x: r.x+1};
     let point1 = {y: 1, x: 0};
-    let point2 = incrX(point1);
-    let point3 = incrX(point2);'''),
+    let point2 = incr_x(point1);
+    let point3 = incr_x(point2);'''),
         '{y: Num, x: Num, x: Num, x: Num}',
     );
     expect(_inferSource(r'''
-    let takesInt = \x -> x+1;
-    let takesList = \x -> [..x];
-    let takesBool = \x -> x or false;
+    let takes_int = \x -> x+1;
+    let takes_list = \x -> [..x];
+    let takes_bool = \x -> x or false;
     let a = {x: 0};
     let b = {..a, x: []};
     let c = {..a, x: false};
     let d = {..b, x: "abc"};
-    takesInt(a.x);
-    takesList(b.x);
-    takesBool(c.x);
+    takes_int(a.x);
+    takes_list(b.x);
+    takes_bool(c.x);
     d.x;
     '''), 'String');
   });
@@ -1001,7 +1001,7 @@ makeCounter(0, \value { print value*value; })
         let get = \ -> List.first([
           .Ok(1),
           .OOM,
-          .BadLuck({attemptsLeft: 3}),
+          .BadLuck({attempts_left: 3}),
         ]);
         let f = \x {
           let value = match x {
@@ -1015,7 +1015,7 @@ makeCounter(0, \value { print value*value; })
         let data = get();
         let result = f(data);
       '''),
-      '.BadLuck({attemptsLeft: Num}) | .OOM | .Ok(Bool)',
+      '.BadLuck({attempts_left: Num}) | .OOM | .Ok(Bool)',
     );
 
     expect(

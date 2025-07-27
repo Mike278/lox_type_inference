@@ -1,7 +1,7 @@
 
 let tab = .Key("\t");
 let center = .Mouse({x: 50, y: 50});
-let keyOrMouse = false ? tab : center;
+let key_or_mouse = false ? tab : center;
 
 let fn = \e -> match e {
     .Key char -> char,
@@ -10,11 +10,11 @@ let fn = \e -> match e {
 
 print fn(tab);
 print fn(center);
-print fn(keyOrMouse);
+print fn(key_or_mouse);
 
 let colors = [.Green, .Gold, .Red];
-let favColor = colors \> List.first;
-print match favColor {
+let fav_color = colors \> List.first;
+print match fav_color {
     .Green -> "green",
     .Gold -> "gold",
     .Red -> "red",

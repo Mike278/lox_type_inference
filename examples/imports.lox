@@ -5,6 +5,6 @@ print x;
 
 print import "foo/relative.lox";
 let rel = import "foo/relative.lox";
-print rel.helloFromRelative;
+print rel.hello_from_relative;
 
 print (import "foo/up.lox").a;

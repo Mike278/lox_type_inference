@@ -6,20 +6,20 @@ print fn2(1)(10)(100);
 
 print (\x -> \y -> \z -> x + y + z)(2)(20)(200);
 
-let someRecord = {
+let some_record = {
     a: false,
     b: \ { return 123; },
     c: \x { return x + 123; },
     d: \x -> x + 123,
     e: \ -> 123
 };
-print someRecord.b();
-let tearoff = someRecord.b;
+print some_record.b();
+let tearoff = some_record.b;
 print tearoff();
 
-print someRecord.c(1);
-print someRecord.d(54);
-print someRecord.e();
+print some_record.c(1);
+print some_record.d(54);
+print some_record.e();
 
 print (\x { return x; })(1);
 
@@ -28,16 +28,16 @@ let id = \x -> x;
 print id("hello");
 print (\x -> x)(1);
 
-let zeroArgFunction = \ -> 123;
-print zeroArgFunction();
+let zero_arg_function = \ -> 123;
+print zero_arg_function();
 
-let makeUser = \name, age -> {
-    userId: clock(),
+let make_user = \name, age -> {
+    user_id: clock(),
     name: name,
     age: age,
-    calcBirthYear: \currentYear -> currentYear - age
+    calc_birth_year: \current_year -> current_year - age
 };
 
-let user = makeUser("mike", 30);
+let user = make_user("mike", 30);
 print user.age;
-print user.calcBirthYear(2024);
+print user.calc_birth_year(2024);

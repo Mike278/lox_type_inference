@@ -19,12 +19,12 @@ let boss = {
     name: "Bob Vance",
     company: "Vance Refrigeration",
 };
-let updated = {..boss, lineOfWork: .Refrigeration};
+let updated = {..boss, line_of_work: .Refrigeration};
 print boss;
 print updated.company;
 let { 
   name, 
-  lineOfWork: subtitle,
+  line_of_work: subtitle,
 } = updated;
 print name;
 print subtitle;
@@ -40,16 +40,16 @@ print match either {
     .Red -> 1,
 };
 
-let sendEmail = \x {
+let send_email = \x {
   if x == "a" then return .MissingSubject;
   if x == "b" then return .NetworkError(123);
   if x == "c" then return .OOM;
   return .Sent;
 };
-let result = match sendEmail("a") {
+let result = match send_email("a") {
   .Sent           -> .Alert("success"),
   .MissingSubject -> .Alert("missing subject line"),
-  somethingBad    -> somethingBad,
+  something_bad    -> something_bad,
 };
 
 //
@@ -58,30 +58,30 @@ let result = match sendEmail("a") {
 let sub = \x, y -> x - y;
 print sub(7, 2);
 
-let oneMinusX = sub(1, _);
-let xMinusOne = sub(_, 1);
-print oneMinusX(3);
-print xMinusOne(3);
+let one_minus_x = sub(1, _);
+let x_minus_one = sub(_, 1);
+print one_minus_x(3);
+print x_minus_one(3);
 
 let numbers = [1,2,3];
 print numbers \> first \> sub(_, 1);
 
-let makeUser = \data {
+let make_user = \data {
     if data.name == "null" then {
         print "hmm";
         return .Anonymous;
     }
-    let randomId = 123;
+    let random_id = 123;
     return .User({
-        userId: randomId,
+        user_id: random_id,
         name: data.name,
-        birthYear: data.birthYear,
-        ageAsOf: \currentYear -> currentYear - data.birthYear,
+        birth_year: data.birth_year,
+        age_as_of: \current_year -> current_year - data.birth_year,
     });
 };
-let user = makeUser({name: "Bob", birthYear: 1974});
+let user = make_user({name: "Bob", birth_year: 1974});
 print match user {
-    .User u -> u.ageAsOf(2025),
+    .User u -> u.age_as_of(2025),
     .Anonymous -> 0,
 };
 

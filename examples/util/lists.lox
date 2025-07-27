@@ -18,19 +18,19 @@ let where = \list, fn ->
     fold(list, [], \state, element ->
         fn(element) ? [..state, element] : state);
 
-let countWhere = \list, predicate ->
+let count_where = \list, predicate ->
     fold(list, 0, \count, element -> predicate(element) ? count + 1 : count);
 
 let sort = \list {
   if list \> empty then return [];
   let x = list \> first;
   let xs = list \> rest;
-  let isBefore = \e -> e < x;
-  let isAfter = \e -> e >= x;
+  let is_before = \e -> e < x;
+  let is_after = \e -> e >= x;
   return [
-    ..xs \> where(_, isBefore) \> sort,
+    ..xs \> where(_, is_before) \> sort,
     x,
-    ..xs \> where(_, isAfter) \> sort
+    ..xs \> where(_, is_after) \> sort
   ];
 };
 
@@ -42,23 +42,23 @@ let zip = \l1, l2, fn ->
         ..zip(l1 \> rest, l2 \> rest, fn)
     ];
 
-let zipWithTail = \list, fn ->
+let zip_with_tail = \list, fn ->
     zip(list, list \> rest, fn);
 
 let sum = reduce(_, plus);
 
 
 
-let foldUntil = \list, state, fn {
+let fold_until = \list, state, fn {
     if list \> empty then return state;
     return match fn(state, list \> first) {
-        .Continue newState -> foldUntil(list \> rest, newState, fn),
-        .Break finalState -> finalState,
+        .Continue new_state -> fold_until(list \> rest, new_state, fn),
+        .Break final_state -> final_state,
     };
 };
 
 let any = \list, predicate ->
-    foldUntil(
+    fold_until(
         list,
         false,
         \state, element ->
@@ -68,7 +68,7 @@ let any = \list, predicate ->
     );
 
 let all = \list, predicate ->
-    foldUntil(
+    fold_until(
         list,
         true,
         \state, element ->

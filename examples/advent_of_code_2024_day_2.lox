@@ -1,4 +1,4 @@
-let {zipWithTail, countWhere, first, all} = import "util/lists.lox";
+let {zip_with_tail, count_where, first, all} = import "util/lists.lox";
 let {minus, sign, abs} = import "util/numeric.lox";
 
 let input = [
@@ -10,12 +10,12 @@ let input = [
     [1, 3, 6, 7, 9],
 ];
 
-let isSafe = \list {
-    let diffs = list \> zipWithTail(_, minus);
-    let firstDirection = diffs \> first \> sign;
+let is_safe = \list {
+    let diffs = list \> zip_with_tail(_, minus);
+    let first_direction = diffs \> first \> sign;
     return all(
         diffs,
-        \diff -> (diff \> sign) == firstDirection
+        \diff -> (diff \> sign) == first_direction
              and (diff \> abs) >= 1
              and (diff \> abs) <= 3
     );
@@ -23,6 +23,6 @@ let isSafe = \list {
 
 /////// Part 1 ///////
 
-let totalSafe = input \> countWhere(_, isSafe);
-print totalSafe;
-assert totalSafe == 2;
+let total_safe = input \> count_where(_, is_safe);
+print total_safe;
+assert total_safe == 2;

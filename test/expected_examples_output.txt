@@ -21,14 +21,14 @@ null
 3
 3
 assignment!
-=== false or isGreat(); ===
+=== false or is_great(); ===
 side effect!
 true
-=== false and isGreat(); ===
+=== false and is_great(); ===
 false
-=== true or isGreat(); ===
+=== true or is_great(); ===
 true
-=== true and isGreat(); ===
+=== true and is_great(); ===
 side effect!
 true
 ====== if.lox =====
@@ -40,7 +40,7 @@ b
 b
 ====== imports.lox =====
 [2, 4, 6]
-{helloFromRelative: yep}
+{hello_from_relative: yep}
 yep
 1
 ====== lambdas.lox =====
@@ -75,7 +75,7 @@ hello
 2
 [1] \> List.first \> id
 1
-1 \> xMinusOne \> xMinusOne
+1 \> x_minus_one \> x_minus_one
 -1
 [1] \> List.first \> id \> sub(_, 1)
 0

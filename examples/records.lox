@@ -1,21 +1,21 @@
 let foo = \ { return 123; };
 
 
-let someRecord = {
+let some_record = {
     a: "one",
     b: 2,
     c: false,
     d: foo
 };
 
-print someRecord;
+print some_record;
 
-print someRecord.a;
-print someRecord.d;
-let tearoff = someRecord.d;
+print some_record.a;
+print some_record.d;
+let tearoff = some_record.d;
 print tearoff();
 
-print someRecord.d();
+print some_record.d();
 
 let ok = \name {
     return {
@@ -42,8 +42,8 @@ print user2.last;
 print user2.nested.another;
 print user2.name;
 
-let emptyRecord = {};
-print emptyRecord;
+let empty_record = {};
+print empty_record;
 print {};
 
 let r1 = {a: "a"};
@@ -88,10 +88,10 @@ assert x3.name == "hello";
 assert y3.name == 42;
 
 
-let incrX = \r -> {..r, x: r.x+1};
+let incr_x = \r -> {..r, x: r.x+1};
 let point1 = {y: 1, x: 0};
-let point2 = incrX(point1);
-let point3 = incrX(point2);
+let point2 = incr_x(point1);
+let point3 = incr_x(point2);
 
 assert point1 == {y: 1, x: 0};
 

@@ -1,13 +1,13 @@
-let makeCounter = \i {
+let make_counter = \i {
   let count = \ {
     print i + 1;
-    return makeCounter(i+1);
+    return make_counter(i+1);
   };
 
   return count;
 };
 
-let counter1 = makeCounter(0);
+let counter1 = make_counter(0);
 let counter2 = counter1();
 let counter3 = counter2();
 let counter4 = counter3();
