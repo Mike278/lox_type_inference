@@ -9,6 +9,12 @@ sealed class Expr with EquatableMixin  {
   @override get props => [type];
 }
 
+class Return extends Expr {
+  final Token keyword;
+  final Expr? expr;
+  Return(this.keyword, this.expr);
+}
+
 sealed class Literal extends Expr with EquatableMixin {
   final Token token;
   late final Object? value = token.literal;
@@ -268,11 +274,6 @@ class Block extends Statement {
   final Token closeBrace;
   Block(this.openBrace, this.statements, this.closeBrace);
 }
-class ReturnStatement extends Statement {
-  final Token keyword;
-  final Expr? expr;
-  ReturnStatement(this.keyword, this.expr);
-}
 class IfStatement extends Statement {
   final Token keyword;
   final Expr condition;
@@ -295,8 +296,6 @@ extension StatementAPI on Statement {
         for (final statement in statements) {
           yield* statement.allExpressions();
         }
-      case ReturnStatement(:final expr):
-        if (expr != null) yield* expr.subExpressions();
       case IfStatement(:final condition, :final thenBranch, :final elseBranch):
         yield* condition.subExpressions();
         yield* thenBranch.allExpressions();
@@ -309,6 +308,8 @@ extension ExprAPI on Expr {
   Iterable<Expr> subExpressions() sync* {
     yield this;
     switch (this) {
+      case Return(:final expr):
+        if (expr != null) yield* expr.subExpressions();
       case Binary(:final left, :final right):
       case LogicalAnd(:final left, :final right):
       case LogicalOr(:final left, :final right):

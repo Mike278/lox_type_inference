@@ -8,6 +8,7 @@ import 'package:lox/utils.dart';
 
 class TypeInference {
   final ResolveImport import;
+  final _returnStack = <_CurrentFunction>[];
   TypeInference(this.import);
 
   void inferProgramTypes(List<Statement> statements) {
@@ -16,7 +17,7 @@ class TypeInference {
     var globalEnv = loxStandardLibraryEnv;
     final level = 0;
     for (final statement in statements) {
-      globalEnv = inferStatement(globalEnv, level, statement, expectedReturnType: null);
+      globalEnv = inferStatement(globalEnv, level, statement);
     }
     for (final statement in statements) {
       for (final expr in statement.allExpressions()) {
@@ -27,21 +28,10 @@ class TypeInference {
     }
   }
 
-  Map<String, LoxType> inferStatement(Map<String, LoxType> env, int level, Statement statement, {
-    required LoxType Function()? expectedReturnType
-  }) {
+  Map<String, LoxType> inferStatement(Map<String, LoxType> env, int level, Statement statement) {
     switch (statement) {
       case Destructuring():
         throw StateError('bug; destructuring shouldve been desugared');
-
-      case ReturnStatement(:final expr):
-        if (expectedReturnType == null) {
-          throw TopLevelReturn();
-        }
-        final type = expr == null
-            ? LoxType.unit
-            : inferExpr(env, level, expr);
-        unify(type, expectedReturnType());
 
       case ExpressionStatement(:final expr):
       case PrintStatement(:final expr):
@@ -54,7 +44,7 @@ class TypeInference {
       case Block(:final statements):
         var localEnv = {...env};
         for (final statement in statements) {
-          localEnv = inferStatement(localEnv, level, statement, expectedReturnType: expectedReturnType);
+          localEnv = inferStatement(localEnv, level, statement);
         }
 
       case IfStatement(
@@ -64,9 +54,9 @@ class TypeInference {
       ):
         final type = inferExpr(env, level, condition);
         unify(type, LoxType.bool);
-        env = inferStatement(env, level, thenBranch, expectedReturnType: expectedReturnType);
+        env = inferStatement(env, level, thenBranch);
         if (elseBranch != null) {
-          env = inferStatement(env, level, elseBranch, expectedReturnType: expectedReturnType);
+          env = inferStatement(env, level, elseBranch);
         }
     }
 
@@ -102,6 +92,7 @@ class TypeInference {
       Variable()       => inferVariable(env, level, expr),
       Call()           => inferFunctionCall(env, level, expr),
       Lambda()         => inferFunction(env, level, expr),
+      Return()         => inferReturn(env, level, expr),
       Grouping()       => inferExpr(env, level, expr.expr),
       Record()         => inferRecord(env, level, expr),
       RecordGet()      => inferRecordGet(env, level, expr),
@@ -380,10 +371,14 @@ class TypeInference {
 
   LoxType inferArrowFunction(Map<String, LoxType> env, int level, Lambda function, Expr body) {
     final parameterTypes = typeVariablesForFunctionParameters(function.params, level);
-    final returnType = inferExpr({...env, ...parameterTypes}, level, body);
+    final expectedReturnType = LoxType.fresh(level);
+    onEnterFunctionBody(expectedReturnType: expectedReturnType);
+    final actualReturnType = inferExpr({...env, ...parameterTypes}, level, body);
+    unify(expectedReturnType, actualReturnType);
+    onExitFunctionBody();
     final functionType = LoxType.function(
       from: parameterTypes.values.toList(),
-      to: returnType,
+      to: actualReturnType,
     );
     return setType(function, functionType);
   }
@@ -397,19 +392,29 @@ class TypeInference {
     };
 
     final returnType = LoxType.fresh(level);
-    var hasReturnStatement = false;
+    onEnterFunctionBody(expectedReturnType: returnType);
     for (final statement in body.statements) {
-      env = inferStatement(env, level, statement, expectedReturnType: () {
-        hasReturnStatement = true;
-        return returnType;
-      });
+      env = inferStatement(env, level, statement);
     }
+    final anyReturnExpressions = _getCurrentFunction().anyReturnExpressions;
+    onExitFunctionBody();
 
     final functionType = LoxType.function(
       from: parameters.values.toList(),
-      to: hasReturnStatement ? returnType : .unit,
+      to: anyReturnExpressions ? returnType : .unit,
     );
     return setType(function, functionType);
+  }
+
+  LoxType inferReturn(Map<String, LoxType> env, int level, Return expr) {
+    final returnType = switch (expr) {
+      Return(:final expr?) => inferExpr(env, level, expr),
+      Return() => LoxType.unit,
+    };
+    final current = _getCurrentFunction();
+    current.anyReturnExpressions = true;
+    unify(current.expectedReturnType, returnType);
+    return setType(expr, .never);
   }
 
   Map<String, LoxType> typeVariablesForFunctionParameters(List<Token> params, int level) {
@@ -421,6 +426,23 @@ class TypeInference {
         param.lexeme: .fresh(level)
     };
   }
+
+  void onEnterFunctionBody({required LoxType expectedReturnType}) {
+    _returnStack.add(.new(
+      expectedReturnType,
+      anyReturnExpressions: false,
+    ));
+  }
+
+  void onExitFunctionBody() {
+    _returnStack.removeLast();
+  }
+
+  _CurrentFunction _getCurrentFunction() =>
+    switch (_returnStack) {
+      [] => throw TopLevelReturn(),
+      [..., final last] => last,
+    };
 
   LoxType inferFunctionCall(Map<String, LoxType> env, int level, Call call) {
     final List<Expr> args;
@@ -471,6 +493,15 @@ class TypeInference {
 
 }
 
+class _CurrentFunction {
+  final LoxType expectedReturnType;
+  bool anyReturnExpressions;
+  _CurrentFunction(
+    this.expectedReturnType, {
+    required this.anyReturnExpressions
+  });
+}
+
 // [Ty] wrapper to enable dot shorthands for referencing lox-specific types
 extension type LoxType(Ty inner) implements Ty {
   static final bool        = LoxType(TyFunctionApplication('Bool', []));
@@ -479,6 +510,7 @@ extension type LoxType(Ty inner) implements Ty {
   static final unit        = LoxType(TyFunctionApplication('Unit', []));
   static final emptyList   = LoxType(TyFunctionApplication('List', [a]));
   static final emptyRecord = LoxType(TyRowEmpty());
+  static final never       = LoxType(TyNever());
   static final list        = ({required LoxType of}) => LoxType(TyFunctionApplication('List', [of]));
 
   static final record = (Map<String, LoxType> fields) => LoxType(

@@ -15,9 +15,9 @@ class LoxRuntimeException implements Exception {
   }
 
 }
-class Return {
+class _Return {
   final Object? returnValue;
-  Return(this.returnValue);
+  _Return(this.returnValue);
 }
 
 typedef LoxFunction = ({
@@ -25,10 +25,26 @@ typedef LoxFunction = ({
   Object? Function(List<Object?> args) impl,
 });
 
-typedef LoxTag = ({
-  Token tag,
-  Object? payload,
-});
+class LoxTag {
+  final Token tag;
+  final Object? payload;
+  LoxTag({required this.tag, required this.payload});
+
+  @override
+  String toString() => switch (payload) {
+    final payload? => '.${tag.lexeme}($payload)',
+    _ => '.${tag.lexeme}',
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is LoxTag && runtimeType == other.runtimeType &&
+              tag == other.tag && payload == other.payload;
+
+  @override
+  int get hashCode => tag.hashCode ^ payload.hashCode;
+}
 
 typedef RuntimeIO = ({
   void Function(Object?) print,
@@ -75,8 +91,6 @@ class LoxRuntime {
         for (final statement in statements) {
           newEnv = execute(newEnv, statement);
         }
-      case ReturnStatement(:final expr):
-        throw Return(expr == null ? null : eval(expr, env));
       case IfStatement(:final keyword, :final condition, :final thenBranch, :final elseBranch):
         final result = evalAs<bool>(condition, keyword, env);
         if (result) {
@@ -92,6 +106,8 @@ class LoxRuntime {
 
   Object? eval(Expr expr, Env env) {
     return switch (expr) {
+      Return(:final expr) =>
+        throw _Return(expr == null ? null : eval(expr, env)),
       Literal(:final value) => value,
       ListLiteral(elements:final values) => [
         for (final x in values) ...switch (x) {
@@ -139,8 +155,8 @@ class LoxRuntime {
           label.lexeme: eval(value, env),
       },
       Lambda(:final params, :final body) => newLoxFunction(() => env, params, body),
-      TagConstructor(:final tag, :final payload?) => (tag: tag, payload: eval(payload, env)),
-      TagConstructor(:final tag, payload: null) => (tag: tag, payload: null),
+      TagConstructor(:final tag, :final payload?) => LoxTag(tag: tag, payload: eval(payload, env)),
+      TagConstructor(:final tag, payload: null) => LoxTag(tag: tag, payload: null),
       TagMatch() => evalMatch(expr, env),
       Import(:final keyword, :final path) => instantiateImport(keyword, path),
     };
@@ -246,7 +262,7 @@ class LoxRuntime {
             case FunctionBody(body: Block(:final statements)):
               final _ = interpret(statements, newEnv);
           }
-        } on Return catch (r) {
+        } on _Return catch (r) {
           return r.returnValue;
         }
         return null; // void

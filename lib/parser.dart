@@ -202,7 +202,6 @@ class Parser {
     if (matchFirst(TokenType.ASSERT)) return assertStatement();
     if (matchFirst(TokenType.PRINT)) return printStatement();
     if (matchFirst(TokenType.OPEN_BRACE)) return block();
-    if (matchFirst(TokenType.RETURN)) return returnStatement();
     if (matchFirst(TokenType.IF)) return ifStatement();
     return expressionStatement();
   }
@@ -230,13 +229,6 @@ class Parser {
     return IfStatement(keyword, condition, thenBranch, elseBranch);
   }
 
-  Statement returnStatement() {
-    final keyword = previous();
-    final value = check(TokenType.SEMICOLON) ? null : expression();
-    consume(TokenType.SEMICOLON, "Expected ';' after value.");
-    return ReturnStatement(keyword, value);
-  }
-
   Statement printStatement() {
     final keyword = previous();
     final value = expression();
@@ -261,7 +253,21 @@ class Parser {
   }
 
   // expression     → ternary;
-  Expr expression() => ternary();
+  Expr expression() => return_();
+
+  Expr return_() {
+    if (matchFirst(TokenType.RETURN)) {
+      final keyword = previous();
+      Expr? value;
+      try {
+        value = expression();
+      } on MissingExpression {
+        value = null;
+      }
+      return Return(keyword, value);
+    }
+    return ternary();
+  }
 
   // ternary        → pipeline "?" expression ":" expression ";";
   Expr ternary() {
@@ -615,9 +621,16 @@ class Parser {
       return Grouping(expr);
     }
 
-    throwParseError(peek(), 'Expected expression.');
+    throw MissingExpression(peek());
   }
 
 }
 
-typedef ParserError = (Token, {String message});
+class ParserError implements Exception {
+  final Token token;
+  final String message;
+  ParserError(this.token, this.message);
+}
+class MissingExpression extends ParserError {
+  MissingExpression(Token token) : super(token, 'Expected expression.');
+}

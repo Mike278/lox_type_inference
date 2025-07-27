@@ -37,7 +37,7 @@ void _runPrompt() {
         env,
         defaultLoxAssert,
         _io,
-        (path) => Source(File(path).readAsStringSync()),
+        dartIOReadFile,
         checkTypes: true,
       );
     } catch (e, s) {
@@ -54,6 +54,9 @@ void _runFile(String path) {
     Env.global(),
     defaultLoxAssert,
     _io,
-    (path) => Source(File(path).readAsStringSync())
+    dartIOReadFile,
   );
 }
+
+final ReadFile dartIOReadFile =
+  (path) => Source(File(path).readAsStringSync());

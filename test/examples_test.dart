@@ -6,13 +6,49 @@ import 'package:lox/interpreter.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 
+import '../bin/lox.dart' show dartIOReadFile;
+import '../tryit/web/sample.dart' show sample;
 
 final testDirectory = join(
   Directory.current.path,
   Directory.current.path.endsWith('test') ? '' : 'test',
 );
 
+final LoxAssertion testAssertion = (keyword, source, value) =>
+  expect(
+    value,
+    isTrue,
+    reason: 'lox `assert` failed: $source',
+  );
+
 void main() {
+  test('tryit', () {
+    final output = [];
+    run(
+      '',
+      Source(sample),
+      Env.global(),
+      testAssertion,
+      (print: (x) {
+        output.add(x.toString());
+      }),
+      (_) => fail('unexpected import'),
+      checkTypes: true,
+    );
+    expect(output, [
+      '[alice, bob, john, charlie, devin]',
+      '{name: Bob Vance, company: Vance Refrigeration}',
+      'Vance Refrigeration',
+      'Bob Vance',
+      '.Refrigeration',
+      '0',
+      '5',
+      '-2',
+      '2',
+      '0',
+      '51',
+    ]);
+  });
   test('examples dir', () {
     final exampleFiles = Directory(join(testDirectory, '..', 'examples'))
         .listSync()
@@ -53,14 +89,9 @@ void main() {
     checkTypes: true,
     file.path,
     Env.global(),
-    (keyword, source, value) =>
-      expect(
-        value,
-        isTrue,
-        reason: 'lox `assert` failed: $source',
-      ),
+    testAssertion,
     (print: prints.add),
-    (path) => Source(File(path).readAsStringSync()),
+    dartIOReadFile,
   );
   return (env, prints: prints);
 }

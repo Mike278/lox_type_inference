@@ -137,15 +137,6 @@ List<(CodeSpan, String)> displayStatement(
         ...displayStatement(s, typeOf)
   ],
 
-  ReturnStatement(:final keyword, expr: null) => [
-      (keyword.span, '${keyword.lexeme}: nil')
-  ],
-
-  ReturnStatement(:final keyword, :final expr?) => [
-      (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
-      ...displayExpression(expr, typeOf),
-  ],
-
   IfStatement(
     :final condition,
     :final thenBranch,
@@ -162,6 +153,10 @@ List<(CodeSpan, String)> displayExpression(
   TypeOf typeOf,
 ) => switch (expr) {
 
+  Return(:final keyword, :final expr) => [
+    (keyword.span, expr == null ? 'nil' : displayType(typeOf(expr))),
+    if (expr != null) ...displayExpression(expr, typeOf),
+  ],
 
   Variable(:final name) => [
     (name.span, '${name.lexeme}: ${displayType(typeOf(expr))}')
@@ -338,6 +333,9 @@ String displayTypeVariable(({int id, bool quantified}) args) {
 String displayAlpha(int i) => String.fromCharCode(97 + i % 26) * (i ~/ 26 + 1);
 
 CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
+
+  Return(:final keyword) =>
+      keyword.span,
 
   Variable(:final name) =>
       name.span,
