@@ -478,7 +478,7 @@ class Parser {
     final keyword = previous();
     final tag = expression();
     final openBrace = consume(.openBrace, "Expected open brace");
-    final cases = <({Token tag, Token? payload, Token arrow, Expr result})>[];
+    final cases = <TagMatchCase>[];
     DefaultMatchCase? defaultCase;
     var first = true;
     do {

@@ -1,0 +1,32 @@
+let unlucky = \ -> false;
+let online = \ -> false;
+let is_auth_expired = \ -> false;
+
+let connect = \ {
+    if unlucky() then return .BadLuck;
+    if !online() then return .Offline;
+    return .Connection({
+        some_connection_details: 123,
+        download: \ -> "the data",
+    });
+};
+
+let download = \connection {
+    if is_auth_expired() then return .AuthExpired;
+    if unlucky() then return .DownloadInterrupted;
+    let result = connection.download();
+    return .TheData(result);
+};
+
+let connect_and_download = \ {
+    let connection = match connect() {
+        .Connection c -> c,
+        .Offline -> return .TheData("some default data"),
+        other -> return other,
+    };
+
+    return download(connection);
+};
+
+let data = connect_and_download();
+print data;

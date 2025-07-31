@@ -246,9 +246,10 @@ make_counter(0, \value { print value*value; })
     );
     expect(
       _inferSource(fold + r' fold([1,2,3], false, \state, element -> "wat");'),
-      isA<TypeMismatch>()
-        .having((e) => e.t1.toString(), 'lhs', 'Bool')
-        .having((e) => e.t2.toString(), 'rhs', 'String')
+      isTypeMismatch(
+        lhs: 'Bool',
+        rhs: 'String',
+      ),
     );
 
     expect(_inferSource(fold + r'''
@@ -984,6 +985,45 @@ make_counter(0, \value { print value*value; })
 
     expect(
       _inferSource(r'''
+let unlucky = \ -> true;
+let online = \ -> true;
+let is_auth_expired = \ -> true;
+
+let connect = \ {
+    if unlucky() then return .BadLuck;
+    if !online() then return .Offline;
+    return .Connection({
+        some_connection_details: 123,
+        download: \ -> {this_is_wrong: "yep"},
+    });
+}
+;
+
+let download = \connection {
+    if is_auth_expired() then return .AuthExpired;
+    if unlucky() then return .DownloadInterrupted;
+    let result = connection.download();
+    return .TheData(result);
+};
+
+let connect_and_connect = \ {
+    let connection = match connect() {
+        .Connection c -> c,
+        .Offline -> return .TheData("some default data"),
+        other -> return other,
+    };
+
+    return download(connection);
+};
+      '''),
+      isTypeMismatch(
+        lhs: 'String',
+        rhs: '{this_is_wrong: String}'
+      ),
+    );
+
+    expect(
+      _inferSource(r'''
         let f = \x {
           let remaining = match x {
             .Green -> return false,
@@ -1076,8 +1116,8 @@ dynamic _inferSource(String source, [Map<String, String> files = const {}]) {
     if (!source.contains(';')) source = '$source;';
     final statements = inferSource(source, (path) => Source(files[path]!));
     return statements.typeOfLastStatement.toString();
-  } on TypeCheckException catch (e) {
-    return e;
+  } on (Expr, TypeCheckException) catch (e) {
+    return e.$2;
   } catch (e, s) {
     print(s);
     return e;
@@ -1109,3 +1149,12 @@ void expectedType(String expected) {
   final source = liveTest.test.name.toString().replaceAll(liveTest.groups.last.name, '');
   expect(_inferSource(source).toString(), expected);
 }
+
+const _sentinel = Object();
+Matcher isTypeMismatch({
+  Object lhs = _sentinel,
+  Object rhs = _sentinel,
+}) =>
+    isA<TypeMismatch>()
+        .having((e) => e.t1.toString(), 'lhs', lhs)
+        .having((e) => e.t2.toString(), 'rhs', rhs);

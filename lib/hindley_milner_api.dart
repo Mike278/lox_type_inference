@@ -67,10 +67,6 @@ class TyFunctionApplication extends Ty with EquatableMixin {
   @override get props => [name, monoTypes];
 }
 
-class TyNever extends Ty with EquatableMixin {
-  @override get props => [];
-  @override String toString() => prettyPrint(this);
-}
 
 class TyRowEmpty extends Ty with EquatableMixin {
   @override get props => [];
@@ -169,14 +165,11 @@ Ty rewriteRow(
         throw NotARow(row2);
     case TyRowEmpty():
         throw RowMissingLabel(label1);
-    case TyNever():
-        throw 'unreachable because we immediately return from `unify` if either type is Never';
   }
 }
 
 void unify(Ty t1, Ty t2) {
   if (t1 == t2) return;
-  if (t1 is TyNever || t2 is TyNever) return;
 
   switch ((t1, t2)) {
     case (final t1, TyVariable(mutableRef: Resolved(type: final t2)))
@@ -200,7 +193,6 @@ void unify(Ty t1, Ty t2) {
         TyRowExtend(:final type, :final row) => [verify(type), verify(row)],
         TyVariant(:final type) => verify(type),
         TyRowEmpty() => null,
-        TyNever() => null,
       };
       verify(ty);
       tvar.mutableRef = Resolved(ty);
@@ -288,8 +280,6 @@ Ty _instantiate(
         ]),
     TyRowEmpty() =>
         type,
-    TyNever() =>
-        type,
     TyRowExtend(:final label, :final type, :final row) =>
         TyRowExtend(
           newEntry: (label, _instantiate(level, type, mappings)),
@@ -320,7 +310,6 @@ Ty generalize(int level, Ty type) => switch (type) {
   TyVariant() => TyVariant(generalize(level, type.type)),
 
   TyRowEmpty() ||
-  TyNever() ||
   TyVariable(mutableRef: Unresolved()) =>
     type,
 };
@@ -355,9 +344,6 @@ String prettyPrint(
 
   TyRowExtend(:final label, :final type, :final row)
       => prettyPrintRecord(label, type, row, displayTypeVariable),
-
-  TyNever()
-      => 'Never',
 
   TyRowEmpty()
       => '{}',
@@ -452,7 +438,6 @@ Ty rename(Ty t, int Function(int) replace) =>
       name,
       [ for (final t in monoTypes) rename(t, replace) ]
     ),
-    TyNever() => t,
     TyRowEmpty() => t,
     TyRowExtend(:final label, :final type, :final row) => TyRowExtend(
       newEntry: (label, rename(type, replace)),
@@ -474,7 +459,6 @@ Set<int> collectTypeVariables(Set<int> state, Ty t) => {
       for (final t in monoTypes)
         ...collectTypeVariables(state, t),
     },
-    TyNever() => { },
     TyRowEmpty() => { },
     TyRowExtend(:final type, :final row) => {
       ...collectTypeVariables(state, row),

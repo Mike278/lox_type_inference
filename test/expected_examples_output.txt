@@ -100,6 +100,8 @@ null
 1
 {}
 {}
+====== return_expr.lox =====
+.TheData(some default data)
 ====== scoping.lox =====
 global
 global

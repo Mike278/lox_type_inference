@@ -86,37 +86,43 @@ class TypeInference {
     };
   }
 
-  LoxType inferExpr(Map<String, LoxType> env, int level, Expr expr) =>
-    switch (expr) {
-      Literal()        => inferLiteral(env, level, expr),
-      Variable()       => inferVariable(env, level, expr),
-      Call()           => inferFunctionCall(env, level, expr),
-      Lambda()         => inferFunction(env, level, expr),
-      Return()         => inferReturn(env, level, expr),
-      Grouping()       => inferExpr(env, level, expr.expr),
-      Record()         => inferRecord(env, level, expr),
-      RecordGet()      => inferRecordGet(env, level, expr),
-      RecordUpdate()   => inferRecordUpdate(env, level, expr),
-      ListLiteral()    => inferList(env, level, expr),
-      TagConstructor() => inferTagConstructor(env, level, expr),
-      TagMatch()       => inferTagMatch(env, level, expr),
-      Ternary()        => inferTernary(env, level, expr),
-      Import()         => inferImport(env, level, expr),
-      UnaryMinus()     => inferUnaryOperation(env, level, expr),
-      UnaryBang()      => inferUnaryOperation(env, level, expr),
-      Binary(operator: Token(type: .pipeline)) => inferPipeline(env, level, expr),
-      Binary(:final left, :final right, operator: final keyword)
-      || LogicalOr(:final left, :final right, :final keyword)
-      || LogicalAnd(:final left, :final right, :final keyword) =>
-          inferBinaryOperation(
-            env,
-            level,
-            left: left,
-            right: right,
-            operator: keyword,
-            expr: expr,
-          ),
-    };
+  LoxType inferExpr(Map<String, LoxType> env, int level, Expr expr) {
+    try {
+      return switch (expr) {
+        Literal()        => inferLiteral(env, level, expr),
+        Variable()       => inferVariable(env, level, expr),
+        Call()           => inferFunctionCall(env, level, expr),
+        Lambda()         => inferFunction(env, level, expr),
+        Return()         => inferReturn(env, level, expr),
+        Grouping()       => inferExpr(env, level, expr.expr),
+        Record()         => inferRecord(env, level, expr),
+        RecordGet()      => inferRecordGet(env, level, expr),
+        RecordUpdate()   => inferRecordUpdate(env, level, expr),
+        ListLiteral()    => inferList(env, level, expr),
+        TagConstructor() => inferTagConstructor(env, level, expr),
+        TagMatch()       => inferTagMatch(env, level, expr),
+        Ternary()        => inferTernary(env, level, expr),
+        Import()         => inferImport(env, level, expr),
+        UnaryMinus()     => inferUnaryOperation(env, level, expr),
+        UnaryBang()      => inferUnaryOperation(env, level, expr),
+        Binary(operator: Token(type: .pipeline)) => inferPipeline(env, level, expr),
+        Binary(:final left, :final right, operator: final keyword)
+        || LogicalOr(:final left, :final right, :final keyword)
+        || LogicalAnd(:final left, :final right, :final keyword) =>
+            inferBinaryOperation(
+              env,
+              level,
+              left: left,
+              right: right,
+              operator: keyword,
+              expr: expr,
+            ),
+      };
+    }
+    on TypeCheckException catch (e) {
+      throw (expr, e);
+    }
+  }
 
 
   LoxType setType(Expr expr, LoxType type) {
@@ -414,7 +420,7 @@ class TypeInference {
     final current = _getCurrentFunction();
     current.anyReturnExpressions = true;
     unify(current.expectedReturnType, returnType);
-    return setType(expr, .never);
+    return setType(expr, .fresh(level));
   }
 
   Map<String, LoxType> typeVariablesForFunctionParameters(List<Token> params, int level) {
@@ -510,7 +516,6 @@ extension type LoxType(Ty inner) implements Ty {
   static final unit        = LoxType(TyFunctionApplication('Unit', []));
   static final emptyList   = LoxType(TyFunctionApplication('List', [a]));
   static final emptyRecord = LoxType(TyRowEmpty());
-  static final never       = LoxType(TyNever());
   static final list        = ({required LoxType of}) => LoxType(TyFunctionApplication('List', [of]));
 
   static final record = (Map<String, LoxType> fields) => LoxType(
