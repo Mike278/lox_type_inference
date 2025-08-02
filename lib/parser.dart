@@ -67,6 +67,7 @@ import 'package:lox/utils.dart';
 class Parser {
   final List<Token> tokens;
   var current = 0;
+  var _discardCount = 0;
   Parser(this.tokens);
 
   Token previous() => tokens[current-1];
@@ -580,8 +581,14 @@ class Parser {
     } else {
       while (true) {
         if (check(.arrow)) break; // trailing comma
-        final param = consume(.identifier, "Expected parameter name");
-        params.add(param);
+        if (matchFirst(.identifier)) {
+          final param = previous();
+          params.add(param);
+        } else if (matchFirst(.underscore)) {
+          final discard = previous();
+          final newName = '${discard.lexeme}${_discardCount++}';
+          params.add(discard.replaceLexeme(newName));
+        }
         if (!matchFirst(.comma)) {
           break;
         }

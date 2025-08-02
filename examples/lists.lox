@@ -81,3 +81,6 @@ print [1] \> List.first \> id \> sub(_, 1);
 
 print (\list, item -> [..list, item])([], false);
 print (\list, item -> [..list, item])(_, false)([]);
+
+assert    map([1,2,3], \_    -> 5) == [5, 5, 5];
+assert reduce([1,2,3], \_, _ -> 5) == 5;

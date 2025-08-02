@@ -31,6 +31,13 @@ class Token with EquatableMixin {
   final int offset;
 
   Token(this.type, this.lexeme, this.literal, this.line, this.offset);
+  Token replaceLexeme(String replacement) => Token(
+    type,
+    replacement,
+    literal,
+    line,
+    offset,
+  );
 
   @override
   String toString() => [type.name, lexeme, if (literal != null) literal, '(ln$line:$offset)'].join(' ');

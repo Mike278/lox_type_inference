@@ -17,10 +17,12 @@ void main() {
 
   // arity 1
   testInferFunction(r'\x -> 1',  't0 -> Num');
+  testInferFunction(r'\_ -> 1',  't0 -> Num');
   testInferFunction(r'\x -> x',  't0 -> t0');
 
   // arity 2
   testInferFunction(r'\x, y -> 1',   't0, t1 -> Num');
+  testInferFunction(r'\_, _ -> 1',   't0, t1 -> Num');
   testInferFunction(r'\x, y -> x',   't0, t1 -> t0');
   testInferFunction(r'\x, y -> y',   't0, t1 -> t1');
   testInferFunction(r'\x, y -> []',  't0, t1 -> List[t2]');
@@ -29,6 +31,7 @@ void main() {
 
   // arity 3
   testInferFunction(r'\x, y, z -> 1',             't0, t1, t2 -> Num');
+  testInferFunction(r'\_, _, _ -> 1',             't0, t1, t2 -> Num');
   testInferFunction(r'\x, y, z -> x',             't0, t1, t2 -> t0');
   testInferFunction(r'\x, y, z -> y',             't0, t1, t2 -> t1');
   testInferFunction(r'\x, y, z -> z',             't0, t1, t2 -> t2');
