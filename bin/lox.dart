@@ -1,21 +1,30 @@
 import 'dart:io';
 
 import 'package:lox/coordinator.dart';
+import 'package:lox/expr.dart';
+import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/interpreter.dart';
+import 'package:lox/mark_types.dart';
 
 void main(List<String> args) {
   if (args.length > 1) {
     print("Usage: jlox [script or directory of scripts]");
     exit(64);
   } else if (args case [final path]) {
-    if (path.endsWith('.lox')) {
-      _runFile(path);
-    } else {
-      Directory(path)
-          .listSync(recursive: true)
-          .whereType<File>()
-          .map((f) => f.path)
-          .forEach(_runFile);
+    try {
+      if (path.endsWith('.lox')) {
+        _runFile(path);
+      } else {
+        Directory(path)
+            .listSync(recursive: true)
+            .whereType<File>()
+            .map((f) => f.path)
+            .forEach(_runFile);
+      }
+    } on (Expr, TypeCheckException) catch (e, s) {
+      final (expr, err) = e;
+      final span = locationForErrorUnderline(expr);
+      Error.throwWithStackTrace('$err\n$expr $span', s);
     }
   } else {
     _runPrompt();

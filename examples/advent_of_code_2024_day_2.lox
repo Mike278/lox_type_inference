@@ -1,4 +1,4 @@
-let {zip_with_tail, count_where, first, all} = import "util/lists.lox";
+let {zip_with_tail, count_where, first, all, enumerated, fold_until, drop_at, map, any} = import "util/lists.lox";
 let {minus, sign, abs} = import "util/numeric.lox";
 
 let input = [
@@ -23,6 +23,21 @@ let is_safe = \list {
 
 /////// Part 1 ///////
 
-let total_safe = input \> count_where(_, is_safe);
-print total_safe;
-assert total_safe == 2;
+let part_1 = input \> count_where(_, is_safe);
+print part_1;
+assert part_1 == 2;
+
+/////// Part 2 ///////
+
+
+let part_2 = input \> count_where(_,
+    \list ->
+        (list \> is_safe) or (
+        list
+            \> enumerated
+            \> map(_, \skip -> list \> drop_at(_, skip.index))
+            \> any(_, is_safe)
+        )
+);
+print part_2;
+assert part_2 == 4;

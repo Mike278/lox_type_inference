@@ -18,6 +18,22 @@ let where = \list, fn ->
     fold(list, [], \state, element ->
         fn(element) ? [..state, element] : state);
 
+let enumerated = \list ->
+    fold(
+        list,
+        {index: 0, list: []},
+        \state, element -> {
+            index: state.index + 1,
+            list: [
+                ..state.list,
+                {
+                    element: element,
+                    index: state.index,
+                }
+            ],
+        }
+    ).list;
+
 let count_where = \list, predicate ->
     fold(list, 0, \count, element -> predicate(element) ? count + 1 : count);
 
@@ -76,3 +92,9 @@ let all = \list, predicate ->
                 ? .Continue(state)
                 : .Break(false)
     );
+
+let drop_at = \list, index ->
+    list
+        \> enumerated
+        \> where(_, \x -> x.index != index)
+        \> map(_, \x -> x.element);
