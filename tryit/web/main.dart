@@ -19,7 +19,7 @@ void main() {
     web.document.getElementById('code-input')!,
     codeMirrorOptions.jsify()
   )..setSize('100%', '100%');
-  getSource() => Source(editor.getDoc().getValue());
+  getSource() => Source.memory(editor.getDoc().getValue());
 
   final outputElement = web.document.getElementById('output-area')!;
   web.document.getElementById('run-button')!.onClick.listen((_) {

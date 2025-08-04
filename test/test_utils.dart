@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 
 Expr parseExpression(String source) {
   if (!source.endsWith(';')) source = '$source;';
-  final statements = parse(Source(source));
+  final statements = parse(Source.memory(source));
   final expr = (statements.single as ExpressionStatement).expr;
   return expr;
 }
@@ -18,7 +18,7 @@ List<Statement> inferSource(String source, [ReadFile? readFile]) {
   readFile ??= noImports;
   final (statements, resolveImport) = parseSourceAndResolveImports(
     '',
-    Source(source),
+    Source.memory(source),
     readFile,
   );
   TypeInference(resolveImport).inferProgramTypes(statements);

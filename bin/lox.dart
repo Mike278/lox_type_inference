@@ -42,7 +42,7 @@ void _runPrompt() {
     try {
       env = run(
         Directory.current.path,
-        Source(line),
+        Source.memory(line),
         env,
         defaultLoxAssert,
         _io,
@@ -68,4 +68,4 @@ void _runFile(String path) {
 }
 
 final ReadFile dartIOReadFile =
-  (path) => Source(File(path).readAsStringSync());
+  (path) => File(path).readAsStringSync();

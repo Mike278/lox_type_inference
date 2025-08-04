@@ -100,7 +100,7 @@ class Parser {
   }
 
   Never throwParseError(Token token, String message) {
-    throw (token, message: message);
+    throw ParserError(token, message);
   }
 
   void synchronize() {
@@ -637,6 +637,8 @@ class ParserError implements Exception {
   final Token token;
   final String message;
   ParserError(this.token, this.message);
+  @override
+  String toString([String? path]) => 'At ${token.toString(path)}\n$message';
 }
 class MissingExpression extends ParserError {
   MissingExpression(Token token) : super(token, 'Expected expression.');

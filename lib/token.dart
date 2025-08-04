@@ -40,7 +40,7 @@ class Token with EquatableMixin {
   );
 
   @override
-  String toString() => [type.name, lexeme, if (literal != null) literal, '(ln$line:$offset)'].join(' ');
+  String toString([String? path]) => [type.name, lexeme, if (literal != null) literal, '(${path??'ln'}$line:$offset)'].join(' ');
 
   @override get props => [type, lexeme, literal, line, offset];
 }

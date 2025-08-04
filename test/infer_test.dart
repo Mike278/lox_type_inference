@@ -1,4 +1,3 @@
-import 'package:lox/coordinator.dart';
 import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/hindley_milner_lox.dart';
@@ -1117,7 +1116,7 @@ final isTypeError = isA<TypeCheckException>();
 dynamic _inferSource(String source, [Map<String, String> files = const {}]) {
   try {
     if (!source.contains(';')) source = '$source;';
-    final statements = inferSource(source, (path) => Source(files[path]!));
+    final statements = inferSource(source, (path) => files[path]!);
     return statements.typeOfLastStatement.toString();
   } on (Expr, TypeCheckException) catch (e) {
     return e.$2;

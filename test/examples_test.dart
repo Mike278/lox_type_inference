@@ -26,7 +26,7 @@ void main() {
     final output = [];
     run(
       '',
-      Source(sample),
+      Source.memory(sample),
       Env.global(),
       testAssertion,
       (print: (x) {

@@ -6,9 +6,20 @@ import 'package:lox/scanner.dart';
 import 'package:lox/expr.dart';
 import 'package:path/path.dart';
 
-extension type Source(String literal) {}
+extension type Source._(({String? path, String literal}) _) {
+  factory Source.memory(String literal) {
+    return Source._((path: null, literal: literal));
+  }
 
-typedef ReadFile = Source Function(String);
+  factory Source(String literal, {required String path}) {
+    return Source._((path: path, literal: literal));
+  }
+
+  String? get path => _.path;
+  String get literal => _.literal;
+}
+
+typedef ReadFile = String Function(String);
 
 Env runFile(
   String path,
@@ -20,7 +31,7 @@ Env runFile(
 }) {
   return run(
     dirname(path),
-    readFile(path),
+    Source(readFile(path), path: path),
     env,
     runAssert,
     io,
@@ -66,8 +77,19 @@ Env run(
 
 List<Statement> parse(Source source) {
   final (tokens, :errors) = scanTokens(source.literal);
-  if (errors.isNotEmpty) throw errors;
-  return Parser(tokens).parse().desugar();
+  if (errors.isNotEmpty) throw [
+    for (final (:line, :offset, :message) in errors)
+      (path: source.path, line: line, offset: offset, message: message),
+  ].join('\n');
+  try {
+    return Parser(tokens).parse().desugar();
+  } on ParserError catch (e) {
+    if (source.path case final path?) {
+      throw e.toString(path);
+    } else {
+      rethrow;
+    }
+  }
 }
 
 Map<ImportPath, Exports> findAndResolveImports(
@@ -96,7 +118,8 @@ Map<ImportPath, Exports> resolveImportsRecursive(
     final (relativeToDir, import) = toVisit.removeAt(0);
     final path = import.path;
     if (result.containsKey(path)) continue;
-    final source = readFile(join(relativeToDir, path.literal));
+    final pathString = join(relativeToDir, path.literal);
+    final source = Source(readFile(pathString), path: pathString);
     final statements = parse(source);
     final declarationsToExport = {
       for (final statement in statements)
