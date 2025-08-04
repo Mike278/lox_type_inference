@@ -11,8 +11,7 @@ let input = [
     [3, 3]
 ];
 
-let { list1, list2 } = fold(
-    input,
+let { list1, list2 } = input \> fold(
     {list1: [], list2: []},
     \state, pair -> {
         list1: [..state.list1, pair \> first],
@@ -35,9 +34,9 @@ assert answer1 == 11;
 /////// Part 2 ///////
 
 let frequency_of_number_in_list2 = \n ->
-    list2 \> count_where(_, n \> eq);
+    list2 \> count_where(n \> eq);
 
-let answer2 = list1 \> fold(_, 0, \running, n {
+let answer2 = list1 \> fold(0, \running, n {
     let value = n * frequency_of_number_in_list2(n);
     return running + value;
 });

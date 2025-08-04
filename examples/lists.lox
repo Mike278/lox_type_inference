@@ -11,15 +11,15 @@ let zs = [1];
 print zs;
 
 let mixed = [.Hello(1), .Tags({two: "three"})];
-print map(mixed, \x -> match x {
+print mixed \> map(\x -> match x {
     .Hello _ -> "its a `.Hello` tag",
     .Tags _ -> "its not",
 });
 
 
 
-print map([1,2,3], \x -> x == 1);
-print map(mixed, \x -> match x {
+print [1,2,3] \> map(\x -> x == 1);
+print mixed \> map(\x -> match x {
     .Hello n -> n == 1,
     .Tags _ -> false,
 });
@@ -31,8 +31,7 @@ let employees = [
     {name: "joe", age: 50}
 ];
 
-let employee_with_max_age = reduce(
-    employees,
+let employee_with_max_age = employees \> reduce(
     \highest, employee ->
         employee.age > highest.age
             ? employee
@@ -40,23 +39,23 @@ let employee_with_max_age = reduce(
 );
 print employee_with_max_age;
 
-let max_age = reduce(
-    map(employees, \e -> e.age),
-    \highest, age -> age > highest ? age : highest
-);
+let max_age = employees
+    \> map(\e -> e.age)
+    \> reduce(\highest, age -> age > highest ? age : highest)
+;
 print max_age;
 
 let max = \x, y -> x > y ? x : y;
 let min = \x, y -> x < y ? x : y;
 
 print employees
-    \> map(_, \e -> e.age)
-    \> reduce(_, max)
+    \> map(\e -> e.age)
+    \> reduce(max)
 ;
 
 print employees
-    \> map(_, \e -> e.age)
-    \> reduce(_, min)
+    \> map(\e -> e.age)
+    \> reduce(min)
 ;
 
 print employees \> List.first;
@@ -82,5 +81,5 @@ print [1] \> List.first \> id \> sub(_, 1);
 print (\list, item -> [..list, item])([], false);
 print (\list, item -> [..list, item])(_, false)([]);
 
-assert    map([1,2,3], \_    -> 5) == [5, 5, 5];
-assert reduce([1,2,3], \_, _ -> 5) == 5;
+assert [1,2,3] \>    map(\_    -> 5) == [5, 5, 5];
+assert [1,2,3] \> reduce(\_, _ -> 5) == 5;

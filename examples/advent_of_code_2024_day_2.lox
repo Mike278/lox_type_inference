@@ -11,33 +11,32 @@ let input = [
 ];
 
 let is_safe = \list {
-    let diffs = list \> zip_with_tail(_, minus);
+    let diffs = list \> zip_with_tail(minus);
     let first_direction = diffs \> first \> sign;
-    return all(
-        diffs,
-        \diff -> (diff \> sign) == first_direction
-             and (diff \> abs) >= 1
-             and (diff \> abs) <= 3
+    return diffs \> all(
+        \diff ->
+            (diff \> sign) == first_direction and
+            (diff \> abs) >= 1 and
+            (diff \> abs) <= 3
     );
 };
 
 /////// Part 1 ///////
 
-let part_1 = input \> count_where(_, is_safe);
+let part_1 = input \> count_where(is_safe);
 print part_1;
 assert part_1 == 2;
 
 /////// Part 2 ///////
 
 
-let part_2 = input \> count_where(_,
+let part_2 = input \> count_where(
     \list ->
         (list \> is_safe) or (
-        list
-            \> enumerated
-            \> map(_, \skip -> list \> drop_at(_, skip.index))
-            \> any(_, is_safe)
-        )
+        list \> enumerated
+             \> map(\skip -> list \> drop_at(skip.index))
+             \> any(is_safe)
+     )
 );
 print part_2;
 assert part_2 == 4;

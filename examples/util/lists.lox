@@ -1,26 +1,28 @@
 let {plus} = import "numeric.lox";
 let {empty, first, rest} = List;
 
-let fold = \list, state, fn ->
-    list \> empty ? state :
-    fold(list \> rest, fn(state, list \> first), fn);
+let fold = \state, fn -> \list {
+    if list \> empty then return state;
+    let element = list \> first;
+    let new_state = fn(state, element);
+    return list \> rest \> fold(new_state, fn);
+};
 
-let map = \list, fn ->
-    fold(list, [], \state, element -> [..state, fn(element)]);
+let map = \fn -> \list ->
+    list \> fold([], \state, element -> [..state, fn(element)]);
 
-let reduce = \list, fn ->
-    fold(list \> rest, list \> first, fn);
+let reduce = \fn -> \list ->
+    list \> rest \> fold(list \> first, fn);
 
 let reverse = \list ->
-    fold(list, [], \state, element -> [element, ..state]);
+    list \> fold([], \state, element -> [element, ..state]);
 
-let where = \list, fn ->
-    fold(list, [], \state, element ->
+let where = \fn -> \list ->
+    list \> fold([], \state, element ->
         fn(element) ? [..state, element] : state);
 
-let enumerated = \list ->
-    fold(
-        list,
+let enumerated = \list {
+    let result = list \> fold(
         {index: 0, list: []},
         \state, element -> {
             index: state.index + 1,
@@ -32,10 +34,12 @@ let enumerated = \list ->
                 }
             ],
         }
-    ).list;
+    );
+    return result.list;
+};
 
-let count_where = \list, predicate ->
-    fold(list, 0, \count, element -> predicate(element) ? count + 1 : count);
+let count_where = \predicate -> \list ->
+    list \> fold(0, \count, element -> predicate(element) ? count + 1 : count);
 
 let sort = \list {
   if list \> empty then return [];
@@ -44,9 +48,9 @@ let sort = \list {
   let is_before = \e -> e < x;
   let is_after = \e -> e >= x;
   return [
-    ..xs \> where(_, is_before) \> sort,
+    ..xs \> where(is_before) \> sort,
     x,
-    ..xs \> where(_, is_after) \> sort
+    ..xs \> where(is_after) \> sort
   ];
 };
 
@@ -58,24 +62,24 @@ let zip = \l1, l2, fn ->
         ..zip(l1 \> rest, l2 \> rest, fn)
     ];
 
-let zip_with_tail = \list, fn ->
+let zip_with_tail = \fn -> \list ->
     zip(list, list \> rest, fn);
 
-let sum = reduce(_, plus);
+let sum = reduce(plus);
 
 
 
-let fold_until = \list, state, fn {
+let fold_until = \state, fn -> \list {
     if list \> empty then return state;
-    return match fn(state, list \> first) {
-        .Continue new_state -> fold_until(list \> rest, new_state, fn),
+    let step = fn(state, list \> first);
+    return match step {
+        .Continue new_state -> list \> rest \> fold_until(new_state, fn),
         .Break final_state -> final_state,
     };
 };
 
-let any = \list, predicate ->
-    fold_until(
-        list,
+let any = \predicate -> \list ->
+    list \> fold_until(
         false,
         \state, element ->
             predicate(element)
@@ -83,9 +87,8 @@ let any = \list, predicate ->
                 : .Continue(state)
     );
 
-let all = \list, predicate ->
-    fold_until(
-        list,
+let all = \predicate -> \list ->
+    list \> fold_until(
         true,
         \state, element ->
             predicate(element)
@@ -93,8 +96,8 @@ let all = \list, predicate ->
                 : .Break(false)
     );
 
-let drop_at = \list, index ->
+let drop_at = \index -> \list ->
     list
         \> enumerated
-        \> where(_, \x -> x.index != index)
-        \> map(_, \x -> x.element);
+        \> where(\x -> x.index != index)
+        \> map(\x -> x.element);
