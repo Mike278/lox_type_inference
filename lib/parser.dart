@@ -26,14 +26,14 @@ import 'package:lox/utils.dart';
 //                ( "else" statement )?;
 // returnStmt     → "return" expression? ";" ;
 // expression     → ternary;
-// ternary        → pipeline "?" expression ":" expression ";";
-// pipeline       → logical_or ( "|>" logical_or )* ;
+// ternary        → logical_or "?" expression ":" expression ";";
 // logical_or     → logical_and ( "or" logical_and)* ;
 // logical_and    → equality ( "and" equality)* ;
 // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 // comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 // term           → factor ( ( "-" | "+" ) factor )* ;
-// factor         → unary ( ( "/" | "*" ) unary )* ;
+// factor         → pipeline ( ( "/" | "*" ) pipeline )* ;
+// pipeline       → unary ( "|>" unary )* ;
 // unary          → ( "!" | "-" ) unary
 //                | lambda
 //                | recordLiteral
@@ -270,9 +270,9 @@ class Parser {
     return ternary();
   }
 
-  // ternary        → pipeline "?" expression ":" expression ";";
+  // ternary        → logical_or "?" expression ":" expression ";";
   Expr ternary() {
-    final condition = pipeline();
+    final condition = or();
     if (matchFirst(.question)) {
       final questionMark = previous();
       final ifTrue = expression();
@@ -281,17 +281,6 @@ class Parser {
       return Ternary(questionMark, condition, ifTrue, ifFalse);
     }
     return condition;
-  }
-
-  // pipeline       → logical_or ( "|>" logical_or )* ;
-  Expr pipeline() {
-    var expr = or();
-    while (matchFirst(.pipeline)) {
-      final operator = previous();
-      final right = or();
-      expr = Binary(expr, operator, right);
-    }
-    return expr;
   }
 
   // logical_or     → logical_and ( "or" logical_and)* ;
@@ -361,13 +350,24 @@ class Parser {
     return expr;
   }
 
-  // factor         → unary ( ( "/" | "*" ) unary )* ;
+  // factor         → pipeline ( ( "/" | "*" ) pipeline )* ;
   Expr factor() {
-    var expr = unary();
+    var expr = pipeline();
     while (matchFirst(
       .slash,
       .star,
     )) {
+      final operator = previous();
+      final right = pipeline();
+      expr = Binary(expr, operator, right);
+    }
+    return expr;
+  }
+
+  // pipeline       → unary ( "|>" unary )* ;
+  Expr pipeline() {
+    var expr = unary();
+    while (matchFirst(.pipeline)) {
       final operator = previous();
       final right = unary();
       expr = Binary(expr, operator, right);

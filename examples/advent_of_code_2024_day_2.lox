@@ -15,9 +15,9 @@ let is_safe = \list {
     let first_direction = diffs \> first \> sign;
     return diffs \> all(
         \diff ->
-            (diff \> sign) == first_direction and
-            (diff \> abs) >= 1 and
-            (diff \> abs) <= 3
+            diff \> sign == first_direction and
+            diff \> abs >= 1 and
+            diff \> abs <= 3
     );
 };
 
@@ -32,11 +32,10 @@ assert part_1 == 2;
 
 let part_2 = input \> count_where(
     \list ->
-        (list \> is_safe) or (
+        list \> is_safe or
         list \> enumerated
              \> map(\skip -> list \> drop_at(skip.index))
              \> any(is_safe)
-     )
 );
 print part_2;
 assert part_2 == 4;
