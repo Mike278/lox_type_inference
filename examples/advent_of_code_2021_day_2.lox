@@ -1,0 +1,45 @@
+let {fold, map, join} = import "util/lists.lox";
+
+let input = [
+    {arg1: "forward", arg2: 5},
+    {arg1: "down",    arg2: 5},
+    {arg1: "forward", arg2: 8},
+    {arg1: "up",      arg2: 3},
+    {arg1: "down",    arg2: 8},
+    {arg1: "forward", arg2: 2},
+];
+
+let scale_by = \factor -> \offset -> {
+    x: offset.x * factor,
+    y: offset.y * factor,
+};
+
+let add = \a, b -> {
+    x: a.x + b.x,
+    y: a.y + b.y,
+};
+
+
+
+/////// Part 1 ///////
+
+let offset_for_direction = \dir {
+    if dir == "up"      then return {y: -1, x: 0};
+    if dir == "down"    then return {y: 1, x: 0};
+    if dir == "forward" then return {y: 0, x: 1};
+    print ["unknown direction: '", dir, "' falling back to no-op"] \> join;
+    return {y: 0, x: 0};
+};
+
+let to_movement = \instr ->
+    offset_for_direction(instr.arg1)
+    \> scale_by(instr.arg2)
+;
+
+let part_1 = input
+    \> map(to_movement)
+    \> fold({y: 0, x: 0}, add)
+    \> \p -> p.x * p.y
+;
+print part_1;
+assert part_1 == 150;

@@ -83,9 +83,9 @@ List<Statement> parse(Source source) {
   ].join('\n');
   try {
     return Parser(tokens).parse().desugar();
-  } on ParserError catch (e) {
+  } on ParserError catch (e, s) {
     if (source.path case final path?) {
-      throw e.toString(path);
+      Error.throwWithStackTrace(e.toString(path), s);
     } else {
       rethrow;
     }
