@@ -297,6 +297,9 @@ final builtins = UnmodifiableMapView({
     'rest': rest,
     'empty': empty,
   },
+  'String': {
+    'concat': concat,
+  },
 });
 
 class _ExceptionFromBuiltin implements Exception {
@@ -326,6 +329,11 @@ final LoxFunction empty = (
   arity: 1,
   impl: (args) => (args.single as List).isEmpty,
 );
+final LoxFunction concat = (
+  arity: 2,
+  impl: (args) => args.join(),
+);
+
 
 
 class Env {

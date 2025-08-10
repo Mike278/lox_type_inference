@@ -101,3 +101,5 @@ let drop_at = \index -> \list ->
         \> enumerated
         \> where(\x -> x.index != index)
         \> map(\x -> x.element);
+
+let join = fold("", String.concat);

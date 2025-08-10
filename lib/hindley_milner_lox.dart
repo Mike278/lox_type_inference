@@ -571,6 +571,9 @@ final loxStandardLibraryEnv = <String, LoxType>{
     'rest': .function(from: [.list(of: b)], to: .list(of: b)),
     'empty': .function(from: [.list(of: c)], to: .bool),
   }),
+  'String' : .record({
+    'concat': .function(from: [.string, .string], to: .string),
+  }),
   'clock': .function(from: [a], to: .num),
 };
 
