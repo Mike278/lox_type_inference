@@ -19,3 +19,5 @@ print match fav_color {
     .Gold -> "gold",
     .Red -> "red",
 };
+
+assert match fav_color { .Gold -> 1, _ -> 2 } == 2;

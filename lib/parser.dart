@@ -486,7 +486,7 @@ class Parser {
       if (!first) consume(.comma, 'Expected comma between match cases.');
       if (check(.closeBrace)) break;
       first = false;
-      if (matchFirst(.identifier)) {
+      if (matchFirst(.identifier, .underscore)) {
         final variable = previous();
         final arrow = consume(.arrow, "Expected arrow");
         final result = expression();
