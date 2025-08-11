@@ -1134,8 +1134,7 @@ extension on List<Statement> {
     || AssertStatement(:final expr)
       => expr.type,
 
-    Destructuring(:final initializer)
-    || LetDeclaration(:final initializer)
+    LetDeclaration(:final initializer)
       => initializer.type,
 
     Block(:final statements)

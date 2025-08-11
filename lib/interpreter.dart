@@ -24,6 +24,7 @@ typedef LoxFunction = ({
   int arity,
   Object? Function(List<Object?> args) impl,
 });
+typedef LoxRecord = Map<String, Object?>;
 
 class LoxTag {
   final Token tag;
@@ -72,7 +73,7 @@ class LoxRuntime {
   LoxRuntime(this.runAssert, this.io, this.import);
   
   Env interpret(List<Statement> statements, Env env) =>
-    statements.desugar().fold(env, execute);
+    statements.fold(env, execute);
   
   Env execute(Env env, Statement statement) {
     switch (statement) {
@@ -82,10 +83,8 @@ class LoxRuntime {
         runAssert(keyword, source, eval(expr, env));
       case ExpressionStatement(:final expr):
         eval(expr, env);
-      case LetDeclaration(:final name, :final initializer):
-        return define(env, name, initializer);
-      case Destructuring():
-        throw StateError('bug; destructuring shouldve been desugared');
+      case LetDeclaration(:final pattern, :final initializer):
+        return handleAssignment(env, pattern, initializer);
       case Block(:final statements):
         var newEnv = Env(env);
         for (final statement in statements) {
@@ -145,12 +144,9 @@ class LoxRuntime {
           field.lexeme: eval(expr, env),
       },
       RecordGet(:final record, :final name) =>
-        switch (evalAs<Map<String, Object?>>(record, name, env)) {
-          final map when map.containsKey(name.lexeme) => map[name.lexeme],
-          _ => throw LoxRuntimeException(name, "Record doesn't have a field named ${name.lexeme}")
-        },
+        accessRecordField(evalAs(record, name, env), name, env),
       RecordUpdate(:final dotdot, :final record, :final newFields) => {
-        ...evalAs<Map<String, Object?>>(record, dotdot, env),
+        ...evalAs<LoxRecord>(record, dotdot, env),
         for (final (label, value) in newFields.pairs())
           label.lexeme: eval(value, env),
       },
@@ -160,6 +156,13 @@ class LoxRuntime {
       TagMatch() => evalMatch(expr, env),
       Import(:final keyword, :final path) => instantiateImport(keyword, path),
     };
+  }
+
+  Object? accessRecordField(LoxRecord record, Token name, Env env) {
+    if (record.containsKey(name.lexeme)) {
+      return record[name.lexeme];
+    }
+    throw LoxRuntimeException(name, "Record doesn't have a field named ${name.lexeme}");
   }
 
   Object? evalMatch(
@@ -206,7 +209,36 @@ class LoxRuntime {
     }
     return env.defining(name, eval(initializer, env));
   }
-  
+
+  Env handleAssignment(Env env, Pattern pattern, Expr initializer) =>
+    switch (pattern) {
+      Identifier(:final name) =>
+        define(env, name, initializer),
+
+      RecordDestructure(:final openBrace) =>
+        destructureRecord(
+          pattern,
+          evalAs(initializer, openBrace, env),
+          env,
+        ),
+    };
+
+  Env destructureRecord(RecordDestructure pattern, LoxRecord record, Env env) {
+    for (final (fieldName, pat) in pattern.elements) {
+      final fieldValue = accessRecordField(record, fieldName, env);
+      env = switch (pat) {
+        null => env.defining(fieldName, fieldValue),
+
+        Identifier(name: final newName) =>
+          env.defining(newName, fieldValue),
+
+        RecordDestructure nested =>
+          destructureRecord(nested, fieldValue as LoxRecord, env),
+      };
+    }
+    return env;
+  }
+
   Object? handleInvocation(
     Expr callee,
     CallArgs args,
@@ -269,7 +301,7 @@ class LoxRuntime {
       },
     );
 
-  Map<String, Object?> instantiateImport(Token importKeyword, ImportPath path) {
+  LoxRecord instantiateImport(Token importKeyword, ImportPath path) {
     final Exports exports;
     try {
       exports = import(path);
@@ -278,8 +310,8 @@ class LoxRuntime {
     }
 
     final module = exports.pairs().fold(Env.global(), (moduleEnv, pair) {
-      final (name, initializer) = pair;
-      return define(moduleEnv, name, initializer);
+      final (pattern, initializer) = pair;
+      return handleAssignment(moduleEnv, pattern, initializer);
     });
 
     return {

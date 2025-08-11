@@ -3,15 +3,17 @@ import 'package:lox/token.dart';
 import 'package:lox/utils.dart';
 
 //
-// program        → declaration* EOF ;
-// declaration    → letDecl
-//                | destructuringDecl
-//                | statement
-//                ;
-// letDecl        → "let" IDENTIFIER "=" expression ";" ;
-// destructuringDecl → "let" destructuring "="  expression ";" ;
-// destructuring     → "{" destructElement ( "," destructElement )* "}";
-// destructElement   → IDENTIFIER (":" ( IDENTIFIER | destructuring ) )?;
+// program               → declaration* EOF ;
+// declaration           → letDecl | statement ;
+// letDecl               → "let" pattern "=" expression ";" ;
+// pattern               → recordPattern
+//                       | literalPattern
+//                       | identifierPattern
+//                       ;
+// recordPattern         → "{" recordPatternElement ( "," recordPatternElement )* "}";
+// recordPatternElement  → pattern (":" pattern )?;
+// literalPattern        → NUMBER | STRING | "true" | "false" | "nil"
+// identifierPattern     → IDENTIFIER
 // statement      → exprStmt
 //                | printStmt
 //                | ifStmt
@@ -129,69 +131,22 @@ class Parser {
   ];
 
   // declaration    → letDecl
-  //                | destructuringDecl
   //                | statement
   //
   Statement declaration() {
     if (matchFirst(.let)) {
-      if (matchFirst(.openBrace)) {
-        return destructuringDecl();
-      } else {
-        return letDeclaration();
-      }
+      return letDeclaration();
     }
     return statement();
   }
 
-  // letDecl        → "let" IDENTIFIER "=" expression ";" ;
+  // letDecl       → "let" pattern "=" expression ";" ;
   Statement letDeclaration() {
-    final name = consume(.identifier, 'Expected variable name.');
+    final pat = pattern();
     consume(.equal, "Expected '=' before variable declaration.");
     final initializer = expression();
     consume(.semicolon, "Expected ';' after variable declaration.");
-    return LetDeclaration(name, initializer);
-  }
-
-
-  // destructuringDecl → "let" destructuring "="  expression ";" ;
-  // destructuring     → "{" destructElement ( "," destructElement )* "}";
-  // destructElement   → IDENTIFIER (":" ( IDENTIFIER | destructuring ) )?;
-  Statement destructuringDecl() {
-
-    DestructuringElement destructElement() {
-      final name = consume(.identifier, 'Expected variable name');
-      if (matchFirst(.colon)) {
-        if (matchFirst(.openBrace)) {
-          final elements = <DestructuringElement>[];
-          while (!check(.closeBrace) && !isAtEnd()) {
-            if (elements.isNotEmpty) consume(.comma, 'Expected comma between record field declarations.');
-            if (check(.closeBrace)) break; // trailing comma
-            elements.add(destructElement());
-          }
-          consume(.closeBrace, "Expected '}' after destructuring.");
-          return Nested(name, elements);
-        } else {
-          final redeclaredName = consume(.identifier, 'Expected name of new variable');
-          return Redeclare(name, redeclaredName);
-        }
-      } else {
-        return InheritName(name);
-      }
-    }
-
-    final elements = <DestructuringElement>[];
-    while (!check(.closeBrace) && !isAtEnd()) {
-      if (elements.isNotEmpty) consume(.comma, 'Expected comma between record field declarations.');
-      if (check(.closeBrace)) break; // trailing comma
-      elements.add(destructElement());
-    }
-
-    consume(.closeBrace, "Expected '}' after destructuring.");
-
-    final equals = consume(.equal, "Expected '=' before variable declaration.");
-    final initializer = expression();
-    consume(.semicolon, "Expected ';' after variable declaration.");
-    return Destructuring(elements, equals, initializer);
+    return LetDeclaration(pat, initializer);
   }
 
   // statement      → printStmt
@@ -251,6 +206,42 @@ class Parser {
     final value = expression();
     final semicolon = consume(.semicolon, "Expected ';' after value.");
     return ExpressionStatement(value, semicolon);
+  }
+
+  Pattern pattern() {
+    if (matchFirst(.openBrace)) {
+      return recordPattern();
+    } else {
+      // if (matchFirst(.number, .string, .true_, .false_, .nil)) {
+      //   return LiteralPattern(previous());
+      // }
+      final name = consume(.identifier, 'Expected variable name');
+      return Identifier(name);
+    }
+  }
+
+  Pattern recordPattern() {
+    final recordPattern = RecordDestructure(
+      openBrace: previous(),
+      elements: [],
+    );
+    var first = true;
+    while (!check(.closeBrace) && !isAtEnd()) {
+      if (first) {
+        first = false;
+      } else {
+        consume(.comma, 'Expected comma between record field declarations.');
+        if (check(.closeBrace)) break; // trailing comma
+      }
+      final fieldName = consume(.identifier, 'Expected variable name');
+      if (matchFirst(.colon)) {
+        recordPattern.elements.add((fieldName, pattern()));
+      } else {
+        recordPattern.elements.add((fieldName, null));
+      }
+    }
+    consume(.closeBrace, "Expected '}' after destructuring.");
+    return recordPattern;
   }
 
   // expression     → ternary;

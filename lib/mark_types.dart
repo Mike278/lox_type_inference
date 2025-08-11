@@ -122,14 +122,14 @@ List<(CodeSpan, String)> displayStatement(
       ...displayExpression(expr, typeOf),
   ],
 
-  LetDeclaration(:final name, :final initializer) => [
-      (name.span, '${name.lexeme}: ${displayType(typeOf(initializer))}'),
+  LetDeclaration(:final pattern, :final initializer) => [
+      switch (pattern) {
+        Identifier(:final name) =>
+          (name.span, '${name.lexeme}: ${displayType(typeOf(initializer))}'),
+        RecordDestructure() =>
+          throw UnimplementedError('todo'),
+      },
       ...displayExpression(initializer, typeOf),
-  ],
-
-  Destructuring d => [
-    for (final let in d.desugar())
-      ...displayStatement(let, typeOf),
   ],
 
   Block(:final statements) => [

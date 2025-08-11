@@ -82,7 +82,7 @@ List<Statement> parse(Source source) {
       (path: source.path, line: line, offset: offset, message: message),
   ].join('\n');
   try {
-    return Parser(tokens).parse().desugar();
+    return Parser(tokens).parse();
   } on ParserError catch (e, s) {
     if (source.path case final path?) {
       Error.throwWithStackTrace(e.toString(path), s);
@@ -123,8 +123,8 @@ Map<ImportPath, Exports> resolveImportsRecursive(
     final statements = parse(source);
     final declarationsToExport = {
       for (final statement in statements)
-        if (statement case LetDeclaration(:final name, :final initializer))
-          name: initializer,
+        if (statement case LetDeclaration(:final pattern, :final initializer))
+          pattern: initializer,
     };
     result[path] = declarationsToExport;
     final relativeToImportDir = dirname(join(relativeToDir, path.literal));

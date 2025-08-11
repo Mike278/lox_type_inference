@@ -12,7 +12,7 @@ class TypeInference {
   TypeInference(this.import);
 
   void inferProgramTypes(List<Statement> statements) {
-    statements = statements.desugar();
+    statements = statements;
     TyVariable.counter = 0;
     var globalEnv = loxStandardLibraryEnv;
     final level = 0;
@@ -30,8 +30,6 @@ class TypeInference {
 
   Map<String, LoxType> inferStatement(Map<String, LoxType> env, int level, Statement statement) {
     switch (statement) {
-      case Destructuring():
-        throw StateError('bug; destructuring shouldve been desugared');
 
       case ExpressionStatement(:final expr):
       case PrintStatement(:final expr):
@@ -63,9 +61,34 @@ class TypeInference {
     return env;
   }
 
-  Map<String, LoxType> inferLet(Map<String, LoxType> env, int level, LetDeclaration let) {
-    final name = let.name.lexeme;
-    final expr = let.initializer;
+  Map<String, LoxType> inferLet(Map<String, LoxType> env, int level, LetDeclaration let) =>
+    switch (let.pattern) {
+      Identifier(:final name) =>
+          inferAssignment(env, level, name, let.initializer),
+      RecordDestructure pattern =>
+          inferRecordPattern(env, level, pattern, let.initializer),
+    };
+
+  Map<String, LoxType> inferRecordPattern(Map<String, LoxType> env, int level, RecordDestructure pattern, Expr record) {
+    for (final (fieldName, pat) in pattern.elements) {
+      final syntheticRecordGet = RecordGet(record, fieldName);
+      env = switch (pat) {
+        Identifier(name: final newName) =>
+            inferAssignment(env, level, newName, syntheticRecordGet),
+
+        null =>
+            inferAssignment(env, level, fieldName, syntheticRecordGet),
+
+        RecordDestructure nested =>
+            inferRecordPattern(env, level, nested, syntheticRecordGet),
+      };
+      // todo: do something with `syntheticRecordGet.type`
+    }
+    return env;
+  }
+
+  Map<String, LoxType> inferAssignment(Map<String, LoxType> env, int level, Token ident, Expr initializer) {
+    final name = ident.lexeme;
     final nextLevel = level+1;
     final maybeRecursive = LoxType.fresh(nextLevel);
     final maybeRecursiveEnv = {
@@ -74,7 +97,7 @@ class TypeInference {
       // fresh type variable and let it get resolved normally
       name: maybeRecursive,
     };
-    final type = inferExpr(maybeRecursiveEnv, nextLevel, expr);
+    final type = inferExpr(maybeRecursiveEnv, nextLevel, initializer);
 
     // tie together the self reference (if any)
     unify(maybeRecursive, type);
@@ -273,8 +296,8 @@ class TypeInference {
   LoxType inferImport(Map<String, LoxType> env, int level, Import expr) {
     final exports = import(expr.path);
     final module = exports.pairs().fold({...loxStandardLibraryEnv}, (moduleEnv, pair) {
-      final (name, initializer) = pair;
-      return inferLet(moduleEnv, 0, LetDeclaration(name, initializer));
+      final (pattern, initializer) = pair;
+      return inferLet(moduleEnv, 0, LetDeclaration(pattern, initializer));
     });
     final type = instantiate(level, LoxType.record({
       for (final (name, value) in module.pairs())

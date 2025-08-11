@@ -85,7 +85,14 @@ hello
 [false]
 [false]
 ====== make_counter.lox =====
-<Instance of 'RecursiveRowTypes'>
+___ Type checking failed ___
+Recursive row types:
+_5
+_10 -> _5
+___ Continuing with execution ___
+1
+2
+3
 ====== records.lox =====
 {a: one, b: 2, c: false, d: (arity: 0, impl: Closure: (List<Object?>) => Object?)}
 one

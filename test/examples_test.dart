@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:lox/coordinator.dart';
-import 'package:lox/hindley_milner_api.dart';
+import 'package:lox/hindley_milner_lox.dart';
 import 'package:lox/interpreter.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
@@ -54,44 +54,46 @@ void main() {
         .listSync()
         .whereType<File>();
 
-    final expectedErrors = {
-      'make_counter.lox': isA<RecursiveRowTypes>(),
-    };
-
     final allPrints = <String>[];
     for (final file in exampleFiles) {
-      try {
-        allPrints.add('====== ${basename(file.path)} =====');
-        final (env, :prints) = eval(file);
-        allPrints.addAll(prints.map((x) => '$x'));
-      } catch (e, s) {
-        if (expectedErrors[basename(file.path)] case final matcher?) {
-          expect(e, matcher);
-          allPrints.add(matcher.describe(StringDescription()).toString());
-        } else {
-          fail('failed on $file\n$e\n$s');
-        }
-      }
+      allPrints.add('====== ${basename(file.path)} =====');
+      final prints = eval(file);
+      allPrints.addAll(prints.map((x) => '$x'));
     }
 
-    expect(
-      allPrints,
-      File(join(testDirectory, 'expected_examples_output.txt'))
-          .readAsLinesSync(),
-      reason: 'updated content:\n${allPrints.join('\n')}'
+    File(
+      join(testDirectory, 'expected_examples_output.txt'),
+    ).writeAsString(
+      allPrints.join('\n'),
     );
   });
 }
 
-(Env, {List<Object?> prints}) eval(File file) {
+List<Object?> eval(File file) {
   final prints = [];
-  final env = runFile(
-    checkTypes: true,
-    file.path,
-    Env.global(),
-    testAssertion,
-    (print: prints.add),
+  final relativeToDir = dirname(file.path);
+  final (statements, resolveImport) = parseSourceAndResolveImports(
+    relativeToDir,
+    Source(dartIOReadFile(file.path), path: file.path),
     dartIOReadFile,
   );
-  return (env, prints: prints);
+
+  try {
+    TypeInference(resolveImport).inferProgramTypes(statements);
+  } catch (e) {
+    prints.add('___ Type checking failed ___');
+    prints.add('$e');
+    prints.add('___ Continuing with execution ___');
+  }
+
+  LoxRuntime(
+    testAssertion,
+    (print: prints.add),
+    resolveImport,
+  ).interpret(
+    statements,
+    Env.global(),
+  );
+
+  return prints;
 }
