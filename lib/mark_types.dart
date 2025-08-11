@@ -123,12 +123,7 @@ List<(CodeSpan, String)> displayStatement(
   ],
 
   LetDeclaration(:final pattern, :final initializer) => [
-      switch (pattern) {
-        Identifier(:final name) =>
-          (name.span, '${name.lexeme}: ${displayType(typeOf(initializer))}'),
-        RecordDestructure() =>
-          throw UnimplementedError('todo'),
-      },
+      ...displayPattern(pattern),
       ...displayExpression(initializer, typeOf),
   ],
 
@@ -147,6 +142,20 @@ List<(CodeSpan, String)> displayStatement(
       if (elseBranch != null) ...displayStatement(elseBranch, typeOf),
   ],
 };
+
+List<(CodeSpan, String)> displayPattern(Pattern pattern) =>
+  switch (pattern) {
+    Identifier(:final name, :final type) => [
+      (name.span, '${name.lexeme}: ${displayType(type)}'),
+    ],
+    RecordDestructure(:final elements) => [
+      for (final field in elements) ...[
+        (field.name.span, '${field.name.lexeme}: ${displayType(field.type)}'),
+        if (field.pattern case final pattern?)
+          ...displayPattern(pattern),
+      ],
+    ],
+  };
 
 List<(CodeSpan, String)> displayExpression(
   Expr expr,

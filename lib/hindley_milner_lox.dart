@@ -63,27 +63,33 @@ class TypeInference {
 
   Map<String, LoxType> inferLet(Map<String, LoxType> env, int level, LetDeclaration let) =>
     switch (let.pattern) {
-      Identifier(:final name) =>
-          inferAssignment(env, level, name, let.initializer),
+      Identifier ident =>
+          inferIdentifierPattern(env, level, ident, let.initializer),
       RecordDestructure pattern =>
           inferRecordPattern(env, level, pattern, let.initializer),
     };
 
   Map<String, LoxType> inferRecordPattern(Map<String, LoxType> env, int level, RecordDestructure pattern, Expr record) {
-    for (final (fieldName, pat) in pattern.elements) {
-      final syntheticRecordGet = RecordGet(record, fieldName);
-      env = switch (pat) {
-        Identifier(name: final newName) =>
-            inferAssignment(env, level, newName, syntheticRecordGet),
+    for (final field in pattern.elements) {
+      final syntheticRecordGet = RecordGet(record, field.name);
+      field.type = () => syntheticRecordGet.type;
+      env = switch (field.pattern) {
+        Identifier ident =>
+            inferIdentifierPattern(env, level, ident, syntheticRecordGet),
 
         null =>
-            inferAssignment(env, level, fieldName, syntheticRecordGet),
+            inferAssignment(env, level, field.name, syntheticRecordGet),
 
         RecordDestructure nested =>
             inferRecordPattern(env, level, nested, syntheticRecordGet),
       };
-      // todo: do something with `syntheticRecordGet.type`
     }
+    return env;
+  }
+
+  Map<String, LoxType> inferIdentifierPattern(Map<String, LoxType> env, int level, Identifier pattern, Expr subExpr) {
+    env = inferAssignment(env, level, pattern.name, subExpr);
+    pattern.type = () => subExpr.type;
     return env;
   }
 

@@ -235,9 +235,9 @@ class Parser {
       }
       final fieldName = consume(.identifier, 'Expected variable name');
       if (matchFirst(.colon)) {
-        recordPattern.elements.add((fieldName, pattern()));
+        recordPattern.elements.add(RecordDestructuringElement(fieldName, pattern()));
       } else {
-        recordPattern.elements.add((fieldName, null));
+        recordPattern.elements.add(RecordDestructuringElement(fieldName));
       }
     }
     consume(.closeBrace, "Expected '}' after destructuring.");

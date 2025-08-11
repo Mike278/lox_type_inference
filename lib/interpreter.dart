@@ -224,10 +224,10 @@ class LoxRuntime {
     };
 
   Env destructureRecord(RecordDestructure pattern, LoxRecord record, Env env) {
-    for (final (fieldName, pat) in pattern.elements) {
-      final fieldValue = accessRecordField(record, fieldName, env);
-      env = switch (pat) {
-        null => env.defining(fieldName, fieldValue),
+    for (final field in pattern.elements) {
+      final fieldValue = accessRecordField(record, field.name, env);
+      env = switch (field.pattern) {
+        null => env.defining(field.name, fieldValue),
 
         Identifier(name: final newName) =>
           env.defining(newName, fieldValue),

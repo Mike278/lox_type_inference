@@ -259,18 +259,29 @@ class IfStatement extends Statement {
 
 sealed class Pattern {}
 
-class Identifier extends Pattern {
+class Identifier extends Pattern with TypeReference {
   final Token name;
   Identifier(this.name);
 }
 
 class RecordDestructure extends Pattern {
   final Token openBrace;
-  final List<(Token, Pattern?)> elements;
+  final List<RecordDestructuringElement> elements;
   RecordDestructure({
     required this.openBrace,
     required this.elements,
   });
+}
+class RecordDestructuringElement with TypeReference {
+  final Token name;
+  final Pattern? pattern;
+  RecordDestructuringElement(this.name, [this.pattern]);
+}
+
+mixin TypeReference {
+  LoxType? Function()? _type;
+  LoxType? get type => _type?.call();
+  set type(LoxType? Function() value) => _type = value;
 }
 
 extension StatementAPI on Statement {
