@@ -1087,6 +1087,33 @@ let connect_and_connect = \ {
     );
 
   });
+
+  test('parameter patterns', () {
+
+    if (inferSource(r'''
+      \data {
+        let i = data.some_int + 1;
+        let b = data.some_bool or false;
+      };
+    ''') case [
+      ExpressionStatement(
+        expr: Lambda(
+          params: [Identifier dataParam],
+          body: FunctionBody(body: Block(statements: [
+            LetDeclaration(initializer: Binary(left: RecordGet(:final record))),
+            ...
+          ])),
+        ),
+      ),
+    ]) {
+      expect(
+        dataParam.type.toString(),
+        record.type.toString(),
+      );
+    } else {
+      fail('bug in test');
+    }
+  });
 }
 
 String? get mainStackTrace =>

@@ -364,14 +364,17 @@ String prettyPrintFunction(Ty parameter, Ty body, DisplayTypeVariable displayTyp
   while (true) if (body case TyFunctionApplication(
     name: 'Function',
     monoTypes: [final input, final output],
-  )) {
+  ) || TyVariable(mutableRef: Resolved(type: TyFunctionApplication(
+    name: 'Function',
+    monoTypes: [final input, final output],
+  )))) {
     parameters.add(input);
     body = output;
   } else break;
 
   final prettyParameters = [
     for (final param in parameters)
-      if (param case TyFunctionApplication(name: 'Function'))
+      if (param case TyFunctionApplication(name: 'Function') || TyVariable(mutableRef: Resolved(type: TyFunctionApplication(name: 'Function'))))
         prettyPrint(param, displayTypeVariable).parenthesized
       else
         prettyPrint(param, displayTypeVariable)
@@ -383,10 +386,10 @@ String prettyPrintFunction(Ty parameter, Ty body, DisplayTypeVariable displayTyp
 
 String prettyPrintRecord(String label, Ty type, Ty tail, DisplayTypeVariable displayTypeVariable) {
   final rows = ['$label: ${prettyPrint(type, displayTypeVariable)}'];
-  while (tail is TyRowExtend) {
-    rows.add('${tail.label}: ${prettyPrint(tail.type, displayTypeVariable)}');
-    tail = tail.row;
-  }
+  while (true) if (tail case TyRowExtend t || TyVariable(mutableRef: Resolved(type: TyRowExtend t))) {
+    rows.add('${t.label}: ${prettyPrint(t.type, displayTypeVariable)}');
+    tail = t.row;
+  } else break;
   final pairs = rows.reversed.join(', ');
 
   if (tail is TyRowEmpty || tail is TyVariable) {
@@ -403,10 +406,10 @@ String _formatTag(String tag, Ty payload, DisplayTypeVariable displayTypeVariabl
 
 String prettyPrintVariant(String tag, Ty payload, Ty tail, DisplayTypeVariable displayTypeVariable) {
   final rows = [_formatTag(tag, payload, displayTypeVariable)];
-  while (tail is TyRowExtend) {
-    rows.add(_formatTag(tail.label, tail.type, displayTypeVariable));
-    tail = tail.row;
-  }
+  while (true) if (tail case TyRowExtend t || TyVariable(mutableRef: Resolved(type: TyRowExtend t))) {
+    rows.add(_formatTag(t.label, t.type, displayTypeVariable));
+    tail = t.row;
+  } else break;
   final pairs = rows.sorted().join(' | ');
   return pairs;
 }
