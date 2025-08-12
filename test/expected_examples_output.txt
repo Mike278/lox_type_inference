@@ -93,6 +93,8 @@ ___ Continuing with execution ___
 1
 2
 3
+====== patterns.lox =====
+a - abc123 (VINTAGE)
 ====== records.lox =====
 {a: one, b: 2, c: false, d: (arity: 0, impl: Closure: (List<Object?>) => Object?)}
 one

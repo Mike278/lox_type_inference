@@ -277,16 +277,23 @@ class LoxRuntime {
   
   LoxFunction newLoxFunction(
     Env Function() getEnv,
-    List<Token> params,
+    List<Pattern> params,
     LambdaBody body,
   ) =>
     (
       arity: params.length,
       impl: (List<Object?> args) {
-        final newEnv = Env(getEnv(), {
+        final enclosing = getEnv();
+        final instantiatedParameters = {
           for (final (param, arg) in params.zipWith(args, makePair))
-            param.lexeme: arg,
-        });
+            ...switch (param) {
+              Identifier(:final name) =>
+                { name.lexeme: arg },
+              RecordDestructure pattern =>
+                destructureRecord(pattern, arg, enclosing).state,
+            }
+        };
+        final newEnv = Env(enclosing, instantiatedParameters);
         try {
           switch (body) {
             case ArrowExpression(:final body):

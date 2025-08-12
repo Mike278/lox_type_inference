@@ -72,7 +72,7 @@ class TypeInference {
   Map<String, LoxType> inferRecordPattern(Map<String, LoxType> env, int level, RecordDestructure pattern, Expr record) {
     for (final field in pattern.elements) {
       final syntheticRecordGet = RecordGet(record, field.name);
-      field.type = () => syntheticRecordGet.type;
+      field.copyTypeOf(syntheticRecordGet);
       env = switch (field.pattern) {
         Identifier ident =>
             inferIdentifierPattern(env, level, ident, syntheticRecordGet),
@@ -89,7 +89,7 @@ class TypeInference {
 
   Map<String, LoxType> inferIdentifierPattern(Map<String, LoxType> env, int level, Identifier pattern, Expr subExpr) {
     env = inferAssignment(env, level, pattern.name, subExpr);
-    pattern.type = () => subExpr.type;
+    pattern.copyTypeOf(subExpr);
     return env;
   }
 
@@ -405,25 +405,25 @@ class TypeInference {
     };
 
   LoxType inferArrowFunction(Map<String, LoxType> env, int level, Lambda function, Expr body) {
-    final parameterTypes = typeVariablesForFunctionParameters(function.params, level);
+    final (:parameterTypes, :parametersEnv) = setupFunctionParameters(function.params, level);
     final expectedReturnType = LoxType.fresh(level);
     onEnterFunctionBody(expectedReturnType: expectedReturnType);
-    final actualReturnType = inferExpr({...env, ...parameterTypes}, level, body);
+    final actualReturnType = inferExpr({...env, ...parametersEnv}, level, body);
     unify(expectedReturnType, actualReturnType);
     onExitFunctionBody();
     final functionType = LoxType.function(
-      from: parameterTypes.values.toList(),
+      from: parameterTypes,
       to: actualReturnType,
     );
     return setType(function, functionType);
   }
 
   LoxType inferBlockFunction(Map<String, LoxType> env, int level, Lambda function, Block body) {
-    final parameters = typeVariablesForFunctionParameters(function.params, level);
+    final (:parameterTypes, :parametersEnv) = setupFunctionParameters(function.params, level);
 
     env = {
       ...env,
-      ...parameters,
+      ...parametersEnv,
     };
 
     final returnType = LoxType.fresh(level);
@@ -435,10 +435,76 @@ class TypeInference {
     onExitFunctionBody();
 
     final functionType = LoxType.function(
-      from: parameters.values.toList(),
+      from: parameterTypes,
       to: anyReturnExpressions ? returnType : .unit,
     );
     return setType(function, functionType);
+  }
+
+  /// Returns:
+  ///     parameterTypes: the types of the function's parameters
+  ///     parametersEnv: variables available to the function body
+  ///
+  /// For example given the function
+  ///     let fn = \a, {b: c, z} -> a + c + (z ? 1 : 2);
+  /// parameterTypes:
+  ///     - #0: Num
+  ///     - #1: {b: Num, z: Bool}
+  /// parametersEnv:
+  ///     - a: Num
+  ///     - c: Num
+  ///     - z: Bool
+  ({
+    List<LoxType> parameterTypes,       // the function has parameters of these types
+    Map<String, LoxType> parametersEnv, // variables of these types are available to the function body
+  }) setupFunctionParameters(List<Pattern> params, int level) {
+    if (params.isEmpty) {
+      final nop = LoxType.fresh(level);
+      return (
+        parameterTypes: [nop],
+        parametersEnv: { '_' : nop },
+      );
+    }
+
+    final result = (
+      parameterTypes: <LoxType>[],
+      parametersEnv: <String, LoxType>{},
+    );
+
+    LoxType destructure(RecordDestructure pattern) {
+      final fields = <String, LoxType>{};
+      for (final element in pattern.elements) {
+        final LoxType type;
+        switch (element.pattern) {
+          case null:
+            type = .fresh(level);
+            result.parametersEnv[element.name.lexeme] = type;
+          case Identifier ident:
+            type = .fresh(level);
+            result.parametersEnv[ident.name.lexeme] = type;
+            ident.type = type;
+          case RecordDestructure pattern:
+            type = destructure(pattern);
+        }
+        element.type = type;
+        fields[element.name.lexeme] = type;
+      }
+      return .record(fields);
+    }
+
+    for (final param in params) {
+      switch (param) {
+        case Identifier(:final name):
+          final type = LoxType.fresh(level);
+          result.parametersEnv[name.lexeme] = type;
+          result.parameterTypes.add(type);
+          param.type = type;
+        case RecordDestructure():
+          result.parameterTypes.add(destructure(param));
+      }
+    }
+
+    return result;
   }
 
   LoxType inferReturn(Map<String, LoxType> env, int level, Return expr) {
@@ -450,16 +516,6 @@ class TypeInference {
     current.anyReturnExpressions = true;
     unify(current.expectedReturnType, returnType);
     return setType(expr, .fresh(level));
-  }
-
-  Map<String, LoxType> typeVariablesForFunctionParameters(List<Token> params, int level) {
-    if (params.isEmpty) {
-      return { '_' : .fresh(level) };
-    }
-    return {
-      for (final param in params)
-        param.lexeme: .fresh(level)
-    };
   }
 
   void onEnterFunctionBody({required LoxType expectedReturnType}) {
@@ -516,7 +572,7 @@ class TypeInference {
       call.closingParen,
     );
     final function = Lambda(
-        [args.placeholder],
+        [Identifier(args.placeholder)],
         ArrowExpression(
           Token(.arrow, '->', null, args.placeholder.line, args.placeholder.offset),
           functionBody,

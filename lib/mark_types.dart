@@ -190,11 +190,7 @@ List<(CodeSpan, String)> displayExpression(
   ) => [
     (arrow.span, displayType(typeOf(expr))),
     ...displayExpression(body, typeOf),
-    ...zip(
-      params,
-      _uncurry(typeOf(expr) as TyFunctionApplication),
-      (param, type) => (param.span, '${param.lexeme}: ${displayType(type)}'),
-    ),
+    ...params.expand(displayPattern),
   ],
 
 
@@ -210,11 +206,7 @@ List<(CodeSpan, String)> displayExpression(
   ) =>[
     (openBrace.span, displayType(typeOf(expr))),
     (closeBrace.span, displayType(typeOf(expr))),
-    ...zip(
-      params,
-      _uncurry(typeOf(expr) as TyFunctionApplication),
-      (param, type) => (param.span, '${param.lexeme}: ${displayType(type)}'),
-    ),
+    ...params.expand(displayPattern),
     for (final s in statements)
       ...displayStatement(s, typeOf),
   ],
@@ -341,6 +333,14 @@ String displayTypeVariable(({int id, bool quantified}) args) {
 
 String displayAlpha(int i) => String.fromCharCode(97 + i % 26) * (i ~/ 26 + 1);
 
+CodeSpan locationForErrorUnderlineOfPattern(Pattern pattern) => switch (pattern) {
+  Identifier(:final name) =>
+      name.span,
+  RecordDestructure(:final openBrace, :final closeBrace) =>
+      openBrace.span.extendedBy(closeBrace.span),
+};
+
+
 CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
 
   Return(:final keyword) =>
@@ -363,7 +363,7 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
     body: ArrowExpression(:final arrow),
   ) =>
       params
-        .map(toSpan)
+        .map(locationForErrorUnderlineOfPattern)
         .reduce(extend)
         .extendedBy(arrow.span),
 
@@ -373,7 +373,7 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
     body: FunctionBody(body: Block(:final openBrace)),
   ) =>
       params
-        .map(toSpan)
+        .map(locationForErrorUnderlineOfPattern)
         .reduce(extend)
         .extendedBy(openBrace.span),
 
@@ -446,17 +446,3 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
   Import(:final keyword) =>
       keyword.span,
 };
-
-Iterable<Ty> _uncurry(TyFunctionApplication fn) sync* {
-  assert(fn.name == 'Function');
-  var [parameter, body] = fn.monoTypes;
-  yield parameter;
-
-  while (true) if (body case TyFunctionApplication(
-    name: 'Function',
-    monoTypes: [final input, final output],
-  )) {
-    yield input;
-    body = output;
-  } else return;
-}

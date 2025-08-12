@@ -93,7 +93,7 @@ class FunctionBody with EquatableMixin  implements LambdaBody {
   @override get props => [body];
 }
 class Lambda extends Expr with EquatableMixin {
-  final List<Token> params;
+  final List<Pattern> params;
   final LambdaBody body;
   Lambda(this.params, this.body);
   @override get props => [...super.props, params, body];
@@ -266,10 +266,12 @@ class Identifier extends Pattern with TypeReference {
 
 class RecordDestructure extends Pattern {
   final Token openBrace;
+  final Token closeBrace;
   final List<RecordDestructuringElement> elements;
   RecordDestructure({
     required this.openBrace,
     required this.elements,
+    required this.closeBrace,
   });
 }
 class RecordDestructuringElement with TypeReference {
@@ -281,7 +283,8 @@ class RecordDestructuringElement with TypeReference {
 mixin TypeReference {
   LoxType? Function()? _type;
   LoxType? get type => _type?.call();
-  set type(LoxType? Function() value) => _type = value;
+  void copyTypeOf(Expr expr) => _type = () => expr.type;
+  set type(LoxType type) => _type = () => type;
 }
 
 extension StatementAPI on Statement {

@@ -46,7 +46,7 @@ import 'package:lox/utils.dart';
 //                | call
 //                ;
 // lambda         → "\" parameters? (block | ("->" expression)) ;
-// parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
+// parameters     → pattern ( "," pattern )* ;
 // recordLiteral  → "{" recordField ( "," recordField )* "}"
 // recordField    → IDENTIFIER ":" expression
 // listLiteral    → "[" listElement ( "," listElement )* "]"
@@ -74,6 +74,7 @@ class Parser {
 
   Token previous() => tokens[current-1];
   Token peek() => tokens[current];
+  Iterable<Token> peekN(int n) => tokens.skip(current).take(n);
   bool isAtEnd() => peek().type == .eof;
   bool check(TokenType type) => !isAtEnd() && peek().type == type;
   Token advance() {
@@ -215,16 +216,19 @@ class Parser {
       // if (matchFirst(.number, .string, .true_, .false_, .nil)) {
       //   return LiteralPattern(previous());
       // }
+      if (matchFirst(.underscore)) {
+        final discard = previous();
+        final newName = '${discard.lexeme}${_discardCount++}';
+        return Identifier(discard.replaceLexeme(newName));
+      }
       final name = consume(.identifier, 'Expected variable name');
       return Identifier(name);
     }
   }
 
   Pattern recordPattern() {
-    final recordPattern = RecordDestructure(
-      openBrace: previous(),
-      elements: [],
-    );
+    final openBrace = previous();
+    final elements = <RecordDestructuringElement>[];
     var first = true;
     while (!check(.closeBrace) && !isAtEnd()) {
       if (first) {
@@ -235,13 +239,17 @@ class Parser {
       }
       final fieldName = consume(.identifier, 'Expected variable name');
       if (matchFirst(.colon)) {
-        recordPattern.elements.add(RecordDestructuringElement(fieldName, pattern()));
+        elements.add(RecordDestructuringElement(fieldName, pattern()));
       } else {
-        recordPattern.elements.add(RecordDestructuringElement(fieldName));
+        elements.add(RecordDestructuringElement(fieldName));
       }
     }
-    consume(.closeBrace, "Expected '}' after destructuring.");
-    return recordPattern;
+    final closeBrace = consume(.closeBrace, "Expected '}' after destructuring.");
+    return RecordDestructure(
+      openBrace: openBrace,
+      elements: elements,
+      closeBrace: closeBrace,
+    );
   }
 
   // expression     → ternary;
@@ -564,22 +572,33 @@ class Parser {
   }
 
   // lambda          → "\" parameters? (block | ("->" expression)) ;
-  // parameters      → IDENTIFIER ( "," IDENTIFIER )* ;
+  // parameters      → pattern ( "," pattern )* ;
   Expr lambda() {
-    final params = <Token>[];
-    if (check(.openBrace) || check(.arrow)) {
-      // 0-param function
-    } else {
+    final params = <Pattern>[];
+    final hasArgs = () {
+      if (check(.arrow)) return false;
+      if (check(.openBrace)) {
+        // Ambiguity:
+        // This is either the opening brace of a 0-param block function:
+        //     \ { a; };
+        // Or the opening brace of a record pattern in the first parameter position:
+        //     \{ a }, b -> a + b;
+        // Need 2 tokens of lookahead to determine if its a record pattern.
+        final lookahead = peekN(3).map((t) => t.type).toList();
+        final isBeginningOfBlockBody = switch (lookahead) {
+          [.openBrace, .identifier, .colon] => false,
+          [.openBrace, .identifier, .comma] => false,
+          [.openBrace, .identifier, .closeBrace] => false,
+          _ => true,
+        };
+        return !isBeginningOfBlockBody;
+      }
+      return true;
+    } ();
+    if (hasArgs) {
       while (true) {
         if (check(.arrow)) break; // trailing comma
-        if (matchFirst(.identifier)) {
-          final param = previous();
-          params.add(param);
-        } else if (matchFirst(.underscore)) {
-          final discard = previous();
-          final newName = '${discard.lexeme}${_discardCount++}';
-          params.add(discard.replaceLexeme(newName));
-        }
+        params.add(pattern());
         if (!matchFirst(.comma)) {
           break;
         }
