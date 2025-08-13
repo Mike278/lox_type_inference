@@ -306,6 +306,25 @@ extension StatementAPI on Statement {
         if (elseBranch != null) yield* elseBranch.allExpressions();
     }
   }
+  Iterable<Pattern> allPatterns() sync* {
+    switch (this) {
+      case PrintStatement(:final expr):
+      case AssertStatement(:final expr):
+      case ExpressionStatement(:final expr):
+        yield* expr.allPatterns();
+      case LetDeclaration(:final pattern, :final initializer):
+        yield* pattern.subPatterns();
+        yield* initializer.allPatterns();
+      case Block(:final statements):
+        for (final statement in statements) {
+          yield* statement.allPatterns();
+        }
+      case IfStatement(:final condition, :final thenBranch, :final elseBranch):
+        yield* condition.allPatterns();
+        yield* thenBranch.allPatterns();
+        if (elseBranch != null) yield* elseBranch.allPatterns();
+    }
+  }
 }
 
 extension ExprAPI on Expr {
@@ -373,6 +392,88 @@ extension ExprAPI on Expr {
       case FalseLiteral():
       case TrueLiteral():
       case NilLiteral():
+    }
+  }
+  
+  Iterable<Pattern> allPatterns() sync* {
+    switch (this) {
+      case Return(:final expr):
+        if (expr != null) yield* expr.allPatterns();
+      case Binary(:final left, :final right):
+      case LogicalAnd(:final left, :final right):
+      case LogicalOr(:final left, :final right):
+        yield* left.allPatterns();
+        yield* right.allPatterns();
+      case UnaryMinus(:final expr):
+      case UnaryBang(:final expr):
+      case Grouping(:final expr):
+        yield* expr.allPatterns();
+      case Lambda(:final params, :final body):
+        for (final p in params) yield* p.subPatterns();
+        switch (body) {
+          case ArrowExpression(:final body):
+            yield* body.allPatterns();
+          case FunctionBody(:final body):
+            for (final statement in body.statements) {
+              yield* statement.allPatterns();
+            }
+        }
+      case Call(:final callee, :final args):
+        yield* callee.allPatterns();
+        switch (args) {
+          case ArgsWithPlaceholder(:final before, :final after):
+            for (final expr in before) yield* expr.allPatterns();
+            for (final expr in after) yield* expr.allPatterns();
+          case ExpressionArgs(:final exprs):
+            for (final expr in exprs) yield* expr.allPatterns();
+        }
+      case Ternary(:final condition, :final ifTrue, :final ifFalse):
+        yield* condition.allPatterns();
+        yield* ifTrue.allPatterns();
+        yield* ifFalse.allPatterns();
+      case TagConstructor(:final payload):
+        if (payload != null)
+        yield* payload.allPatterns();
+      case Record(:final fields):
+        for (final expr in fields.values) yield* expr.allPatterns();
+      case RecordGet(:final record):
+        yield* record.allPatterns();
+      case RecordUpdate(:final record, :final newFields):
+        yield* record.allPatterns();
+        for (final expr in newFields.values) yield* expr.allPatterns();
+      case ListLiteral(:final elements):
+        for (final e in elements) {
+          switch (e) {
+            case ExpressionListElement(:final expr):
+            case SpreadListElement(:final expr):
+              yield* expr.allPatterns();
+          }
+        }
+      case TagMatch(:final tag, :final cases, :final defaultCase):
+        yield* tag.allPatterns();
+        for (final case_ in cases) yield* case_.result.allPatterns();
+        if (defaultCase != null) yield* defaultCase.result.allPatterns();
+      case Import():
+      case Variable():
+      case StringLiteral():
+      case NumberLiteral():
+      case FalseLiteral():
+      case TrueLiteral():
+      case NilLiteral():
+    }
+  }
+}
+
+extension PatternAPI on Pattern {
+  
+  Iterable<Pattern> subPatterns() sync* {
+    yield this;
+    switch (this) {
+      case RecordDestructure(:final elements):
+        for (final e in elements) 
+          if (e.pattern case final pattern?) 
+            yield* pattern.subPatterns();
+      case Identifier():
     }
   }
 }

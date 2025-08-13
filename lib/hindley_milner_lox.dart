@@ -25,6 +25,21 @@ class TypeInference {
           expr.type = LoxType(generalize(-1, type));
         }
       }
+      final allPatterns = statement.allPatterns().toList();
+      for (final pat in allPatterns) {
+        switch (pat) {
+          case Identifier():
+            if (pat.type case final type?) {
+              pat.type = LoxType(generalize(-1, type));
+            }
+          case RecordDestructure(:final elements):
+            for (final e in elements) {
+              if (e.type case final type?) {
+                e.type = LoxType(generalize(-1, type));
+              }
+            }
+        }
+      }
     }
   }
 
@@ -667,6 +682,20 @@ void normalizeProgramTypeVariableIds(List<Statement> statements) {
     for (final expr in statement.allExpressions()) {
       if (expr.type case final type?) {
         expr.type = LoxType(normalizeTypeVariableIds(type));
+      }
+    }
+    for (final pat in statement.allPatterns()) {
+      switch (pat) {
+        case Identifier():
+          if (pat.type case final type?) {
+            pat.type = LoxType(normalizeTypeVariableIds(type));
+          }
+        case RecordDestructure(:final elements):
+          for (final e in elements) {
+            if (e.type case final type?) {
+              e.type = LoxType(normalizeTypeVariableIds(type));
+            }
+          }
       }
     }
   }

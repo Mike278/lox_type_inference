@@ -1,7 +1,7 @@
 ====== advent_of_code_2021_day_2.lox =====
 ___ TYPES ___
-0:5 - 0:9      fold: `pppppppppppppp, (`pppppppppppppp, `qqqqqqqqqqqqqq -> `pppppppppppppp), List[`qqqqqqqqqqqqqq] -> `pppppppppppppp
-0:11 - 0:14    map: (`jjjjjjjjjjjjjjjjjjjjjjjjjjjj -> `kkkkkkkkkkkkkkkkkkkkkkkkkkkk), List[`jjjjjjjjjjjjjjjjjjjjjjjjjjjj] -> List[`kkkkkkkkkkkkkkkkkkkkkkkkkkkk]
+0:5 - 0:9      fold: a, (a, b -> a), List[b] -> a
+0:11 - 0:14    map: (a -> b), List[a] -> List[b]
 0:16 - 0:20    join: List[String] -> String
 0:24 - 0:30    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
 0:31 - 0:47    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
@@ -134,19 +134,19 @@ ___ OUTPUT ___
 
 ====== advent_of_code_2024_day_1.lox =====
 ___ TYPES ___
-0:5 - 0:9      fold: `pppppppppppppp, (`pppppppppppppp, `qqqqqqqqqqqqqq -> `pppppppppppppp), List[`qqqqqqqqqqqqqq] -> `pppppppppppppp
-0:11 - 0:22    count_where: (`eeeeeeeeeeeeeeeeeeeeeeeeeeee -> Bool), List[`eeeeeeeeeeeeeeeeeeeeeeeeeeee] -> Num
-0:24 - 0:27    zip: List[`xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx], List[`yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy], (`xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, `yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy -> `zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz) -> List[`zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz]
+0:5 - 0:9      fold: a, (a, b -> a), List[b] -> a
+0:11 - 0:22    count_where: (a -> Bool), List[a] -> Num
+0:24 - 0:27    zip: List[a], List[b], (a, b -> c) -> List[c]
 0:29 - 0:33    sort: List[Num] -> List[Num]
 0:35 - 0:38    sum: List[Num] -> Num
-0:40 - 0:45    first: List[`yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy] -> `yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
-0:47 - 0:51    rest: List[`ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt] -> List[`ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt]
+0:40 - 0:45    first: List[a] -> a
+0:47 - 0:51    rest: List[a] -> List[a]
 0:55 - 0:61    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
 0:62 - 0:78    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
 1:5 - 1:13     abs_diff: Num, Num -> Num
 1:17 - 1:23    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
 1:24 - 1:42    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
-2:5 - 2:7      eq: `vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv, `vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv -> Bool
+2:5 - 2:7      eq: a, a -> Bool
 2:11 - 2:17    util/functions.lox: {eq: a, a -> Bool}
 2:18 - 2:38    util/functions.lox: {eq: a, a -> Bool}
 4:4 - 4:9      input: List[List[Num]]
@@ -246,15 +246,15 @@ ___ OUTPUT ___
 
 ====== advent_of_code_2024_day_2.lox =====
 ___ TYPES ___
-0:5 - 0:18     zip_with_tail: (`dddddddddddddd, `dddddddddddddd -> `eeeeeeeeeeeeee), List[`dddddddddddddd] -> List[`eeeeeeeeeeeeee]
-0:20 - 0:31    count_where: (`eeeeeeeeeeeeeeeeeeeeeeeeeeee -> Bool), List[`eeeeeeeeeeeeeeeeeeeeeeeeeeee] -> Num
-0:33 - 0:38    first: List[`kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk] -> `kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-0:40 - 0:43    all: (`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn -> Bool), List[`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn] -> Bool
-0:45 - 0:55    enumerated: List[`ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt] -> List[{element: `ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt, index: Num}]
-0:57 - 0:67    fold_until: `hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh, (`hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh, `iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii -> .Break(`hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh) | .Continue(`hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh)), List[`iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii] -> `hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
-0:69 - 0:76    drop_at: Num, List[`aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] -> List[`aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
-0:78 - 0:81    map: (`lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll -> `mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm), List[`lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll] -> List[`mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm]
-0:83 - 0:86    any: (`uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu -> Bool), List[`uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu] -> Bool
+0:5 - 0:18     zip_with_tail: (a, a -> b), List[a] -> List[b]
+0:20 - 0:31    count_where: (a -> Bool), List[a] -> Num
+0:33 - 0:38    first: List[a] -> a
+0:40 - 0:43    all: (a -> Bool), List[a] -> Bool
+0:45 - 0:55    enumerated: List[a] -> List[{element: a, index: Num}]
+0:57 - 0:67    fold_until: a, (a, b -> .Break(a) | .Continue(a)), List[b] -> a
+0:69 - 0:76    drop_at: Num, List[a] -> List[a]
+0:78 - 0:81    map: (a -> b), List[a] -> List[b]
+0:83 - 0:86    any: (a -> Bool), List[a] -> Bool
 0:90 - 0:96    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
 0:97 - 0:113   util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
 1:5 - 1:10     minus: Num, Num -> Num
@@ -376,33 +376,33 @@ ___ TYPES ___
 5:4 - 5:22     one_arg_empty_body: a -> Unit
 5:28 - 5:29    a -> Unit
 5:30 - 5:31    a -> Unit
-5:26 - 5:27    a: `o
+5:26 - 5:27    a: a
 6:4 - 6:21     one_arg_no_return: a -> Unit
 6:27 - 6:28    a -> Unit
 6:38 - 6:39    a -> Unit
-6:25 - 6:26    a: `r
+6:25 - 6:26    a: a
 6:29 - 6:34    print: a
 6:35 - 6:36    a: a
 7:4 - 7:23     one_arg_with_return: a -> a
 7:29 - 7:30    a -> a
 7:41 - 7:42    a -> a
-7:27 - 7:28    a: `v
+7:27 - 7:28    a: a
 7:31 - 7:37    a
 7:38 - 7:39    a: a
 8:4 - 8:22     one_args_expr_body: a -> a
 8:28 - 8:30    a -> a
 8:31 - 8:32    a: a
-8:26 - 8:27    a: `z
+8:26 - 8:27    a: a
 10:4 - 10:23   two_args_empty_body: a, b -> Unit
 10:32 - 10:33  a, b -> Unit
 10:34 - 10:35  a, b -> Unit
-10:27 - 10:28  a: `bb
-10:30 - 10:31  b: `cc
+10:27 - 10:28  a: a
+10:30 - 10:31  b: a
 11:4 - 11:22   two_args_no_return: a, b -> Unit
 11:31 - 11:32  a, b -> Unit
 11:51 - 11:52  a, b -> Unit
-11:26 - 11:27  a: `ff
-11:29 - 11:30  b: `gg
+11:26 - 11:27  a: a
+11:29 - 11:30  b: a
 11:33 - 11:38  print: a
 11:39 - 11:40  a: a
 11:42 - 11:47  print: a
@@ -562,7 +562,7 @@ b
 
 ====== imports.lox =====
 ___ TYPES ___
-0:5 - 0:8      map: (`ttttttttttttttttttttttttttttttttttttttttttttt -> `uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu), List[`ttttttttttttttttttttttttttttttttttttttttttttt] -> List[`uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu]
+0:5 - 0:8      map: (a -> b), List[a] -> List[b]
 0:12 - 0:18    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
 0:19 - 0:30    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
 2:4 - 2:5      x: List[Num]
@@ -695,7 +695,7 @@ ___ TYPES ___
 26:4 - 26:6    id: a -> a
 26:12 - 26:14  a -> a
 26:15 - 26:16  x: a
-26:10 - 26:11  x: `zzz
+26:10 - 26:11  x: a
 27:0 - 27:5    print: String
 27:16 - 27:17  String
 27:6 - 27:8    id: String -> String
@@ -725,7 +725,7 @@ ___ TYPES ___
 37:38 - 37:50  current_year: Num
 37:53 - 37:56  age: Num
 37:22 - 37:34  current_year: Num
-33:17 - 33:21  name: `llll
+33:17 - 33:21  name: a
 33:23 - 33:26  age: Num
 40:4 - 40:8    user: {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
 40:31 - 40:32  {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
@@ -756,9 +756,9 @@ hello
 
 ====== lists.lox =====
 ___ TYPES ___
-0:5 - 0:8      map: (`nnnnnnnnnnnnnn -> `oooooooooooooo), List[`nnnnnnnnnnnnnn] -> List[`oooooooooooooo]
-0:10 - 0:17    reverse: List[`hhhhhhhhhhhhhhhhhhhhhhhhhhhh] -> List[`hhhhhhhhhhhhhhhhhhhhhhhhhhhh]
-0:19 - 0:25    reduce: (`eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, `eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee -> `eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee), List[`eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee] -> `eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+0:5 - 0:8      map: (a -> b), List[a] -> List[b]
+0:10 - 0:17    reverse: List[a] -> List[a]
+0:19 - 0:25    reduce: (a, a -> a), List[a] -> a
 0:29 - 0:35    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
 0:36 - 0:52    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
 2:4 - 2:6      xs: List[Num]
@@ -838,7 +838,7 @@ ___ TYPES ___
 36:14 - 36:22  employee: {name: String, age: Num}
 37:14 - 37:21  highest: {name: String, age: Num}
 34:5 - 34:12   highest: {name: String, age: Num}
-34:14 - 34:22  employee: {age: Num}
+34:14 - 34:22  employee: {name: String, age: Num}
 39:0 - 39:5    print: {name: String, age: Num}
 39:6 - 39:27   employee_with_max_age: {name: String, age: Num}
 41:4 - 41:11   max_age: Num
@@ -925,7 +925,7 @@ ___ TYPES ___
 63:4 - 63:6    id: a -> a
 63:12 - 63:14  a -> a
 63:15 - 63:16  x: a
-63:10 - 63:11  x: `ooooooooooooooooooooooooooooooooooooooooooooooo
+63:10 - 63:11  x: a
 65:4 - 65:15   one_minus_x: Num -> Num
 65:26 - 65:27  Num -> Num
 65:25 - 65:26  _: <unknown>
@@ -1050,13 +1050,13 @@ ___ TYPES ___
 2:38 - 2:40    {as_of: Num}, {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
 2:48 - 2:49    {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
 10:0 - 10:1    {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
-2:42 - 2:47    robot: {serial_number: `mmmmmmmmmmmmmmm, manufacture_date: {year: `ggggggggggggggg}, name: {label: String}}
+2:42 - 2:47    robot: {serial_number: b, manufacture_date: {year: d}, name: {label: String}}
 4:8 - 4:12     name: {label: String}
 4:16 - 4:21    label: String
-5:8 - 5:24     manufacture_date: {year: `ggggggggggggggg}
-5:28 - 5:32    year: `ggggggggggggggg
-5:34 - 5:47    creation_year: `ggggggggggggggg
-6:8 - 6:21     serial_number: `mmmmmmmmmmmmmmm
+5:8 - 5:24     manufacture_date: {year: b}
+5:28 - 5:32    year: a
+5:34 - 5:47    creation_year: a
+6:8 - 6:21     serial_number: a
 7:8 - 7:13     robot: {serial_number: b, manufacture_date: {year: d}, name: {label: String}}
 8:8 - 8:19     is_old_tech: Bool
 8:51 - 8:52    >: Bool
@@ -1103,7 +1103,7 @@ ___ TYPES ___
 33:4 - 33:6    _2: String
 34:4 - 34:17   discard_param: a -> Num
 34:23 - 34:25  a -> Num
-34:21 - 34:23  _3: `pppppppppppppppp
+34:21 - 34:23  _3: a
 35:0 - 35:6    assert: Bool
 35:26 - 35:28  ==: Bool
 35:24 - 35:25  Num
@@ -1325,7 +1325,7 @@ ___ TYPES ___
 19:4 - 19:6    ok: a -> {first: a, last: Unit, nested: {another: Num}, name: a}
 19:15 - 19:16  a -> {first: a, last: Unit, nested: {another: Num}, name: a}
 28:0 - 28:1    a -> {first: a, last: Unit, nested: {another: Num}, name: a}
-19:10 - 19:14  name: `y
+19:10 - 19:14  name: a
 20:4 - 20:10   {first: a, last: Unit, nested: {another: Num}, name: a}
 27:4 - 27:5    {...}: {first: a, last: Unit, nested: {another: Num}, name: a}
 21:8 - 21:13   first: a
@@ -1435,8 +1435,8 @@ ___ TYPES ___
 72:27 - 72:28  r: a
 72:30 - 72:34  name: a
 72:36 - 72:40  name: a
-72:13 - 72:14  r: `hhhh
-72:16 - 72:20  name: `ffff
+72:13 - 72:14  r: a
+72:16 - 72:20  name: a
 74:4 - 74:6    x1: {title: String, name: String}
 74:39 - 74:40  {...}: {title: String, name: String}
 74:10 - 74:15  title: String
@@ -1560,7 +1560,7 @@ ___ TYPES ___
 13:4 - 13:12   download: {download: Unit -> b} -> .AuthExpired | .DownloadInterrupted | .TheData(b)
 13:27 - 13:28  {download: Unit -> b} -> .AuthExpired | .DownloadInterrupted | .TheData(b)
 18:0 - 18:1    {download: Unit -> b} -> .AuthExpired | .DownloadInterrupted | .TheData(b)
-13:16 - 13:26  connection: {download: Unit -> `tt}
+13:16 - 13:26  connection: {download: Unit -> b}
 14:23 - 14:24  Bool
 14:7 - 14:22   is_auth_expired: Unit -> Bool
 14:30 - 14:36  .AuthExpired | .DownloadInterrupted | .TheData(b)
