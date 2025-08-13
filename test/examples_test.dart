@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:lox/coordinator.dart';
 import 'package:lox/hindley_milner_lox.dart';
 import 'package:lox/interpreter.dart';
+import 'package:lox/mark_types.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 
@@ -70,30 +71,41 @@ void main() {
 }
 
 List<Object?> eval(File file) {
-  final prints = [];
+  final output = [];
   final relativeToDir = dirname(file.path);
+  final source = Source(dartIOReadFile(file.path), path: file.path);
   final (statements, resolveImport) = parseSourceAndResolveImports(
     relativeToDir,
-    Source(dartIOReadFile(file.path), path: file.path),
+    source,
     dartIOReadFile,
   );
 
   try {
     TypeInference(resolveImport).inferProgramTypes(statements);
+    final (marks, errorOutput: _) = markTypes(relativeToDir, source, dartIOReadFile);
+    final fmt = (CodePosition pos) => [pos.line, pos.offset].join(':');
+    output.add('___ TYPES ___');
+    for (final (span, :display, style: _) in marks) {
+      final location = '${fmt(span.from)} - ${fmt(span.to)}'.padRight(14);
+      output.add('$location $display');
+    }
   } catch (e) {
-    prints.add('___ Type checking failed ___');
-    prints.add('$e');
-    prints.add('___ Continuing with execution ___');
+    output.add('___ Type checking failed ___');
+    output.add('$e');
+    output.add('___ Continuing with execution ___');
   }
 
+  output.add('___ OUTPUT ___');
   LoxRuntime(
     testAssertion,
-    (print: prints.add),
+    (print: output.add),
     resolveImport,
   ).interpret(
     statements,
     Env.global(),
   );
+  output.add('');
+  output.add('');
 
-  return prints;
+  return output;
 }

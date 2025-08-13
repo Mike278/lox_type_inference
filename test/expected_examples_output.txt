@@ -1,12 +1,493 @@
 ====== advent_of_code_2021_day_2.lox =====
+___ TYPES ___
+0:5 - 0:9      fold: `pppppppppppppp, (`pppppppppppppp, `qqqqqqqqqqqqqq -> `pppppppppppppp), List[`qqqqqqqqqqqqqq] -> `pppppppppppppp
+0:11 - 0:14    map: (`jjjjjjjjjjjjjjjjjjjjjjjjjjjj -> `kkkkkkkkkkkkkkkkkkkkkkkkkkkk), List[`jjjjjjjjjjjjjjjjjjjjjjjjjjjj] -> List[`kkkkkkkkkkkkkkkkkkkkkkkkkkkk]
+0:16 - 0:20    join: List[String] -> String
+0:24 - 0:30    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+0:31 - 0:47    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+2:4 - 2:9      input: List[{arg1: String, arg2: Num}]
+9:0 - 9:1      [...]: List[{arg1: String, arg2: Num}]
+3:29 - 3:30    {...}: {arg1: String, arg2: Num}
+3:5 - 3:9      arg1: String
+3:22 - 3:26    arg2: Num
+4:29 - 4:30    {...}: {arg1: String, arg2: Num}
+4:5 - 4:9      arg1: String
+4:22 - 4:26    arg2: Num
+5:29 - 5:30    {...}: {arg1: String, arg2: Num}
+5:5 - 5:9      arg1: String
+5:22 - 5:26    arg2: Num
+6:29 - 6:30    {...}: {arg1: String, arg2: Num}
+6:5 - 6:9      arg1: String
+6:22 - 6:26    arg2: Num
+7:29 - 7:30    {...}: {arg1: String, arg2: Num}
+7:5 - 7:9      arg1: String
+7:22 - 7:26    arg2: Num
+8:29 - 8:30    {...}: {arg1: String, arg2: Num}
+8:5 - 8:9      arg1: String
+8:22 - 8:26    arg2: Num
+11:4 - 11:12   scale_by: Num, {y: Num, x: Num} -> {x: Num, y: Num}
+11:23 - 11:25  Num, {y: Num, x: Num} -> {x: Num, y: Num}
+11:34 - 11:36  {y: Num, x: Num} -> {x: Num, y: Num}
+14:0 - 14:1    {...}: {x: Num, y: Num}
+12:4 - 12:5    x: Num
+12:16 - 12:17  *: Num
+12:14 - 12:15  x: Num
+12:7 - 12:13   offset: {y: Num, x: Num}
+12:18 - 12:24  factor: Num
+13:4 - 13:5    y: Num
+13:16 - 13:17  *: Num
+13:14 - 13:15  y: Num
+13:7 - 13:13   offset: {y: Num, x: Num}
+13:18 - 13:24  factor: Num
+11:27 - 11:33  offset: {y: Num, x: Num}
+11:16 - 11:22  factor: Num
+16:4 - 16:7    add: {y: Num, x: Num}, {y: Num, x: Num} -> {x: Num, y: Num}
+16:16 - 16:18  {y: Num, x: Num}, {y: Num, x: Num} -> {x: Num, y: Num}
+19:0 - 19:1    {...}: {x: Num, y: Num}
+17:4 - 17:5    x: Num
+17:11 - 17:12  +: Num
+17:9 - 17:10   x: Num
+17:7 - 17:8    a: {y: Num, x: Num}
+17:15 - 17:16  x: Num
+17:13 - 17:14  b: {y: Num, x: Num}
+18:4 - 18:5    y: Num
+18:11 - 18:12  +: Num
+18:9 - 18:10   y: Num
+18:7 - 18:8    a: {y: Num, x: Num}
+18:15 - 18:16  y: Num
+18:13 - 18:14  b: {y: Num, x: Num}
+16:11 - 16:12  a: {y: Num, x: Num}
+16:14 - 16:15  b: {y: Num, x: Num}
+25:4 - 25:24   offset_for_direction: String -> {y: Num, x: Num}
+25:32 - 25:33  String -> {y: Num, x: Num}
+31:0 - 31:1    String -> {y: Num, x: Num}
+25:28 - 25:31  dir: String
+26:11 - 26:13  ==: Bool
+26:7 - 26:10   dir: String
+26:29 - 26:35  {y: Num, x: Num}
+26:48 - 26:49  {...}: {y: Num, x: Num}
+26:37 - 26:38  y: Num
+26:40 - 26:41  -: Num
+26:44 - 26:45  x: Num
+27:11 - 27:13  ==: Bool
+27:7 - 27:10   dir: String
+27:29 - 27:35  {y: Num, x: Num}
+27:47 - 27:48  {...}: {y: Num, x: Num}
+27:37 - 27:38  y: Num
+27:43 - 27:44  x: Num
+28:11 - 28:13  ==: Bool
+28:7 - 28:10   dir: String
+28:29 - 28:35  {y: Num, x: Num}
+28:47 - 28:48  {...}: {y: Num, x: Num}
+28:37 - 28:38  y: Num
+28:43 - 28:44  x: Num
+29:4 - 29:9    print: String
+29:67 - 29:69  \>: String
+29:65 - 29:66  [...]: List[String]
+29:35 - 29:38  dir: String
+29:70 - 29:74  join: List[String] -> String
+30:4 - 30:10   {y: Num, x: Num}
+30:22 - 30:23  {...}: {y: Num, x: Num}
+30:12 - 30:13  y: Num
+30:18 - 30:19  x: Num
+33:4 - 33:15   to_movement: {arg2: Num, arg1: String} -> {x: Num, y: Num}
+33:25 - 33:27  {arg2: Num, arg1: String} -> {x: Num, y: Num}
+35:4 - 35:6    \>: {x: Num, y: Num}
+34:35 - 34:36  {y: Num, x: Num}
+34:4 - 34:24   offset_for_direction: String -> {y: Num, x: Num}
+34:31 - 34:35  arg1: String
+34:25 - 34:30  instr: {arg2: Num, arg1: String}
+35:26 - 35:27  {y: Num, x: Num} -> {x: Num, y: Num}
+35:7 - 35:15   scale_by: Num, {y: Num, x: Num} -> {x: Num, y: Num}
+35:22 - 35:26  arg2: Num
+35:16 - 35:21  instr: {arg2: Num, arg1: String}
+33:19 - 33:24  instr: {arg2: Num, arg1: String}
+38:4 - 38:10   part_1: Num
+41:4 - 41:6    \>: Num
+40:4 - 40:6    \>: {y: Num, x: Num}
+39:4 - 39:6    \>: List[{x: Num, y: Num}]
+38:13 - 38:18  input: List[{arg1: String, arg2: Num}]
+39:22 - 39:23  List[{arg2: Num, arg1: String}] -> List[{x: Num, y: Num}]
+39:7 - 39:10   map: ({arg2: Num, arg1: String} -> {x: Num, y: Num}), List[{arg2: Num, arg1: String}] -> List[{x: Num, y: Num}]
+39:11 - 39:22  to_movement: {arg2: Num, arg1: String} -> {x: Num, y: Num}
+40:29 - 40:30  List[{y: Num, x: Num}] -> {y: Num, x: Num}
+40:7 - 40:11   fold: {y: Num, x: Num}, ({y: Num, x: Num}, {y: Num, x: Num} -> {y: Num, x: Num}), List[{y: Num, x: Num}] -> {y: Num, x: Num}
+40:23 - 40:24  {...}: {y: Num, x: Num}
+40:13 - 40:14  y: Num
+40:19 - 40:20  x: Num
+40:26 - 40:29  add: {y: Num, x: Num}, {y: Num, x: Num} -> {x: Num, y: Num}
+41:10 - 41:12  {y: Num, x: Num} -> Num
+41:17 - 41:18  *: Num
+41:15 - 41:16  x: Num
+41:13 - 41:14  p: {y: Num, x: Num}
+41:21 - 41:22  y: Num
+41:19 - 41:20  p: {y: Num, x: Num}
+41:8 - 41:9    p: {y: Num, x: Num}
+43:0 - 43:5    print: Num
+43:6 - 43:12   part_1: Num
+44:0 - 44:6    assert: Bool
+44:14 - 44:16  ==: Bool
+44:7 - 44:13   part_1: Num
+___ OUTPUT ___
 150
+
+
 ====== advent_of_code_2024_day_1.lox =====
+___ TYPES ___
+0:5 - 0:9      fold: `pppppppppppppp, (`pppppppppppppp, `qqqqqqqqqqqqqq -> `pppppppppppppp), List[`qqqqqqqqqqqqqq] -> `pppppppppppppp
+0:11 - 0:22    count_where: (`eeeeeeeeeeeeeeeeeeeeeeeeeeee -> Bool), List[`eeeeeeeeeeeeeeeeeeeeeeeeeeee] -> Num
+0:24 - 0:27    zip: List[`xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx], List[`yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy], (`xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, `yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy -> `zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz) -> List[`zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz]
+0:29 - 0:33    sort: List[Num] -> List[Num]
+0:35 - 0:38    sum: List[Num] -> Num
+0:40 - 0:45    first: List[`yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy] -> `yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+0:47 - 0:51    rest: List[`ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt] -> List[`ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt]
+0:55 - 0:61    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+0:62 - 0:78    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+1:5 - 1:13     abs_diff: Num, Num -> Num
+1:17 - 1:23    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
+1:24 - 1:42    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
+2:5 - 2:7      eq: `vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv, `vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv -> Bool
+2:11 - 2:17    util/functions.lox: {eq: a, a -> Bool}
+2:18 - 2:38    util/functions.lox: {eq: a, a -> Bool}
+4:4 - 4:9      input: List[List[Num]]
+11:0 - 11:1    [...]: List[List[Num]]
+5:9 - 5:10     [...]: List[Num]
+6:9 - 6:10     [...]: List[Num]
+7:9 - 7:10     [...]: List[Num]
+8:9 - 8:10     [...]: List[Num]
+9:9 - 9:10     [...]: List[Num]
+10:9 - 10:10   [...]: List[Num]
+13:6 - 13:11   list1: List[Num]
+13:13 - 13:18  list2: List[Num]
+13:29 - 13:31  \>: {list1: List[Num], list2: List[Num]}
+13:23 - 13:28  input: List[List[Num]]
+19:0 - 19:1    List[List[Num]] -> {list1: List[Num], list2: List[Num]}
+13:32 - 13:36  fold: {list1: List[Num], list2: List[Num]}, ({list1: List[Num], list2: List[Num]}, List[Num] -> {list1: List[Num], list2: List[Num]}), List[List[Num]] -> {list1: List[Num], list2: List[Num]}
+14:25 - 14:26  {...}: {list1: List[Num], list2: List[Num]}
+14:5 - 14:10   list1: List[Num]
+14:13 - 14:14  [...]: List[Num]
+14:16 - 14:21  list2: List[Num]
+14:24 - 14:25  [...]: List[Num]
+15:17 - 15:19  {list2: List[Num], list1: List[Num]}, List[Num] -> {list1: List[Num], list2: List[Num]}
+18:4 - 18:5    {...}: {list1: List[Num], list2: List[Num]}
+16:8 - 16:13   list1: List[Num]
+16:44 - 16:45  [...]: List[Num]
+16:24 - 16:29  list1: List[Num]
+16:18 - 16:23  state: {list2: List[Num], list1: List[Num]}
+16:36 - 16:38  \>: Num
+16:31 - 16:35  pair: List[Num]
+16:39 - 16:44  first: List[Num] -> Num
+17:8 - 17:13   list2: List[Num]
+17:52 - 17:53  [...]: List[Num]
+17:24 - 17:29  list2: List[Num]
+17:18 - 17:23  state: {list2: List[Num], list1: List[Num]}
+17:44 - 17:46  \>: Num
+17:36 - 17:38  \>: List[Num]
+17:31 - 17:35  pair: List[Num]
+17:39 - 17:43  rest: List[Num] -> List[Num]
+17:47 - 17:52  first: List[Num] -> Num
+15:5 - 15:10   state: {list2: List[Num], list1: List[Num]}
+15:12 - 15:16  pair: List[Num]
+20:0 - 20:5    print: List[Num]
+20:6 - 20:11   list1: List[Num]
+21:0 - 21:5    print: List[Num]
+21:6 - 21:11   list2: List[Num]
+25:4 - 25:11   answer1: Num
+29:2 - 29:4    \>: Num
+29:0 - 29:1    List[Num]
+25:14 - 25:17  zip: List[Num], List[Num], (Num, Num -> Num) -> List[Num]
+26:8 - 26:10   \>: List[Num]
+26:2 - 26:7    list1: List[Num]
+26:11 - 26:15  sort: List[Num] -> List[Num]
+27:8 - 27:10   \>: List[Num]
+27:2 - 27:7    list2: List[Num]
+27:11 - 27:15  sort: List[Num] -> List[Num]
+28:2 - 28:10   abs_diff: Num, Num -> Num
+29:5 - 29:8    sum: List[Num] -> Num
+31:0 - 31:6    assert: Bool
+31:15 - 31:17  ==: Bool
+31:7 - 31:14   answer1: Num
+35:4 - 35:32   frequency_of_number_in_list2: Num -> Num
+35:38 - 35:40  Num -> Num
+36:10 - 36:12  \>: Num
+36:4 - 36:9    list2: List[Num]
+36:32 - 36:33  List[Num] -> Num
+36:13 - 36:24  count_where: (Num -> Bool), List[Num] -> Num
+36:27 - 36:29  \>: Num -> Bool
+36:25 - 36:26  n: Num
+36:30 - 36:32  eq: Num, Num -> Bool
+35:36 - 35:37  n: Num
+38:4 - 38:11   answer2: Num
+38:20 - 38:22  \>: Num
+38:14 - 38:19  list1: List[Num]
+41:1 - 41:2    List[Num] -> Num
+38:23 - 38:27  fold: Num, (Num, Num -> Num), List[Num] -> Num
+38:43 - 38:44  Num, Num -> Num
+41:0 - 41:1    Num, Num -> Num
+38:32 - 38:39  running: Num
+38:41 - 38:42  n: Num
+39:8 - 39:13   value: Num
+39:18 - 39:19  *: Num
+39:16 - 39:17  n: Num
+39:50 - 39:51  Num
+39:20 - 39:48  frequency_of_number_in_list2: Num -> Num
+39:49 - 39:50  n: Num
+40:4 - 40:10   Num
+40:19 - 40:20  +: Num
+40:11 - 40:18  running: Num
+40:21 - 40:26  value: Num
+43:0 - 43:6    assert: Bool
+43:15 - 43:17  ==: Bool
+43:7 - 43:14   answer2: Num
+___ OUTPUT ___
 [3, 4, 2, 1, 3, 3]
 [4, 3, 5, 3, 9, 3]
+
+
 ====== advent_of_code_2024_day_2.lox =====
+___ TYPES ___
+0:5 - 0:18     zip_with_tail: (`dddddddddddddd, `dddddddddddddd -> `eeeeeeeeeeeeee), List[`dddddddddddddd] -> List[`eeeeeeeeeeeeee]
+0:20 - 0:31    count_where: (`eeeeeeeeeeeeeeeeeeeeeeeeeeee -> Bool), List[`eeeeeeeeeeeeeeeeeeeeeeeeeeee] -> Num
+0:33 - 0:38    first: List[`kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk] -> `kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+0:40 - 0:43    all: (`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn -> Bool), List[`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn] -> Bool
+0:45 - 0:55    enumerated: List[`ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt] -> List[{element: `ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt, index: Num}]
+0:57 - 0:67    fold_until: `hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh, (`hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh, `iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii -> .Break(`hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh) | .Continue(`hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh)), List[`iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii] -> `hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+0:69 - 0:76    drop_at: Num, List[`aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] -> List[`aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
+0:78 - 0:81    map: (`lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll -> `mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm), List[`lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll] -> List[`mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm]
+0:83 - 0:86    any: (`uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu -> Bool), List[`uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu] -> Bool
+0:90 - 0:96    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+0:97 - 0:113   util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+1:5 - 1:10     minus: Num, Num -> Num
+1:12 - 1:16    sign: Num -> Num
+1:18 - 1:21    abs: Num -> Num
+1:25 - 1:31    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
+1:32 - 1:50    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
+3:4 - 3:9      input: List[List[Num]]
+10:0 - 10:1    [...]: List[List[Num]]
+4:18 - 4:19    [...]: List[Num]
+5:18 - 5:19    [...]: List[Num]
+6:18 - 6:19    [...]: List[Num]
+7:18 - 7:19    [...]: List[Num]
+8:18 - 8:19    [...]: List[Num]
+9:18 - 9:19    [...]: List[Num]
+12:4 - 12:11   is_safe: List[Num] -> Bool
+12:20 - 12:21  List[Num] -> Bool
+21:0 - 21:1    List[Num] -> Bool
+12:15 - 12:19  list: List[Num]
+13:8 - 13:13   diffs: List[Num]
+13:21 - 13:23  \>: List[Num]
+13:16 - 13:20  list: List[Num]
+13:43 - 13:44  List[Num] -> List[Num]
+13:24 - 13:37  zip_with_tail: (Num, Num -> Num), List[Num] -> List[Num]
+13:38 - 13:43  minus: Num, Num -> Num
+14:8 - 14:23   first_direction: Num
+14:41 - 14:43  \>: Num
+14:32 - 14:34  \>: Num
+14:26 - 14:31  diffs: List[Num]
+14:35 - 14:40  first: List[Num] -> Num
+14:44 - 14:48  sign: Num -> Num
+15:4 - 15:10   Bool
+15:17 - 15:19  \>: Bool
+15:11 - 15:16  diffs: List[Num]
+20:4 - 20:5    List[Num] -> Bool
+15:20 - 15:23  all: (Num -> Bool), List[Num] -> Bool
+16:14 - 16:16  Num -> Bool
+18:29 - 18:32  and: Bool
+17:44 - 17:47  and: Bool
+17:25 - 17:27  ==: Bool
+17:17 - 17:19  \>: Num
+17:12 - 17:16  diff: Num
+17:20 - 17:24  sign: Num -> Num
+17:28 - 17:43  first_direction: Num
+18:24 - 18:26  >=: Bool
+18:17 - 18:19  \>: Num
+18:12 - 18:16  diff: Num
+18:20 - 18:23  abs: Num -> Num
+19:24 - 19:26  <=: Bool
+19:17 - 19:19  \>: Num
+19:12 - 19:16  diff: Num
+19:20 - 19:23  abs: Num -> Num
+16:9 - 16:13   diff: Num
+25:4 - 25:10   part_1: Num
+25:19 - 25:21  \>: Num
+25:13 - 25:18  input: List[List[Num]]
+25:41 - 25:42  List[List[Num]] -> Num
+25:22 - 25:33  count_where: (List[Num] -> Bool), List[List[Num]] -> Num
+25:34 - 25:41  is_safe: List[Num] -> Bool
+26:0 - 26:5    print: Num
+26:6 - 26:12   part_1: Num
+27:0 - 27:6    assert: Bool
+27:14 - 27:16  ==: Bool
+27:7 - 27:13   part_1: Num
+32:4 - 32:10   part_2: Num
+32:19 - 32:21  \>: Num
+32:13 - 32:18  input: List[List[Num]]
+38:0 - 38:1    List[List[Num]] -> Num
+32:22 - 32:33  count_where: (List[Num] -> Bool), List[List[Num]] -> Num
+33:10 - 33:12  List[Num] -> Bool
+34:24 - 34:26  or: Bool
+34:13 - 34:15  \>: Bool
+34:8 - 34:12   list: List[Num]
+34:16 - 34:23  is_safe: List[Num] -> Bool
+37:13 - 37:15  \>: Bool
+36:13 - 36:15  \>: List[List[Num]]
+35:13 - 35:15  \>: List[{element: Num, index: Num}]
+35:8 - 35:12   list: List[Num]
+35:16 - 35:26  enumerated: List[Num] -> List[{element: Num, index: Num}]
+36:56 - 36:57  List[{element: Num, index: Num}] -> List[List[Num]]
+36:16 - 36:19  map: ({element: Num, index: Num} -> List[Num]), List[{element: Num, index: Num}] -> List[List[Num]]
+36:26 - 36:28  {element: Num, index: Num} -> List[Num]
+36:34 - 36:36  \>: List[Num]
+36:29 - 36:33  list: List[Num]
+36:55 - 36:56  List[Num] -> List[Num]
+36:37 - 36:44  drop_at: Num, List[Num] -> List[Num]
+36:50 - 36:55  index: Num
+36:45 - 36:49  skip: {element: Num, index: Num}
+36:21 - 36:25  skip: {element: Num, index: Num}
+37:27 - 37:28  List[List[Num]] -> Bool
+37:16 - 37:19  any: (List[Num] -> Bool), List[List[Num]] -> Bool
+37:20 - 37:27  is_safe: List[Num] -> Bool
+33:5 - 33:9    list: List[Num]
+39:0 - 39:5    print: Num
+39:6 - 39:12   part_2: Num
+40:0 - 40:6    assert: Bool
+40:14 - 40:16  ==: Bool
+40:7 - 40:13   part_2: Num
+___ OUTPUT ___
 2
 4
+
+
 ====== basic_test.lox =====
+___ TYPES ___
+0:4 - 0:24     zero_args_empty_body: a -> Unit
+0:29 - 0:30    a -> Unit
+0:31 - 0:32    a -> Unit
+1:4 - 1:23     zero_args_no_return: a -> Unit
+1:28 - 1:29    a -> Unit
+1:39 - 1:40    a -> Unit
+1:30 - 1:35    print: Num
+2:4 - 2:25     zero_args_with_return: a -> Num
+2:30 - 2:31    a -> Num
+2:42 - 2:43    a -> Num
+2:32 - 2:38    Num
+3:4 - 3:23     zero_args_expr_body: a -> Num
+3:28 - 3:30    a -> Num
+5:4 - 5:22     one_arg_empty_body: a -> Unit
+5:28 - 5:29    a -> Unit
+5:30 - 5:31    a -> Unit
+5:26 - 5:27    a: `o
+6:4 - 6:21     one_arg_no_return: a -> Unit
+6:27 - 6:28    a -> Unit
+6:38 - 6:39    a -> Unit
+6:25 - 6:26    a: `r
+6:29 - 6:34    print: a
+6:35 - 6:36    a: a
+7:4 - 7:23     one_arg_with_return: a -> a
+7:29 - 7:30    a -> a
+7:41 - 7:42    a -> a
+7:27 - 7:28    a: `v
+7:31 - 7:37    a
+7:38 - 7:39    a: a
+8:4 - 8:22     one_args_expr_body: a -> a
+8:28 - 8:30    a -> a
+8:31 - 8:32    a: a
+8:26 - 8:27    a: `z
+10:4 - 10:23   two_args_empty_body: a, b -> Unit
+10:32 - 10:33  a, b -> Unit
+10:34 - 10:35  a, b -> Unit
+10:27 - 10:28  a: `bb
+10:30 - 10:31  b: `cc
+11:4 - 11:22   two_args_no_return: a, b -> Unit
+11:31 - 11:32  a, b -> Unit
+11:51 - 11:52  a, b -> Unit
+11:26 - 11:27  a: `ff
+11:29 - 11:30  b: `gg
+11:33 - 11:38  print: a
+11:39 - 11:40  a: a
+11:42 - 11:47  print: a
+11:48 - 11:49  b: a
+12:4 - 12:24   two_args_with_return: Num, Num -> Num
+12:33 - 12:34  Num, Num -> Num
+12:49 - 12:50  Num, Num -> Num
+12:28 - 12:29  a: Num
+12:31 - 12:32  b: Num
+12:35 - 12:41  Num
+12:44 - 12:45  +: Num
+12:42 - 12:43  a: Num
+12:46 - 12:47  b: Num
+13:4 - 13:22   two_args_expr_body: Num, Num -> Num
+13:31 - 13:33  Num, Num -> Num
+13:36 - 13:37  +: Num
+13:34 - 13:35  a: Num
+13:38 - 13:39  b: Num
+13:26 - 13:27  a: Num
+13:29 - 13:30  b: Num
+15:0 - 15:5    print: Unit
+15:27 - 15:28  Unit
+15:6 - 15:26   zero_args_empty_body: Unit -> Unit
+16:0 - 16:5    print: Unit
+16:26 - 16:27  Unit
+16:6 - 16:25   zero_args_no_return: Unit -> Unit
+17:0 - 17:5    print: Num
+17:28 - 17:29  Num
+17:6 - 17:27   zero_args_with_return: Unit -> Num
+18:0 - 18:5    print: Num
+18:26 - 18:27  Num
+18:6 - 18:25   zero_args_expr_body: Unit -> Num
+20:0 - 20:5    print: Unit
+20:26 - 20:27  Unit
+20:6 - 20:24   one_arg_empty_body: Num -> Unit
+21:0 - 21:5    print: Unit
+21:25 - 21:26  Unit
+21:6 - 21:23   one_arg_no_return: Num -> Unit
+22:0 - 22:5    print: Num
+22:27 - 22:28  Num
+22:6 - 22:25   one_arg_with_return: Num -> Num
+23:0 - 23:5    print: Num
+23:26 - 23:27  Num
+23:6 - 23:24   one_args_expr_body: Num -> Num
+25:0 - 25:5    print: Unit
+25:30 - 25:31  Unit
+25:6 - 25:25   two_args_empty_body: Num, Num -> Unit
+26:0 - 26:5    print: Unit
+26:29 - 26:30  Unit
+26:6 - 26:24   two_args_no_return: Num, Num -> Unit
+27:0 - 27:5    print: Num
+27:31 - 27:32  Num
+27:6 - 27:26   two_args_with_return: Num, Num -> Num
+28:0 - 28:5    print: Num
+28:29 - 28:30  Num
+28:6 - 28:24   two_args_expr_body: Num, Num -> Num
+30:4 - 30:14   assignment: String
+31:0 - 31:5    print: String
+31:6 - 31:16   assignment: String
+33:4 - 33:12   is_great: a -> Bool
+33:17 - 33:18  a -> Bool
+36:0 - 36:1    a -> Bool
+34:4 - 34:9    print: String
+35:4 - 35:10   Bool
+38:0 - 38:5    print: String
+39:0 - 39:5    print: Bool
+39:12 - 39:14  or: Bool
+39:24 - 39:25  Bool
+39:15 - 39:23  is_great: Unit -> Bool
+41:0 - 41:5    print: String
+42:0 - 42:5    print: Bool
+42:12 - 42:15  and: Bool
+42:25 - 42:26  Bool
+42:16 - 42:24  is_great: Unit -> Bool
+44:0 - 44:5    print: String
+45:0 - 45:5    print: Bool
+45:11 - 45:13  or: Bool
+45:23 - 45:24  Bool
+45:14 - 45:22  is_great: Unit -> Bool
+47:0 - 47:5    print: String
+48:0 - 48:5    print: Bool
+48:11 - 48:14  and: Bool
+48:24 - 48:25  Bool
+48:15 - 48:23  is_great: Unit -> Bool
+___ OUTPUT ___
 null
 1
 null
@@ -34,19 +515,229 @@ true
 === true and is_great(); ===
 side effect!
 true
+
+
 ====== if.lox =====
+___ TYPES ___
+1:9 - 1:11     or: Bool
+1:5 - 1:6      >: Bool
+2:4 - 2:9      print: String
+3:7 - 3:12     print: Num
+5:4 - 5:9      maybe: a -> Bool
+5:14 - 5:15    a -> Bool
+5:30 - 5:31    a -> Bool
+5:16 - 5:22    Bool
+7:11 - 7:13    or: Bool
+7:9 - 7:10     Bool
+7:3 - 7:8      maybe: Unit -> Bool
+7:16 - 7:17    >: Bool
+8:8 - 8:9      a: String
+9:4 - 9:9      print: String
+9:10 - 9:11    a: String
+12:4 - 12:9    count: Num -> Unit
+12:15 - 12:16  Num -> Unit
+15:0 - 15:1    Num -> Unit
+12:13 - 12:14  n: Num
+13:9 - 13:10   >: Bool
+13:7 - 13:8    n: Num
+13:27 - 13:28  Unit
+13:18 - 13:23  count: Num -> Unit
+13:25 - 13:26  -: Num
+13:24 - 13:25  n: Num
+14:4 - 14:9    print: Num
+14:10 - 14:11  n: Num
+17:7 - 17:8    Unit
+17:0 - 17:5    count: Num -> Unit
+19:0 - 19:5    print: String
+19:12 - 19:13  ?: String
+19:8 - 19:9    >: Bool
+___ OUTPUT ___
 a
 b
 1
 2
 3
 b
+
+
 ====== imports.lox =====
+___ TYPES ___
+0:5 - 0:8      map: (`ttttttttttttttttttttttttttttttttttttttttttttt -> `uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu), List[`ttttttttttttttttttttttttttttttttttttttttttttt] -> List[`uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu]
+0:12 - 0:18    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
+0:19 - 0:30    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
+2:4 - 2:5      x: List[Num]
+2:16 - 2:18    \>: List[Num]
+2:14 - 2:15    [...]: List[Num]
+2:34 - 2:35    List[Num] -> List[Num]
+2:19 - 2:22    map: (Num -> Num), List[Num] -> List[Num]
+2:26 - 2:28    Num -> Num
+2:31 - 2:32    *: Num
+2:29 - 2:30    n: Num
+2:24 - 2:25    n: Num
+3:0 - 3:5      print: List[Num]
+3:6 - 3:7      x: List[Num]
+5:0 - 5:5      print: {hello_from_relative: String}
+5:6 - 5:12     foo/relative.lox: {hello_from_relative: String}
+5:13 - 5:31    foo/relative.lox: {hello_from_relative: String}
+6:4 - 6:7      rel: {hello_from_relative: String}
+6:10 - 6:16    foo/relative.lox: {hello_from_relative: String}
+6:17 - 6:35    foo/relative.lox: {hello_from_relative: String}
+7:0 - 7:5      print: String
+7:10 - 7:29    hello_from_relative: String
+7:6 - 7:9      rel: {hello_from_relative: String}
+9:0 - 9:5      print: Num
+9:28 - 9:29    a: Num
+9:7 - 9:13     foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
+9:14 - 9:26    foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
+___ OUTPUT ___
 [2, 4, 6]
 {hello_from_relative: yep}
 yep
 1
+
+
 ====== lambdas.lox =====
+___ TYPES ___
+0:4 - 0:6      fn: Num, Num -> Num
+0:12 - 0:14    Num, Num -> Num
+0:18 - 0:20    Num -> Num
+0:23 - 0:24    +: Num
+0:21 - 0:22    x: Num
+0:25 - 0:26    y: Num
+0:16 - 0:17    y: Num
+0:10 - 0:11    x: Num
+1:0 - 1:5      print: Num
+1:14 - 1:15    Num
+1:10 - 1:11    Num -> Num
+1:6 - 1:8      fn: Num, Num -> Num
+3:4 - 3:7      fn2: Num, Num, Num -> Num
+3:13 - 3:15    Num, Num, Num -> Num
+3:19 - 3:21    Num, Num -> Num
+3:25 - 3:27    Num -> Num
+3:34 - 3:35    +: Num
+3:30 - 3:31    +: Num
+3:28 - 3:29    x: Num
+3:32 - 3:33    y: Num
+3:36 - 3:37    z: Num
+3:23 - 3:24    z: Num
+3:17 - 3:18    y: Num
+3:11 - 3:12    x: Num
+4:0 - 4:5      print: Num
+4:20 - 4:21    Num
+4:15 - 4:16    Num -> Num
+4:11 - 4:12    Num, Num -> Num
+4:6 - 4:9      fn2: Num, Num, Num -> Num
+6:0 - 6:5      print: Num
+6:46 - 6:47    Num
+6:41 - 6:42    Num -> Num
+6:37 - 6:38    Num, Num -> Num
+6:10 - 6:12    Num, Num, Num -> Num
+6:16 - 6:18    Num, Num -> Num
+6:22 - 6:24    Num -> Num
+6:31 - 6:32    +: Num
+6:27 - 6:28    +: Num
+6:25 - 6:26    x: Num
+6:29 - 6:30    y: Num
+6:33 - 6:34    z: Num
+6:20 - 6:21    z: Num
+6:14 - 6:15    y: Num
+6:8 - 6:9      x: Num
+8:4 - 8:15     some_record: {a: Bool, b: a -> Num, c: Num -> Num, d: Num -> Num, e: b -> Num}
+14:0 - 14:1    {...}: {a: Bool, b: a -> Num, c: Num -> Num, d: Num -> Num, e: b -> Num}
+9:4 - 9:5      a: Bool
+10:4 - 10:5    b: a -> Num
+10:9 - 10:10   a -> Num
+10:23 - 10:24  a -> Num
+10:11 - 10:17  Num
+11:4 - 11:5    c: Num -> Num
+11:10 - 11:11  Num -> Num
+11:28 - 11:29  Num -> Num
+11:8 - 11:9    x: Num
+11:12 - 11:18  Num
+11:21 - 11:22  +: Num
+11:19 - 11:20  x: Num
+12:4 - 12:5    d: Num -> Num
+12:10 - 12:12  Num -> Num
+12:15 - 12:16  +: Num
+12:13 - 12:14  x: Num
+12:8 - 12:9    x: Num
+13:4 - 13:5    e: a -> Num
+13:9 - 13:11   a -> Num
+15:0 - 15:5    print: Num
+15:20 - 15:21  Num
+15:18 - 15:19  b: Unit -> Num
+15:6 - 15:17   some_record: {a: Bool, b: Unit -> Num, c: Num -> Num, d: Num -> Num, e: a -> Num}
+16:4 - 16:11   tearoff: a -> Num
+16:26 - 16:27  b: a -> Num
+16:14 - 16:25  some_record: {a: Bool, b: a -> Num, c: Num -> Num, d: Num -> Num, e: b -> Num}
+17:0 - 17:5    print: Num
+17:14 - 17:15  Num
+17:6 - 17:13   tearoff: Unit -> Num
+19:0 - 19:5    print: Num
+19:21 - 19:22  Num
+19:18 - 19:19  c: Num -> Num
+19:6 - 19:17   some_record: {a: Bool, b: a -> Num, c: Num -> Num, d: Num -> Num, e: b -> Num}
+20:0 - 20:5    print: Num
+20:22 - 20:23  Num
+20:18 - 20:19  d: Num -> Num
+20:6 - 20:17   some_record: {a: Bool, b: a -> Num, c: Num -> Num, d: Num -> Num, e: b -> Num}
+21:0 - 21:5    print: Num
+21:20 - 21:21  Num
+21:18 - 21:19  e: Unit -> Num
+21:6 - 21:17   some_record: {a: Bool, b: a -> Num, c: Num -> Num, d: Num -> Num, e: Unit -> Num}
+23:0 - 23:5    print: Num
+23:26 - 23:27  Num
+23:10 - 23:11  Num -> Num
+23:22 - 23:23  Num -> Num
+23:8 - 23:9    x: Num
+23:12 - 23:18  Num
+23:19 - 23:20  x: Num
+26:4 - 26:6    id: a -> a
+26:12 - 26:14  a -> a
+26:15 - 26:16  x: a
+26:10 - 26:11  x: `zzz
+27:0 - 27:5    print: String
+27:16 - 27:17  String
+27:6 - 27:8    id: String -> String
+28:0 - 28:5    print: Num
+28:17 - 28:18  Num
+28:10 - 28:12  Num -> Num
+28:13 - 28:14  x: Num
+28:8 - 28:9    x: Num
+30:4 - 30:21   zero_arg_function: a -> Num
+30:26 - 30:28  a -> Num
+31:0 - 31:5    print: Num
+31:24 - 31:25  Num
+31:6 - 31:23   zero_arg_function: Unit -> Num
+33:4 - 33:13   make_user: a, Num -> {user_id: Num, name: a, age: Num, calc_birth_year: Num -> Num}
+33:27 - 33:29  a, Num -> {user_id: Num, name: a, age: Num, calc_birth_year: Num -> Num}
+38:0 - 38:1    {...}: {user_id: Num, name: a, age: Num, calc_birth_year: Num -> Num}
+34:4 - 34:11   user_id: Num
+34:19 - 34:20  Num
+34:13 - 34:18  clock: Unit -> Num
+35:4 - 35:8    name: a
+35:10 - 35:14  name: a
+36:4 - 36:7    age: Num
+36:9 - 36:12   age: Num
+37:4 - 37:19   calc_birth_year: Num -> Num
+37:35 - 37:37  Num -> Num
+37:51 - 37:52  -: Num
+37:38 - 37:50  current_year: Num
+37:53 - 37:56  age: Num
+37:22 - 37:34  current_year: Num
+33:17 - 33:21  name: `llll
+33:23 - 33:26  age: Num
+40:4 - 40:8    user: {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
+40:31 - 40:32  {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
+40:11 - 40:20  make_user: String, Num -> {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
+41:0 - 41:5    print: Num
+41:11 - 41:14  age: Num
+41:6 - 41:10   user: {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
+42:0 - 42:5    print: Num
+42:31 - 42:32  Num
+42:11 - 42:26  calc_birth_year: Num -> Num
+42:6 - 42:10   user: {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
+___ OUTPUT ___
 11
 111
 222
@@ -61,7 +752,259 @@ hello
 123
 30
 1994
+
+
 ====== lists.lox =====
+___ TYPES ___
+0:5 - 0:8      map: (`nnnnnnnnnnnnnn -> `oooooooooooooo), List[`nnnnnnnnnnnnnn] -> List[`oooooooooooooo]
+0:10 - 0:17    reverse: List[`hhhhhhhhhhhhhhhhhhhhhhhhhhhh] -> List[`hhhhhhhhhhhhhhhhhhhhhhhhhhhh]
+0:19 - 0:25    reduce: (`eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, `eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee -> `eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee), List[`eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee] -> `eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+0:29 - 0:35    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+0:36 - 0:52    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+2:4 - 2:6      xs: List[Num]
+2:17 - 2:18    [...]: List[Num]
+3:0 - 3:5      print: List[Num]
+3:6 - 3:8      xs: List[Num]
+4:0 - 4:5      print: List[Num]
+4:16 - 4:17    List[Num]
+4:6 - 4:13     reverse: List[Num] -> List[Num]
+4:14 - 4:16    xs: List[Num]
+6:4 - 6:6      ys: List[a]
+6:10 - 6:11    [...]: List[a]
+7:0 - 7:5      print: List[a]
+7:6 - 7:8      ys: List[a]
+9:4 - 9:6      zs: List[Num]
+9:11 - 9:12    [...]: List[Num]
+10:0 - 10:5    print: List[Num]
+10:6 - 10:8    zs: List[Num]
+12:4 - 12:9    mixed: List[.Hello(Num) | .Tags({two: String})]
+12:45 - 12:46  [...]: List[.Hello(Num) | .Tags({two: String})]
+12:14 - 12:19  Hello: .Hello(Num) | .Tags({two: String})
+12:25 - 12:29  Tags: .Hello(Num) | .Tags({two: String})
+12:43 - 12:44  {...}: {two: String}
+12:31 - 12:34  two: String
+13:0 - 13:5    print: List[String]
+13:12 - 13:14  \>: List[String]
+13:6 - 13:11   mixed: List[.Hello(Num) | .Tags({two: String})]
+16:1 - 16:2    List[.Hello(Num) | .Tags({two: String})] -> List[String]
+13:15 - 13:18  map: (.Hello(Num) | .Tags({two: String}) -> String), List[.Hello(Num) | .Tags({two: String})] -> List[String]
+13:22 - 13:24  .Hello(Num) | .Tags({two: String}) -> String
+13:25 - 13:30  match: String
+13:31 - 13:32  x: .Hello(Num) | .Tags({two: String})
+13:20 - 13:21  x: .Hello(Num) | .Tags({two: String})
+20:0 - 20:5    print: List[Bool]
+20:14 - 20:16  \>: List[Bool]
+20:12 - 20:13  [...]: List[Num]
+20:33 - 20:34  List[Num] -> List[Bool]
+20:17 - 20:20  map: (Num -> Bool), List[Num] -> List[Bool]
+20:24 - 20:26  Num -> Bool
+20:29 - 20:31  ==: Bool
+20:27 - 20:28  x: Num
+20:22 - 20:23  x: Num
+21:0 - 21:5    print: List[Bool]
+21:12 - 21:14  \>: List[Bool]
+21:6 - 21:11   mixed: List[.Hello(Num) | .Tags({two: String})]
+24:1 - 24:2    List[.Hello(Num) | .Tags({two: String})] -> List[Bool]
+21:15 - 21:18  map: (.Hello(Num) | .Tags({two: String}) -> Bool), List[.Hello(Num) | .Tags({two: String})] -> List[Bool]
+21:22 - 21:24  .Hello(Num) | .Tags({two: String}) -> Bool
+21:25 - 21:30  match: Bool
+21:31 - 21:32  x: .Hello(Num) | .Tags({two: String})
+22:18 - 22:20  ==: Bool
+22:16 - 22:17  n: Num
+21:20 - 21:21  x: .Hello(Num) | .Tags({two: String})
+27:4 - 27:13   employees: List[{name: String, age: Num}]
+31:0 - 31:1    [...]: List[{name: String, age: Num}]
+28:26 - 28:27  {...}: {name: String, age: Num}
+28:5 - 28:9    name: String
+28:19 - 28:22  age: Num
+29:26 - 29:27  {...}: {name: String, age: Num}
+29:5 - 29:9    name: String
+29:19 - 29:22  age: Num
+30:25 - 30:26  {...}: {name: String, age: Num}
+30:5 - 30:9    name: String
+30:18 - 30:21  age: Num
+33:4 - 33:25   employee_with_max_age: {name: String, age: Num}
+33:38 - 33:40  \>: {name: String, age: Num}
+33:28 - 33:37  employees: List[{name: String, age: Num}]
+38:0 - 38:1    List[{name: String, age: Num}] -> {name: String, age: Num}
+33:41 - 33:47  reduce: ({name: String, age: Num}, {name: String, age: Num} -> {name: String, age: Num}), List[{name: String, age: Num}] -> {name: String, age: Num}
+34:23 - 34:25  {name: String, age: Num}, {name: String, age: Num} -> {name: String, age: Num}
+36:12 - 36:13  ?: {name: String, age: Num}
+35:21 - 35:22  >: Bool
+35:17 - 35:20  age: Num
+35:8 - 35:16   employee: {name: String, age: Num}
+35:31 - 35:34  age: Num
+35:23 - 35:30  highest: {name: String, age: Num}
+36:14 - 36:22  employee: {name: String, age: Num}
+37:14 - 37:21  highest: {name: String, age: Num}
+34:5 - 34:12   highest: {name: String, age: Num}
+34:14 - 34:22  employee: {age: Num}
+39:0 - 39:5    print: {name: String, age: Num}
+39:6 - 39:27   employee_with_max_age: {name: String, age: Num}
+41:4 - 41:11   max_age: Num
+43:4 - 43:6    \>: Num
+42:4 - 42:6    \>: List[Num]
+41:14 - 41:23  employees: List[{name: String, age: Num}]
+42:22 - 42:23  List[{name: String, age: Num}] -> List[Num]
+42:7 - 42:10   map: ({name: String, age: Num} -> Num), List[{name: String, age: Num}] -> List[Num]
+42:14 - 42:16  {name: String, age: Num} -> Num
+42:19 - 42:22  age: Num
+42:17 - 42:18  e: {name: String, age: Num}
+42:12 - 42:13  e: {name: String, age: Num}
+43:60 - 43:61  List[Num] -> Num
+43:7 - 43:13   reduce: (Num, Num -> Num), List[Num] -> Num
+43:28 - 43:30  Num, Num -> Num
+43:45 - 43:46  ?: Num
+43:35 - 43:36  >: Bool
+43:31 - 43:34  age: Num
+43:37 - 43:44  highest: Num
+43:47 - 43:50  age: Num
+43:53 - 43:60  highest: Num
+43:15 - 43:22  highest: Num
+43:24 - 43:27  age: Num
+45:0 - 45:5    print: Num
+45:6 - 45:13   max_age: Num
+47:4 - 47:7    max: Num, Num -> Num
+47:16 - 47:18  Num, Num -> Num
+47:25 - 47:26  ?: Num
+47:21 - 47:22  >: Bool
+47:19 - 47:20  x: Num
+47:23 - 47:24  y: Num
+47:27 - 47:28  x: Num
+47:31 - 47:32  y: Num
+47:11 - 47:12  x: Num
+47:14 - 47:15  y: Num
+48:4 - 48:7    min: Num, Num -> Num
+48:16 - 48:18  Num, Num -> Num
+48:25 - 48:26  ?: Num
+48:21 - 48:22  <: Bool
+48:19 - 48:20  x: Num
+48:23 - 48:24  y: Num
+48:27 - 48:28  x: Num
+48:31 - 48:32  y: Num
+48:11 - 48:12  x: Num
+48:14 - 48:15  y: Num
+50:0 - 50:5    print: Num
+52:4 - 52:6    \>: Num
+51:4 - 51:6    \>: List[Num]
+50:6 - 50:15   employees: List[{name: String, age: Num}]
+51:22 - 51:23  List[{name: String, age: Num}] -> List[Num]
+51:7 - 51:10   map: ({name: String, age: Num} -> Num), List[{name: String, age: Num}] -> List[Num]
+51:14 - 51:16  {name: String, age: Num} -> Num
+51:19 - 51:22  age: Num
+51:17 - 51:18  e: {name: String, age: Num}
+51:12 - 51:13  e: {name: String, age: Num}
+52:17 - 52:18  List[Num] -> Num
+52:7 - 52:13   reduce: (Num, Num -> Num), List[Num] -> Num
+52:14 - 52:17  max: Num, Num -> Num
+55:0 - 55:5    print: Num
+57:4 - 57:6    \>: Num
+56:4 - 56:6    \>: List[Num]
+55:6 - 55:15   employees: List[{name: String, age: Num}]
+56:22 - 56:23  List[{name: String, age: Num}] -> List[Num]
+56:7 - 56:10   map: ({name: String, age: Num} -> Num), List[{name: String, age: Num}] -> List[Num]
+56:14 - 56:16  {name: String, age: Num} -> Num
+56:19 - 56:22  age: Num
+56:17 - 56:18  e: {name: String, age: Num}
+56:12 - 56:13  e: {name: String, age: Num}
+57:17 - 57:18  List[Num] -> Num
+57:7 - 57:13   reduce: (Num, Num -> Num), List[Num] -> Num
+57:14 - 57:17  min: Num, Num -> Num
+60:0 - 60:5    print: {name: String, age: Num}
+60:16 - 60:18  \>: {name: String, age: Num}
+60:6 - 60:15   employees: List[{name: String, age: Num}]
+60:24 - 60:29  first: List[{name: String, age: Num}] -> {name: String, age: Num}
+60:19 - 60:23  List: {first: List[{name: String, age: Num}] -> {name: String, age: Num}, rest: List[a] -> List[a], empty: List[b] -> Bool}
+62:4 - 62:7    sub: Num, Num -> Num
+62:16 - 62:18  Num, Num -> Num
+62:20 - 62:21  -: Num
+62:19 - 62:20  x: Num
+62:21 - 62:22  y: Num
+62:11 - 62:12  x: Num
+62:14 - 62:15  y: Num
+63:4 - 63:6    id: a -> a
+63:12 - 63:14  a -> a
+63:15 - 63:16  x: a
+63:10 - 63:11  x: `ooooooooooooooooooooooooooooooooooooooooooooooo
+65:4 - 65:15   one_minus_x: Num -> Num
+65:26 - 65:27  Num -> Num
+65:25 - 65:26  _: <unknown>
+65:18 - 65:21  sub: Num, Num -> Num
+66:4 - 66:15   x_minus_one: Num -> Num
+66:26 - 66:27  Num -> Num
+66:22 - 66:23  _: <unknown>
+66:18 - 66:21  sub: Num, Num -> Num
+68:0 - 68:5    print: Num
+68:19 - 68:20  Num
+68:6 - 68:17   one_minus_x: Num -> Num
+69:0 - 69:5    print: Num
+69:19 - 69:20  Num
+69:6 - 69:17   x_minus_one: Num -> Num
+71:0 - 71:5    print: String
+72:0 - 72:5    print: Num
+72:24 - 72:26  \>: Num
+72:10 - 72:12  \>: Num
+72:8 - 72:9    [...]: List[Num]
+72:18 - 72:23  first: List[Num] -> Num
+72:13 - 72:17  List: {first: List[Num] -> Num, rest: List[a] -> List[a], empty: List[b] -> Bool}
+72:27 - 72:29  id: Num -> Num
+74:0 - 74:5    print: String
+75:0 - 75:5    print: Num
+75:23 - 75:25  \>: Num
+75:8 - 75:10   \>: Num
+75:11 - 75:22  x_minus_one: Num -> Num
+75:26 - 75:37  x_minus_one: Num -> Num
+77:0 - 77:5    print: String
+78:0 - 78:5    print: Num
+78:30 - 78:32  \>: Num
+78:24 - 78:26  \>: Num
+78:10 - 78:12  \>: Num
+78:8 - 78:9    [...]: List[Num]
+78:18 - 78:23  first: List[Num] -> Num
+78:13 - 78:17  List: {first: List[Num] -> Num, rest: List[a] -> List[a], empty: List[b] -> Bool}
+78:27 - 78:29  id: Num -> Num
+78:41 - 78:42  Num -> Num
+78:37 - 78:38  _: <unknown>
+78:33 - 78:36  sub: Num, Num -> Num
+80:0 - 80:5    print: List[Bool]
+80:47 - 80:48  List[Bool]
+80:19 - 80:21  List[Bool], Bool -> List[Bool]
+80:35 - 80:36  [...]: List[Bool]
+80:25 - 80:29  list: List[Bool]
+80:31 - 80:35  item: Bool
+80:8 - 80:12   list: List[Bool]
+80:14 - 80:18  item: Bool
+80:39 - 80:40  [...]: List[Bool]
+81:0 - 81:5    print: List[Bool]
+81:50 - 81:51  List[Bool]
+81:46 - 81:47  List[Bool] -> List[Bool]
+81:38 - 81:39  _: <unknown>
+81:19 - 81:21  List[Bool], Bool -> List[Bool]
+81:35 - 81:36  [...]: List[Bool]
+81:25 - 81:29  list: List[Bool]
+81:31 - 81:35  item: Bool
+81:8 - 81:12   list: List[Bool]
+81:14 - 81:18  item: Bool
+81:49 - 81:50  [...]: List[Bool]
+83:0 - 83:6    assert: Bool
+83:37 - 83:39  ==: Bool
+83:15 - 83:17  \>: List[Num]
+83:13 - 83:14  [...]: List[Num]
+83:35 - 83:36  List[Num] -> List[Num]
+83:21 - 83:24  map: (Num -> Num), List[Num] -> List[Num]
+83:31 - 83:33  Num -> Num
+83:26 - 83:28  _0: Num
+83:48 - 83:49  [...]: List[Num]
+84:0 - 84:6    assert: Bool
+84:37 - 84:39  ==: Bool
+84:15 - 84:17  \>: Num
+84:13 - 84:14  [...]: List[Num]
+84:35 - 84:36  List[Num] -> Num
+84:18 - 84:24  reduce: (Num, Num -> Num), List[Num] -> Num
+84:31 - 84:33  Num, Num -> Num
+84:26 - 84:28  _1: Num
+84:29 - 84:31  _2: Num
+___ OUTPUT ___
 [1, 2, 3]
 [3, 2, 1]
 []
@@ -84,18 +1027,492 @@ hello
 0
 [false]
 [false]
+
+
 ====== make_counter.lox =====
 ___ Type checking failed ___
 Recursive row types:
 _5
 _10 -> _5
 ___ Continuing with execution ___
+___ OUTPUT ___
 1
 2
 3
+
+
 ====== patterns.lox =====
+___ TYPES ___
+0:5 - 0:9      join: List[String] -> String
+0:13 - 0:19    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+0:20 - 0:36    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+2:4 - 2:12     describe: {as_of: Num}, {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
+2:38 - 2:40    {as_of: Num}, {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
+2:48 - 2:49    {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
+10:0 - 10:1    {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
+2:42 - 2:47    robot: {serial_number: `mmmmmmmmmmmmmmm, manufacture_date: {year: `ggggggggggggggg}, name: {label: String}}
+4:8 - 4:12     name: {label: String}
+4:16 - 4:21    label: String
+5:8 - 5:24     manufacture_date: {year: `ggggggggggggggg}
+5:28 - 5:32    year: `ggggggggggggggg
+5:34 - 5:47    creation_year: `ggggggggggggggg
+6:8 - 6:21     serial_number: `mmmmmmmmmmmmmmm
+7:8 - 7:13     robot: {serial_number: b, manufacture_date: {year: d}, name: {label: String}}
+8:8 - 8:19     is_old_tech: Bool
+8:51 - 8:52    >: Bool
+8:35 - 8:36    -: Num
+8:22 - 8:34    current_year: Num
+8:37 - 8:50    creation_year: Num
+9:4 - 9:10     String
+9:80 - 9:82    \>: String
+9:78 - 9:79    [...]: List[String]
+9:12 - 9:17    label: String
+9:26 - 9:39    serial_number: String
+9:53 - 9:54    ?: String
+9:41 - 9:52    is_old_tech: Bool
+9:83 - 9:87    join: List[String] -> String
+2:17 - 2:22    as_of: Num
+2:24 - 2:36    current_year: Num
+12:4 - 12:9    robot: {name: {label: String, title: String, version: String}, manufacture_date: {year: Num, month: Num, day: Num}, serial_number: String}
+24:0 - 24:1    {...}: {name: {label: String, title: String, version: String}, manufacture_date: {year: Num, month: Num, day: Num}, serial_number: String}
+13:4 - 13:8    name: {label: String, title: String, version: String}
+17:4 - 17:5    {...}: {label: String, title: String, version: String}
+14:8 - 14:13   label: String
+15:8 - 15:13   title: String
+16:8 - 16:15   version: String
+18:4 - 18:20   manufacture_date: {year: Num, month: Num, day: Num}
+22:4 - 22:5    {...}: {year: Num, month: Num, day: Num}
+19:8 - 19:12   year: Num
+20:8 - 20:13   month: Num
+21:8 - 21:11   day: Num
+23:4 - 23:17   serial_number: String
+26:4 - 26:15   description: String
+26:24 - 26:26  \>: String
+26:18 - 26:23  robot: {name: {label: String, title: String, version: String}, manufacture_date: {year: Num, month: Num, day: Num}, serial_number: String}
+26:49 - 26:50  {serial_number: String, manufacture_date: {month: Num, day: Num, year: Num}, name: {title: String, version: String, label: String}} -> String
+26:27 - 26:35  describe: {as_of: Num}, {serial_number: String, manufacture_date: {month: Num, day: Num, year: Num}, name: {title: String, version: String, label: String}} -> String
+26:48 - 26:49  {...}: {as_of: Num}
+26:37 - 26:42  as_of: Num
+27:0 - 27:5    print: String
+27:6 - 27:17   description: String
+28:0 - 28:6    assert: Bool
+28:19 - 28:21  ==: Bool
+28:7 - 28:18   description: String
+31:4 - 31:6    _0: Num
+32:4 - 32:6    _1: Num
+33:4 - 33:6    _2: String
+34:4 - 34:17   discard_param: a -> Num
+34:23 - 34:25  a -> Num
+34:21 - 34:23  _3: `pppppppppppppppp
+35:0 - 35:6    assert: Bool
+35:26 - 35:28  ==: Bool
+35:24 - 35:25  Num
+35:7 - 35:20   discard_param: String -> Num
+36:0 - 36:6    assert: Bool
+36:25 - 36:27  ==: Bool
+36:23 - 36:24  Num
+36:7 - 36:20   discard_param: List[a] -> Num
+36:22 - 36:23  [...]: List[a]
+38:4 - 38:7    f01: {a: Num} -> Num
+38:15 - 38:17  {a: Num} -> Num
+38:19 - 38:20  +: Num
+38:20 - 38:21  a: Num
+38:12 - 38:13  a: Num
+39:4 - 39:7    f02: {a: Num} -> Num
+39:15 - 39:16  {a: Num} -> Num
+39:29 - 39:30  {a: Num} -> Num
+39:12 - 39:13  a: Num
+39:17 - 39:23  Num
+39:25 - 39:26  +: Num
+39:26 - 39:27  a: Num
+40:4 - 40:7    f03: {a: Num} -> Num
+40:18 - 40:20  {a: Num} -> Num
+40:22 - 40:23  +: Num
+40:23 - 40:24  b: Num
+40:12 - 40:13  a: Num
+40:15 - 40:16  b: Num
+41:4 - 41:7    f04: {a: Num} -> Num
+41:18 - 41:19  {a: Num} -> Num
+41:32 - 41:33  {a: Num} -> Num
+41:12 - 41:13  a: Num
+41:15 - 41:16  b: Num
+41:20 - 41:26  Num
+41:28 - 41:29  +: Num
+41:29 - 41:30  b: Num
+43:0 - 43:6    assert: Bool
+43:19 - 43:21  ==: Bool
+43:17 - 43:18  Num
+43:7 - 43:10   f01: {a: Num} -> Num
+43:16 - 43:17  {...}: {a: Num}
+43:12 - 43:13  a: Num
+44:0 - 44:6    assert: Bool
+44:19 - 44:21  ==: Bool
+44:17 - 44:18  Num
+44:7 - 44:10   f02: {a: Num} -> Num
+44:16 - 44:17  {...}: {a: Num}
+44:12 - 44:13  a: Num
+45:0 - 45:6    assert: Bool
+45:19 - 45:21  ==: Bool
+45:17 - 45:18  Num
+45:7 - 45:10   f03: {a: Num} -> Num
+45:16 - 45:17  {...}: {a: Num}
+45:12 - 45:13  a: Num
+46:0 - 46:6    assert: Bool
+46:19 - 46:21  ==: Bool
+46:17 - 46:18  Num
+46:7 - 46:10   f04: {a: Num} -> Num
+46:16 - 46:17  {...}: {a: Num}
+46:12 - 46:13  a: Num
+48:4 - 48:7    f06: Num, {a: Num} -> Num
+48:18 - 48:20  Num, {a: Num} -> Num
+48:24 - 48:25  +: Num
+48:22 - 48:23  +: Num
+48:23 - 48:24  a: Num
+48:25 - 48:26  x: Num
+48:11 - 48:12  x: Num
+48:15 - 48:16  a: Num
+49:4 - 49:7    f07: Num, {a: Num} -> Num
+49:18 - 49:19  Num, {a: Num} -> Num
+49:34 - 49:35  Num, {a: Num} -> Num
+49:11 - 49:12  x: Num
+49:15 - 49:16  a: Num
+49:20 - 49:26  Num
+49:30 - 49:31  +: Num
+49:28 - 49:29  +: Num
+49:29 - 49:30  a: Num
+49:31 - 49:32  x: Num
+50:4 - 50:7    f08: Num, {a: Num} -> Num
+50:21 - 50:23  Num, {a: Num} -> Num
+50:27 - 50:28  +: Num
+50:25 - 50:26  +: Num
+50:26 - 50:27  b: Num
+50:28 - 50:29  x: Num
+50:11 - 50:12  x: Num
+50:15 - 50:16  a: Num
+50:18 - 50:19  b: Num
+51:4 - 51:7    f09: Num, {a: Num} -> Num
+51:21 - 51:22  Num, {a: Num} -> Num
+51:37 - 51:38  Num, {a: Num} -> Num
+51:11 - 51:12  x: Num
+51:15 - 51:16  a: Num
+51:18 - 51:19  b: Num
+51:23 - 51:29  Num
+51:33 - 51:34  +: Num
+51:31 - 51:32  +: Num
+51:32 - 51:33  b: Num
+51:34 - 51:35  x: Num
+53:0 - 53:6    assert: Bool
+53:22 - 53:24  ==: Bool
+53:20 - 53:21  Num
+53:7 - 53:10   f06: Num, {a: Num} -> Num
+53:19 - 53:20  {...}: {a: Num}
+53:15 - 53:16  a: Num
+54:0 - 54:6    assert: Bool
+54:22 - 54:24  ==: Bool
+54:20 - 54:21  Num
+54:7 - 54:10   f07: Num, {a: Num} -> Num
+54:19 - 54:20  {...}: {a: Num}
+54:15 - 54:16  a: Num
+55:0 - 55:6    assert: Bool
+55:22 - 55:24  ==: Bool
+55:20 - 55:21  Num
+55:7 - 55:10   f08: Num, {a: Num} -> Num
+55:19 - 55:20  {...}: {a: Num}
+55:15 - 55:16  a: Num
+56:0 - 56:6    assert: Bool
+56:22 - 56:24  ==: Bool
+56:20 - 56:21  Num
+56:7 - 56:10   f09: Num, {a: Num} -> Num
+56:19 - 56:20  {...}: {a: Num}
+56:15 - 56:16  a: Num
+58:4 - 58:7    f10: {a: Num}, Num -> Num
+58:18 - 58:20  {a: Num}, Num -> Num
+58:24 - 58:25  +: Num
+58:22 - 58:23  +: Num
+58:23 - 58:24  a: Num
+58:25 - 58:26  x: Num
+58:12 - 58:13  a: Num
+58:16 - 58:17  x: Num
+59:4 - 59:7    f11: {a: Num}, Num -> Num
+59:18 - 59:19  {a: Num}, Num -> Num
+59:34 - 59:35  {a: Num}, Num -> Num
+59:12 - 59:13  a: Num
+59:16 - 59:17  x: Num
+59:20 - 59:26  Num
+59:30 - 59:31  +: Num
+59:28 - 59:29  +: Num
+59:29 - 59:30  a: Num
+59:31 - 59:32  x: Num
+60:4 - 60:7    f12: {a: Num}, Num -> Num
+60:21 - 60:23  {a: Num}, Num -> Num
+60:27 - 60:28  +: Num
+60:25 - 60:26  +: Num
+60:26 - 60:27  b: Num
+60:28 - 60:29  x: Num
+60:12 - 60:13  a: Num
+60:15 - 60:16  b: Num
+60:19 - 60:20  x: Num
+61:4 - 61:7    f13: {a: Num}, Num -> Num
+61:21 - 61:22  {a: Num}, Num -> Num
+61:37 - 61:38  {a: Num}, Num -> Num
+61:12 - 61:13  a: Num
+61:15 - 61:16  b: Num
+61:19 - 61:20  x: Num
+61:23 - 61:29  Num
+61:33 - 61:34  +: Num
+61:31 - 61:32  +: Num
+61:32 - 61:33  b: Num
+61:34 - 61:35  x: Num
+63:0 - 63:6    assert: Bool
+63:22 - 63:24  ==: Bool
+63:20 - 63:21  Num
+63:7 - 63:10   f10: {a: Num}, Num -> Num
+63:16 - 63:17  {...}: {a: Num}
+63:12 - 63:13  a: Num
+64:0 - 64:6    assert: Bool
+64:22 - 64:24  ==: Bool
+64:20 - 64:21  Num
+64:7 - 64:10   f11: {a: Num}, Num -> Num
+64:16 - 64:17  {...}: {a: Num}
+64:12 - 64:13  a: Num
+65:0 - 65:6    assert: Bool
+65:22 - 65:24  ==: Bool
+65:20 - 65:21  Num
+65:7 - 65:10   f12: {a: Num}, Num -> Num
+65:16 - 65:17  {...}: {a: Num}
+65:12 - 65:13  a: Num
+66:0 - 66:6    assert: Bool
+66:22 - 66:24  ==: Bool
+66:20 - 66:21  Num
+66:7 - 66:10   f13: {a: Num}, Num -> Num
+66:16 - 66:17  {...}: {a: Num}
+66:12 - 66:13  a: Num
+___ OUTPUT ___
 a - abc123 (VINTAGE)
+
+
 ====== records.lox =====
+___ TYPES ___
+0:4 - 0:7      foo: a -> Num
+0:12 - 0:13    a -> Num
+0:26 - 0:27    a -> Num
+0:14 - 0:20    Num
+3:4 - 3:15     some_record: {a: String, b: Num, c: Bool, d: a -> Num}
+8:0 - 8:1      {...}: {a: String, b: Num, c: Bool, d: a -> Num}
+4:4 - 4:5      a: String
+5:4 - 5:5      b: Num
+6:4 - 6:5      c: Bool
+7:4 - 7:5      d: a -> Num
+7:7 - 7:10     foo: a -> Num
+10:0 - 10:5    print: {a: String, b: Num, c: Bool, d: a -> Num}
+10:6 - 10:17   some_record: {a: String, b: Num, c: Bool, d: a -> Num}
+12:0 - 12:5    print: String
+12:18 - 12:19  a: String
+12:6 - 12:17   some_record: {a: String, b: Num, c: Bool, d: a -> Num}
+13:0 - 13:5    print: a -> Num
+13:18 - 13:19  d: a -> Num
+13:6 - 13:17   some_record: {a: String, b: Num, c: Bool, d: a -> Num}
+14:4 - 14:11   tearoff: a -> Num
+14:26 - 14:27  d: a -> Num
+14:14 - 14:25  some_record: {a: String, b: Num, c: Bool, d: a -> Num}
+15:0 - 15:5    print: Num
+15:14 - 15:15  Num
+15:6 - 15:13   tearoff: Unit -> Num
+17:0 - 17:5    print: Num
+17:20 - 17:21  Num
+17:18 - 17:19  d: Unit -> Num
+17:6 - 17:17   some_record: {a: String, b: Num, c: Bool, d: Unit -> Num}
+19:4 - 19:6    ok: a -> {first: a, last: Unit, nested: {another: Num}, name: a}
+19:15 - 19:16  a -> {first: a, last: Unit, nested: {another: Num}, name: a}
+28:0 - 28:1    a -> {first: a, last: Unit, nested: {another: Num}, name: a}
+19:10 - 19:14  name: `y
+20:4 - 20:10   {first: a, last: Unit, nested: {another: Num}, name: a}
+27:4 - 27:5    {...}: {first: a, last: Unit, nested: {another: Num}, name: a}
+21:8 - 21:13   first: a
+21:15 - 21:19  name: a
+22:8 - 22:12   last: Unit
+23:8 - 23:14   nested: {another: Num}
+25:8 - 25:9    {...}: {another: Num}
+24:12 - 24:19  another: Num
+26:8 - 26:12   name: a
+26:14 - 26:18  name: a
+30:4 - 30:8    user: {first: String, last: Unit, nested: {another: Num}, name: String}
+30:19 - 30:20  {first: String, last: Unit, nested: {another: Num}, name: String}
+30:11 - 30:13  ok: String -> {first: String, last: Unit, nested: {another: Num}, name: String}
+31:0 - 31:5    print: String
+31:11 - 31:16  first: String
+31:6 - 31:10   user: {first: String, last: Unit, nested: {another: Num}, name: String}
+32:0 - 32:5    print: Unit
+32:11 - 32:15  last: Unit
+32:6 - 32:10   user: {first: String, last: Unit, nested: {another: Num}, name: String}
+33:0 - 33:5    print: Num
+33:18 - 33:25  another: Num
+33:11 - 33:17  nested: {another: Num}
+33:6 - 33:10   user: {first: String, last: Unit, nested: {another: Num}, name: String}
+34:0 - 34:5    print: String
+34:11 - 34:15  name: String
+34:6 - 34:10   user: {first: String, last: Unit, nested: {another: Num}, name: String}
+36:0 - 36:5    print: String
+38:4 - 38:9    user2: {first: Num, last: Unit, nested: {another: Num}, name: Num}
+38:16 - 38:17  {first: Num, last: Unit, nested: {another: Num}, name: Num}
+38:12 - 38:14  ok: Num -> {first: Num, last: Unit, nested: {another: Num}, name: Num}
+39:0 - 39:5    print: Num
+39:12 - 39:17  first: Num
+39:6 - 39:11   user2: {first: Num, last: Unit, nested: {another: Num}, name: Num}
+40:0 - 40:5    print: Unit
+40:12 - 40:16  last: Unit
+40:6 - 40:11   user2: {first: Num, last: Unit, nested: {another: Num}, name: Num}
+41:0 - 41:5    print: Num
+41:19 - 41:26  another: Num
+41:12 - 41:18  nested: {another: Num}
+41:6 - 41:11   user2: {first: Num, last: Unit, nested: {another: Num}, name: Num}
+42:0 - 42:5    print: Num
+42:12 - 42:16  name: Num
+42:6 - 42:11   user2: {first: Num, last: Unit, nested: {another: Num}, name: Num}
+44:4 - 44:16   empty_record: {}
+44:20 - 44:21  {...}: {}
+45:0 - 45:5    print: {}
+45:6 - 45:18   empty_record: {}
+46:0 - 46:5    print: {}
+46:7 - 46:8    {...}: {}
+48:4 - 48:6    r1: {a: String}
+48:16 - 48:17  {...}: {a: String}
+48:10 - 48:11  a: String
+49:4 - 49:6    r2: {a: String, b: Bool}
+49:24 - 49:25  {...}: {a: String, b: Bool}
+49:12 - 49:14  r1: {a: String}
+49:16 - 49:17  b: Bool
+50:4 - 50:6    r3: {a: String, b: Bool, c: Num}
+50:29 - 50:30  {...}: {a: String, b: Bool, c: Num}
+50:12 - 50:14  r1: {a: String}
+50:16 - 50:17  b: Bool
+50:25 - 50:26  c: Num
+51:4 - 51:6    r4: {a: String}
+51:14 - 51:15  {...}: {a: String}
+51:12 - 51:14  r1: {a: String}
+52:4 - 52:6    r5: {a: String, a: String}
+52:22 - 52:23  {...}: {a: String, a: String}
+52:12 - 52:14  r1: {a: String}
+52:16 - 52:17  a: String
+53:4 - 53:6    r6: {a: String, a: Bool}
+53:23 - 53:24  {...}: {a: String, a: Bool}
+53:12 - 53:14  r1: {a: String}
+53:16 - 53:17  a: Bool
+55:0 - 55:6    assert: Bool
+55:10 - 55:12  ==: Bool
+55:7 - 55:9    r1: {a: String}
+55:20 - 55:21  {...}: {a: String}
+55:14 - 55:15  a: String
+56:0 - 56:6    assert: Bool
+56:10 - 56:12  ==: Bool
+56:7 - 56:9    r2: {a: String, b: Bool}
+56:30 - 56:31  {...}: {a: String, b: Bool}
+56:14 - 56:15  a: String
+56:22 - 56:23  b: Bool
+57:0 - 57:6    assert: Bool
+57:12 - 57:14  ==: Bool
+57:10 - 57:11  b: Bool
+57:7 - 57:9    r2: {a: String, b: Bool}
+58:0 - 58:6    assert: Bool
+58:10 - 58:12  ==: Bool
+58:7 - 58:9    r3: {a: String, b: Bool, c: Num}
+58:35 - 58:36  {...}: {a: String, b: Bool, c: Num}
+58:14 - 58:15  a: String
+58:22 - 58:23  b: Bool
+58:31 - 58:32  c: Num
+59:0 - 59:6    assert: Bool
+59:12 - 59:14  ==: Bool
+59:10 - 59:11  b: Bool
+59:7 - 59:9    r3: {a: String, b: Bool, c: Num}
+60:0 - 60:6    assert: Bool
+60:10 - 60:12  ==: Bool
+60:7 - 60:9    r4: {a: String}
+60:20 - 60:21  {...}: {a: String}
+60:14 - 60:15  a: String
+72:4 - 72:9    named: a, b -> {name: b}
+72:21 - 72:23  a, b -> {name: b}
+72:40 - 72:41  {...}: {name: b}
+72:27 - 72:28  r: a
+72:30 - 72:34  name: a
+72:36 - 72:40  name: a
+72:13 - 72:14  r: `hhhh
+72:16 - 72:20  name: `ffff
+74:4 - 74:6    x1: {title: String, name: String}
+74:39 - 74:40  {...}: {title: String, name: String}
+74:10 - 74:15  title: String
+74:22 - 74:26  name: String
+75:4 - 75:6    y1: {title: String, name: String, name: String}
+75:28 - 75:29  {title: String, name: String, name: String}
+75:9 - 75:14   named: {title: String, name: String}, String -> {title: String, name: String, name: String}
+75:15 - 75:17  x1: {title: String, name: String}
+76:0 - 76:6    assert: Bool
+76:15 - 76:17  ==: Bool
+76:10 - 76:14  name: String
+76:7 - 76:9    x1: {title: String, name: String}
+77:0 - 77:6    assert: Bool
+77:15 - 77:17  ==: Bool
+77:10 - 77:14  name: String
+77:7 - 77:9    y1: {title: String, name: String, name: String}
+79:4 - 79:6    x2: {title: String, name: Num}
+79:30 - 79:31  {...}: {title: String, name: Num}
+79:10 - 79:15  title: String
+79:22 - 79:26  name: Num
+80:4 - 80:6    y2: {title: String, name: Num, name: String}
+80:28 - 80:29  {title: String, name: Num, name: String}
+80:9 - 80:14   named: {title: String, name: Num}, String -> {title: String, name: Num, name: String}
+80:15 - 80:17  x2: {title: String, name: Num}
+81:0 - 81:6    assert: Bool
+81:15 - 81:17  ==: Bool
+81:10 - 81:14  name: Num
+81:7 - 81:9    x2: {title: String, name: Num}
+82:0 - 82:6    assert: Bool
+82:15 - 82:17  ==: Bool
+82:10 - 82:14  name: String
+82:7 - 82:9    y2: {title: String, name: Num, name: String}
+84:4 - 84:6    x3: {title: String, name: String}
+84:35 - 84:36  {...}: {title: String, name: String}
+84:10 - 84:15  title: String
+84:22 - 84:26  name: String
+85:4 - 85:6    y3: {title: String, name: String, name: Num}
+85:21 - 85:22  {title: String, name: String, name: Num}
+85:9 - 85:14   named: {title: String, name: String}, Num -> {title: String, name: String, name: Num}
+85:15 - 85:17  x3: {title: String, name: String}
+86:0 - 86:6    assert: Bool
+86:15 - 86:17  ==: Bool
+86:10 - 86:14  name: String
+86:7 - 86:9    x3: {title: String, name: String}
+87:0 - 87:6    assert: Bool
+87:15 - 87:17  ==: Bool
+87:10 - 87:14  name: Num
+87:7 - 87:9    y3: {title: String, name: String, name: Num}
+90:4 - 90:10   incr_x: {x: Num} -> {x: Num, x: Num}
+90:16 - 90:18  {x: Num} -> {x: Num, x: Num}
+90:33 - 90:34  {...}: {x: Num, x: Num}
+90:22 - 90:23  r: {x: Num}
+90:25 - 90:26  x: Num
+90:31 - 90:32  +: Num
+90:30 - 90:31  x: Num
+90:28 - 90:29  r: {x: Num}
+90:14 - 90:15  r: {x: Num}
+91:4 - 91:10   point1: {y: Num, x: Num}
+91:24 - 91:25  {...}: {y: Num, x: Num}
+91:14 - 91:15  y: Num
+91:20 - 91:21  x: Num
+92:4 - 92:10   point2: {y: Num, x: Num, x: Num}
+92:26 - 92:27  {y: Num, x: Num, x: Num}
+92:13 - 92:19  incr_x: {y: Num, x: Num} -> {y: Num, x: Num, x: Num}
+92:20 - 92:26  point1: {y: Num, x: Num}
+93:4 - 93:10   point3: {y: Num, x: Num, x: Num, x: Num}
+93:26 - 93:27  {y: Num, x: Num, x: Num, x: Num}
+93:13 - 93:19  incr_x: {y: Num, x: Num, x: Num} -> {y: Num, x: Num, x: Num, x: Num}
+93:20 - 93:26  point2: {y: Num, x: Num, x: Num}
+95:0 - 95:6    assert: Bool
+95:14 - 95:16  ==: Bool
+95:7 - 95:13   point1: {y: Num, x: Num}
+95:28 - 95:29  {...}: {y: Num, x: Num}
+95:18 - 95:19  y: Num
+95:24 - 95:25  x: Num
+___ OUTPUT ___
 {a: one, b: 2, c: false, d: (arity: 0, impl: Closure: (List<Object?>) => Object?)}
 one
 (arity: 0, impl: Closure: (List<Object?>) => Object?)
@@ -112,13 +1529,151 @@ null
 1
 {}
 {}
+
+
 ====== return_expr.lox =====
+___ TYPES ___
+0:4 - 0:11     unlucky: a -> Bool
+0:16 - 0:18    a -> Bool
+1:4 - 1:10     online: a -> Bool
+1:15 - 1:17    a -> Bool
+2:4 - 2:19     is_auth_expired: a -> Bool
+2:24 - 2:26    a -> Bool
+4:4 - 4:11     connect: a -> .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
+4:16 - 4:17    a -> .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
+11:0 - 11:1    a -> .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
+5:15 - 5:16    Bool
+5:7 - 5:14     unlucky: Unit -> Bool
+5:22 - 5:28    .BadLuck | .Connection({some_connection_details: Num, download: b -> String}) | .Offline
+5:30 - 5:37    BadLuck: .BadLuck | .Connection({some_connection_details: Num, download: b -> String}) | .Offline
+6:7 - 6:8      !: Bool
+6:15 - 6:16    Bool
+6:8 - 6:14     online: Unit -> Bool
+6:22 - 6:28    .BadLuck | .Connection({some_connection_details: Num, download: b -> String}) | .Offline
+6:30 - 6:37    Offline: .BadLuck | .Connection({some_connection_details: Num, download: b -> String}) | .Offline
+7:4 - 7:10     .BadLuck | .Connection({some_connection_details: Num, download: b -> String}) | .Offline
+7:12 - 7:22    Connection: .BadLuck | .Connection({some_connection_details: Num, download: b -> String}) | .Offline
+10:4 - 10:5    {...}: {some_connection_details: Num, download: a -> String}
+8:8 - 8:31     some_connection_details: Num
+9:8 - 9:16     download: a -> String
+9:20 - 9:22    a -> String
+13:4 - 13:12   download: {download: Unit -> b} -> .AuthExpired | .DownloadInterrupted | .TheData(b)
+13:27 - 13:28  {download: Unit -> b} -> .AuthExpired | .DownloadInterrupted | .TheData(b)
+18:0 - 18:1    {download: Unit -> b} -> .AuthExpired | .DownloadInterrupted | .TheData(b)
+13:16 - 13:26  connection: {download: Unit -> `tt}
+14:23 - 14:24  Bool
+14:7 - 14:22   is_auth_expired: Unit -> Bool
+14:30 - 14:36  .AuthExpired | .DownloadInterrupted | .TheData(b)
+14:38 - 14:49  AuthExpired: .AuthExpired | .DownloadInterrupted | .TheData(b)
+15:15 - 15:16  Bool
+15:7 - 15:14   unlucky: Unit -> Bool
+15:22 - 15:28  .AuthExpired | .DownloadInterrupted | .TheData(b)
+15:30 - 15:49  DownloadInterrupted: .AuthExpired | .DownloadInterrupted | .TheData(b)
+16:8 - 16:14   result: a
+16:37 - 16:38  a
+16:28 - 16:36  download: Unit -> a
+16:17 - 16:27  connection: {download: Unit -> b}
+17:4 - 17:10   .AuthExpired | .DownloadInterrupted | .TheData(b)
+17:12 - 17:19  TheData: .AuthExpired | .DownloadInterrupted | .TheData(b)
+17:20 - 17:26  result: a
+20:4 - 20:24   connect_and_download: a -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+20:29 - 20:30  a -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+28:0 - 28:1    a -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+21:8 - 21:18   connection: {some_connection_details: Num, download: a -> String}
+21:21 - 21:26  match: {some_connection_details: Num, download: a -> String}
+21:35 - 21:36  .AuthExpired | .BadLuck | .Connection({some_connection_details: Num, download: b -> String}) | .DownloadInterrupted | .Offline | .TheData(String)
+21:27 - 21:34  connect: Unit -> .AuthExpired | .BadLuck | .Connection({some_connection_details: Num, download: b -> String}) | .DownloadInterrupted | .Offline | .TheData(String)
+22:25 - 22:26  c: {some_connection_details: Num, download: a -> String}
+23:20 - 23:26  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+23:28 - 23:35  TheData: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+24:17 - 24:23  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+24:24 - 24:29  other: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+27:4 - 27:10   .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+27:30 - 27:31  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+27:11 - 27:19  download: {some_connection_details: Num, download: Unit -> String} -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+27:20 - 27:30  connection: {some_connection_details: Num, download: Unit -> String}
+30:4 - 30:8    data: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+30:32 - 30:33  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+30:11 - 30:31  connect_and_download: Unit -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+31:0 - 31:5    print: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+31:6 - 31:10   data: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+___ OUTPUT ___
 .TheData(some default data)
+
+
 ====== scoping.lox =====
+___ TYPES ___
+1:4 - 1:5      a: String
+3:6 - 3:12     show_a: a -> Unit
+3:17 - 3:18    a -> Unit
+5:2 - 5:3      a -> Unit
+4:4 - 4:9      print: String
+4:10 - 4:11    a: String
+7:9 - 7:10     Unit
+7:2 - 7:8      show_a: Unit -> Unit
+8:6 - 8:7      a: String
+9:9 - 9:10     Unit
+9:2 - 9:8      show_a: Unit -> Unit
+___ OUTPUT ___
 global
 global
+
+
 ====== tags.lox =====
+___ TYPES ___
+1:4 - 1:7      tab: .Key(String)
+1:11 - 1:14    Key: .Key(String)
+2:4 - 2:10     center: .Mouse({x: Num, y: Num})
+2:14 - 2:19    Mouse: .Mouse({x: Num, y: Num})
+2:33 - 2:34    {...}: {x: Num, y: Num}
+2:21 - 2:22    x: Num
+2:28 - 2:29    y: Num
+3:4 - 3:16     key_or_mouse: .Key(String) | .Mouse({x: Num, y: Num})
+3:25 - 3:26    ?: .Key(String) | .Mouse({x: Num, y: Num})
+3:27 - 3:30    tab: .Key(String) | .Mouse({x: Num, y: Num})
+3:33 - 3:39    center: .Key(String) | .Mouse({x: Num, y: Num})
+5:4 - 5:6      fn: .Key(String) | .Mouse({x: Num}) -> String
+5:12 - 5:14    .Key(String) | .Mouse({x: Num}) -> String
+5:15 - 5:20    match: String
+5:21 - 5:22    e: .Key(String) | .Mouse({x: Num})
+6:17 - 6:21    char: String
+7:35 - 7:36    ?: String
+7:30 - 7:31    >: Bool
+7:28 - 7:29    x: Num
+7:21 - 7:27    coords: {x: Num}
+5:10 - 5:11    e: .Key(String) | .Mouse({x: Num})
+10:0 - 10:5    print: String
+10:12 - 10:13  String
+10:6 - 10:8    fn: .Key(String) | .Mouse({x: Num}) -> String
+10:9 - 10:12   tab: .Key(String) | .Mouse({x: Num})
+11:0 - 11:5    print: String
+11:15 - 11:16  String
+11:6 - 11:8    fn: .Key(String) | .Mouse({y: Num, x: Num}) -> String
+11:9 - 11:15   center: .Key(String) | .Mouse({x: Num, y: Num})
+12:0 - 12:5    print: String
+12:21 - 12:22  String
+12:6 - 12:8    fn: .Key(String) | .Mouse({y: Num, x: Num}) -> String
+12:9 - 12:21   key_or_mouse: .Key(String) | .Mouse({x: Num, y: Num})
+14:4 - 14:10   colors: List[.Gold | .Green | .Red]
+14:33 - 14:34  [...]: List[.Gold | .Green | .Red]
+14:15 - 14:20  Green: .Gold | .Green | .Red
+14:23 - 14:27  Gold: .Gold | .Green | .Red
+14:30 - 14:33  Red: .Gold | .Green | .Red
+15:4 - 15:13   fav_color: .Gold | .Green | .Red
+15:23 - 15:25  \>: .Gold | .Green | .Red
+15:16 - 15:22  colors: List[.Gold | .Green | .Red]
+15:31 - 15:36  first: List[.Gold | .Green | .Red] -> .Gold | .Green | .Red
+15:26 - 15:30  List: {first: List[.Gold | .Green | .Red] -> .Gold | .Green | .Red, rest: List[b] -> List[b], empty: List[c] -> Bool}
+16:0 - 16:5    print: String
+16:6 - 16:11   match: String
+16:12 - 16:21  fav_color: .Gold | .Green | .Red
+22:0 - 22:6    assert: Bool
+22:46 - 22:48  ==: Bool
+22:7 - 22:12   match: Num
+22:13 - 22:22  fav_color: .Gold | .Green | .Red
+___ OUTPUT ___
 \t
 bottom
 bottom
 green
+
