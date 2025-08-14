@@ -678,22 +678,58 @@ final loxStandardLibraryEnv = <String, LoxType>{
 };
 
 void normalizeProgramTypeVariableIds(List<Statement> statements) {
+  // normalize per top-level statement?
   for (final statement in statements) {
+    final allTypeVariables = <int>{};
+    final allTypes = <LoxType>{};
+
+    for (final pat in statement.allPatterns()) {
+      switch (pat) {
+        case Identifier():
+          if (pat.type case final type?) {
+            allTypes.add(type);
+            allTypeVariables.addAll(collectTypeVariables(allTypeVariables, type));
+          }
+        case RecordDestructure(:final elements):
+          for (final e in elements) {
+            if (e.type case final type?) {
+              allTypes.add(type);
+              allTypeVariables.addAll(collectTypeVariables(allTypeVariables, type));
+            }
+          }
+      }
+    }
+
     for (final expr in statement.allExpressions()) {
       if (expr.type case final type?) {
-        expr.type = LoxType(normalizeTypeVariableIds(type));
+        allTypes.add(type);
+        allTypeVariables.addAll(collectTypeVariables(allTypeVariables, type));
+      }
+    }
+
+
+    final types = allTypes.toList();
+    final namesSorted = allTypeVariables.toList();
+    int lookup(int name) =>
+      namesSorted.contains(name)
+        ? namesSorted.indexOf(name)
+        : name;
+
+    for (final expr in statement.allExpressions()) {
+      if (expr.type case final type?) {
+        expr.type = LoxType(rename(type, lookup));
       }
     }
     for (final pat in statement.allPatterns()) {
       switch (pat) {
         case Identifier():
           if (pat.type case final type?) {
-            pat.type = LoxType(normalizeTypeVariableIds(type));
+            pat.type = LoxType(rename(type, lookup));
           }
         case RecordDestructure(:final elements):
           for (final e in elements) {
             if (e.type case final type?) {
-              e.type = LoxType(normalizeTypeVariableIds(type));
+              e.type = LoxType(rename(type, lookup));
             }
           }
       }
