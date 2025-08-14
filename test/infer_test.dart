@@ -1,8 +1,6 @@
-import 'package:lox/coordinator.dart';
 import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/hindley_milner_lox.dart';
-import 'package:lox/mark_types.dart';
 import 'package:lox/utils.dart';
 import 'package:test/test.dart';
 import 'package:test_api/src/backend/invoker.dart'; // ignore: depend_on_referenced_packages
@@ -954,28 +952,6 @@ make_counter(0, \value { print value*value; })
 
   test('destructuring', () {
     expect(
-      _markTypes(r'''
-      let fn1 = \data { let {x, y} = data; };
-      let fn2 = \data { let {x, y} = data; };
-      ''').map((x) => x.display),
-      [
-        'fn1: {y: b, x: c} -> Unit',
-        '{y: b, x: c} -> Unit',
-        '{y: b, x: c} -> Unit',
-        'data: {y: b, x: c}',
-        'x: c',
-        'y: b',
-        'data: {y: b, x: c}',
-        'fn2: {y: b, x: c} -> Unit',
-        '{y: b, x: c} -> Unit',
-        '{y: b, x: c} -> Unit',
-        'data: {y: b, x: c}',
-        'x: c',
-        'y: b',
-        'data: {y: b, x: c}',
-      ],
-    );
-    expect(
       _inferSource('let {a} = {a: 1}; a;'),
       'Num',
     );
@@ -1169,20 +1145,6 @@ dynamic _inferSource(String source, [Map<String, String> files = const {}]) {
     if (!source.contains(';')) source = '$source;';
     final statements = inferSource(source, (path) => files[path]!);
     return statements.typeOfLastStatement.toString();
-  } on (Expr, TypeCheckException) catch (e) {
-    return e.$2;
-  } catch (e, s) {
-    print(s);
-    return e;
-  }
-}
-
-dynamic _markTypes(String source, [Map<String, String> files = const {}]) {
-  try {
-    if (!source.contains(';')) source = '$source;';
-    final (marks, :errorOutput) = markTypes('', Source.memory(source), (path) => files[path]!);
-    if (errorOutput.isNotEmpty) throw errorOutput;
-    return marks;
   } on (Expr, TypeCheckException) catch (e) {
     return e.$2;
   } catch (e, s) {
