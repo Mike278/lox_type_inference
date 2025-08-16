@@ -504,7 +504,7 @@ class TypeInference {
         element.type = type;
         fields[element.name.lexeme] = type;
       }
-      return .record(fields);
+      return .record(fields, tail: .fresh(level));
     }
 
     for (final param in params) {
@@ -618,9 +618,9 @@ extension type LoxType(Ty inner) implements Ty {
   static final emptyRecord = LoxType(TyRowEmpty());
   static final list        = ({required LoxType of}) => LoxType(TyFunctionApplication('List', [of]));
 
-  static final record = (Map<String, LoxType> fields) => LoxType(
+  static final record = (Map<String, LoxType> fields, {LoxType? tail}) => LoxType(
     fields.fold(
-      emptyRecord,
+      tail ?? emptyRecord,
       (row, label, type) => TyRowExtend(
         newEntry: (label, type),
         row: row,

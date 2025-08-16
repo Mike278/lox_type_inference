@@ -34,7 +34,7 @@ let part_2 = input \> count_where(
     \list ->
         list \> is_safe or
         list \> enumerated
-             \> map(\skip -> list \> drop_at(skip.index))
+             \> map(\{index} -> list \> drop_at(index))
              \> any(is_safe)
 );
 print part_2;

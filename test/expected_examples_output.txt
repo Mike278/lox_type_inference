@@ -334,16 +334,15 @@ ___ TYPES ___
 35:13 - 35:15  \>: List[{element: Num, index: Num}]
 35:8 - 35:12   list: List[Num]
 35:16 - 35:26  enumerated: List[Num] -> List[{element: Num, index: Num}]
-36:56 - 36:57  List[{element: Num, index: Num}] -> List[List[Num]]
+36:54 - 36:55  List[{element: Num, index: Num}] -> List[List[Num]]
 36:16 - 36:19  map: ({element: Num, index: Num} -> List[Num]), List[{element: Num, index: Num}] -> List[List[Num]]
-36:26 - 36:28  {element: Num, index: Num} -> List[Num]
-36:34 - 36:36  \>: List[Num]
-36:29 - 36:33  list: List[Num]
-36:55 - 36:56  List[Num] -> List[Num]
-36:37 - 36:44  drop_at: Num, List[Num] -> List[Num]
-36:50 - 36:55  index: Num
-36:45 - 36:49  skip: {element: Num, index: Num}
-36:21 - 36:25  skip: {element: Num, index: Num}
+36:29 - 36:31  {element: Num, index: Num} -> List[Num]
+36:37 - 36:39  \>: List[Num]
+36:32 - 36:36  list: List[Num]
+36:53 - 36:54  List[Num] -> List[Num]
+36:40 - 36:47  drop_at: Num, List[Num] -> List[Num]
+36:48 - 36:53  index: Num
+36:22 - 36:27  index: Num
 37:27 - 37:28  List[List[Num]] -> Bool
 37:16 - 37:19  any: (List[Num] -> Bool), List[List[Num]] -> Bool
 37:20 - 37:27  is_safe: List[Num] -> Bool
@@ -1046,18 +1045,18 @@ ___ TYPES ___
 0:5 - 0:9      join: List[String] -> String
 0:13 - 0:19    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
 0:20 - 0:36    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
-2:4 - 2:12     describe: {as_of: Num}, {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
-2:38 - 2:40    {as_of: Num}, {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
-2:48 - 2:49    {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
-10:0 - 10:1    {serial_number: b, manufacture_date: {year: d}, name: {label: String}} -> String
-2:42 - 2:47    robot: {serial_number: b, manufacture_date: {year: d}, name: {label: String}}
+2:4 - 2:12     describe: {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
+2:38 - 2:40    {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
+2:48 - 2:49    {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
+10:0 - 10:1    {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
+2:42 - 2:47    robot: {serial_number: c, manufacture_date: {year: e}, name: {label: String}}
 4:8 - 4:12     name: {label: String}
 4:16 - 4:21    label: String
-5:8 - 5:24     manufacture_date: {year: d}
-5:28 - 5:32    year: d
-5:34 - 5:47    creation_year: d
-6:8 - 6:21     serial_number: b
-7:8 - 7:13     robot: {serial_number: b, manufacture_date: {year: d}, name: {label: String}}
+5:8 - 5:24     manufacture_date: {year: e}
+5:28 - 5:32    year: e
+5:34 - 5:47    creation_year: e
+6:8 - 6:21     serial_number: c
+7:8 - 7:13     robot: {serial_number: c, manufacture_date: {year: e}, name: {label: String}}
 8:8 - 8:19     is_old_tech: Bool
 8:51 - 8:52    >: Bool
 8:35 - 8:36    -: Num
