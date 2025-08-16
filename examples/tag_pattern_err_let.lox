@@ -1,0 +1,6 @@
+
+let f = \x {
+    let .Foo(y) = x;
+};
+
+f(true ? .Foo(1) : .Bar);

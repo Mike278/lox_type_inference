@@ -280,6 +280,12 @@ class RecordDestructuringElement with TypeReference {
   RecordDestructuringElement(this.name, [this.pattern]);
 }
 
+class TagPattern extends Pattern with TypeReference {
+  final Token tag;
+  final Pattern? payload;
+  TagPattern(this.tag, this.payload);
+}
+
 mixin TypeReference {
   LoxType? Function()? _type;
   LoxType? get type => _type?.call();
@@ -473,6 +479,9 @@ extension PatternAPI on Pattern {
         for (final e in elements) 
           if (e.pattern case final pattern?) 
             yield* pattern.subPatterns();
+      case TagPattern(:final payload):
+        if (payload != null)
+          yield* payload.subPatterns();
       case Identifier():
     }
   }

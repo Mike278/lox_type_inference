@@ -97,7 +97,7 @@ List<Object?> eval(File file) {
     );
   } catch (e, s) {
     output.add(e);
-    output.add(s);
+    print(s);
   }
   output.add('');
   output.add('');

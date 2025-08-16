@@ -1673,3 +1673,35 @@ bottom
 bottom
 green
 
+
+====== tag_pattern_err_let.lox =====
+___ Type checking failed ___
+(Lambda(null, [Instance of 'Identifier'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
+___ Continuing with execution ___
+___ OUTPUT ___
+LoxRuntimeException{token: identifier Foo (ln3:9), message: Tag patterns can only be used in match expressions.}
+
+
+====== tag_pattern_err_let_no_payload.lox =====
+___ Type checking failed ___
+(Lambda(null, [Instance of 'Identifier'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
+___ Continuing with execution ___
+___ OUTPUT ___
+LoxRuntimeException{token: identifier Foo (ln3:9), message: Tag patterns can only be used in match expressions.}
+
+
+====== tag_pattern_err_param.lox =====
+___ Type checking failed ___
+(Lambda(null, [Instance of 'TagPattern'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
+___ Continuing with execution ___
+___ OUTPUT ___
+LoxRuntimeException{token: identifier Foo (ln2:10), message: Tag patterns can only be used in match expressions.}
+
+
+====== tag_pattern_err_param_no_payload.lox =====
+___ Type checking failed ___
+(Lambda(null, [Instance of 'TagPattern'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
+___ Continuing with execution ___
+___ OUTPUT ___
+LoxRuntimeException{token: identifier Foo (ln2:10), message: Tag patterns can only be used in match expressions.}
+

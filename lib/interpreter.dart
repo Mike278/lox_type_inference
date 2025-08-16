@@ -217,12 +217,15 @@ class LoxRuntime {
 
       case RecordDestructure(:final openBrace):
         final record = evalAs<LoxRecord>(initializer, openBrace, env);
-        final matches = matchRecord(pattern, record);
+        final matches = destructureRecord(pattern, record);
         return env.definingAll(matches, openBrace);
+
+      case TagPattern(:final tag):
+        throwTagPatternInIrrefutablePosition(tag);
     }
   }
 
-  LoxRecord matchRecord(RecordDestructure pattern, LoxRecord record) {
+  LoxRecord destructureRecord(RecordDestructure pattern, LoxRecord record) {
     var env = Env.empty();
     for (final field in pattern.elements) {
       final fieldValue = accessRecordField(record, field.name);
@@ -234,9 +237,12 @@ class LoxRuntime {
 
         RecordDestructure nested =>
           env.definingAll(
-            matchRecord(nested, fieldValue as LoxRecord),
+            destructureRecord(nested, fieldValue as LoxRecord),
             nested.openBrace,
           ),
+
+        TagPattern(:final tag) =>
+          throwTagPatternInIrrefutablePosition(tag),
       };
     }
     return env.state;
@@ -293,7 +299,9 @@ class LoxRuntime {
               Identifier(:final name) =>
                 { name.lexeme: arg },
               RecordDestructure pattern =>
-                matchRecord(pattern, arg),
+                destructureRecord(pattern, arg),
+              TagPattern(:final tag) =>
+                throwTagPatternInIrrefutablePosition(tag),
             }
         };
         final newEnv = Env(enclosing, instantiatedParameters);
@@ -330,6 +338,10 @@ class LoxRuntime {
           name: value,
     };
   }
+}
+
+Never throwTagPatternInIrrefutablePosition(Token tag) {
+  throw LoxRuntimeException(tag, 'Tag patterns can only be used in match expressions.');
 }
 
 final builtins = UnmodifiableMapView({

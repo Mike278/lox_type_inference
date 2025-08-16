@@ -38,6 +38,10 @@ class TypeInference {
                 e.type = LoxType(generalize(-1, type));
               }
             }
+          case TagPattern():
+            if (pat.type case final type?) {
+              pat.type = LoxType(generalize(-1, type));
+            }
         }
       }
     }
@@ -82,6 +86,8 @@ class TypeInference {
           inferIdentifierPattern(env, level, ident, let.initializer),
       RecordDestructure pattern =>
           inferRecordPattern(env, level, pattern, let.initializer),
+      TagPattern() =>
+          throw TagPatternInIrrefutablePosition(),
     };
 
   Map<String, LoxType> inferRecordPattern(Map<String, LoxType> env, int level, RecordDestructure pattern, Expr record) {
@@ -97,6 +103,9 @@ class TypeInference {
 
         RecordDestructure nested =>
             inferRecordPattern(env, level, nested, syntheticRecordGet),
+
+        TagPattern() =>
+            throw TagPatternInIrrefutablePosition(),
       };
     }
     return env;
@@ -500,6 +509,8 @@ class TypeInference {
             ident.type = type;
           case RecordDestructure pattern:
             type = destructure(pattern);
+          case TagPattern():
+            throw TagPatternInIrrefutablePosition();
         }
         element.type = type;
         fields[element.name.lexeme] = type;
@@ -516,6 +527,8 @@ class TypeInference {
           param.type = type;
         case RecordDestructure():
           result.parameterTypes.add(destructure(param));
+        case TagPattern():
+            throw TagPatternInIrrefutablePosition();
       }
     }
 
@@ -681,34 +694,33 @@ void normalizeProgramTypeVariableIds(List<Statement> statements) {
   // normalize per top-level statement?
   for (final statement in statements) {
     final allTypeVariables = <int>{};
-    final allTypes = <LoxType>{};
 
     for (final pat in statement.allPatterns()) {
       switch (pat) {
         case Identifier():
           if (pat.type case final type?) {
-            allTypes.add(type);
             allTypeVariables.addAll(collectTypeVariables(allTypeVariables, type));
           }
         case RecordDestructure(:final elements):
           for (final e in elements) {
             if (e.type case final type?) {
-              allTypes.add(type);
               allTypeVariables.addAll(collectTypeVariables(allTypeVariables, type));
             }
+          }
+        case TagPattern():
+          if (pat.type case final type?) {
+            allTypeVariables.addAll(collectTypeVariables(allTypeVariables, type));
           }
       }
     }
 
     for (final expr in statement.allExpressions()) {
       if (expr.type case final type?) {
-        allTypes.add(type);
         allTypeVariables.addAll(collectTypeVariables(allTypeVariables, type));
       }
     }
 
 
-    final types = allTypes.toList();
     final namesSorted = allTypeVariables.toList();
     int lookup(int name) =>
       namesSorted.contains(name)
@@ -731,6 +743,10 @@ void normalizeProgramTypeVariableIds(List<Statement> statements) {
             if (e.type case final type?) {
               e.type = LoxType(rename(type, lookup));
             }
+          }
+        case TagPattern():
+          if (pat.type case final type?) {
+            pat.type = LoxType(rename(type, lookup));
           }
       }
     }

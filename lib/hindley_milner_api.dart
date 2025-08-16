@@ -129,6 +129,9 @@ class UndefinedVariable implements TypeCheckException {
 class TopLevelReturn implements TypeCheckException {
   @override toString() => 'Return statements must be defined inside functions, not at the top level.';
 }
+class TagPatternInIrrefutablePosition implements TypeCheckException {
+  @override toString() => 'Tag patterns can only be used in match expressions.';
+}
 
 Ty rewriteRow(
   Ty row2,

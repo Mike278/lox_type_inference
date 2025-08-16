@@ -155,6 +155,10 @@ List<(CodeSpan, String)> displayPattern(Pattern pattern) =>
           ...displayPattern(pattern),
       ],
     ],
+    TagPattern(:final tag, :final payload, :final type) => [
+      (tag.span, '${tag.lexeme}: ${displayType(type)}'),
+      if (payload != null) ...displayPattern(payload),
+    ],
   };
 
 List<(CodeSpan, String)> displayExpression(
@@ -338,6 +342,8 @@ CodeSpan locationForErrorUnderlineOfPattern(Pattern pattern) => switch (pattern)
       name.span,
   RecordDestructure(:final openBrace, :final closeBrace) =>
       openBrace.span.extendedBy(closeBrace.span),
+  TagPattern(:final tag) =>
+      tag.span,
 };
 
 

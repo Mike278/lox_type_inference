@@ -212,6 +212,9 @@ class Parser {
   Pattern pattern() {
     if (matchFirst(.openBrace)) {
       return recordPattern();
+    }
+    else if (matchFirst(.dot)) {
+      return tagPattern();
     } else {
       // if (matchFirst(.number, .string, .true_, .false_, .nil)) {
       //   return LiteralPattern(previous());
@@ -250,6 +253,18 @@ class Parser {
       elements: elements,
       closeBrace: closeBrace,
     );
+  }
+
+  Pattern tagPattern() {
+    final tagName = consume(.identifier, "Expected tag name");
+    final Pattern? payload;
+    if (matchFirst(.openParen)) {
+      payload = pattern();
+      consume(.closeParen, "Expected close paren");
+    } else {
+      payload = null;
+    }
+    return TagPattern(tagName, payload);
   }
 
   // expression     → ternary;
