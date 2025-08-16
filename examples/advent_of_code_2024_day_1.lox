@@ -13,9 +13,9 @@ let input = [
 
 let { list1, list2 } = input \> fold(
     {list1: [], list2: []},
-    \state, pair -> {
-        list1: [..state.list1, pair \> first],
-        list2: [..state.list2, pair \> rest \> first],
+    \{list1, list2}, pair -> {
+        list1: [..list1, pair \> first],
+        list2: [..list2, pair \> rest \> first],
     }
 );
 print list1;

@@ -9,18 +9,8 @@ import 'package:test/test.dart';
 
 import '../bin/lox.dart' show dartIOReadFile;
 import '../tryit/web/sample.dart' show sample;
+import 'test_utils.dart';
 
-final testDirectory = join(
-  Directory.current.path,
-  Directory.current.path.endsWith('test') ? '' : 'test',
-);
-
-final LoxAssertion testAssertion = (keyword, source, value) =>
-  expect(
-    value,
-    isTrue,
-    reason: 'lox `assert` failed: $source',
-  );
 
 void main() {
   test('tryit', () {
@@ -96,14 +86,19 @@ List<Object?> eval(File file) {
   }
 
   output.add('___ OUTPUT ___');
-  LoxRuntime(
-    testAssertion,
-    (print: output.add),
-    resolveImport,
-  ).interpret(
-    statements,
-    Env.global(),
-  );
+  try {
+    LoxRuntime(
+      testAssertion,
+      (print: output.add),
+      resolveImport,
+    ).interpret(
+      statements,
+      Env.global(),
+    );
+  } catch (e, s) {
+    output.add(e);
+    output.add(s);
+  }
   output.add('');
   output.add('');
 

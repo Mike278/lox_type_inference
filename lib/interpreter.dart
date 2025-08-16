@@ -144,7 +144,7 @@ class LoxRuntime {
           field.lexeme: eval(expr, env),
       },
       RecordGet(:final record, :final name) =>
-        accessRecordField(evalAs(record, name, env), name, env),
+        accessRecordField(evalAs(record, name, env), name),
       RecordUpdate(:final dotdot, :final record, :final newFields) => {
         ...evalAs<LoxRecord>(record, dotdot, env),
         for (final (label, value) in newFields.pairs())
@@ -158,7 +158,7 @@ class LoxRuntime {
     };
   }
 
-  Object? accessRecordField(LoxRecord record, Token name, Env env) {
+  Object? accessRecordField(LoxRecord record, Token name) {
     if (record.containsKey(name.lexeme)) {
       return record[name.lexeme];
     }
@@ -210,22 +210,22 @@ class LoxRuntime {
     return env.defining(name, eval(initializer, env));
   }
 
-  Env handleAssignment(Env env, Pattern pattern, Expr initializer) =>
+  Env handleAssignment(Env env, Pattern pattern, Expr initializer) {
     switch (pattern) {
-      Identifier(:final name) =>
-        define(env, name, initializer),
+      case Identifier(:final name):
+        return define(env, name, initializer);
 
-      RecordDestructure(:final openBrace) =>
-        destructureRecord(
-          pattern,
-          evalAs(initializer, openBrace, env),
-          env,
-        ),
-    };
+      case RecordDestructure(:final openBrace):
+        final record = evalAs<LoxRecord>(initializer, openBrace, env);
+        final matches = matchRecord(pattern, record);
+        return env.definingAll(matches, openBrace);
+    }
+  }
 
-  Env destructureRecord(RecordDestructure pattern, LoxRecord record, Env env) {
+  LoxRecord matchRecord(RecordDestructure pattern, LoxRecord record) {
+    var env = Env.empty();
     for (final field in pattern.elements) {
-      final fieldValue = accessRecordField(record, field.name, env);
+      final fieldValue = accessRecordField(record, field.name);
       env = switch (field.pattern) {
         null => env.defining(field.name, fieldValue),
 
@@ -233,10 +233,13 @@ class LoxRuntime {
           env.defining(newName, fieldValue),
 
         RecordDestructure nested =>
-          destructureRecord(nested, fieldValue as LoxRecord, env),
+          env.definingAll(
+            matchRecord(nested, fieldValue as LoxRecord),
+            nested.openBrace,
+          ),
       };
     }
-    return env;
+    return env.state;
   }
 
   Object? handleInvocation(
@@ -290,7 +293,7 @@ class LoxRuntime {
               Identifier(:final name) =>
                 { name.lexeme: arg },
               RecordDestructure pattern =>
-                destructureRecord(pattern, arg, enclosing).state,
+                matchRecord(pattern, arg),
             }
         };
         final newEnv = Env(enclosing, instantiatedParameters);
@@ -379,7 +382,20 @@ class Env {
   final UnmodifiableMapView<String, Object?> state;
   final Env? _enclosing;
   Env.global() : state = builtins, _enclosing = null;
+  Env.empty() : this(null);
   Env(this._enclosing, [Map<String, Object?>? values]) : state = UnmodifiableMapView({...?values});
+
+  Env definingAll(Map<String, Object?> other, Token errorOnToken) {
+    final collision = state.keys.toSet().intersection(other.keys.toSet()).firstOrNull;
+    if (collision != null) {
+      throw LoxRuntimeException(errorOnToken, "The name '$collision is already defined.");
+    }
+
+    return Env(_enclosing, {
+      ...state,
+      ...other,
+    });
+  }
 
   Env defining(Token name, Object? value) {
     final key = name.lexeme;

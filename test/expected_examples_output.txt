@@ -25,21 +25,20 @@ ___ TYPES ___
 8:29 - 8:30    {...}: {arg1: String, arg2: Num}
 8:5 - 8:9      arg1: String
 8:22 - 8:26    arg2: Num
-11:4 - 11:12   scale_by: Num, {y: Num, x: Num} -> {x: Num, y: Num}
-11:23 - 11:25  Num, {y: Num, x: Num} -> {x: Num, y: Num}
-11:34 - 11:36  {y: Num, x: Num} -> {x: Num, y: Num}
+11:4 - 11:12   scale_by: Num, {x: Num, y: Num} -> {x: Num, y: Num}
+11:23 - 11:25  Num, {x: Num, y: Num} -> {x: Num, y: Num}
+11:34 - 11:36  {x: Num, y: Num} -> {x: Num, y: Num}
 14:0 - 14:1    {...}: {x: Num, y: Num}
 12:4 - 12:5    x: Num
-12:16 - 12:17  *: Num
-12:14 - 12:15  x: Num
-12:7 - 12:13   offset: {y: Num, x: Num}
-12:18 - 12:24  factor: Num
+12:9 - 12:10   *: Num
+12:7 - 12:8    x: Num
+12:11 - 12:17  factor: Num
 13:4 - 13:5    y: Num
-13:16 - 13:17  *: Num
-13:14 - 13:15  y: Num
-13:7 - 13:13   offset: {y: Num, x: Num}
-13:18 - 13:24  factor: Num
-11:27 - 11:33  offset: {y: Num, x: Num}
+13:9 - 13:10   *: Num
+13:7 - 13:8    y: Num
+13:11 - 13:17  factor: Num
+11:28 - 11:29  x: Num
+11:31 - 11:32  y: Num
 11:16 - 11:22  factor: Num
 16:4 - 16:7    add: {y: Num, x: Num}, {y: Num, x: Num} -> {x: Num, y: Num}
 16:16 - 16:18  {y: Num, x: Num}, {y: Num, x: Num} -> {x: Num, y: Num}
@@ -97,8 +96,8 @@ ___ TYPES ___
 34:4 - 34:24   offset_for_direction: String -> {y: Num, x: Num}
 34:31 - 34:35  arg1: String
 34:25 - 34:30  instr: {arg2: Num, arg1: String}
-35:26 - 35:27  {y: Num, x: Num} -> {x: Num, y: Num}
-35:7 - 35:15   scale_by: Num, {y: Num, x: Num} -> {x: Num, y: Num}
+35:26 - 35:27  {x: Num, y: Num} -> {x: Num, y: Num}
+35:7 - 35:15   scale_by: Num, {x: Num, y: Num} -> {x: Num, y: Num}
 35:22 - 35:26  arg2: Num
 35:16 - 35:21  instr: {arg2: Num, arg1: String}
 33:19 - 33:24  instr: {arg2: Num, arg1: String}
@@ -116,13 +115,12 @@ ___ TYPES ___
 40:13 - 40:14  y: Num
 40:19 - 40:20  x: Num
 40:26 - 40:29  add: {y: Num, x: Num}, {y: Num, x: Num} -> {x: Num, y: Num}
-41:10 - 41:12  {y: Num, x: Num} -> Num
-41:17 - 41:18  *: Num
-41:15 - 41:16  x: Num
-41:13 - 41:14  p: {y: Num, x: Num}
-41:21 - 41:22  y: Num
-41:19 - 41:20  p: {y: Num, x: Num}
-41:8 - 41:9    p: {y: Num, x: Num}
+41:15 - 41:17  {x: Num, y: Num} -> Num
+41:20 - 41:21  *: Num
+41:18 - 41:19  x: Num
+41:22 - 41:23  y: Num
+41:9 - 41:10   x: Num
+41:12 - 41:13  y: Num
 43:0 - 43:5    print: Num
 43:6 - 43:12   part_1: Num
 44:0 - 44:6    assert: Bool
@@ -168,26 +166,25 @@ ___ TYPES ___
 14:13 - 14:14  [...]: List[Num]
 14:16 - 14:21  list2: List[Num]
 14:24 - 14:25  [...]: List[Num]
-15:17 - 15:19  {list2: List[Num], list1: List[Num]}, List[Num] -> {list1: List[Num], list2: List[Num]}
+15:26 - 15:28  {list1: List[Num], list2: List[Num]}, List[Num] -> {list1: List[Num], list2: List[Num]}
 18:4 - 18:5    {...}: {list1: List[Num], list2: List[Num]}
 16:8 - 16:13   list1: List[Num]
-16:44 - 16:45  [...]: List[Num]
-16:24 - 16:29  list1: List[Num]
-16:18 - 16:23  state: {list2: List[Num], list1: List[Num]}
-16:36 - 16:38  \>: Num
-16:31 - 16:35  pair: List[Num]
-16:39 - 16:44  first: List[Num] -> Num
+16:38 - 16:39  [...]: List[Num]
+16:18 - 16:23  list1: List[Num]
+16:30 - 16:32  \>: Num
+16:25 - 16:29  pair: List[Num]
+16:33 - 16:38  first: List[Num] -> Num
 17:8 - 17:13   list2: List[Num]
-17:52 - 17:53  [...]: List[Num]
-17:24 - 17:29  list2: List[Num]
-17:18 - 17:23  state: {list2: List[Num], list1: List[Num]}
-17:44 - 17:46  \>: Num
-17:36 - 17:38  \>: List[Num]
-17:31 - 17:35  pair: List[Num]
-17:39 - 17:43  rest: List[Num] -> List[Num]
-17:47 - 17:52  first: List[Num] -> Num
-15:5 - 15:10   state: {list2: List[Num], list1: List[Num]}
-15:12 - 15:16  pair: List[Num]
+17:46 - 17:47  [...]: List[Num]
+17:18 - 17:23  list2: List[Num]
+17:38 - 17:40  \>: Num
+17:30 - 17:32  \>: List[Num]
+17:25 - 17:29  pair: List[Num]
+17:33 - 17:37  rest: List[Num] -> List[Num]
+17:41 - 17:46  first: List[Num] -> Num
+15:6 - 15:11   list1: List[Num]
+15:13 - 15:18  list2: List[Num]
+15:21 - 15:25  pair: List[Num]
 20:0 - 20:5    print: List[Num]
 20:6 - 20:11   list1: List[Num]
 21:0 - 21:5    print: List[Num]

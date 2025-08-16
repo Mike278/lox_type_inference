@@ -9,9 +9,9 @@ let input = [
     {arg1: "forward", arg2: 2},
 ];
 
-let scale_by = \factor -> \offset -> {
-    x: offset.x * factor,
-    y: offset.y * factor,
+let scale_by = \factor -> \{x, y} -> {
+    x: x * factor,
+    y: y * factor,
 };
 
 let add = \a, b -> {
@@ -39,7 +39,7 @@ let to_movement = \instr ->
 let part_1 = input
     \> map(to_movement)
     \> fold({y: 0, x: 0}, add)
-    \> \p -> p.x * p.y
+    \> \{x, y} -> x * y
 ;
 print part_1;
 assert part_1 == 150;

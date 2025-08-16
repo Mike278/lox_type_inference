@@ -76,13 +76,12 @@ let make_user = \data {
         user_id: random_id,
         name: data.name,
         birth_year: data.birth_year,
-        age_as_of: \current_year -> current_year - data.birth_year,
+        age: \{as_of_year: current_year} -> current_year - data.birth_year,
     });
 };
 let user = make_user({name: "Bob", birth_year: 1974});
 print match user {
-    .User u -> u.age_as_of(2025),
+    .User u -> u.age({as_of_year: 2025}),
     .Anonymous -> 0,
 };
-
 ''';

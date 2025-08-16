@@ -24,13 +24,13 @@ let where = \fn -> \list ->
 let enumerated = \list {
     let result = list \> fold(
         {index: 0, list: []},
-        \state, element -> {
-            index: state.index + 1,
+        \{index, list}, element -> {
+            index: index + 1,
             list: [
-                ..state.list,
+                ..list,
                 {
                     element: element,
-                    index: state.index,
+                    index: index,
                 }
             ],
         }
@@ -96,10 +96,10 @@ let all = \predicate -> \list ->
                 : .Break(false)
     );
 
-let drop_at = \index -> \list ->
+let drop_at = \target_index -> \list ->
     list
         \> enumerated
-        \> where(\x -> x.index != index)
-        \> map(\x -> x.element);
+        \> where(\{index} -> index != target_index)
+        \> map(\{element} -> element);
 
 let join = fold("", String.concat);
