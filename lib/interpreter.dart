@@ -173,22 +173,42 @@ class LoxRuntime {
       :keyword,
       tag: target,
       :cases,
-      :defaultCase,
       braces: (_, closingBrace),
     ) = match;
     final LoxTag actual = evalAs(target, keyword, env);
-    for (final TagMatchCase(:tag, :payload, :result) in cases) {
-      if (tag.lexeme == actual.tag.lexeme) {
-        if (payload != null) {
-          return eval(result, env.defining(payload, actual.payload));
-        }
-        return eval(result, env);
+    for (final (i, TagMatchCase(:pattern, :result)) in cases.indexed) {
+      switch (pattern) {
+        case TagPattern():
+          if (envIfPatternMatches(pattern, actual, env) case final env?) {
+            return eval(result, env);
+          }
+        case Identifier(:final name):
+          final isLast = i == cases.length - 1;
+          if (!isLast) {
+            throw LoxRuntimeException(name, 'The default case must be the last case.');
+          }
+          return eval(result, env.defining(name, actual));
+        case RecordDestructure(openBrace: final errorToken):
+          throwMatchOnlySupportsTagPatterns(errorToken);
       }
     }
-    if (defaultCase case DefaultMatchCase(:final variable, :final result)?) {
-      return eval(result, env.defining(variable, actual));
-    }
     throw LoxRuntimeException(closingBrace, 'No match was found');
+  }
+
+  Env? envIfPatternMatches(TagPattern pattern, LoxTag actual, Env env) {
+    if (pattern.tag.lexeme != actual.tag.lexeme) return null;
+    switch (pattern.payload) {
+      case null:
+        return env;
+      case Identifier(:final name):
+        return env.defining(name, actual.payload);
+      case RecordDestructure pattern:
+        final destructured = destructureRecord(pattern, actual.payload as LoxRecord);
+        return env.definingAll(destructured, pattern.openBrace);
+      case TagPattern nested:
+        final inner = actual.payload as LoxTag;
+        return envIfPatternMatches(nested, inner, env);
+    }
   }
   
   T evalAs<T extends Object>(Expr expr, Token errorOnToken, Env env) {
@@ -294,12 +314,12 @@ class LoxRuntime {
       impl: (List<Object?> args) {
         final enclosing = getEnv();
         final instantiatedParameters = {
-          for (final (param, arg) in params.zipWith(args, makePair))
+          for (final (param, arg) in params.zipWith(args, makePair<Pattern, Object?>))
             ...switch (param) {
               Identifier(:final name) =>
                 { name.lexeme: arg },
               RecordDestructure pattern =>
-                destructureRecord(pattern, arg),
+                destructureRecord(pattern, arg as LoxRecord),
               TagPattern(:final tag) =>
                 throwTagPatternInIrrefutablePosition(tag),
             }
@@ -340,9 +360,10 @@ class LoxRuntime {
   }
 }
 
-Never throwTagPatternInIrrefutablePosition(Token tag) {
-  throw LoxRuntimeException(tag, 'Tag patterns can only be used in match expressions.');
-}
+Never throwTagPatternInIrrefutablePosition(Token tag) =>
+    throw LoxRuntimeException(tag, 'Tag patterns can only be used in match expressions.');
+Never throwMatchOnlySupportsTagPatterns(Token pattern) =>
+    throw LoxRuntimeException(pattern, 'Match expressions only support tag patterns.');
 
 final builtins = UnmodifiableMapView({
   'clock': clock,

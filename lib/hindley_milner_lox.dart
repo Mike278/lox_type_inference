@@ -379,11 +379,11 @@ class TypeInference {
   LoxType inferTagMatch(Map<String, LoxType> env, int level, TagMatch expr) {
     final LoxType expectedReturnType;
     LoxType casesRow;
-    if (expr.defaultCase case (:var variable, arrow: _, :var result)) {
+    if (expr.cases case [..., TagMatchCase(pattern: Identifier(:final name), :final result)]) {
       final defaultType = LoxType.fresh(level);
       final resultEnv = {
         ...env,
-        variable.lexeme: LoxType.variant(defaultType),
+        name.lexeme: LoxType.variant(defaultType),
       };
       expectedReturnType = inferExpr(resultEnv, level, result);
       casesRow = defaultType;
@@ -392,27 +392,39 @@ class TypeInference {
       casesRow = .emptyRecord;
     }
 
-    for (final (:tag, :payload, arrow: _, :result) in expr.cases) {
-      if (payload == null) {
-        final payloadType = LoxType.unit;
-        final resultType = inferExpr(env, level, result);
-        unify(expectedReturnType, resultType);
-        casesRow = LoxType(TyRowExtend(
-          newEntry: (tag.lexeme, payloadType),
-          row: casesRow,
-        ));
-      } else {
-        final payloadType = LoxType.fresh(level);
-        final resultEnv = {
-          ...env,
-          payload.lexeme: payloadType,
-        };
-        final resultType = inferExpr(resultEnv, level, result);
-        unify(expectedReturnType, resultType);
-        casesRow = LoxType(TyRowExtend(
-          newEntry: (tag.lexeme, payloadType),
-          row: casesRow,
-        ));
+    for (final (i, TagMatchCase(:pattern, arrow: _, :result)) in expr.cases.indexed) {
+      switch (pattern) {
+        case TagPattern(:final tag, :final payload):
+          switch (payload) {
+            case null:
+              final payloadType = LoxType.unit;
+              final resultType = inferExpr(env, level, result);
+              unify(expectedReturnType, resultType);
+              casesRow = LoxType(TyRowExtend(
+                newEntry: (tag.lexeme, payloadType),
+                row: casesRow,
+              ));
+            case Identifier(:final name):
+              final payloadType = LoxType.fresh(level);
+              final resultEnv = {
+                ...env,
+                name.lexeme: payloadType,
+              };
+              final resultType = inferExpr(resultEnv, level, result);
+              unify(expectedReturnType, resultType);
+              casesRow = LoxType(TyRowExtend(
+                newEntry: (tag.lexeme, payloadType),
+                row: casesRow,
+              ));
+            case RecordDestructure():
+            case TagPattern():
+              throw 'todo';
+          }
+        case Identifier():
+          final isLast = i == expr.cases.length - 1;
+          if (!isLast) throw DefaultCaseMustBeLast();
+        case RecordDestructure():
+          throw NonTagPatternInMatch();
       }
     }
 

@@ -4,8 +4,8 @@ let center = .Mouse({x: 50, y: 50});
 let key_or_mouse = false ? tab : center;
 
 let fn = \e -> match e {
-    .Key char -> char,
-    .Mouse coords -> coords.x > 50 ? "top" : "bottom",
+    .Key(char) -> char,
+    .Mouse(coords) -> coords.x > 50 ? "top" : "bottom",
 };
 
 print fn(tab);

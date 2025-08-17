@@ -132,6 +132,12 @@ class TopLevelReturn implements TypeCheckException {
 class TagPatternInIrrefutablePosition implements TypeCheckException {
   @override toString() => 'Tag patterns can only be used in match expressions.';
 }
+class NonTagPatternInMatch implements TypeCheckException {
+  @override toString() => 'Match expressions only support tag patterns.';
+}
+class DefaultCaseMustBeLast implements TypeCheckException {
+  @override toString() => 'The default case must be the last case.';
+}
 
 Ty rewriteRow(
   Ty row2,

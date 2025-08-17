@@ -20,7 +20,7 @@ let download = \connection {
 
 let connect_and_download = \ {
     let connection = match connect() {
-        .Connection c -> c,
+        .Connection(c) -> c,
         .Offline -> return .TheData("some default data"),
         other -> return other,
     };

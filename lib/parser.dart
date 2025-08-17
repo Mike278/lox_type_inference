@@ -494,28 +494,18 @@ class Parser {
     final tag = expression();
     final openBrace = consume(.openBrace, "Expected open brace");
     final cases = <TagMatchCase>[];
-    DefaultMatchCase? defaultCase;
     var first = true;
     do {
       if (!first) consume(.comma, 'Expected comma between match cases.');
       if (check(.closeBrace)) break;
       first = false;
-      if (matchFirst(.identifier, .underscore)) {
-        final variable = previous();
-        final arrow = consume(.arrow, "Expected arrow");
-        final result = expression();
-        defaultCase = (variable: variable, arrow: arrow, result: result);
-      } else {
-        consume(.dot, "Expected dot before tag name");
-        final tag = consume(.identifier, "Expected tag name");
-        final payload = matchFirst(.identifier, .underscore) ? previous() : null;
-        final arrow = consume(.arrow, "Expected arrow");
-        final result = expression();
-        cases.add((tag: tag, payload: payload, arrow: arrow, result: result));
-      }
+      final pat = pattern();
+      final arrow = consume(.arrow, "Expected arrow");
+      final result = expression();
+      cases.add((pattern: pat, arrow: arrow, result: result));
     } while (!check(.closeBrace) && !isAtEnd());
     final closeBrace = consume(.closeBrace, "Expected close brace");
-    return TagMatch(keyword, tag, (openBrace, closeBrace), cases, defaultCase);
+    return TagMatch(keyword, tag, (openBrace, closeBrace), cases);
   }
 
   Expr import() {

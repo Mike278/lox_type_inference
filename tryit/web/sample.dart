@@ -81,7 +81,7 @@ let make_user = \data {
 };
 let user = make_user({name: "Bob", birth_year: 1974});
 print match user {
-    .User u -> u.age({as_of_year: 2025}),
+    .User(u) -> u.age({as_of_year: 2025}),
     .Anonymous -> 0,
 };
 ''';

@@ -312,14 +312,13 @@ List<(CodeSpan, String)> displayExpression(
     (tag.span, '${tag.lexeme}: ${displayType(typeOf(expr))}'),
     if (payload != null) ...displayExpression(payload, typeOf)
   ],
-  TagMatch(:final tag, :final keyword, :final cases, :final defaultCase) => [
+  TagMatch(:final tag, :final keyword, :final cases) => [
     (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
     ...displayExpression(tag, typeOf),
-    for (final TagMatchCase(:result) in cases)
+    for (final TagMatchCase(:pattern, :result) in cases) ...[
+      ...displayPattern(pattern),
       ...displayExpression(result, typeOf),
-    if (defaultCase case DefaultMatchCase(:final result)?)
-      ...displayExpression(result, typeOf),
-
+    ],
   ],
   Import(:final keyword, :final target, :final path) => [
     (keyword.span, '$path: ${displayType(typeOf(expr))}'),

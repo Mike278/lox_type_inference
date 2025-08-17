@@ -729,14 +729,14 @@ make_counter(0, \value { print value*value; })
       '''), '.Green | .Red -> Num');
       expect(_inferSource(r'''
       \z -> match z {
-         .Green g -> 1 + g,
-         .Red r -> 2 + r,
+         .Green(g) -> 1 + g,
+         .Red(r) -> 2 + r,
       };
       '''), '.Green(Num) | .Red(Num) -> Num');
       expect(_inferSource(r'''
       \z -> match z {
-         .Green g -> 1 + g,
-         .Red _ -> 2,
+         .Green(g) -> 1 + g,
+         .Red(_) -> 2,
       };
       '''), '.Green(Num) | .Red(t0) -> Num');
       expect(_inferSource(r'''
@@ -748,15 +748,15 @@ make_counter(0, \value { print value*value; })
       '''), 'Num');
       expect(_inferSource(r'''
       let fn = \z -> match z {
-         .Green g -> 1 + g,
-         .Red r -> 2 + r,
+         .Green(g) -> 1 + g,
+         .Red(r) -> 2 + r,
       };
       fn(.Green(1));
       '''), 'Num');
       expect(_inferSource(r'''
       let fn = \z -> match z {
-         .Green g -> 1 + g,
-         .Red r -> 2 + r,
+         .Green(g) -> 1 + g,
+         .Red(r) -> 2 + r,
       };
       fn(.Yellow(1));
       '''), isTypeError);
@@ -769,12 +769,12 @@ make_counter(0, \value { print value*value; })
     });
 
     test('match returning payload', () {
-      expect(_inferSource(r'''match .A(1) { .A a -> a };'''), ('Num'));
-      expect(_inferSource(r'''match .A([]) { .A a -> a };'''), ('List[t0]'));
-      expect(_inferSource(r'''\x -> match .A(x) { .A a -> a };'''), ('t0 -> t0'));
-      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A a -> a, .B b -> b };'''), 'Num');
-      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A a -> a, .B b -> "no" };'''), isTypeError);
-      expect(_inferSource(r'''match true ? .A(1) : .B("no") { .A a -> a, .B b -> b };'''), isTypeError);
+      expect(_inferSource(r'''match .A(1) { .A(a) -> a };'''), ('Num'));
+      expect(_inferSource(r'''match .A([]) { .A(a) -> a };'''), ('List[t0]'));
+      expect(_inferSource(r'''\x -> match .A(x) { .A(a) -> a };'''), ('t0 -> t0'));
+      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A(a) -> a, .B(b) -> b };'''), 'Num');
+      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A(a) -> a, .B(b) -> "no" };'''), isTypeError);
+      expect(_inferSource(r'''match true ? .A(1) : .B("no") { .A(a) -> a, .B(b) -> b };'''), isTypeError);
     });
 
     test('match returning tags', () {
@@ -849,8 +849,8 @@ make_counter(0, \value { print value*value; })
         };
         let input = [.A, .B, .C, .D] \> List.first;
         match f(input) {
-          .Ok x -> "a or b",
-          .Other o -> match o {
+          .Ok(x) -> "a or b",
+          .Other(o) -> match o {
             .C -> "c",
             .D -> "d",
           },
@@ -866,8 +866,8 @@ make_counter(0, \value { print value*value; })
         };
         let input = [.A, .B, .C, .D] \> List.first;
         match f(input) {
-          .Ok x -> "a or b",
-          .Other o -> match o {
+          .Ok(x) -> "a or b",
+          .Other(o) -> match o {
             .C -> "c",
        //     .D -> "d",
           },
@@ -887,8 +887,8 @@ make_counter(0, \value { print value*value; })
         };
         let input = [.A, .B, .C, .D] \> List.first;
         match f1(input) {
-          .Ok x -> .Ok(x),
-          .Other o -> f2(o),
+          .Ok(x) -> .Ok(x),
+          .Other(o) -> f2(o),
         };
         '''), '.Ok(Num)');
       });
@@ -905,8 +905,8 @@ make_counter(0, \value { print value*value; })
         };
         let input = [.A, .B, .C, .D] \> List.first;
         match f1(input) {
-          .Ok x -> .Ok(x),
-          .Other o -> f2(o),
+          .Ok(x) -> .Ok(x),
+          .Other(o) -> f2(o),
         };
         '''), isTypeError);
       });
@@ -1010,7 +1010,7 @@ let download = \connection {
 
 let connect_and_connect = \ {
     let connection = match connect() {
-        .Connection c -> c,
+        .Connection(c) -> c,
         .Offline -> return .TheData("some default data"),
         other -> return other,
     };
@@ -1047,7 +1047,7 @@ let connect_and_connect = \ {
         ]);
         let f = \x {
           let value = match x {
-            .Ok value -> value,
+            .Ok(value) -> value,
             err -> return err,
           };
           

@@ -73,8 +73,8 @@ let fold_until = \state, fn -> \list {
     if list \> empty then return state;
     let step = fn(state, list \> first);
     return match step {
-        .Continue new_state -> list \> rest \> fold_until(new_state, fn),
-        .Break final_state -> final_state,
+        .Continue(new_state) -> list \> rest \> fold_until(new_state, fn),
+        .Break(final_state) -> final_state,
     };
 };
 

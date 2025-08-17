@@ -787,6 +787,10 @@ ___ TYPES ___
 13:22 - 13:24  .Hello(Num) | .Tags({two: String}) -> String
 13:25 - 13:30  match: String
 13:31 - 13:32  x: .Hello(Num) | .Tags({two: String})
+14:5 - 14:10   Hello: <unknown>
+14:11 - 14:13  _0: <unknown>
+15:5 - 15:9    Tags: <unknown>
+15:10 - 15:12  _1: <unknown>
 13:20 - 13:21  x: .Hello(Num) | .Tags({two: String})
 20:0 - 20:5    print: List[Bool]
 20:14 - 20:16  \>: List[Bool]
@@ -805,8 +809,12 @@ ___ TYPES ___
 21:22 - 21:24  .Hello(Num) | .Tags({two: String}) -> Bool
 21:25 - 21:30  match: Bool
 21:31 - 21:32  x: .Hello(Num) | .Tags({two: String})
-22:18 - 22:20  ==: Bool
-22:16 - 22:17  n: Num
+22:5 - 22:10   Hello: <unknown>
+22:11 - 22:12  n: <unknown>
+22:19 - 22:21  ==: Bool
+22:17 - 22:18  n: Num
+23:5 - 23:9    Tags: <unknown>
+23:10 - 23:12  _2: <unknown>
 21:20 - 21:21  x: .Hello(Num) | .Tags({two: String})
 27:4 - 27:13   employees: List[{name: String, age: Num}]
 31:0 - 31:1    [...]: List[{name: String, age: Num}]
@@ -989,7 +997,7 @@ ___ TYPES ___
 83:35 - 83:36  List[Num] -> List[Num]
 83:21 - 83:24  map: (Num -> Num), List[Num] -> List[Num]
 83:31 - 83:33  Num -> Num
-83:26 - 83:28  _0: Num
+83:26 - 83:28  _3: Num
 83:48 - 83:49  [...]: List[Num]
 84:0 - 84:6    assert: Bool
 84:37 - 84:39  ==: Bool
@@ -998,8 +1006,8 @@ ___ TYPES ___
 84:35 - 84:36  List[Num] -> Num
 84:18 - 84:24  reduce: (Num, Num -> Num), List[Num] -> Num
 84:31 - 84:33  Num, Num -> Num
-84:26 - 84:28  _1: Num
-84:29 - 84:31  _2: Num
+84:26 - 84:28  _4: Num
+84:29 - 84:31  _5: Num
 ___ OUTPUT ___
 [1, 2, 3]
 [3, 2, 1]
@@ -1579,9 +1587,13 @@ ___ TYPES ___
 21:21 - 21:26  match: {some_connection_details: Num, download: c -> String}
 21:35 - 21:36  .AuthExpired | .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .DownloadInterrupted | .Offline | .TheData(String)
 21:27 - 21:34  connect: Unit -> .AuthExpired | .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .DownloadInterrupted | .Offline | .TheData(String)
-22:25 - 22:26  c: {some_connection_details: Num, download: c -> String}
+22:9 - 22:19   Connection: <unknown>
+22:20 - 22:21  c: <unknown>
+22:26 - 22:27  c: {some_connection_details: Num, download: c -> String}
+23:9 - 23:16   Offline: <unknown>
 23:20 - 23:26  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
 23:28 - 23:35  TheData: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+24:8 - 24:13   other: <unknown>
 24:17 - 24:23  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
 24:24 - 24:29  other: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
 27:4 - 27:10   .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
@@ -1632,11 +1644,15 @@ ___ TYPES ___
 5:12 - 5:14    .Key(String) | .Mouse({x: Num}) -> String
 5:15 - 5:20    match: String
 5:21 - 5:22    e: .Key(String) | .Mouse({x: Num})
-6:17 - 6:21    char: String
-7:35 - 7:36    ?: String
-7:30 - 7:31    >: Bool
-7:28 - 7:29    x: Num
-7:21 - 7:27    coords: {x: Num}
+6:5 - 6:8      Key: <unknown>
+6:9 - 6:13     char: <unknown>
+6:18 - 6:22    char: String
+7:5 - 7:10     Mouse: <unknown>
+7:11 - 7:17    coords: <unknown>
+7:36 - 7:37    ?: String
+7:31 - 7:32    >: Bool
+7:29 - 7:30    x: Num
+7:22 - 7:28    coords: {x: Num}
 5:10 - 5:11    e: .Key(String) | .Mouse({x: Num})
 10:0 - 10:5    print: String
 10:12 - 10:13  String
@@ -1663,10 +1679,15 @@ ___ TYPES ___
 16:0 - 16:5    print: String
 16:6 - 16:11   match: String
 16:12 - 16:21  fav_color: .Gold | .Green | .Red
+17:5 - 17:10   Green: <unknown>
+18:5 - 18:9    Gold: <unknown>
+19:5 - 19:8    Red: <unknown>
 22:0 - 22:6    assert: Bool
 22:46 - 22:48  ==: Bool
 22:7 - 22:12   match: Num
 22:13 - 22:22  fav_color: .Gold | .Green | .Red
+22:26 - 22:30  Gold: <unknown>
+22:37 - 22:39  _0: <unknown>
 ___ OUTPUT ___
 \t
 bottom

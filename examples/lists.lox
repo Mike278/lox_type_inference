@@ -12,16 +12,16 @@ print zs;
 
 let mixed = [.Hello(1), .Tags({two: "three"})];
 print mixed \> map(\x -> match x {
-    .Hello _ -> "its a `.Hello` tag",
-    .Tags _ -> "its not",
+    .Hello(_) -> "its a `.Hello` tag",
+    .Tags(_) -> "its not",
 });
 
 
 
 print [1,2,3] \> map(\x -> x == 1);
 print mixed \> map(\x -> match x {
-    .Hello n -> n == 1,
-    .Tags _ -> false,
+    .Hello(n) -> n == 1,
+    .Tags(_) -> false,
 });
 
 

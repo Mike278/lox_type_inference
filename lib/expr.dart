@@ -193,19 +193,12 @@ class TagMatch extends Expr with EquatableMixin {
   final Expr tag;
   final (Token, Token) braces;
   final List<TagMatchCase> cases;
-  final DefaultMatchCase? defaultCase;
-  TagMatch(this.keyword, this.tag, this.braces, this.cases, this.defaultCase);
-  @override get props => [...super.props, keyword, tag, braces, cases, defaultCase];
+  TagMatch(this.keyword, this.tag, this.braces, this.cases);
+  @override get props => [...super.props, keyword, tag, braces, cases];
 }
 
 typedef TagMatchCase = ({
-  Token tag,
-  Token? payload,
-  Token arrow,
-  Expr result,
-});
-typedef DefaultMatchCase = ({
-  Token variable,
+  Pattern pattern,
   Token arrow,
   Expr result,
 });
@@ -387,10 +380,9 @@ extension ExprAPI on Expr {
               yield* expr.subExpressions();
           }
         }
-      case TagMatch(:final tag, :final cases, :final defaultCase):
+      case TagMatch(:final tag, :final cases):
         yield* tag.subExpressions();
         for (final case_ in cases) yield* case_.result.subExpressions();
-        if (defaultCase != null) yield* defaultCase.result.subExpressions();
       case Import():
       case Variable():
       case StringLiteral():
@@ -455,10 +447,12 @@ extension ExprAPI on Expr {
               yield* expr.allPatterns();
           }
         }
-      case TagMatch(:final tag, :final cases, :final defaultCase):
+      case TagMatch(:final tag, :final cases):
         yield* tag.allPatterns();
-        for (final case_ in cases) yield* case_.result.allPatterns();
-        if (defaultCase != null) yield* defaultCase.result.allPatterns();
+        for (final TagMatchCase(:pattern, :result) in cases) {
+          yield* pattern.subPatterns();
+          yield* result.allPatterns();
+        }
       case Import():
       case Variable():
       case StringLiteral():
