@@ -788,9 +788,9 @@ ___ TYPES ___
 13:25 - 13:30  match: String
 13:31 - 13:32  x: .Hello(Num) | .Tags({two: String})
 14:5 - 14:10   Hello: <unknown>
-14:11 - 14:13  _0: <unknown>
+14:11 - 14:13  _0: Num
 15:5 - 15:9    Tags: <unknown>
-15:10 - 15:12  _1: <unknown>
+15:10 - 15:12  _1: {two: String}
 13:20 - 13:21  x: .Hello(Num) | .Tags({two: String})
 20:0 - 20:5    print: List[Bool]
 20:14 - 20:16  \>: List[Bool]
@@ -810,11 +810,11 @@ ___ TYPES ___
 21:25 - 21:30  match: Bool
 21:31 - 21:32  x: .Hello(Num) | .Tags({two: String})
 22:5 - 22:10   Hello: <unknown>
-22:11 - 22:12  n: <unknown>
+22:11 - 22:12  n: Num
 22:19 - 22:21  ==: Bool
 22:17 - 22:18  n: Num
 23:5 - 23:9    Tags: <unknown>
-23:10 - 23:12  _2: <unknown>
+23:10 - 23:12  _2: {two: String}
 21:20 - 21:21  x: .Hello(Num) | .Tags({two: String})
 27:4 - 27:13   employees: List[{name: String, age: Num}]
 31:0 - 31:1    [...]: List[{name: String, age: Num}]
@@ -1588,7 +1588,7 @@ ___ TYPES ___
 21:35 - 21:36  .AuthExpired | .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .DownloadInterrupted | .Offline | .TheData(String)
 21:27 - 21:34  connect: Unit -> .AuthExpired | .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .DownloadInterrupted | .Offline | .TheData(String)
 22:9 - 22:19   Connection: <unknown>
-22:20 - 22:21  c: <unknown>
+22:20 - 22:21  c: {some_connection_details: Num, download: c -> String}
 22:26 - 22:27  c: {some_connection_details: Num, download: c -> String}
 23:9 - 23:16   Offline: <unknown>
 23:20 - 23:26  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
@@ -1645,14 +1645,13 @@ ___ TYPES ___
 5:15 - 5:20    match: String
 5:21 - 5:22    e: .Key(String) | .Mouse({x: Num})
 6:5 - 6:8      Key: <unknown>
-6:9 - 6:13     char: <unknown>
+6:9 - 6:13     char: String
 6:18 - 6:22    char: String
 7:5 - 7:10     Mouse: <unknown>
-7:11 - 7:17    coords: <unknown>
-7:36 - 7:37    ?: String
-7:31 - 7:32    >: Bool
-7:29 - 7:30    x: Num
-7:22 - 7:28    coords: {x: Num}
+7:12 - 7:13    x: Num
+7:26 - 7:27    ?: String
+7:21 - 7:22    >: Bool
+7:19 - 7:20    x: Num
 5:10 - 5:11    e: .Key(String) | .Mouse({x: Num})
 10:0 - 10:5    print: String
 10:12 - 10:13  String

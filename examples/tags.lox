@@ -5,7 +5,7 @@ let key_or_mouse = false ? tab : center;
 
 let fn = \e -> match e {
     .Key(char) -> char,
-    .Mouse(coords) -> coords.x > 50 ? "top" : "bottom",
+    .Mouse({x}) -> x > 50 ? "top" : "bottom",
 };
 
 print fn(tab);
@@ -21,3 +21,47 @@ print match fav_color {
 };
 
 assert match fav_color { .Gold -> 1, _ -> 2 } == 2;
+
+// assert match [
+//     .Dark(.Some("oh")),
+//     .Light(.None),
+//     .Dark(.None),
+//     .Dark(.Some("hi")),
+//     .Dark(.None),
+//     .Light(.Some("ok")),
+//     .Light(.Some("yep")),
+// ] \> List.first {
+//     .Dark(.None)       -> 1,
+//     .Dark(.Some(str))  -> 2,
+//     .Light(.None)      -> 3,
+//     .Light(.Some(str)) -> 4,
+// } == 2;
+//
+// assert match [
+//     .Dark({title: .Some("oh"), subtitle: "hmm"}),
+//     .Light({title: .None, subtitle: "hmm"}),
+//     .Dark({title: .None, subtitle: "hmm"}),
+//     .Dark({title: .Some("hi"), subtitle: "hmm"}),
+//     .Dark({title: .None, subtitle: "hmm"}),
+//     .Light({title: .Some("ok"), subtitle: "hmm"}),
+//     .Light({title: .Some("yep"), subtitle: "hmm"}),
+// ] \> List.first {
+//     .Dark({title: .None})        -> 1,
+//     .Dark({title: .Some(str)})   -> 2,
+//     .Light({title: .None})       -> 3,
+//     .Light({title: .Some(str)})  -> 4,
+// } == 2;
+//
+// assert match [
+//     .Dark({title: .Some("oh"), subtitle: "hmm"}),
+//     .Light({title: .None, subtitle: "hmm"}),
+//     .Dark({title: .None, subtitle: "hmm"}),
+//     .Dark({title: .Some("hi"), subtitle: "hmm"}),
+//     .Dark({title: .None, subtitle: "hmm"}),
+//     .Light({title: .Some("ok"), subtitle: "hmm"}),
+//     .Light({title: .Some("yep"), subtitle: "hmm"}),
+// ] \> List.first {
+//     .Dark({title})  -> 1,
+//     .Light({title}) -> 2,
+// } == 2;
+//
