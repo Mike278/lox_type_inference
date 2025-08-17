@@ -1177,12 +1177,3 @@ void expectedType(String expected) {
   final source = liveTest.test.name.toString().replaceAll(liveTest.groups.last.name, '');
   expect(_inferSource(source).toString(), expected);
 }
-
-const _sentinel = Object();
-Matcher isTypeMismatch({
-  Object lhs = _sentinel,
-  Object rhs = _sentinel,
-}) =>
-    isA<TypeMismatch>()
-        .having((e) => e.t1.toString(), 'lhs', lhs)
-        .having((e) => e.t2.toString(), 'rhs', rhs);

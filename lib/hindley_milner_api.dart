@@ -138,6 +138,9 @@ class NonTagPatternInMatch implements TypeCheckException {
 class DefaultCaseMustBeLast implements TypeCheckException {
   @override toString() => 'The default case must be the last case.';
 }
+class MatchingNestedTagPatternsUnsupported implements TypeCheckException {
+  @override toString() => 'Type checking nested tag patterns is not supported yet.';
+}
 
 Ty rewriteRow(
   Ty row2,

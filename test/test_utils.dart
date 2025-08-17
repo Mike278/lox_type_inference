@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:lox/coordinator.dart';
 import 'package:lox/expr.dart';
+import 'package:lox/hindley_milner_api.dart';
 import 'package:lox/hindley_milner_lox.dart';
 import 'package:lox/interpreter.dart';
 import 'package:path/path.dart';
@@ -61,4 +62,19 @@ void runSource(
     unexpectedImport,
     checkTypes: true,
   );
+}
+
+const _sentinel = Object();
+Matcher isTypeMismatch({
+  Object lhs = _sentinel,
+  Object rhs = _sentinel,
+}) {
+  var matcher = isA<TypeMismatch>();
+  if (!identical(lhs, _sentinel)) {
+    matcher = matcher.having((e) => e.t1.toString(), 'lhs', lhs);
+  }
+  if (!identical(rhs, _sentinel)) {
+    matcher = matcher.having((e) => e.t2.toString(), 'rhs', rhs);
+  }
+  return matcher;
 }

@@ -123,6 +123,126 @@ void main() {
         ],
       );
     });
+
+    test('6', () {
+      expect(
+        _markTypes(r'''
+        let x = [
+          .A(.One),
+          .A(.Two),
+          .B(.One),
+          .B(.Two),
+        ] \> List.first;
+        
+        let y = match x {
+          .A(.One) -> 1,
+          .A(.Two) -> 1,
+          .B(.One) -> 1,
+          .B(.Two) -> 1,
+        };
+        ''').map((x) => x.display).where((x) => x.startsWith('x:')),
+        [
+          'x: .A(.One | .Two) | .B(.One | .Two)',
+          'x: .A(.One | .Two) | .B(.One | .Two)',
+        ],
+      );
+    }, skip: 'Type checking nested tag patterns is not supported yet');
+
+    test('7', () {
+      expect(
+        _markError(r'''
+        let x = [
+          .A(.One),
+          .A(.Two),
+        ] \> List.first;
+        
+        let y = match x {
+          .A(.One) -> 1,
+        };
+        ''').map((x) => 'line ${x.$1.from.line}: ${x.display}'),
+        [
+          contains('line 5: Type mismatch')
+        ],
+      );
+    }, skip: 'Type checking nested tag patterns is not supported yet');
+
+    test('8', () {
+      expect(
+        _markError(r'''
+        let x = [
+          .A(.One),
+          .A(.Two),
+        ] \> List.first;
+        
+        let y = match x {
+          .A(.One) -> 1,
+          .A(.Two) -> 1,
+        };
+        ''').map((x) => x.display).where((x) => x.startsWith('x:')),
+        [
+          'x: .A(.One | .Two)',
+          'x: .A(.One | .Two)',
+        ],
+      );
+    }, skip: 'Type checking nested tag patterns is not supported yet');
+
+    test('9', () {
+      expect(
+        _markTypes(r'''
+        let x = [
+          .A(.One),
+          .A(.Two),
+          .B(.One),
+          .B(.Two),
+        ] \> List.first;
+        
+        let y = match x {
+          .A(a) -> match a {
+            .One -> 1,
+            .Two -> 1,
+          },
+          .B(b) -> match b {
+            .One -> 1,
+            .Two -> 1,
+          },
+        };
+        ''').map((x) => x.display).where((x) => x.startsWith(RegExp('[xyab]'))),
+        [
+            'x: .A(.One | .Two) | .B(.One | .Two)',
+            'y: Num',
+            'x: .A(.One | .Two) | .B(.One | .Two)',
+            'a: .One | .Two',
+            'a: .One | .Two',
+            'b: .One | .Two',
+            'b: .One | .Two',
+        ],
+      );
+    });
+
+    test('10', () {
+      expect(
+        _markTypes(r'''
+        let x = [
+          .A(.One),
+          .A(.Two),
+        ] \> List.first;
+        
+        let y = match x {
+          .A(a) -> match a {
+            .One -> 1,
+            .Two -> 1,
+          },
+        };
+        ''').map((x) => x.display).where((x) => x.startsWith(RegExp('[xya]'))),
+        [
+            'x: .A(.One | .Two)',
+            'y: Num',
+            'x: .A(.One | .Two)',
+            'a: .One | .Two',
+            'a: .One | .Two'
+        ],
+      );
+    });
   });
 }
 
@@ -134,5 +254,16 @@ List<MarkText> _markTypes(String source, [Map<String, String> files = const {}])
     (path) => files[path]!
   );
   if (errorOutput.isNotEmpty) throw errorOutput;
+  return marks;
+}
+
+
+List<MarkText> _markError(String source, [Map<String, String> files = const {}]) {
+  final (marks, :errorOutput) = markTypes(
+    '',
+    Source.memory(source),
+    (path) => files[path]!
+  );
+  expect(errorOutput, isNotEmpty, reason: 'marks were:\n${marks.join('\n')}');
   return marks;
 }

@@ -203,7 +203,8 @@ class LoxRuntime {
       case Identifier(:final name):
         return env.defining(name, actual.payload);
       case RecordDestructure pattern:
-        final destructured = destructureRecord(pattern, actual.payload as LoxRecord);
+        final destructured = destructureRecordIfMatches(pattern, actual.payload as LoxRecord);
+        if (destructured == null) return null;
         return env.definingAll(destructured, pattern.openBrace);
       case TagPattern nested:
         final inner = actual.payload as LoxTag;
@@ -264,6 +265,32 @@ class LoxRuntime {
         TagPattern(:final tag) =>
           throwTagPatternInIrrefutablePosition(tag),
       };
+    }
+    return env.state;
+  }
+
+  LoxRecord? destructureRecordIfMatches(RecordDestructure pattern, LoxRecord record) {
+    var env = Env.empty();
+    for (final field in pattern.elements) {
+      final fieldValue = accessRecordField(record, field.name);
+      switch (field.pattern) {
+        case null:
+          env = env.defining(field.name, fieldValue);
+
+        case Identifier(name: final newName):
+          env = env.defining(newName, fieldValue);
+
+        case RecordDestructure nested:
+          env = env.definingAll(
+            destructureRecord(nested, fieldValue as LoxRecord),
+            nested.openBrace,
+          );
+
+        case TagPattern pattern:
+          final maybeEnv = envIfPatternMatches(pattern, fieldValue as LoxTag, env);
+          if (maybeEnv == null) return null;
+          env = maybeEnv;
+      }
     }
     return env.state;
   }

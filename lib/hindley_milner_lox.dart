@@ -379,14 +379,16 @@ class TypeInference {
   LoxType inferTagMatch(Map<String, LoxType> env, int level, TagMatch expr) {
     final LoxType expectedReturnType;
     LoxType casesRow;
-    if (expr.cases case [..., TagMatchCase(pattern: Identifier(:final name), :final result)]) {
+    if (expr.cases case [..., TagMatchCase(pattern: Identifier ident, :final result)]) {
       final defaultType = LoxType.fresh(level);
+      final defaultPatternType = LoxType.variant(defaultType);
       final resultEnv = {
         ...env,
-        name.lexeme: LoxType.variant(defaultType),
+        ident.name.lexeme: defaultPatternType,
       };
       expectedReturnType = inferExpr(resultEnv, level, result);
       casesRow = defaultType;
+      ident.type = defaultPatternType;
     } else {
       expectedReturnType = .fresh(level);
       casesRow = .emptyRecord;
@@ -395,14 +397,31 @@ class TypeInference {
     for (final (i, TagMatchCase(:pattern, arrow: _, :result)) in expr.cases.indexed) {
       switch (pattern) {
         case TagPattern(:final tag, :final payload):
-          final (:payloadEnv, :payloadType) = setupTagPatternPayloadMatchBranch(payload, level);
-          final resultEnv = {...env, ...payloadEnv};
+          final resultEnv = {...env};
+          final LoxType payloadType;
+          switch (payload) {
+            case null:
+              payloadType = LoxType.unit;
+            case Identifier(:final name):
+              final type = LoxType.fresh(level);
+              resultEnv[name.lexeme] = type;
+              payloadType = type;
+              payload.type = type;
+            case RecordDestructure():
+              payloadType = _recordPattern(payload, resultEnv, level);
+            case TagPattern():
+              throw MatchingNestedTagPatternsUnsupported();
+          }
           final resultType = inferExpr(resultEnv, level, result);
           unify(expectedReturnType, resultType);
           casesRow = LoxType(TyRowExtend(
             newEntry: (tag.lexeme, payloadType),
             row: casesRow,
           ));
+          pattern.type = .variant(LoxType(TyRowExtend(
+            newEntry: (tag.lexeme, payloadType),
+            row: LoxType.emptyRecord,
+          )));
         case Identifier():
           final isLast = i == expr.cases.length - 1;
           if (!isLast) throw DefaultCaseMustBeLast();
@@ -417,66 +436,27 @@ class TypeInference {
     return setType(expr, expectedReturnType);
   }
 
-  /// Returns:
-  ///     payloadType: the type of the payload patten of the match branch has this type
-  ///     payloadEnv:  variables available to the match branch body
-  ///
-  /// For example given a match branch with the following payload:
-  ///       .Foo({b: c, z}) -> c + (z ? 1 : 2),
-  ///            ^^^^^^^^^
-  ///            [payload]
-  ///
-  /// payloadType: {b: Num, z: Bool}
-  /// payloadEnv: c: Num, z: Bool
-  ({
-    LoxType payloadType,
-    Map<String, LoxType> payloadEnv,
-  }) setupTagPatternPayloadMatchBranch(Pattern? payload, int level) {
-
-    final payloadEnv = <String, LoxType>{};
-
-    LoxType destructure(RecordDestructure pattern) {
-      final fields = <String, LoxType>{};
-      for (final element in pattern.elements) {
-        final LoxType type;
-        switch (element.pattern) {
-          case null:
-            type = .fresh(level);
-            payloadEnv[element.name.lexeme] = type;
-          case Identifier ident:
-            type = .fresh(level);
-            payloadEnv[ident.name.lexeme] = type;
-            ident.type = type;
-          case RecordDestructure pattern:
-            type = destructure(pattern);
-          case TagPattern():
-            throw 'todo'; // todo
-        }
-        element.type = type;
-        fields[element.name.lexeme] = type;
+  LoxType _recordPattern(RecordDestructure pattern, Map<String, LoxType> payloadEnv, int level) {
+    final fields = <String, LoxType>{};
+    for (final element in pattern.elements) {
+      final LoxType type;
+      switch (element.pattern) {
+        case null:
+          type = .fresh(level);
+          payloadEnv[element.name.lexeme] = type;
+        case Identifier ident:
+          type = .fresh(level);
+          payloadEnv[ident.name.lexeme] = type;
+          ident.type = type;
+        case RecordDestructure pattern:
+          type = _recordPattern(pattern, payloadEnv, level);
+        case TagPattern():
+          throw MatchingNestedTagPatternsUnsupported();
       }
-      return .record(fields, tail: .fresh(level));
+      element.type = type;
+      fields[element.name.lexeme] = type;
     }
-
-    final LoxType payloadType;
-    switch (payload) {
-      case null:
-        payloadType = LoxType.unit;
-      case Identifier(:final name):
-        final type = LoxType.fresh(level);
-        payloadEnv[name.lexeme] = type;
-        payloadType = type;
-        payload.type = type;
-      case RecordDestructure():
-        payloadType = destructure(payload);
-      case TagPattern():
-          throw 'todo'; // todo
-    }
-
-    return (
-      payloadType: payloadType,
-      payloadEnv: payloadEnv,
-    );
+    return .record(fields, tail: .fresh(level));
   }
 
   LoxType inferFunction(Map<String, LoxType> env, int level, Lambda function) =>
