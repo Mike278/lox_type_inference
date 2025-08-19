@@ -469,6 +469,27 @@ make_counter(0, \value { print value*value; })
   test('record update', () {
 
     expect(_inferSource(r'''
+    let f = \state -> 
+      true 
+        ? {..state, a: state.a + 1} 
+        : {..state, b: state.b + 1}
+    ;
+    '''), '{a: Num, b: Num} -> {a: Num, b: Num, a: Num, b: Num}');
+    expect(_inferSource(r'''
+    let f = \state -> 
+      true 
+        ? state 
+        : {..state, count: state.count + 1}
+    ;
+    '''), '{count: Num} -> {count: Num, count: Num}');
+    expect(_inferSource(r'''
+    let f = \state -> 
+      true 
+        ? {..state, count: state.count} 
+        : {..state, count: state.count + 1}
+    ;
+    '''), '{count: Num} -> {count: Num, count: Num}');
+    expect(_inferSource(r'''
       let r1 = {a: "a"};
       let r2 = {..r1, b: false};
     '''), '{a: String, b: Bool}');

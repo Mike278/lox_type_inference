@@ -43,3 +43,53 @@ let part_1 = input
 ;
 print part_1;
 assert part_1 == 150;
+
+/////// Part 2 ///////
+
+let update = \state, instr {
+
+    let {aim, pos} = match state {
+        .Err(_) -> return state,
+        .Ok(x) -> x,
+    };
+
+    let {
+        arg1: dir,
+        arg2: mag,
+    } = instr;
+
+    // todo: fix type checking bug that prevents using record updates here
+
+    if dir == "down" then return .Ok({
+        aim: aim + mag,
+        pos: pos,
+    });
+
+    if dir == "up" then return .Ok({
+        aim: aim - mag,
+        pos: pos,
+    });
+
+    if dir == "forward" then return .Ok({
+        aim: aim,
+        pos: {
+            x: pos.x + mag,
+            y: pos.y + mag * aim
+        },
+    });
+
+    return .Err(["unknown direction: '", dir, "' falling back to no-op"] \> join);
+};
+
+let initial = .Ok({
+    aim: 0,
+    pos: {x: 0, y: 0},
+});
+let result = input \> fold(initial, update);
+let part_2 = match result {
+    .Ok({pos: {x, y}}) -> x * y,
+    .Err(_) -> -1,
+};
+
+print part_2;
+assert part_2 == 900;

@@ -126,8 +126,112 @@ ___ TYPES ___
 44:0 - 44:6    assert: Bool
 44:14 - 44:16  ==: Bool
 44:7 - 44:13   part_1: Num
+48:4 - 48:10   update: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: b, arg1: String} -> .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+48:27 - 48:28  .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: b, arg1: String} -> .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+81:0 - 81:1    .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: b, arg1: String} -> .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+48:14 - 48:19  state: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+48:21 - 48:26  instr: {arg2: b, arg1: String}
+50:9 - 50:12   aim: Num
+50:14 - 50:17  pos: {x: Num, y: Num}
+50:21 - 50:26  match: {pos: {x: Num, y: Num}, aim: Num}
+50:27 - 50:32  state: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+51:9 - 51:12   Err: .Err(String)
+51:13 - 51:15  _0: String
+51:19 - 51:25  .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+51:26 - 51:31  state: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+52:9 - 52:11   Ok: .Ok({pos: {x: Num, y: Num}, aim: Num})
+52:12 - 52:13  x: {pos: {x: Num, y: Num}, aim: Num}
+52:18 - 52:19  x: {pos: {x: Num, y: Num}, aim: Num}
+56:8 - 56:12   arg1: String
+56:14 - 56:17  dir: String
+57:8 - 57:12   arg2: b
+57:14 - 57:17  mag: b
+58:8 - 58:13   instr: {arg2: b, arg1: String}
+62:11 - 62:13  ==: Bool
+62:7 - 62:10   dir: String
+62:26 - 62:32  .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+62:34 - 62:36  Ok: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+65:4 - 65:5    {...}: {aim: Num, pos: {x: Num, y: Num}}
+63:8 - 63:11   aim: Num
+63:17 - 63:18  +: Num
+63:13 - 63:16  aim: Num
+63:19 - 63:22  mag: Num
+64:8 - 64:11   pos: {x: Num, y: Num}
+64:13 - 64:16  pos: {x: Num, y: Num}
+67:11 - 67:13  ==: Bool
+67:7 - 67:10   dir: String
+67:24 - 67:30  .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+67:32 - 67:34  Ok: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+70:4 - 70:5    {...}: {aim: Num, pos: {x: Num, y: Num}}
+68:8 - 68:11   aim: Num
+68:17 - 68:18  -: Num
+68:13 - 68:16  aim: Num
+68:19 - 68:22  mag: Num
+69:8 - 69:11   pos: {x: Num, y: Num}
+69:13 - 69:16  pos: {x: Num, y: Num}
+72:11 - 72:13  ==: Bool
+72:7 - 72:10   dir: String
+72:29 - 72:35  .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+72:37 - 72:39  Ok: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+78:4 - 78:5    {...}: {aim: Num, pos: {x: Num, y: Num}}
+73:8 - 73:11   aim: Num
+73:13 - 73:16  aim: Num
+74:8 - 74:11   pos: {x: Num, y: Num}
+77:8 - 77:9    {...}: {x: Num, y: Num}
+75:12 - 75:13  x: Num
+75:21 - 75:22  +: Num
+75:19 - 75:20  x: Num
+75:15 - 75:18  pos: {x: Num}
+75:23 - 75:26  mag: Num
+76:12 - 76:13  y: Num
+76:21 - 76:22  +: Num
+76:19 - 76:20  y: Num
+76:15 - 76:18  pos: {y: Num}
+76:27 - 76:28  *: Num
+76:23 - 76:26  mag: Num
+76:29 - 76:32  aim: Num
+80:4 - 80:10   .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+80:12 - 80:15  Err: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+80:73 - 80:75  \>: String
+80:71 - 80:72  [...]: List[String]
+80:41 - 80:44  dir: String
+80:76 - 80:80  join: List[String] -> String
+83:4 - 83:11   initial: .Ok({aim: Num, pos: {x: Num, y: Num}})
+83:15 - 83:17  Ok: .Ok({aim: Num, pos: {x: Num, y: Num}})
+86:0 - 86:1    {...}: {aim: Num, pos: {x: Num, y: Num}}
+84:4 - 84:7    aim: Num
+85:4 - 85:7    pos: {x: Num, y: Num}
+85:20 - 85:21  {...}: {x: Num, y: Num}
+85:10 - 85:11  x: Num
+85:16 - 85:17  y: Num
+87:4 - 87:10   result: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+87:19 - 87:21  \>: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+87:13 - 87:18  input: List[{arg1: String, arg2: Num}]
+87:42 - 87:43  List[{arg2: Num, arg1: String}] -> .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+87:22 - 87:26  fold: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}}), (.Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}}), {arg2: Num, arg1: String} -> .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})), List[{arg2: Num, arg1: String}] -> .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+87:27 - 87:34  initial: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+87:36 - 87:42  update: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: Num, arg1: String} -> .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+88:4 - 88:10   part_2: Num
+88:13 - 88:18  match: Num
+88:19 - 88:25  result: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+89:5 - 89:7    Ok: .Ok({aim: Num, pos: {x: Num, y: Num}})
+89:9 - 89:12   pos: {x: Num, y: Num}
+89:15 - 89:16  x: Num
+89:18 - 89:19  y: Num
+89:28 - 89:29  *: Num
+89:26 - 89:27  x: Num
+89:30 - 89:31  y: Num
+90:5 - 90:8    Err: .Err(String)
+90:9 - 90:11   _1: String
+90:15 - 90:16  -: Num
+93:0 - 93:5    print: Num
+93:6 - 93:12   part_2: Num
+94:0 - 94:6    assert: Bool
+94:14 - 94:16  ==: Bool
+94:7 - 94:13   part_2: Num
 ___ OUTPUT ___
 150
+900
 
 
 ====== advent_of_code_2024_day_1.lox =====
@@ -1035,7 +1139,7 @@ ___ OUTPUT ___
 
 ====== make_counter.lox =====
 ___ Type checking failed ___
-Recursive row types:
+Recursive types:
 _5
 _10 -> _5
 ___ Continuing with execution ___

@@ -100,6 +100,12 @@ class RowMissingLabel implements TypeCheckException {
   RowMissingLabel(this.label);
   @override toString() => 'row does not contain label $label';
 }
+class RecursiveTypes implements TypeCheckException {
+  final Ty t1;
+  final Ty t2;
+  RecursiveTypes(this.t1, this.t2);
+  @override toString() => 'Recursive types:\n$t1\n$t2';
+}
 class RecursiveRowTypes implements TypeCheckException {
   final Ty t1;
   final Ty t2;
@@ -194,7 +200,7 @@ void unify(Ty t1, Ty t2) {
 
       void verify(Ty ty) => switch (ty) {
         TyVariable(:final Unresolved mutableRef) when mutableRef.id == id =>
-          throw RecursiveRowTypes(t1, t2),
+          throw RecursiveTypes(t1, t2),
 
         TyVariable(:final Unresolved mutableRef) when mutableRef.level! > level =>
           ty.mutableRef = Unresolved(id: mutableRef.id, level: level),
