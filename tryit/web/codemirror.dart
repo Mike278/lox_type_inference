@@ -6,43 +6,104 @@ import 'dart:js_interop';
 
 import 'package:web/web.dart';
 
-extension type CodeMirror._(JSObject _) implements JSObject {
-  external static void defineSimpleMode(String mode, JSAny? options);
-  external factory CodeMirror(Element element, JSAny? codeMirrorOptions);
-  external Doc getDoc();
-  external void setSize(String x, String y);
-  external void on(String event, JSFunction callback);
+@JS('cm.basicSetup')
+external JSObject get basicSetup;
+
+@JS('oneDark')
+external JSObject get oneDark;
+
+@JS('cmView.hoverTooltip')
+external JSObject hoverTooltip(JSFunction callback, [JSObject? options]);
+
+@JS('cm.EditorView')
+extension type EditorView._(JSObject o) implements JSObject {
+  external EditorView(EditorViewConfig config);
+  external EditorState get state;
+  external void dispatch(TransactionSpec spec);
+  external static ViewUpdateFacet updateListener;
+
+  static JSAny createUpdateListener(void Function(String) onChange) =>
+    EditorView.updateListener.of((ViewUpdate update) {
+      if (update.docChanged) onChange(update.view.state.doc.value);
+    }.toJS);
+
+  void replaceContent(String newContent) {
+    dispatch(TransactionSpec(
+      changes: ChangeSpec(
+        from: 0,
+        to: state.doc.value.length,
+        insert: newContent,
+      ),
+    ));
+  }
 }
 
-
-extension type Doc._(JSObject _) implements JSObject {
-  external void setValue(String value);
-  external String getValue();
-  external TextMarker markText(Position from, Position to, MarkTextOptions options);
+extension type ViewUpdateFacet._(JSObject o) implements JSObject {
+  external JSAny of(JSAny value);
 }
 
-
-@anonymous
-extension type Position._(JSObject _) implements JSObject {
-  external int line;
-  external int ch;
-
-  external factory Position({required int line, required int ch});
+extension type ViewUpdate._(JSObject o) implements JSObject {
+  external EditorView get view;
+  external bool get docChanged;
 }
 
-extension type TextMarker._(JSObject _) implements JSObject {
-  external void clear();
+extension type EditorViewConfig._(JSObject o) implements JSObject {
+  external factory EditorViewConfig({
+    JSArray<JSAny> extensions,
+    String doc,
+    HTMLElement parent,
+  });
 }
 
-@anonymous
-extension type MarkTextOptions._(JSObject _) implements JSObject {
-  external String className;
-  external String? title;
-  external JSAny? attributes;
+extension type EditorState._(JSObject o) implements JSObject {
+  external Text get doc;
+}
 
-  external factory MarkTextOptions({
-    required String className,
-    String? title,
-    JSAny? attributes,
+extension type Text._(JSObject o) implements JSObject {
+  String get value => o.toString();
+  external Line lineAt(JSNumber pos);
+}
+
+extension type Line._(JSObject o) implements JSObject {
+  external int get from;
+  external int get to;
+  external int get number;
+  external String get text;
+  external int get length;
+}
+
+extension type TransactionSpec._(JSObject o) implements JSObject {
+  external factory TransactionSpec({ChangeSpec changes});
+}
+
+extension type ChangeSpec._(JSObject o) implements JSObject {
+  external factory ChangeSpec({int from, int to, String insert});
+}
+
+extension type HoverTooltipOptions._(JSObject o) implements JSObject {
+  external factory HoverTooltipOptions({int hoverTime});
+}
+
+extension type Tooltip._(JSObject o) implements JSObject {
+  external factory Tooltip({
+    JSNumber pos,
+    JSFunction create,
+  });
+
+  static Tooltip create({
+    required JSNumber start,
+    required HTMLElement Function(EditorView) build,
+  }) => Tooltip(
+    pos: start,
+    create: (JSObject? view) {
+      final element = build(view as EditorView);
+      return TooltipView(dom: element);
+    }.toJS,
+  );
+}
+
+extension type TooltipView._(JSObject o) {
+  external factory TooltipView({
+    HTMLElement dom,
   });
 }

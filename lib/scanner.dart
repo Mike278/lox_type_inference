@@ -20,7 +20,7 @@ typedef ScanError = ({int line, int offset, String message});
 
   void addToken(TokenType type, [Object? literal]) {
     final text = source.substring(start, current);
-    tokens.add(Token(type, text, literal, line, offset - (current - start)));
+    tokens.add(Token(type, text, literal, line, offset - (current - start), start));
   }
 
   bool match(String expected) {
@@ -130,7 +130,7 @@ typedef ScanError = ({int line, int offset, String message});
     scanToken();
   }
 
-  tokens.add(Token(.eof, '', null, line, 0));
+  tokens.add(Token(.eof, '', null, line, 0, current));
   return (tokens, errors: errors);
 }
 

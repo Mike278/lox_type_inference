@@ -9,6 +9,8 @@ environment:
 dependencies:
   web: ^0.5.1
   http:
+  path:
+  collection:
   lox:
     path: ../
 

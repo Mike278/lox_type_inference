@@ -9,30 +9,41 @@ import 'package:lox/utils.dart';
 
 typedef MarkText = (CodeSpan, {String display, String? style});
 typedef CodeSpan = ({CodePosition from, CodePosition to});
-typedef CodePosition = ({int line, int offset});
+typedef CodePosition = ({int line, int offset, int absoluteOffset});
 
 extension on Token {
   CodeSpan get span => toSpan(this);
 }
 
 CodeSpan toSpan(Token token) {
-  final from = (line: token.line-1, offset: token.offset);
-  final to = (line: token.line-1, offset: token.offset + token.lexeme.length);
-  return (from: from, to: to);
+  final length = token.lexeme.length;
+  final line = token.line-1;
+  final fromOffset = token.offset;
+  final toOffset = fromOffset + length;
+  final fromAbsolute = token.absoluteOffset;
+  final toAbsolute = fromAbsolute + length;
+  return (
+    from: (line: line, offset: fromOffset, absoluteOffset: fromAbsolute),
+    to: (line: line, offset: toOffset, absoluteOffset: toAbsolute),
+  );
 }
 
-extension on CodeSpan {
+extension CodeSpanAPI on CodeSpan {
   CodeSpan extendedBy(CodeSpan other) => extend(this, other);
+  bool contains(int position) =>
+    from.absoluteOffset <= position && position <= to.absoluteOffset;
 }
 
 CodeSpan extend(CodeSpan a, CodeSpan b) => (
   from: (
     line: min(a.from.line, b.from.line),
     offset: min(a.from.offset, b.from.offset),
+    absoluteOffset: min(a.from.absoluteOffset, b.from.absoluteOffset),
   ),
   to: (
     line: max(a.from.line, b.from.line),
     offset: max(a.from.offset, b.from.offset),
+    absoluteOffset: max(a.from.absoluteOffset, b.from.absoluteOffset),
   ),
 );
 
@@ -60,9 +71,9 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
     final typeOf = (Expr expr) => expr.type;
     final hovers = buildHoverInfo(statements, typeOf);
     justSpentTime('building hovers');
-    for (final (span, :display) in hovers) {
+    for (final (token, :display) in hovers) {
       marks.add((
-        span,
+        toSpan(token),
         display: display,
         style: null,
       ));
@@ -95,7 +106,7 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
 
 typedef TypeOf = Ty? Function(Expr);
 
-List<(CodeSpan, {String display})> buildHoverInfo(
+List<(Token, {String display})> buildHoverInfo(
   List<Statement> program,
   TypeOf typeOf,
 ) => [
@@ -108,7 +119,7 @@ List<(CodeSpan, {String display})> buildHoverInfo(
 ];
 
 
-List<(CodeSpan, String)> displayStatement(
+List<(Token, String)> displayStatement(
   Statement statement,
   TypeOf typeOf,
 ) => switch (statement) {
@@ -118,7 +129,7 @@ List<(CodeSpan, String)> displayStatement(
 
   AssertStatement(:final keyword, :final expr) ||
   PrintStatement(:final keyword, :final expr) => [
-      (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
+      (keyword, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
       ...displayExpression(expr, typeOf),
   ],
 
@@ -143,36 +154,36 @@ List<(CodeSpan, String)> displayStatement(
   ],
 };
 
-List<(CodeSpan, String)> displayPattern(Pattern pattern) =>
+List<(Token, String)> displayPattern(Pattern pattern) =>
   switch (pattern) {
     Identifier(:final name, :final type) => [
-      (name.span, '${name.lexeme}: ${displayType(type)}'),
+      (name, '${name.lexeme}: ${displayType(type)}'),
     ],
     RecordDestructure(:final elements) => [
       for (final field in elements) ...[
-        (field.name.span, '${field.name.lexeme}: ${displayType(field.type)}'),
+        (field.name, '${field.name.lexeme}: ${displayType(field.type)}'),
         if (field.pattern case final pattern?)
           ...displayPattern(pattern),
       ],
     ],
     TagPattern(:final tag, :final payload, :final type) => [
-      (tag.span, '${tag.lexeme}: ${displayType(type)}'),
+      (tag, '${tag.lexeme}: ${displayType(type)}'),
       if (payload != null) ...displayPattern(payload),
     ],
   };
 
-List<(CodeSpan, String)> displayExpression(
+List<(Token, String)> displayExpression(
   Expr expr,
   TypeOf typeOf,
 ) => switch (expr) {
 
   Return(:final keyword, :final expr) => [
-    (keyword.span, expr == null ? 'nil' : displayType(typeOf(expr))),
+    (keyword, expr == null ? 'nil' : displayType(typeOf(expr))),
     if (expr != null) ...displayExpression(expr, typeOf),
   ],
 
   Variable(:final name) => [
-    (name.span, '${name.lexeme}: ${displayType(typeOf(expr))}')
+    (name, '${name.lexeme}: ${displayType(typeOf(expr))}')
   ],
 
 
@@ -192,7 +203,7 @@ List<(CodeSpan, String)> displayExpression(
       :final arrow,
     ),
   ) => [
-    (arrow.span, displayType(typeOf(expr))),
+    (arrow, displayType(typeOf(expr))),
     ...displayExpression(body, typeOf),
     ...params.expand(displayPattern),
   ],
@@ -208,8 +219,8 @@ List<(CodeSpan, String)> displayExpression(
       )
     )
   ) =>[
-    (openBrace.span, displayType(typeOf(expr))),
-    (closeBrace.span, displayType(typeOf(expr))),
+    (openBrace, displayType(typeOf(expr))),
+    (closeBrace, displayType(typeOf(expr))),
     ...params.expand(displayPattern),
     for (final s in statements)
       ...displayStatement(s, typeOf),
@@ -221,7 +232,7 @@ List<(CodeSpan, String)> displayExpression(
     args: ExpressionArgs(exprs: final args),
     :final closingParen,
   ) => [
-    (closingParen.span, displayType(typeOf(expr))),
+    (closingParen, displayType(typeOf(expr))),
     ...displayExpression(callee, typeOf),
     for (final arg in args) ...displayExpression(arg, typeOf),
   ],
@@ -232,8 +243,8 @@ List<(CodeSpan, String)> displayExpression(
     args: ArgsWithPlaceholder(:final before, :final placeholder, :final placeholderType, :final after),
     :final closingParen,
   ) => [
-    (closingParen.span, displayType(typeOf(expr))),
-    (placeholder.span, '${placeholder.lexeme}: ${displayType(placeholderType)}'),
+    (closingParen, displayType(typeOf(expr))),
+    (placeholder, '${placeholder.lexeme}: ${displayType(placeholderType)}'),
     for (final e in before) ...displayExpression(e, typeOf),
     for (final e in after) ...displayExpression(e, typeOf),
     ...displayExpression(callee, typeOf),
@@ -244,7 +255,7 @@ List<(CodeSpan, String)> displayExpression(
     :final closingBracket,
     :final elements,
   ) => [
-    (closingBracket.span, '[...]: ${displayType(typeOf(expr))}'),
+    (closingBracket, '[...]: ${displayType(typeOf(expr))}'),
     for (final e in elements) ...switch (e) {
         ExpressionListElement(:final expr) || SpreadListElement(:final expr) =>
           displayExpression(expr, typeOf)
@@ -258,7 +269,7 @@ List<(CodeSpan, String)> displayExpression(
     :final ifTrue,
     :final ifFalse,
   ) => [
-    (questionMark.span, '?: ${displayType(typeOf(expr))}'),
+    (questionMark, '?: ${displayType(typeOf(expr))}'),
     ...displayExpression(condition, typeOf),
     ...displayExpression(ifTrue, typeOf),
     ...displayExpression(ifFalse, typeOf),
@@ -268,23 +279,23 @@ List<(CodeSpan, String)> displayExpression(
   LogicalAnd(:final left, :final keyword, :final right) ||
   LogicalOr(:final left, :final keyword, :final right) ||
   Binary(:final left, operator: final keyword, :final right) => [
-    (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
+    (keyword, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
     ...displayExpression(left, typeOf),
     ...displayExpression(right, typeOf),
   ],
 
 
   Record(:final fields, :final closingBrace) => [
-    (closingBrace.span, '{...}: ${displayType(typeOf(expr))}'),
+    (closingBrace, '{...}: ${displayType(typeOf(expr))}'),
     for (final (name, field) in fields.pairs()) ...[
-      (name.span, '${name.lexeme}: ${displayType(typeOf(field))}'),
+      (name, '${name.lexeme}: ${displayType(typeOf(field))}'),
       ...displayExpression(field, typeOf),
     ]
   ],
 
 
   RecordGet(:final name, :final record) => [
-    (name.span, '${name.lexeme}: ${displayType(typeOf(expr))}'),
+    (name, '${name.lexeme}: ${displayType(typeOf(expr))}'),
     ...displayExpression(record, typeOf),
   ],
 
@@ -294,10 +305,10 @@ List<(CodeSpan, String)> displayExpression(
     :final newFields,
     :final closingBrace,
   ) => [
-    (closingBrace.span, '{...}: ${displayType(typeOf(expr))}'),
+    (closingBrace, '{...}: ${displayType(typeOf(expr))}'),
     ...displayExpression(record, typeOf),
     for (final (name, field) in newFields.pairs()) ...[
-      (name.span, '${name.lexeme}: ${displayType(typeOf(field))}'),
+      (name, '${name.lexeme}: ${displayType(typeOf(field))}'),
       ...displayExpression(field, typeOf),
     ]
   ],
@@ -305,15 +316,15 @@ List<(CodeSpan, String)> displayExpression(
 
   UnaryMinus(:final operator, :final expr) ||
   UnaryBang(:final operator, :final expr) => [
-    (operator.span, '${operator.lexeme}: ${displayType(typeOf(expr))}'),
+    (operator, '${operator.lexeme}: ${displayType(typeOf(expr))}'),
     ...displayExpression(expr, typeOf),
   ],
   TagConstructor(:final tag, :final payload) => [
-    (tag.span, '${tag.lexeme}: ${displayType(typeOf(expr))}'),
+    (tag, '${tag.lexeme}: ${displayType(typeOf(expr))}'),
     if (payload != null) ...displayExpression(payload, typeOf)
   ],
   TagMatch(:final tag, :final keyword, :final cases) => [
-    (keyword.span, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
+    (keyword, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
     ...displayExpression(tag, typeOf),
     for (final TagMatchCase(:pattern, :result) in cases) ...[
       ...displayPattern(pattern),
@@ -321,8 +332,8 @@ List<(CodeSpan, String)> displayExpression(
     ],
   ],
   Import(:final keyword, :final target, :final path) => [
-    (keyword.span, '$path: ${displayType(typeOf(expr))}'),
-    (target.span, '$path: ${displayType(typeOf(expr))}'),
+    (keyword, '$path: ${displayType(typeOf(expr))}'),
+    (target, '$path: ${displayType(typeOf(expr))}'),
   ],
 };
 

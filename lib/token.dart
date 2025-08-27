@@ -29,14 +29,16 @@ class Token with EquatableMixin {
   final Object? literal;
   final int line;
   final int offset;
+  final int absoluteOffset;
 
-  Token(this.type, this.lexeme, this.literal, this.line, this.offset);
+  Token(this.type, this.lexeme, this.literal, this.line, this.offset, this.absoluteOffset);
   Token replaceLexeme(String replacement) => Token(
     type,
     replacement,
     literal,
     line,
     offset,
+    absoluteOffset,
   );
 
   @override

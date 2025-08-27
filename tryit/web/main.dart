@@ -2,66 +2,128 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 
+import 'package:collection/collection.dart';
 import 'package:http/http.dart';
 import 'package:lox/coordinator.dart';
 import 'package:lox/interpreter.dart';
 import 'package:lox/mark_types.dart';
+import 'package:path/path.dart';
 import 'package:web/web.dart' as web;
 
 import './codemirror.dart';
-import './sample.dart';
+import './code_samples.dart';
 
 
 void main() {
 
-  CodeMirror.defineSimpleMode('lox', loxMode.jsify());
-  final editor = CodeMirror(
-    web.document.getElementById('code-input')!,
-    codeMirrorOptions.jsify()
-  )..setSize('100%', '100%');
-  getSource() => Source.memory(editor.getDoc().getValue());
+  final outputElement = web.document.getElementById('output')!;
+  final editorDiv = web.document.getElementById('editor') as web.HTMLElement;
+  final runButton = web.document.getElementById('run-button')!;
+  final examplesMenu = web.document.getElementById('examples-menu')!;
 
-  final outputElement = web.document.getElementById('output-area')!;
-  web.document.getElementById('run-button')!.onClick.listen((_) {
-    outputElement.text = exec(getSource());
-  });
+  var selectedExample = samples.values.first;
+  void updateSelectedExample(String newSample) {
+    selectedExample = newSample;
+  }
 
-  editor.getDoc().setValue(sample);
-
-  final clearMarks = <void Function()>[];
+  final marksByLine = <int, List<MarkText>>{};
   Timer? debounce;
-  void queueTypecheck() {
+  void queueTypecheck(String code) {
     debounce?.cancel();
-    debounce = Timer(const Duration(milliseconds: 300), () {
-      for (var clear in clearMarks) {
-        clear();
-      }
-      clearMarks.clear();
-      final (:errorOutput, marks) = markTypes('', getSource(), webImportFile);
+    debounce = .new(.new(milliseconds: 300), () {
+      marksByLine.clear();
+      final (:errorOutput, marks) = markTypes('', .memory(code), webImportFile(selectedExample));
       outputElement.text = errorOutput;
-      final doc = editor.getDoc();
-      for (final ((:from, :to), :display, :style) in marks) {
-        final mark = doc.markText(
-          Position(line: from.line, ch: from.offset),
-          Position(line: to.line, ch: to.offset),
-          MarkTextOptions(
-            className: 'cm-tooltip-marker ${style ?? ''}',
-            attributes: {'data-tooltip': display}.jsify(),
-          ),
-        );
-        clearMarks.add(() => mark.clear());
+      for (final mark in marks) {
+        final (pos, display:_, style: _) = mark;
+        final line = pos.from.line+1;
+        (marksByLine[line] ??= []).add(mark);
+      }
+      for (final list in marksByLine.values) {
+        list.sort((a, b) => -a.$1.from.absoluteOffset.compareTo(b.$1.from.absoluteOffset));
       }
     });
   }
 
-  editor.on('change', (JSAny? _, JSAny? __) {
-    queueTypecheck();
-    _maybeLog(editor.getDoc().getValue());
-  }.toJS);
-  queueTypecheck();
+  final editor = EditorView(.new(
+    parent: editorDiv,
+    doc: selectedExample,
+    extensions: [
+      basicSetup,
+      oneDark,
+      hoverTooltip(
+        hoverTooltipCallback(marksByLine),
+        HoverTooltipOptions(hoverTime: 1),
+      ),
+      EditorView.createUpdateListener((code) {
+        queueTypecheck(code);
+        _maybeLog(code);
+      })
+    ].toJS
+  ));
+
+  runButton.onClick.listen((_) {
+    outputElement.text = exec(
+      selectedExample,
+      .memory(editor.state.doc.value),
+    );
+  });
+
+  queueTypecheck(editor.state.doc.value);
+
+  populateExamplesMenu(editor, examplesMenu, updateSelectedExample);
 }
 
-String exec(Source source) {
+JSFunction hoverTooltipCallback(Map<int, List<MarkText>> marksByLine) =>
+  (JSObject view, JSNumber pos, JSNumber side) {
+    view as EditorView;
+    final dartPos = (pos.dartify() as num).toInt();
+    final line = view.state.doc.lineAt(pos);
+    final marks = marksByLine[line.number] ?? [];
+    if (marks.isEmpty) return null;
+    final mark = marks.firstWhereOrNull((mark) => mark.$1.contains(dartPos));
+    if (mark == null) return null;
+    return Tooltip.create(
+      start: pos,
+      build: (editor) {
+        final element = web.document.createElement("div");
+        element.className = "cm-tooltip-content type-hint-tooltip";
+        final typeElement = web.document.createElement("div");
+        typeElement.className = "cm-tooltip-type";
+        typeElement.textContent = mark.display;
+        element.appendChild(typeElement);
+        final tooltip = element as web.HTMLElement;
+        return tooltip;
+      },
+    );
+  }.toJS;
+
+
+void populateExamplesMenu(EditorView editor, web.Element menuElement, void Function(String) onSelected) {
+  final list = web.document.createElement('ul');
+  final title = web.document.createElement('h3');
+  title.textContent = 'Examples';
+  menuElement.append(title);
+
+  samples.forEach((name, code) {
+    final item = web.document.createElement('li');
+    item.textContent = name;
+    item.onClick.listen((_) {
+      editor.replaceContent(code);
+      menuElement.querySelector('.active')?.classList.remove('active');
+      item.classList.add('active');
+      onSelected(name);
+    });
+    list.append(item);
+  });
+
+  // Set the first item as active by default
+  (list.firstChild as web.HTMLLIElement?)?.classList.add('active');
+
+  menuElement.append(list);
+}
+
+String exec(String dir, Source source) {
 
   final output = [];
   printMessage(msg) => output.add(msg);
@@ -74,10 +136,10 @@ String exec(Source source) {
     run(
       '',
       source,
-      Env.global(),
+      .global(),
       runAssert,
       (print: printMessage),
-      webImportFile,
+      webImportFile(dir),
       checkTypes: false,
     );
   } catch (e) {
@@ -87,77 +149,23 @@ String exec(Source source) {
   return output.join('\n');
 }
 
-final webImportFile = (_) => throw 'file imports arent supported on web';
+ReadFile webImportFile(String relativeTo) =>
+  (path) {
+    final dir = dirname(relativeTo);
+    final collapsed = path.replaceAll('../', '');
+    final resolved = dir == '.'
+        ? collapsed
+        : '$dir/$collapsed';
+    return samples[resolved] ?? (throw 'failed to import $path relative to $relativeTo ($resolved)');
+  };
 
 
-// keyword
-// atom
-// number
-// def
-// variable
-// punctuation
-// property
-// operator
-// variable-2
-// variable-3
-// s-default
-// type
-// comment
-// string
-// string-2
-// meta
-// qualifier
-// builtin
-// bracket
-// tag
-// attribute
-// hr
-// link
-
-final loxMode = {
-  'start': [
-    {'token': "property",                   'regex': r'([a-zA-Z_]\w*)(?=\s*:)'},
-    {'token': "string",                     'regex': r'"(?:[^\\]|\\.)*?(?:"|$)'},
-    {'token': ["keyword", null, "def"],     'regex': r'(let)(\s+)([a-z$][\w$]*)'},
-    {'token': "keyword",                    'regex': r'(?:let|print|if|then|else|return)\b'},
-    {'token': "attribute",                  'regex': r'List'},
-    {'token': "bracket",                    'regex': r'[\{\[\(]', },
-    {'token': "bracket",                    'regex': r'[\}\]\)]', },
-    {'token': "atom",                       'regex': r'true|false|nil'},
-    {'token': "punctuation",                'regex': r'[,;]'},
-    {'token': "number",                     'regex': r'\d'},
-    {'token': "comment",                    'regex': r'\/\/.*'},
-    {'token': "comment", 'next': "comment", 'regex': r'\/\*'},
-    {'token': "operator",                   'regex': r'->'},
-    {'token': "operator",                   'regex': r'->|\\>|\?|:|\.\.'},
-    {'token': "variable-3",                 'regex': r'[a-z$][\w$]*'},
-  ],
-  'comment': [
-    {'token': "comment", 'next': "start",   'regex': r'.*?\*\/'},
-    {'token': "comment",                    'regex': r'.*'},
-  ],
-};
-
-final codeMirrorOptions = {
-  'value': sample,
-  'mode': 'lox',
-  'lineNumbers': true,
-  'theme': 'ambiance',
-  'indentUnit': 4,
-  'highlightSelectionMatches': true,
-  'matchBrackets': true,
-  'autoCloseBrackets': true,
-  'autoCloseTags': {
-    'whenOpening': true,
-    'whenClosing': true,
-  },
-};
 
 Timer? debounce;
 Future<void> _maybeLog(String source) async {
   if (source.isEmpty) return;
   debounce?.cancel();
-  debounce = Timer(const Duration(seconds: 2), () => _log(source));
+  debounce = .new(.new(seconds: 2), () => _log(source));
 }
 
 final start = DateTime.now().toUtc().toIso8601String();

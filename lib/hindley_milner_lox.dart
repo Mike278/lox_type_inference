@@ -639,7 +639,14 @@ class TypeInference {
     final function = Lambda(
         [Identifier(args.placeholder)],
         ArrowExpression(
-          Token(.arrow, '->', null, args.placeholder.line, args.placeholder.offset),
+          Token(
+            .arrow,
+            '->',
+            null,
+            args.placeholder.line,
+            args.placeholder.offset,
+            args.placeholder.absoluteOffset,
+          ),
           functionBody,
         ),
     );
