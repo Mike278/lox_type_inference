@@ -617,6 +617,187 @@ side effect!
 true
 
 
+====== grab_bag.lox =====
+___ TYPES ___
+1:4 - 1:9      empty: List[a] -> Bool
+1:17 - 1:22    empty: List[a] -> Bool
+1:12 - 1:16    List: {first: List[b] -> b, rest: List[c] -> List[c], empty: List[a] -> Bool}
+2:4 - 2:9      first: List[a] -> a
+2:17 - 2:22    first: List[a] -> a
+2:12 - 2:16    List: {first: List[a] -> a, rest: List[b] -> List[b], empty: List[c] -> Bool}
+3:4 - 3:8      rest: List[a] -> List[a]
+3:16 - 3:20    rest: List[a] -> List[a]
+3:11 - 3:15    List: {first: List[b] -> b, rest: List[a] -> List[a], empty: List[c] -> Bool}
+8:4 - 8:11     friends: List[String]
+8:29 - 8:30    [...]: List[String]
+9:4 - 9:10     family: List[String]
+9:32 - 9:33    [...]: List[String]
+10:4 - 10:10   people: List[String]
+10:48 - 10:49  [...]: List[String]
+10:23 - 10:30  friends: List[String]
+10:42 - 10:48  family: List[String]
+11:0 - 11:5    print: List[String]
+11:17 - 11:18  List[String]
+11:6 - 11:10   rest: List[String] -> List[String]
+11:11 - 11:17  people: List[String]
+16:4 - 16:8    boss: {name: String, company: String}
+19:0 - 19:1    {...}: {name: String, company: String}
+17:4 - 17:8    name: String
+18:4 - 18:11   company: String
+20:4 - 20:11   updated: {name: String, company: String, line_of_work: .Refrigeration}
+20:51 - 20:52  {...}: {name: String, company: String, line_of_work: .Refrigeration}
+20:17 - 20:21  boss: {name: String, company: String}
+20:23 - 20:35  line_of_work: .Refrigeration
+20:38 - 20:51  Refrigeration: .Refrigeration
+21:0 - 21:5    print: {name: String, company: String}
+21:6 - 21:10   boss: {name: String, company: String}
+22:0 - 22:5    print: String
+22:14 - 22:21  company: String
+22:6 - 22:13   updated: {name: String, company: String, line_of_work: .Refrigeration}
+24:2 - 24:6    name: String
+25:2 - 25:14   line_of_work: .Refrigeration
+25:16 - 25:24  subtitle: .Refrigeration
+26:4 - 26:11   updated: {name: String, company: String, line_of_work: .Refrigeration}
+27:0 - 27:5    print: String
+27:6 - 27:10   name: String
+28:0 - 28:5    print: .Refrigeration
+28:6 - 28:14   subtitle: .Refrigeration
+33:4 - 33:9    green: .Green
+33:13 - 33:18  Green: .Green
+34:4 - 34:7    red: .Red
+34:11 - 34:14  Red: .Red
+35:4 - 35:10   either: .Green | .Red
+35:18 - 35:19  ?: .Green | .Red
+35:20 - 35:25  green: .Green | .Red
+35:28 - 35:31  red: .Green | .Red
+36:0 - 36:5    print: Num
+36:6 - 36:11   match: Num
+36:12 - 36:18  either: .Green | .Red
+37:5 - 37:10   Green: .Green
+38:5 - 38:8    Red: .Red
+41:4 - 41:14   send_email: String -> .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+41:20 - 41:21  String -> .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+46:0 - 46:1    String -> .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+41:18 - 41:19  x: String
+42:7 - 42:9    ==: Bool
+42:5 - 42:6    x: String
+42:19 - 42:25  .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+42:27 - 42:41  MissingSubject: .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+43:7 - 43:9    ==: Bool
+43:5 - 43:6    x: String
+43:19 - 43:25  .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+43:27 - 43:39  NetworkError: .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+44:7 - 44:9    ==: Bool
+44:5 - 44:6    x: String
+44:19 - 44:25  .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+44:27 - 44:30  OOM: .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+45:2 - 45:8    .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+45:10 - 45:14  Sent: .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+47:4 - 47:10   result: .Alert(String) | .NetworkError(Num) | .OOM
+47:13 - 47:18  match: .Alert(String) | .NetworkError(Num) | .OOM
+47:33 - 47:34  .Alert(String) | .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+47:19 - 47:29  send_email: String -> .Alert(String) | .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+48:3 - 48:7    Sent: .Sent
+48:22 - 48:27  Alert: .Alert(String) | .NetworkError(Num) | .OOM
+49:3 - 49:17   MissingSubject: .MissingSubject
+49:22 - 49:27  Alert: .Alert(String) | .NetworkError(Num) | .OOM
+50:2 - 50:15   something_bad: .Alert(String) | .NetworkError(Num) | .OOM
+50:22 - 50:35  something_bad: .Alert(String) | .NetworkError(Num) | .OOM
+56:4 - 56:7    sub: Num, Num -> Num
+56:16 - 56:18  Num, Num -> Num
+56:21 - 56:22  -: Num
+56:19 - 56:20  x: Num
+56:23 - 56:24  y: Num
+56:11 - 56:12  x: Num
+56:14 - 56:15  y: Num
+57:0 - 57:5    print: Num
+57:14 - 57:15  Num
+57:6 - 57:9    sub: Num, Num -> Num
+59:4 - 59:15   one_minus_x: Num -> Num
+59:26 - 59:27  Num -> Num
+59:25 - 59:26  _: <unknown>
+59:18 - 59:21  sub: Num, Num -> Num
+60:4 - 60:15   x_minus_one: Num -> Num
+60:26 - 60:27  Num -> Num
+60:22 - 60:23  _: <unknown>
+60:18 - 60:21  sub: Num, Num -> Num
+61:0 - 61:5    print: Num
+61:19 - 61:20  Num
+61:6 - 61:17   one_minus_x: Num -> Num
+62:0 - 62:5    print: Num
+62:19 - 62:20  Num
+62:6 - 62:17   x_minus_one: Num -> Num
+64:4 - 64:11   numbers: List[Num]
+64:20 - 64:21  [...]: List[Num]
+65:0 - 65:5    print: Num
+65:23 - 65:25  \>: Num
+65:14 - 65:16  \>: Num
+65:6 - 65:13   numbers: List[Num]
+65:17 - 65:22  first: List[Num] -> Num
+65:34 - 65:35  Num -> Num
+65:30 - 65:31  _: <unknown>
+65:26 - 65:29  sub: Num, Num -> Num
+67:4 - 67:13   make_user: {birth_year: Num, name: String} -> .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+67:22 - 67:23  {birth_year: Num, name: String} -> .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+79:0 - 79:1    {birth_year: Num, name: String} -> .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+67:17 - 67:21  data: {birth_year: Num, name: String}
+68:17 - 68:19  ==: Bool
+68:12 - 68:16  name: String
+68:7 - 68:11   data: {birth_year: Num, name: String}
+69:8 - 69:13   print: String
+70:8 - 70:14   .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+70:16 - 70:25  Anonymous: .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+72:8 - 72:17   random_id: Num
+73:4 - 73:10   .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+73:12 - 73:16  User: .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+78:4 - 78:5    {...}: {user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num}
+74:8 - 74:15   user_id: Num
+74:17 - 74:26  random_id: Num
+75:8 - 75:12   name: String
+75:19 - 75:23  name: String
+75:14 - 75:18  data: {birth_year: Num, name: String}
+76:8 - 76:18   birth_year: Num
+76:25 - 76:35  birth_year: Num
+76:20 - 76:24  data: {birth_year: Num, name: String}
+77:8 - 77:11   age: {as_of_year: Num} -> Num
+77:41 - 77:43  {as_of_year: Num} -> Num
+77:57 - 77:58  -: Num
+77:44 - 77:56  current_year: Num
+77:64 - 77:74  birth_year: Num
+77:59 - 77:63  data: {birth_year: Num, name: String}
+77:15 - 77:25  as_of_year: Num
+77:27 - 77:39  current_year: Num
+80:4 - 80:8    user: .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+80:52 - 80:53  .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+80:11 - 80:20  make_user: {birth_year: Num, name: String} -> .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+80:51 - 80:52  {...}: {name: String, birth_year: Num}
+80:22 - 80:26  name: String
+80:35 - 80:45  birth_year: Num
+81:0 - 81:5    print: Num
+81:6 - 81:11   match: Num
+81:12 - 81:16  user: .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+82:5 - 82:9    User: .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+82:10 - 82:11  u: {user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num}
+82:40 - 82:41  Num
+82:18 - 82:21  age: {as_of_year: Num} -> Num
+82:16 - 82:17  u: {user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num}
+82:39 - 82:40  {...}: {as_of_year: Num}
+82:23 - 82:33  as_of_year: Num
+83:5 - 83:14   Anonymous: .Anonymous
+___ OUTPUT ___
+[alice, bob, john, charlie, devin]
+{name: Bob Vance, company: Vance Refrigeration}
+Vance Refrigeration
+Bob Vance
+.Refrigeration
+0
+5
+-2
+2
+0
+51
+
+
 ====== if.lox =====
 ___ TYPES ___
 1:9 - 1:11     or: Bool

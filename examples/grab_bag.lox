@@ -1,4 +1,3 @@
-final sample = r'''
 // Built-ins
 let empty = List.empty;
 let first = List.first;
@@ -22,8 +21,8 @@ let boss = {
 let updated = {..boss, line_of_work: .Refrigeration};
 print boss;
 print updated.company;
-let { 
-  name, 
+let {
+  name,
   line_of_work: subtitle,
 } = updated;
 print name;
@@ -84,4 +83,3 @@ print match user {
     .User(u) -> u.age({as_of_year: 2025}),
     .Anonymous -> 0,
 };
-''';

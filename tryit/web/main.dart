@@ -21,8 +21,8 @@ void main() {
   final runButton = web.document.getElementById('run-button')!;
   final examplesMenu = web.document.getElementById('examples-menu')!;
 
-  var selectedExample = samples.values.first;
-  void updateSelectedExample(String newSample) {
+  var selectedExample = samples.first;
+  void updateSelectedExample(Sample newSample) {
     selectedExample = newSample;
   }
 
@@ -32,7 +32,7 @@ void main() {
     debounce?.cancel();
     debounce = .new(.new(milliseconds: 300), () {
       marksByLine.clear();
-      final (:errorOutput, marks) = markTypes('', .memory(code), webImportFile(selectedExample));
+      final (:errorOutput, marks) = markTypes('', .memory(code), webImportFile(selectedExample.name));
       outputElement.text = errorOutput;
       for (final mark in marks) {
         final (pos, display:_, style: _) = mark;
@@ -47,7 +47,7 @@ void main() {
 
   final editor = EditorView(.new(
     parent: editorDiv,
-    doc: selectedExample,
+    doc: selectedExample.content,
     extensions: [
       basicSetup,
       oneDark,
@@ -64,7 +64,7 @@ void main() {
 
   runButton.onClick.listen((_) {
     outputElement.text = exec(
-      selectedExample,
+      selectedExample.name,
       .memory(editor.state.doc.value),
     );
   });
@@ -99,23 +99,24 @@ JSFunction hoverTooltipCallback(Map<int, List<MarkText>> marksByLine) =>
   }.toJS;
 
 
-void populateExamplesMenu(EditorView editor, web.Element menuElement, void Function(String) onSelected) {
+void populateExamplesMenu(EditorView editor, web.Element menuElement, void Function(Sample) onSelected) {
   final list = web.document.createElement('ul');
   final title = web.document.createElement('h3');
   title.textContent = 'Examples';
   menuElement.append(title);
 
-  samples.forEach((name, code) {
+  for (final sample in samples) {
+    final (name, code) = sample;
     final item = web.document.createElement('li');
     item.textContent = name;
     item.onClick.listen((_) {
       editor.replaceContent(code);
       menuElement.querySelector('.active')?.classList.remove('active');
       item.classList.add('active');
-      onSelected(name);
+      onSelected(sample);
     });
     list.append(item);
-  });
+  }
 
   // Set the first item as active by default
   (list.firstChild as web.HTMLLIElement?)?.classList.add('active');
@@ -123,7 +124,7 @@ void populateExamplesMenu(EditorView editor, web.Element menuElement, void Funct
   menuElement.append(list);
 }
 
-String exec(String dir, Source source) {
+String exec(SampleName sample, Source source) {
 
   final output = [];
   printMessage(msg) => output.add(msg);
@@ -139,7 +140,7 @@ String exec(String dir, Source source) {
       .global(),
       runAssert,
       (print: printMessage),
-      webImportFile(dir),
+      webImportFile(sample),
       checkTypes: false,
     );
   } catch (e) {
@@ -149,14 +150,19 @@ String exec(String dir, Source source) {
   return output.join('\n');
 }
 
-ReadFile webImportFile(String relativeTo) =>
+final _samplesByName = {
+  for (final (name, sample) in samples)
+    name: sample,
+};
+
+ReadFile webImportFile(SampleName relativeTo) =>
   (path) {
     final dir = dirname(relativeTo);
     final collapsed = path.replaceAll('../', '');
     final resolved = dir == '.'
         ? collapsed
         : '$dir/$collapsed';
-    return samples[resolved] ?? (throw 'failed to import $path relative to $relativeTo ($resolved)');
+    return _samplesByName[resolved] ?? (throw 'failed to import $path relative to $relativeTo ($resolved)');
   };
 
 
