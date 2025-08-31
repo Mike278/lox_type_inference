@@ -35,7 +35,7 @@ void main() {
       final (:errorOutput, marks) = markTypes('', .memory(code), webImportFile(selectedExample.name));
       outputElement.text = errorOutput;
       for (final mark in marks) {
-        final (pos, display:_, style: _) = mark;
+        final (pos, display:_, isError: _) = mark;
         final line = pos.from.line+1;
         (marksByLine[line] ??= []).add(mark);
       }
@@ -54,8 +54,9 @@ void main() {
       oneDark,
       hoverTooltip(
         hoverTooltipCallback(marksByLine),
-        HoverTooltipOptions(hoverTime: 1),
+        HoverTooltipOptions(hoverTime: 50),
       ),
+      linter(linterCallback(marksByLine)),
       EditorView.createUpdateListener((code) {
         queueTypecheck(code);
         _maybeLog(code);
@@ -82,7 +83,7 @@ JSFunction hoverTooltipCallback(Map<int, List<MarkText>> marksByLine) =>
     final line = view.state.doc.lineAt(pos);
     final marks = marksByLine[line.number] ?? [];
     if (marks.isEmpty) return null;
-    final mark = marks.firstWhereOrNull((mark) => mark.$1.contains(dartPos));
+    final mark = marks.firstWhereOrNull((mark) => !mark.isError && mark.$1.contains(dartPos));
     if (mark == null) return null;
     return Tooltip.create(
       start: pos,
@@ -97,6 +98,20 @@ JSFunction hoverTooltipCallback(Map<int, List<MarkText>> marksByLine) =>
         return tooltip;
       },
     );
+  }.toJS;
+
+JSFunction linterCallback(Map<int, List<MarkText>> marksByLine) =>
+  (JSAny _) {
+    return [
+      for (final (span, :display, :isError) in marksByLine.values.expand((i) => i))
+        if (isError)
+          Diagnostic(
+            from: span.from.absoluteOffset,
+            to: span.to.absoluteOffset,
+            severity: 'error',
+            message: display,
+          )
+    ].toJS;
   }.toJS;
 
 

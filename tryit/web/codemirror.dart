@@ -15,6 +15,10 @@ external JSObject get oneDark;
 @JS('cmView.hoverTooltip')
 external JSObject hoverTooltip(JSFunction callback, [JSObject? options]);
 
+@JS('lint.linter')
+external JSObject linter(JSFunction callback, [JSObject? options]);
+
+
 @JS('cm.EditorView')
 extension type EditorView._(JSObject o) implements JSObject {
   external EditorView(EditorViewConfig config);
@@ -184,4 +188,15 @@ extension type StringStream._(JSObject o) implements JSObject {
 
 extension type Language._(JSObject o) implements JSObject {
   external String get name;
+}
+
+extension type Diagnostic._(JSObject o) implements JSObject {
+  external factory Diagnostic({
+    required int from,
+    required int to,
+    required String severity, // "error" | "hint" | "info" | "warning"
+    String? markClass,
+    String? source,
+    required String message,
+  });
 }

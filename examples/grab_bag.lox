@@ -48,7 +48,7 @@ let send_email = \x {
 let result = match send_email("a") {
   .Sent           -> .Alert("success"),
   .MissingSubject -> .Alert("missing subject line"),
-  something_bad    -> something_bad,
+  something_bad   -> something_bad,
 };
 
 //

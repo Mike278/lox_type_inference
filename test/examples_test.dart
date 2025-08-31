@@ -47,7 +47,7 @@ List<Object?> eval(File file) {
     final (marks, errorOutput: _) = markTypes(relativeToDir, source, dartIOReadFile);
     final fmt = (CodePosition pos) => [pos.line, pos.offset].join(':');
     output.add('___ TYPES ___');
-    for (final (span, :display, style: _) in marks) {
+    for (final (span, :display, isError: _) in marks) {
       final location = '${fmt(span.from)} - ${fmt(span.to)}'.padRight(14);
       output.add('$location $display');
     }

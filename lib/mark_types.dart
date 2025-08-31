@@ -7,7 +7,7 @@ import 'package:lox/hindley_milner_lox.dart';
 import 'package:lox/token.dart';
 import 'package:lox/utils.dart';
 
-typedef MarkText = (CodeSpan, {String display, String? style});
+typedef MarkText = (CodeSpan, {String display, bool isError});
 typedef CodeSpan = ({CodePosition from, CodePosition to});
 typedef CodePosition = ({int line, int offset, int absoluteOffset});
 
@@ -75,7 +75,7 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
       marks.add((
         toSpan(token),
         display: display,
-        style: null,
+        isError: false,
       ));
     }
 
@@ -86,7 +86,7 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
         marks.add((
           span,
           display: '$typeError',
-          style: 'type-error'
+          isError: true,
         ));
         reportError('typecheck error')(typeError);
       } else {
