@@ -250,8 +250,16 @@ String? _nextToken(StringStream stream, JSAny state) {
 
   // Strings
   if (ch == '"') {
-    (state as dynamic).tokenize = _tokenizeString;
-    return (state as dynamic).tokenize(stream, state);
+    var escaped = false;
+    String? next;
+    while ((next = stream.next()) != null) {
+      if (next == '"' && !escaped) {
+        break;
+      }
+      escaped = !escaped && next == "\\";
+    }
+
+    return "string";
   }
 
   // Numbers
@@ -312,19 +320,4 @@ String? _nextToken(StringStream stream, JSAny state) {
   }
 
   return null;
-}
-
-_tokenizeString(StringStream stream, state) {
-  var escaped = false;
-  String? next;
-
-  while ((next = stream.next()) != null) {
-    if (next == '"' && !escaped) {
-      state.tokenize = _nextToken;
-      return "string";
-    }
-    escaped = !escaped && next == "\\";
-  }
-
-  return "string";
 }
