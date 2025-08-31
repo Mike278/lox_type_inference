@@ -1,75 +1,170 @@
+/* General body styling for the dark theme */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #2f2f2f;
-    color: #fff;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    height: 100vh;
+    overflow: hidden;
 }
 
+/* Main container using Flexbox for the layout */
 .container {
-    max-width: 750px;
-    margin: 40px auto;
-    padding: 15px;
-    background-color: #333;
-    border: 1px solid #444;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    gap: 20px;
+    box-sizing: border-box;
 }
 
-
-#run-button {
-    background-color: #00c4f1;
-    color: #fff;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#run-button:hover {
-    background-color: #4ec9d7;
-}
-
-.output {
-    margin-top: 15px;
-}
-
-#output-area {
-    background-color: #444;
+/* Left-side menu for examples */
+.examples-menu {
+    flex: 0 0 200px; /* Do not grow, do not shrink, base width 200px */
+    background-color: #252526;
+    border-radius: 8px;
     padding: 10px;
-    font-size: 14px;
-    font-family: monospace;
-    color: #fff;
+    height: fit-content;
+}
+
+.examples-menu h3 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #444;
+    font-size: 1rem;
+    color: #cccccc;
+}
+
+.examples-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.examples-menu li {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.examples-menu li:hover {
+    background-color: #3a3d41;
+}
+
+.examples-menu li.active {
+    background-color: #094771;
+    color: #ffffff;
+    font-weight: 500;
+}
+
+/* Main content area */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Allow flex item to shrink below content size */
+}
+
+.main-header {
+    flex: 0 0 auto; /* Don't grow or shrink */
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.main-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Green "Run" button styling */
+.run-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.run-button:hover {
+    background-color: #218838;
+}
+
+.run-button:active {
+    background-color: #1e7e34;
+    transform: scale(0.98);
+}
+
+/* Styling for the CodeMirror editor container */
+.editor-container {
+    flex: 1; /* Take up remaining vertical space */
+    border: 1px solid #444;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures the child CodeMirror editor respects the border radius */
+    min-height: 0; /* Allow flex item to shrink */
+}
+
+/* CodeMirror specific styling */
+.cm-editor {
+    height: 100%;
+    font-size: 16px;
+}
+
+.cm-editor .cm-scroller {
+    overflow: auto; /* Enable scrolling within the editor */
+}
+
+.cm-editor .cm-gutters {
+    background-color: #252526 !important; /* Match theme */
+    border-right: 1px solid #444;
+}
+
+/* Output area styling with fixed width */
+.output-container {
+    flex: 0 0 400px; /* Fixed width for output */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Allow flex item to shrink */
+}
+
+.output-container h2 {
+    flex: 0 0 auto; /* Don't grow or shrink */
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+}
+
+.output-area {
+    flex: 1; /* Take up remaining vertical space */
+    background-color: #252526;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+    white-space: pre-wrap; /* Allows text to wrap */
+    word-wrap: break-word;
+    font-family: 'Fira Code', monospace;
+    color: #d4d4d4;
+    overflow-y: auto; /* Enable scrolling for output */
+    min-height: 0; /* Allow flex item to shrink */
+}
+
+.type-hint-tooltip {
+    background: #ffffff;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Droid Sans Mono", "Source Code Pro", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 8px 12px;
+    max-width: 400px;
+    word-wrap: break-word;
     white-space: pre-wrap;
 }
-.type-info {
-  border-bottom: 2px solid #7EA7D8;
-}
-.type-error {
-  border-bottom: 2px solid #EF5350;
-}
-
-.cm-tooltip-marker {
-  position: relative;
-}
-
-.cm-tooltip-marker:before {
-  content: attr(data-tooltip);
-  position: absolute;
-  left: 100%;
-  padding: 6px 12px;
-  background: rgba(66, 66, 66);
-  color: white;
-  border-radius: 4px;
-  font-size: 14px;
-  white-space: nowrap;
-  visibility: hidden;
-  opacity: 0;
-  z-index: 9999;
-  margin-bottom: 5px;
-  overflow-wrap: break-word;
-}
-
-.cm-tooltip-marker:hover:before {
-  visibility: visible;
-  opacity: 1;
-}
-

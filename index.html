@@ -1,30 +1,48 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="scaffolded-by" content="https://github.com/dart-lang/sdk">
-    <title>tryit</title>
-    <script defer src="main.dart.js"></script>
-    <link rel="stylesheet" href="codemirror_js/codemirror.css" >
+    <title>Toy Language Demo</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="cm-ambiance.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code&display=swap" rel="stylesheet">
+
+    <script type="module">
+
+      window.cm = await import('https://esm.sh/codemirror@6.0.2');
+      window.oneDark = (await import('https://esm.sh/@codemirror/theme-one-dark@6.1.2')).oneDark;
+      window.tooltip = await import('https://esm.sh/@codemirror/tooltip@0.19.16');
+      window.cmView = await import('https://esm.sh/@codemirror/view@6.38.1');
+      window.language = await import('https://esm.sh/@codemirror/language@6.11.3');
+      window.lint = await import('https://esm.sh/@codemirror/lint@6.8.5');
+
+      // Now load and run the Dart code
+      const dartScript = document.createElement('script');
+      dartScript.src = 'main.dart.js';
+      document.head.appendChild(dartScript);
+    </script>
 </head>
-
 <body>
-<script src="codemirror_js/codemirror.js"></script>
-<div class="container">
-    <div >
-        <div id="code-input"></div>
-        <button id="run-button">Run</button>
-    </div>
-    <div class="output">
-        <h2>Output:</h2>
-        <pre id="output-area"></pre>
-    </div>
-</div>
+    <div class="container">
+        <!-- Left-side menu for code examples -->
+        <aside id="examples-menu" class="examples-menu"></aside>
 
+        <!-- Main content area -->
+        <main class="main-content">
+            <header class="main-header">
+                <button id="run-button" class="run-button">Run</button>
+            </header>
+
+            <!-- The CodeMirror editor will be attached here -->
+            <div id="editor" class="editor-container"></div>
+
+        </main>
+        <div class="output-container">
+            <h2>Output</h2>
+            <pre id="output" class="output-area"></pre>
+        </div>
+    </div>
 </body>
 </html>
