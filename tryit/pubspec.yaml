@@ -7,7 +7,7 @@ environment:
   sdk: ^3.10.0-edge.0176bcc73f80c6b174575ff53f80f33e1bac5421
 
 dependencies:
-  web: ^0.5.1
+  web:
   http:
   path:
   collection:
@@ -15,6 +15,6 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  build_runner: ^2.4.8
-  build_web_compilers: ^4.0.9
-  lints: ^4.0.0
+  build_runner:
+  build_web_compilers:
+  lints:
