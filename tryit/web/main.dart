@@ -33,7 +33,7 @@ void main() {
     debounce = .new(.new(milliseconds: 300), () {
       marksByLine.clear();
       final (:errorOutput, marks) = markTypes('', .memory(code), webImportFile(selectedExample.name));
-      outputElement.text = errorOutput;
+      outputElement.textContent = errorOutput;
       for (final mark in marks) {
         final (pos, display:_, isError: _) = mark;
         final line = pos.from.line+1;
@@ -65,7 +65,7 @@ void main() {
   ));
 
   runButton.onClick.listen((_) {
-    outputElement.text = exec(
+    outputElement.textContent = exec(
       selectedExample.name,
       .memory(editor.state.doc.value),
     );
