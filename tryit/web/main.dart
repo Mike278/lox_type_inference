@@ -49,6 +49,7 @@ void main() {
     parent: editorDiv,
     doc: selectedExample.content,
     extensions: [
+      lox,
       basicSetup,
       oneDark,
       hoverTooltip(
@@ -193,3 +194,122 @@ Future<void> _log(String source) => post(
     }
   })
 );
+
+
+final lox = streamLanguageDefine(StreamParser.create(
+  name: 'Lox',
+  startState: () => {}.jsify()!,
+  copyState: (state) => {...state.dartify() as Map}.jsify()!,
+  token: (stream, state) {
+    return _nextToken(stream, state);
+  },
+  blankLine: null,
+  indent: null,
+  languageData: null,
+));
+
+
+final _red = 'variable';
+final _orange = 'atom';
+// final _yellow = 'number';
+final _blue = 'operator';
+final _green = 'string';
+// final _pink = 'keyword';
+final _white = 'error';
+final _grey = 'comment';
+
+String? _nextToken(StringStream stream, JSAny state) {
+  // Handle whitespace
+  if (stream.eatSpace()) {
+    return null;
+  }
+
+  final ch = stream.next();
+  if (ch == null) return null;
+
+  // Comments
+  if (ch == '/' && stream.eat('/'.toJS) != null) {
+    stream.skipToEnd();
+    return _grey;
+  }
+
+  // Strings
+  if (ch == '"') {
+    (state as dynamic).tokenize = _tokenizeString;
+    return (state as dynamic).tokenize(stream, state);
+  }
+
+  // Numbers
+  if (RegExp(r'\d').hasMatch(ch)) {
+    stream.match(RegExp(r'^\d*(?:\.\d*)?(?:[eE][+\-]?\d+)?').toJS);
+    return _green;
+  }
+
+  // Operators
+  if ('\\+-*/=!<>?:'.contains(ch)) return _orange;
+  if (ch == '=' && stream.eat('='.toJS) != null) return _orange;
+  if (ch == '!' && stream.eat('='.toJS) != null) return _orange;
+  if (ch == '<' && stream.eat('='.toJS) != null) return _orange;
+  if (ch == '>' && stream.eat('='.toJS) != null) return _orange;
+  if (ch == '.' && stream.eat('.'.toJS) != null) return _orange;
+  if (ch == '\\' && stream.eat('>'.toJS) != null) return _orange;
+  if (ch == '-' && stream.eat('>'.toJS) != null) return _orange;
+
+  // Variants (starting with .)
+  if (ch == '.' && RegExp(r'[A-Z]').hasMatch(stream.peek() ?? '-')) {
+    stream.match(RegExp(r'^[A-Za-z_][A-Za-z0-9_]*').toJS);
+    return _white;
+  }
+
+  // Identifiers and keywords
+  if (RegExp(r'[a-zA-Z_]').hasMatch(ch)) {
+    stream.match(RegExp(r'^[a-zA-Z0-9_]*').toJS);
+    final word = stream.current();
+
+    if ({
+      "let",
+      "if",
+      "then",
+      "else",
+      "return",
+      "match",
+      "import",
+      "assert",
+      "print",
+      "true",
+      "false",
+      "and",
+      "or",
+    }.contains(word)) {
+      return _red;
+    }
+
+    return null;
+  }
+
+  if ('[]{}()'.contains(ch)) {
+    return _blue;
+  }
+
+  // Punctuation
+  if (ch == ';' || ch == ',' || ch == ':') {
+    return _grey;
+  }
+
+  return null;
+}
+
+_tokenizeString(StringStream stream, state) {
+  var escaped = false;
+  String? next;
+
+  while ((next = stream.next()) != null) {
+    if (next == '"' && !escaped) {
+      state.tokenize = _nextToken;
+      return "string";
+    }
+    escaped = !escaped && next == "\\";
+  }
+
+  return "string";
+}

@@ -107,3 +107,81 @@ extension type TooltipView._(JSObject o) {
     HTMLElement dom,
   });
 }
+
+@JS('RegExp')
+extension type JSRegExp._(JSObject _) implements JSObject {
+  external JSRegExp(String pattern, [String flags]);
+}
+
+extension RegExpToJS on RegExp {
+  JSAny get toJS {
+    final flags = [
+      if (!isCaseSensitive) 'i',
+      if (isMultiLine) 'm',
+      if (isDotAll) 's',
+      if (isUnicode) 'u',
+    ].join('');
+    return JSRegExp(pattern, flags);
+  }
+}
+
+
+@JS('language.StreamLanguage.define')
+external Language streamLanguageDefine(StreamParser parser);
+
+extension type StreamParser._(JSObject o) implements JSObject {
+  external factory StreamParser({
+    String? name,
+    JSFunction? startState,
+    JSFunction? token,
+    JSFunction? blankLine,
+    JSFunction? copyState,
+    JSFunction? indent,
+    JSAny? languageData,
+  });
+
+  static StreamParser create({
+    required String? name,
+    required JSAny Function()? startState,
+    required String? Function(StringStream, JSAny) token,
+    required void Function(JSAny)? blankLine,
+    required JSAny Function(JSAny)? copyState,
+    required int Function(JSAny, String, JSObject)? indent,
+    required Map<String, JSAny>? languageData,
+  }) {
+    return StreamParser(
+      name: name,
+      token: token.toJS,
+      blankLine: blankLine?.toJS,
+      startState: startState?.toJS,
+      copyState: copyState?.toJS,
+      indent: indent?.toJS,
+      languageData: languageData?.jsify(),
+    );
+  }
+}
+
+extension type StringStream._(JSObject o) implements JSObject {
+  external int get pos;
+  external int get start;
+  external String get string;
+  external int get indentUnit;
+  external bool eol();
+  external bool sol();
+  external String? peek();
+  external String? next();
+  external String? eat(JSAny match);
+  external bool eatWhile(JSAny match);
+  external bool eatSpace();
+  external void skipToEnd();
+  external bool? skipTo(String ch);
+  external void backUp(int n);
+  external int column();
+  external int indentation();
+  external JSAny? match(JSAny pattern, [bool? consume, bool? caseInsensitive]);
+  external String current();
+}
+
+extension type Language._(JSObject o) implements JSObject {
+  external String get name;
+}
