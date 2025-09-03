@@ -10,13 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code&display=swap" rel="stylesheet">
 
     <script type="module">
-
-      window.cm = await import('https://esm.sh/codemirror@6.0.2');
-      window.oneDark = (await import('https://esm.sh/@codemirror/theme-one-dark@6.1.2')).oneDark;
-      window.tooltip = await import('https://esm.sh/@codemirror/tooltip@0.19.16');
-      window.cmView = await import('https://esm.sh/@codemirror/view@6.38.1');
-      window.language = await import('https://esm.sh/@codemirror/language@6.11.3');
-      window.lint = await import('https://esm.sh/@codemirror/lint@6.8.5');
+      import { cm, oneDark, tooltip, cmView, language, lint } from './cm.js';
+      window.cm = cm;
+      window.oneDark = oneDark;
+      window.tooltip = tooltip;
+      window.cmView = cmView;
+      window.language = language;
+      window.lint = lint;
 
       // Now load and run the Dart code
       const dartScript = document.createElement('script');
