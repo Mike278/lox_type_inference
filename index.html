@@ -10,13 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code&display=swap" rel="stylesheet">
 
     <script type="module">
-      import { cm, oneDark, tooltip, cmView, language, lint } from './cm.js';
+      import { cm, oneDark, tooltip, cmView, language, lint, commands } from './cm.js';
       window.cm = cm;
       window.oneDark = oneDark;
       window.tooltip = tooltip;
       window.cmView = cmView;
       window.language = language;
       window.lint = lint;
+      window.commands = commands;
 
       // Now load and run the Dart code
       const dartScript = document.createElement('script');
