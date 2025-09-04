@@ -5,3 +5,4 @@ export * as tooltip from 'https://esm.sh/@codemirror/tooltip';
 export * as cmView from 'https://esm.sh/@codemirror/view';
 export * as language from 'https://esm.sh/@codemirror/language';
 export * as lint from 'https://esm.sh/@codemirror/lint';
+export * as commands from 'https://esm.sh/@codemirror/commands';

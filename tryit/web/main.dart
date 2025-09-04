@@ -7,12 +7,19 @@ import 'package:http/http.dart';
 import 'package:lox/coordinator.dart';
 import 'package:lox/interpreter.dart';
 import 'package:lox/mark_types.dart';
+import 'package:lox/parser.dart';
 import 'package:path/path.dart';
 import 'package:web/web.dart' as web;
 
 import './codemirror.dart';
 import './code_samples.dart';
 
+
+
+final documentsState = {
+  for (final (name, sample) in samples)
+    name: sample,
+};
 
 void main() {
 
@@ -21,9 +28,11 @@ void main() {
   final runButton = web.document.getElementById('run-button')!;
   final examplesMenu = web.document.getElementById('examples-menu')!;
 
-  var selectedExample = samples.first;
-  void updateSelectedExample(Sample newSample) {
+  var selectedExample = samples.first.$1;
+  void updateSelectedExample(EditorView editor, SampleName newSample) {
+    documentsState[selectedExample] = SampleContent(editor.state.doc.value);
     selectedExample = newSample;
+    editor.replaceContent(documentsState[newSample]!);
   }
 
   final marksByLine = <int, List<MarkText>>{};
@@ -32,22 +41,32 @@ void main() {
     debounce?.cancel();
     debounce = .new(.new(milliseconds: 300), () {
       marksByLine.clear();
-      final (:errorOutput, marks) = markTypes('', .memory(code), webImportFile(selectedExample.name));
-      outputElement.textContent = errorOutput;
-      for (final mark in marks) {
-        final (pos, display:_, isError: _) = mark;
-        final line = pos.from.line+1;
-        (marksByLine[line] ??= []).add(mark);
-      }
-      for (final list in marksByLine.values) {
-        list.sort((a, b) => -a.$1.from.absoluteOffset.compareTo(b.$1.from.absoluteOffset));
+      outputElement.textContent = '';
+      try {
+        final (:errorOutput, marks) = markTypes('', .memory(code), webImportFile(selectedExample));
+        outputElement.textContent = errorOutput;
+        for (final mark in marks) {
+          final (pos, display:_, isError: _) = mark;
+          final line = pos.from.line+1;
+          (marksByLine[line] ??= []).add(mark);
+        }
+        for (final list in marksByLine.values) {
+          list.sort((a, b) => -a.$1.from.absoluteOffset.compareTo(b.$1.from.absoluteOffset));
+        }
+      } on ParserError catch (e) {
+        outputElement.textContent = '(line ${e.token.line}:${e.token.offset}) ${e.message}';
+        marksByLine[e.token.line] = [(
+          toSpan(e.token),
+          display: e.message,
+          isError: true,
+        )];
       }
     });
   }
 
   final editor = EditorView(.new(
     parent: editorDiv,
-    doc: selectedExample.content,
+    doc: documentsState[selectedExample]!,
     extensions: [
       lox,
       basicSetup,
@@ -57,23 +76,25 @@ void main() {
         HoverTooltipOptions(hoverTime: 50),
       ),
       linter(linterCallback(marksByLine)),
+      lintGutter(),
       EditorView.createUpdateListener((code) {
         queueTypecheck(code);
         _maybeLog(code);
-      })
+      }),
+      keymap.of([indentWithTab].toJS),
     ].toJS
   ));
 
   runButton.onClick.listen((_) {
     outputElement.textContent = exec(
-      selectedExample.name,
+      selectedExample,
       .memory(editor.state.doc.value),
     );
   });
 
   queueTypecheck(editor.state.doc.value);
 
-  populateExamplesMenu(editor, examplesMenu, updateSelectedExample);
+  populateExamplesMenu(examplesMenu, (sample) => updateSelectedExample(editor, sample));
 }
 
 JSFunction hoverTooltipCallback(Map<int, List<MarkText>> marksByLine) =>
@@ -115,21 +136,19 @@ JSFunction linterCallback(Map<int, List<MarkText>> marksByLine) =>
   }.toJS;
 
 
-void populateExamplesMenu(EditorView editor, web.Element menuElement, void Function(Sample) onSelected) {
+void populateExamplesMenu(web.Element menuElement, void Function(SampleName) onSelected) {
   final list = web.document.createElement('ul');
   final title = web.document.createElement('h3');
   title.textContent = 'Examples';
   menuElement.append(title);
 
-  for (final sample in samples) {
-    final (name, code) = sample;
+  for (final name in documentsState.keys) {
     final item = web.document.createElement('li');
     item.textContent = name;
     item.onClick.listen((_) {
-      editor.replaceContent(code);
       menuElement.querySelector('.active')?.classList.remove('active');
       item.classList.add('active');
-      onSelected(sample);
+      onSelected(name);
     });
     list.append(item);
   }
@@ -166,11 +185,6 @@ String exec(SampleName sample, Source source) {
   return output.join('\n');
 }
 
-final _samplesByName = {
-  for (final (name, sample) in samples)
-    name: sample,
-};
-
 ReadFile webImportFile(SampleName relativeTo) =>
   (path) {
     final dir = dirname(relativeTo);
@@ -178,7 +192,7 @@ ReadFile webImportFile(SampleName relativeTo) =>
     final resolved = dir == '.'
         ? collapsed
         : '$dir/$collapsed';
-    return _samplesByName[resolved] ?? (throw 'failed to import $path relative to $relativeTo ($resolved)');
+    return documentsState[resolved] ?? (throw 'failed to import $path relative to $relativeTo ($resolved)');
   };
 
 

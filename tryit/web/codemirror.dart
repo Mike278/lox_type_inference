@@ -18,6 +18,14 @@ external JSObject hoverTooltip(JSFunction callback, [JSObject? options]);
 @JS('lint.linter')
 external JSObject linter(JSFunction callback, [JSObject? options]);
 
+@JS('lint.lintGutter')
+external JSObject lintGutter();
+
+@JS('commands.indentWithTab')
+external JSObject get indentWithTab;
+
+@JS('cmView.keymap')
+external KeyMap get keymap;
 
 @JS('cm.EditorView')
 extension type EditorView._(JSObject o) implements JSObject {
@@ -43,6 +51,10 @@ extension type EditorView._(JSObject o) implements JSObject {
 }
 
 extension type ViewUpdateFacet._(JSObject o) implements JSObject {
+  external JSAny of(JSAny value);
+}
+
+extension type KeyMap._(JSObject o) implements JSObject {
   external JSAny of(JSAny value);
 }
 
