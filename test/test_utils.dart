@@ -60,7 +60,7 @@ void runSource(
     testAssertion,
     io,
     unexpectedImport,
-    checkTypes: true,
+    checkTypes: checkTypes,
   );
 }
 

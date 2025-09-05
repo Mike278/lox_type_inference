@@ -27,6 +27,9 @@ void main() {
   final editorDiv = web.document.getElementById('editor') as web.HTMLElement;
   final runButton = web.document.getElementById('run-button')!;
   final examplesMenu = web.document.getElementById('examples-menu')!;
+  web.EventStreamProviders.beforeUnloadEvent.forTarget(web.window).listen((event) {
+    event.preventDefault();
+  });
 
   var selectedExample = samples.first.$1;
   void updateSelectedExample(EditorView editor, SampleName newSample) {
