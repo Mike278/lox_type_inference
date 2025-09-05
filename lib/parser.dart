@@ -48,7 +48,7 @@ import 'package:lox/utils.dart';
 // lambda         → "\" parameters? (block | ("->" expression)) ;
 // parameters     → pattern ( "," pattern )* ;
 // recordLiteral  → "{" recordField ( "," recordField )* "}"
-// recordField    → IDENTIFIER ":" expression
+// recordField    → (IDENTIFIER ":")? expression
 // listLiteral    → "[" listElement ( "," listElement )* "]"
 // listElement    → ".." expression
 //                | expression
@@ -515,7 +515,7 @@ class Parser {
   }
 
   // record         → "{" recordField ( "," recordField )* "}"
-  // recordField    → IDENTIFIER ":" expression
+  // recordField    → (IDENTIFIER ":")? expression
   Expr recordLiteral() {
     final fields = <Token, Expr>{};
     var first = true;
@@ -540,8 +540,9 @@ class Parser {
         if (fields.containsKey(name)) {
           throwParseError(name, 'Duplicate field name');
         }
-        consume(.colon, "Expected ':' between field name and value.");
-        final value = expression();
+        final value = matchFirst(.colon)
+          ? expression()    // { foo: foo + 1 }
+          : Variable(name); // { foo }
         fields[name] = value;
       }
     }

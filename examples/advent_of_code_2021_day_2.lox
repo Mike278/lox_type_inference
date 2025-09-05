@@ -62,16 +62,16 @@ let update = \state, instr {
 
     if dir == "down" then return .Ok({
         aim: aim + mag,
-        pos: pos,
+        pos,
     });
 
     if dir == "up" then return .Ok({
         aim: aim - mag,
-        pos: pos,
+        pos,
     });
 
     if dir == "forward" then return .Ok({
-        aim: aim,
+        aim,
         pos: {
             x: pos.x + mag,
             y: pos.y + mag * aim

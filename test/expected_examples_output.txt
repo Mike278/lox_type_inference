@@ -702,7 +702,7 @@ ___ TYPES ___
 49:3 - 49:17   MissingSubject: .MissingSubject
 49:22 - 49:27  Alert: .Alert(String) | .NetworkError(Num) | .OOM
 50:2 - 50:15   something_bad: .Alert(String) | .NetworkError(Num) | .OOM
-50:22 - 50:35  something_bad: .Alert(String) | .NetworkError(Num) | .OOM
+50:21 - 50:34  something_bad: .Alert(String) | .NetworkError(Num) | .OOM
 56:4 - 56:7    sub: Num, Num -> Num
 56:16 - 56:18  Num, Num -> Num
 56:21 - 56:22  -: Num
@@ -1801,6 +1801,44 @@ ___ TYPES ___
 95:28 - 95:29  {...}: {y: Num, x: Num}
 95:18 - 95:19  y: Num
 95:24 - 95:25  x: Num
+106:4 - 106:13 summarize: {wins: Num, losses: Num, draws: Num} -> {total: Num, win_rate: Num}
+106:39 - 106:40 {wins: Num, losses: Num, draws: Num} -> {total: Num, win_rate: Num}
+110:0 - 110:1  {wins: Num, losses: Num, draws: Num} -> {total: Num, win_rate: Num}
+106:18 - 106:22 wins: Num
+106:24 - 106:30 losses: Num
+106:32 - 106:37 draws: Num
+107:8 - 107:13 total: Num
+107:30 - 107:31 +: Num
+107:21 - 107:22 +: Num
+107:16 - 107:20 wins: Num
+107:23 - 107:29 losses: Num
+107:32 - 107:37 draws: Num
+108:8 - 108:16 win_rate: Num
+108:29 - 108:30 ?: Num
+108:25 - 108:26 >: Bool
+108:19 - 108:24 total: Num
+108:36 - 108:37 /: Num
+108:31 - 108:35 wins: Num
+108:38 - 108:43 total: Num
+109:4 - 109:10 {total: Num, win_rate: Num}
+109:29 - 109:30 {...}: {total: Num, win_rate: Num}
+109:13 - 109:18 total: Num
+109:13 - 109:18 total: Num
+109:20 - 109:28 win_rate: Num
+109:20 - 109:28 win_rate: Num
+112:5 - 112:10 total: Num
+112:12 - 112:20 win_rate: Num
+112:22 - 112:26 rate: Num
+112:70 - 112:71 {total: Num, win_rate: Num}
+112:30 - 112:39 summarize: {wins: Num, losses: Num, draws: Num} -> {total: Num, win_rate: Num}
+112:69 - 112:70 {...}: {wins: Num, losses: Num, draws: Num}
+112:41 - 112:45 wins: Num
+112:50 - 112:56 losses: Num
+112:61 - 112:66 draws: Num
+113:0 - 113:5  print: Num
+113:6 - 113:11 total: Num
+114:0 - 114:5  print: Num
+114:6 - 114:10 rate: Num
 ___ OUTPUT ___
 {a: one, b: 2, c: false, d: (arity: 0, impl: Closure: (List<Object?>) => Object?)}
 one
@@ -1818,6 +1856,8 @@ null
 1
 {}
 {}
+10
+0.4
 
 
 ====== return_expr.lox =====

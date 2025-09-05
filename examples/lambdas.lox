@@ -32,9 +32,9 @@ let zero_arg_function = \ -> 123;
 print zero_arg_function();
 
 let make_user = \name, age -> {
+    name,
+    age,
     user_id: clock(),
-    name: name,
-    age: age,
     calc_birth_year: \current_year -> current_year - age
 };
 

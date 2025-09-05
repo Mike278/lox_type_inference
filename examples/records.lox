@@ -103,3 +103,13 @@ assert point1 == {y: 1, x: 0};
 // (as per https://www.microsoft.com/en-us/research/publication/extensible-records-with-scoped-labels/)
 // assert point2 == {y: 1, x: 1};
 // assert point3 == {y: 1, x: 2};
+
+let summarize = \{wins, losses, draws} {
+    let total = wins + losses + draws;
+    let win_rate = total > 0 ? wins / total : 0;
+    return { total, win_rate };
+};
+
+let {total, win_rate: rate} = summarize({wins: 4, losses: 6, draws: 0});
+print total;
+print rate;
