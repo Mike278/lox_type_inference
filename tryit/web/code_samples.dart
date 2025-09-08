@@ -292,16 +292,16 @@ let update = \state, instr {
 
     if dir == "down" then return .Ok({
         aim: aim + mag,
-        pos: pos,
+        pos,
     });
 
     if dir == "up" then return .Ok({
         aim: aim - mag,
-        pos: pos,
+        pos,
     });
 
     if dir == "forward" then return .Ok({
-        aim: aim,
+        aim,
         pos: {
             x: pos.x + mag,
             y: pos.y + mag * aim
@@ -352,13 +352,7 @@ let enumerated = \list {
         {index: 0, list: []},
         \{index, list}, element -> {
             index: index + 1,
-            list: [
-                ..list,
-                {
-                    element: element,
-                    index: index,
-                }
-            ],
+            list: [ ..list, { element, index } ],
         }
     );
     return result.list;
