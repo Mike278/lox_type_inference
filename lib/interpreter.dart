@@ -41,10 +41,10 @@ class LoxTag {
   bool operator ==(Object other) =>
       identical(this, other) ||
           other is LoxTag && runtimeType == other.runtimeType &&
-              tag == other.tag && payload == other.payload;
+              tag.lexeme == other.tag.lexeme && const DeepCollectionEquality().equals(payload, other.payload);
 
   @override
-  int get hashCode => tag.hashCode ^ payload.hashCode;
+  int get hashCode => tag.lexeme.hashCode ^ const DeepCollectionEquality().hash(payload);
 }
 
 typedef RuntimeIO = ({
@@ -126,7 +126,7 @@ class LoxRuntime {
         .greaterEqual  => evalAs<num>(left, operator, env) >= evalAs<num>(right, operator, env),
         .less          => evalAs<num>(left, operator, env) < evalAs<num>(right, operator, env),
         .lessEqual     => evalAs<num>(left, operator, env) <= evalAs<num>(right, operator, env),
-        .equalEqual    => DeepCollectionEquality().equals(eval(left, env), eval(right, env)),
+        .equalEqual    => const DeepCollectionEquality().equals(eval(left, env), eval(right, env)),
         .bangEqual     => eval(left, env) != eval(right, env),
         .pipeline      => handleInvocation(right, ExpressionArgs([left]), operator, env),
         final type => throw StateError('bug: unhandled binary operator $type'),
@@ -218,6 +218,7 @@ class LoxRuntime {
     }
     on LoxRuntimeException { rethrow; }
     catch (e) {
+      if (e is _Return) rethrow;
       throw LoxRuntimeException(errorOnToken, '$e');
     }
   }
