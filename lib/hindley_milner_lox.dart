@@ -154,6 +154,7 @@ class TypeInference {
         ListLiteral()    => inferList(env, level, expr),
         TagConstructor() => inferTagConstructor(env, level, expr),
         TagMatch()       => inferTagMatch(env, level, expr),
+        TagCast()        => inferTagCast(env, level, expr),
         Ternary()        => inferTernary(env, level, expr),
         Import()         => inferImport(env, level, expr),
         UnaryMinus()     => inferUnaryOperation(env, level, expr),
@@ -457,6 +458,32 @@ class TypeInference {
       fields[element.name.lexeme] = type;
     }
     return .record(fields, tail: .fresh(level));
+  }
+
+  LoxType inferTagCast(Map<String, LoxType> env, int level, TagCast expr) {
+    final token = (TokenType type, String lexeme) => Token(type, lexeme, null, 0, 0, 0);
+    final match = TagMatch(
+      token(.match, 'match'),
+      expr.expr,
+      (
+        token(.openBrace, '{'),
+        token(.closeBrace, '}'),
+      ),
+      [
+        (
+          pattern: TagPattern(expr.tagName, Identifier(token(.identifier, '#'))),
+          arrow: token(.arrow, '->'),
+          result: Variable(token(.identifier, '#')),
+        ),
+        (
+          pattern: Identifier(token(.identifier, '#')),
+          arrow: token(.arrow, '->'),
+          result: Return(token(.return_, 'return'), Variable(token(.identifier, '#'))),
+        ),
+      ],
+    );
+    final type = inferTagMatch(env, level, match);
+    return setType(expr, type);
   }
 
   LoxType inferFunction(Map<String, LoxType> env, int level, Lambda function) =>

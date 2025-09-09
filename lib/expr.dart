@@ -214,6 +214,16 @@ extension type ImportPath(String literal) {}
 typedef Exports = Map<Pattern, Expr>;
 typedef ResolveImport = Exports Function(ImportPath);
 
+class TagCast extends Expr with EquatableMixin {
+  final Expr expr;
+  final Token bang;
+  final Token tagName;
+
+  TagCast({required this.expr, required this.bang, required this.tagName});
+
+  @override get props => [...super.props, expr, bang, tagName];
+}
+
 sealed class Statement {}
 class ExpressionStatement extends Statement {
   final Expr expr;
@@ -383,6 +393,8 @@ extension ExprAPI on Expr {
       case TagMatch(:final tag, :final cases):
         yield* tag.subExpressions();
         for (final case_ in cases) yield* case_.result.subExpressions();
+      case TagCast(:final expr):
+        yield* expr.subExpressions();
       case Import():
       case Variable():
       case StringLiteral():
@@ -453,6 +465,8 @@ extension ExprAPI on Expr {
           yield* pattern.subPatterns();
           yield* result.allPatterns();
         }
+      case TagCast(:final expr):
+        yield* expr.allPatterns();
       case Import():
       case Variable():
       case StringLiteral():

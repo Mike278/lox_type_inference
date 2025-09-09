@@ -2149,11 +2149,64 @@ ___ TYPES ___
 71:11 - 71:16  title: .none | .some(String)
 72:5 - 72:10   light: .light({subtitle: String, title: .none | .some(String)})
 72:12 - 72:17  title: .none | .some(String)
+75:4 - 75:5    a: a -> .nope | .ok(Num)
+75:10 - 75:12  a -> .nope | .ok(Num)
+76:4 - 76:5    ?: .nope | .ok(Num)
+76:7 - 76:9    ok: .nope | .ok(Num)
+77:7 - 77:11   nope: .nope | .ok(Num)
+78:4 - 78:5    b: a -> .err({kind: String}) | .ok(String)
+78:10 - 78:12  a -> .err({kind: String}) | .ok(String)
+79:4 - 79:5    ?: .err({kind: String}) | .ok(String)
+79:7 - 79:9    ok: .err({kind: String}) | .ok(String)
+80:7 - 80:10   err: .err({kind: String}) | .ok(String)
+80:23 - 80:24  {...}: {kind: String}
+80:12 - 80:16  kind: String
+81:4 - 81:5    c: a -> .fatal | .success({data: String, another: Num}) | .timeout
+81:10 - 81:12  a -> .fatal | .success({data: String, another: Num}) | .timeout
+82:4 - 82:5    ?: .fatal | .success({data: String, another: Num}) | .timeout
+82:7 - 82:14   success: .fatal | .success({data: String, another: Num}) | .timeout
+82:37 - 82:38  {...}: {data: String, another: Num}
+82:16 - 82:20  data: String
+82:27 - 82:34  another: Num
+84:8 - 84:9    ?: .fatal | .success({data: String, another: Num}) | .timeout
+84:11 - 84:18  timeout: .fatal | .success({data: String, another: Num}) | .timeout
+85:11 - 85:16  fatal: .fatal | .success({data: String, another: Num}) | .timeout
+86:4 - 86:5    d: a -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+86:10 - 86:11  a -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+92:0 - 92:1    a -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+87:8 - 87:11   num: Num
+87:16 - 87:17  .err({kind: String}) | .fatal | .nope | .ok(Num) | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+87:14 - 87:15  a: Unit -> .err({kind: String}) | .fatal | .nope | .ok(Num) | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+88:8 - 88:11   str: String
+88:16 - 88:17  .err({kind: String}) | .fatal | .nope | .ok(String) | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+88:14 - 88:15  b: Unit -> .err({kind: String}) | .fatal | .nope | .ok(String) | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+89:8 - 89:11   wat: Num
+89:27 - 89:34  another: Num
+89:16 - 89:17  .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .success({data: String, another: Num}) | .timeout
+89:14 - 89:15  c: Unit -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .success({data: String, another: Num}) | .timeout
+90:10 - 90:14  data: String
+90:21 - 90:22  .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .success({data: String, another: Num}) | .timeout
+90:19 - 90:20  c: Unit -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .success({data: String, another: Num}) | .timeout
+91:4 - 91:10   .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+91:12 - 91:14  ok: .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+91:36 - 91:37  {...}: {num: Num, str: String, data: String, wat: Num}
+91:17 - 91:20  num: Num
+91:17 - 91:20  num: Num
+91:22 - 91:25  str: String
+91:22 - 91:25  str: String
+91:27 - 91:31  data: String
+91:27 - 91:31  data: String
+91:33 - 91:36  wat: Num
+91:33 - 91:36  wat: Num
+93:0 - 93:5    print: .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+93:8 - 93:9    .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+93:6 - 93:7    d: Unit -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
 ___ OUTPUT ___
 \t
 bottom
 bottom
 green
+.ok({num: 5, str: a, data: a, wat: 1})
 
 
 ====== tag_pattern_err_let.lox =====

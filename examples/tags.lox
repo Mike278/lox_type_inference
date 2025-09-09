@@ -72,3 +72,23 @@ assert match [
     .dark({title})  -> 1,
     .light({title}) -> 2,
 } == 1;
+
+let a = \ -> true
+    ? .ok(5)
+    : .nope;
+let b = \ -> true
+    ? .ok("a")
+    : .err({kind: "bad"});
+let c = \ -> true
+    ? .success({data: "a", another: 1})
+    : true
+        ? .timeout
+        : .fatal;
+let d = \ {
+    let num = a()!.ok;
+    let str = b()!.ok;
+    let wat = c()!.success.another;
+    let { data } = c()!.success;
+    return .ok({ num, str, data, wat});
+};
+print d();
