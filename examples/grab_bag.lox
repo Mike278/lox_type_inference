@@ -18,7 +18,7 @@ let boss = {
     name: "Bob Vance",
     company: "Vance Refrigeration",
 };
-let updated = {..boss, line_of_work: .Refrigeration};
+let updated = {..boss, line_of_work: .refrigeration};
 print boss;
 print updated.company;
 let {
@@ -31,24 +31,24 @@ print subtitle;
 //
 // Variants
 //
-let green = .Green;
-let red = .Red;
+let green = .green;
+let red = .red;
 let either = true ? green : red;
 print match either {
-    .Green -> 0,
-    .Red -> 1,
+    .green -> 0,
+    .red -> 1,
 };
 
 let send_email = \x {
-  if x == "a" then return .MissingSubject;
-  if x == "b" then return .NetworkError(123);
-  if x == "c" then return .OOM;
-  return .Sent;
+  if x == "a" then return .missing_subject;
+  if x == "b" then return .network_error(123);
+  if x == "c" then return .oom;
+  return .sent;
 };
 let result = match send_email("a") {
-  .Sent           -> .Alert("success"),
-  .MissingSubject -> .Alert("missing subject line"),
-  something_bad   -> something_bad,
+  .sent            -> .alert("success"),
+  .missing_subject -> .alert("missing subject line"),
+  something_bad    -> something_bad,
 };
 
 //
@@ -68,10 +68,10 @@ print numbers \> first \> sub(_, 1);
 let make_user = \data {
     if data.name == "null" then {
         print "hmm";
-        return .Anonymous;
+        return .anonymous;
     }
     let random_id = 123;
-    return .User({
+    return .user({
         user_id: random_id,
         name: data.name,
         birth_year: data.birth_year,
@@ -80,6 +80,6 @@ let make_user = \data {
 };
 let user = make_user({name: "Bob", birth_year: 1974});
 print match user {
-    .User(u) -> u.age({as_of_year: 2025}),
-    .Anonymous -> 0,
+    .user(u) -> u.age({as_of_year: 2025}),
+    .anonymous -> 0,
 };

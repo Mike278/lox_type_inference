@@ -725,117 +725,117 @@ make_counter(0, \value { print value*value; })
 
   group('variants', () {
     test('construct', () {
-      expect(_inferSource(r'let x = .Green;'), '.Green');
-      expect(_inferSource(r'let x = .Green(1);'), '.Green(Num)');
+      expect(_inferSource(r'let x = .green;'), '.green');
+      expect(_inferSource(r'let x = .green(1);'), '.green(Num)');
       expect(_inferSource(r'''
-      let x = .Green;
-      let y = .Red;
+      let x = .green;
+      let y = .red;
       let z = true ? x : y;
-      '''), '.Green | .Red');
+      '''), '.green | .red');
       expect(_inferSource(r'''
       \x {
-        if x == .Green then return 1;
-        if x == .Red then return 2;
+        if x == .green then return 1;
+        if x == .red then return 2;
         return 3;
       };
-      '''), '.Green | .Red -> Num');
+      '''), '.green | .red -> Num');
     });
 
     test('match', () {
       expect(_inferSource(r'''
       \z -> match z {
-         .Green -> 1,
-         .Red -> 2,
+         .green -> 1,
+         .red -> 2,
       };
-      '''), '.Green | .Red -> Num');
+      '''), '.green | .red -> Num');
       expect(_inferSource(r'''
       \z -> match z {
-         .Green(g) -> 1 + g,
-         .Red(r) -> 2 + r,
+         .green(g) -> 1 + g,
+         .red(r) -> 2 + r,
       };
-      '''), '.Green(Num) | .Red(Num) -> Num');
+      '''), '.green(Num) | .red(Num) -> Num');
       expect(_inferSource(r'''
       \z -> match z {
-         .Green(g) -> 1 + g,
-         .Red(_) -> 2,
+         .green(g) -> 1 + g,
+         .red(_) -> 2,
       };
-      '''), '.Green(Num) | .Red(t0) -> Num');
+      '''), '.green(Num) | .red(t0) -> Num');
       expect(_inferSource(r'''
       let fn = \z -> match z {
-         .Green -> 1,
-         .Red -> 2,
+         .green -> 1,
+         .red -> 2,
       };
-      fn(.Green);
+      fn(.green);
       '''), 'Num');
       expect(_inferSource(r'''
       let fn = \z -> match z {
-         .Green(g) -> 1 + g,
-         .Red(r) -> 2 + r,
+         .green(g) -> 1 + g,
+         .red(r) -> 2 + r,
       };
-      fn(.Green(1));
+      fn(.green(1));
       '''), 'Num');
       expect(_inferSource(r'''
       let fn = \z -> match z {
-         .Green(g) -> 1 + g,
-         .Red(r) -> 2 + r,
+         .green(g) -> 1 + g,
+         .red(r) -> 2 + r,
       };
-      fn(.Yellow(1));
+      fn(.yellow(1));
       '''), isTypeError);
       expect(_inferSource(r'''
       \z -> match z {
-         .Green -> 1,
-         .Red -> false,
+         .green -> 1,
+         .red -> false,
       };
       '''), isTypeError);
     });
 
     test('match returning payload', () {
-      expect(_inferSource(r'''match .A(1) { .A(a) -> a };'''), ('Num'));
-      expect(_inferSource(r'''match .A([]) { .A(a) -> a };'''), ('List[t0]'));
-      expect(_inferSource(r'''\x -> match .A(x) { .A(a) -> a };'''), ('t0 -> t0'));
-      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A(a) -> a, .B(b) -> b };'''), 'Num');
-      expect(_inferSource(r'''match true ? .A(1) : .B(2) { .A(a) -> a, .B(b) -> "no" };'''), isTypeError);
-      expect(_inferSource(r'''match true ? .A(1) : .B("no") { .A(a) -> a, .B(b) -> b };'''), isTypeError);
+      expect(_inferSource(r'''match .a(1) { .a(a) -> a };'''), ('Num'));
+      expect(_inferSource(r'''match .a([]) { .a(a) -> a };'''), ('List[t0]'));
+      expect(_inferSource(r'''\x -> match .a(x) { .a(a) -> a };'''), ('t0 -> t0'));
+      expect(_inferSource(r'''match true ? .a(1) : .b(2) { .a(a) -> a, .b(b) -> b };'''), 'Num');
+      expect(_inferSource(r'''match true ? .a(1) : .b(2) { .a(a) -> a, .b(b) -> "no" };'''), isTypeError);
+      expect(_inferSource(r'''match true ? .a(1) : .b("no") { .a(a) -> a, .b(b) -> b };'''), isTypeError);
     });
 
     test('match returning tags', () {
       expect(_inferSource(r'''
       \z -> match z {
-         .InGreen -> .OutGreen,
-         .InRed -> .OutRed,
+         .in_green -> .out_green,
+         .in_red -> .out_red,
       };
-      '''), '.InGreen | .InRed -> .OutGreen | .OutRed');
+      '''), '.in_green | .in_red -> .out_green | .out_red');
     });
 
     test('open vs closed', () {
       expect(_inferSource(r'''
       let fn = \z -> match z {
-         .InGreen -> .OutGreen,
-         .InRed -> .OutRed,
+         .in_green -> .out_green,
+         .in_red -> .out_red,
       };
-      match fn(.InGreen) {
-        .OutGreen -> 1,
-        .OutRed -> 2,
-      };
-      '''), 'Num');
-      expect(_inferSource(r'''
-      let fn = \z -> match z {
-         .InGreen -> .OutGreen,
-         .InRed -> .OutRed,
-      };
-      match fn(.InGreen) {
-        .OutGreen -> 1,
-        .OutRed -> 2,
-        .SomeExtraTag -> 3,
+      match fn(.in_green) {
+        .out_green -> 1,
+        .out_red -> 2,
       };
       '''), 'Num');
       expect(_inferSource(r'''
       let fn = \z -> match z {
-         .InGreen -> .OutGreen,
-         .InRed -> .OutRed,
+         .in_green -> .out_green,
+         .in_red -> .out_red,
       };
-      match fn(.InGreen) {
-        .OutGreen -> 1
+      match fn(.in_green) {
+        .out_green -> 1,
+        .out_red -> 2,
+        .some_extra_tag -> 3,
+      };
+      '''), 'Num');
+      expect(_inferSource(r'''
+      let fn = \z -> match z {
+         .in_green -> .out_green,
+         .in_red -> .out_red,
+      };
+      match fn(.in_green) {
+        .out_green -> 1
       };
       '''), isTypeError);
     });
@@ -844,36 +844,36 @@ make_counter(0, \value { print value*value; })
       test('case1', () {
         expect(_inferSource(r'''
         let f = \v -> match v {
-           .A -> .Ok(1),
-           .B -> .Ok(2),
-           other -> .Other(other),
+           .a -> .ok(1),
+           .b -> .ok(2),
+           other -> .other(other),
         };
-        '''), '.A | .B -> .Ok(Num) | .Other(t0)');
+        '''), '.a | .b -> .ok(Num) | .other(t0)');
       });
       test('case2', () {
         expect(_inferSource(r'''
         let f = \v -> match v {
-           .A -> .Ok(1),
-           .B -> .Ok(2),
-           other -> .Other(other),
+           .a -> .ok(1),
+           .b -> .ok(2),
+           other -> .other(other),
         };
-        let input = [.A, .B, .C, .D] \> List.first;
+        let input = [.a, .b, .c, .d] \> List.first;
         let result = f(input);
-        '''), '.Ok(Num) | .Other(.C | .D)');
+        '''), '.ok(Num) | .other(.c | .d)');
       });
       test('case3', () {
         expect(_inferSource(r'''
         let f = \v -> match v {
-           .A -> .Ok(1),
-           .B -> .Ok(2),
-           other -> .Other(other),
+           .a -> .ok(1),
+           .b -> .ok(2),
+           other -> .other(other),
         };
-        let input = [.A, .B, .C, .D] \> List.first;
+        let input = [.a, .b, .c, .d] \> List.first;
         match f(input) {
-          .Ok(x) -> "a or b",
-          .Other(o) -> match o {
-            .C -> "c",
-            .D -> "d",
+          .ok(x) -> "a or b",
+          .other(o) -> match o {
+            .c -> "c",
+            .d -> "d",
           },
         };
         '''), 'String');
@@ -881,16 +881,16 @@ make_counter(0, \value { print value*value; })
       test('case4', () {
         expect(_inferSource(r'''
         let f = \v -> match v {
-           .A -> .Ok(1),
-           .B -> .Ok(2),
-           other -> .Other(other),
+           .a -> .ok(1),
+           .b -> .ok(2),
+           other -> .other(other),
         };
-        let input = [.A, .B, .C, .D] \> List.first;
+        let input = [.a, .b, .c, .d] \> List.first;
         match f(input) {
-          .Ok(x) -> "a or b",
-          .Other(o) -> match o {
-            .C -> "c",
-       //     .D -> "d",
+          .ok(x) -> "a or b",
+          .other(o) -> match o {
+            .c -> "c",
+       //     .d -> "d",
           },
         };
         '''), isTypeError);
@@ -898,36 +898,36 @@ make_counter(0, \value { print value*value; })
       test('case5', () {
         expect(_inferSource(r'''
         let f1 = \v -> match v {
-           .A -> .Ok(1),
-           .B -> .Ok(2),
-           other -> .Other(other),
+           .a -> .ok(1),
+           .b -> .ok(2),
+           other -> .other(other),
         };
         let f2 = \v -> match v {
-           .C -> .Ok(3),
-           .D -> .Ok(4),
+           .c -> .ok(3),
+           .d -> .ok(4),
         };
-        let input = [.A, .B, .C, .D] \> List.first;
+        let input = [.a, .b, .c, .d] \> List.first;
         match f1(input) {
-          .Ok(x) -> .Ok(x),
-          .Other(o) -> f2(o),
+          .ok(x) -> .ok(x),
+          .other(o) -> f2(o),
         };
-        '''), '.Ok(Num)');
+        '''), '.ok(Num)');
       });
       test('case6', () {
         expect(_inferSource(r'''
         let f1 = \v -> match v {
-           .A -> .Ok(1),
-           .B -> .Ok(2),
-           other -> .Other(other),
+           .a -> .ok(1),
+           .b -> .ok(2),
+           other -> .other(other),
         };
         let f2 = \v -> match v {
-           .C -> .Ok(3),
-      //     .D -> .Ok(4),
+           .c -> .ok(3),
+      //     .d -> .ok(4),
         };
-        let input = [.A, .B, .C, .D] \> List.first;
+        let input = [.a, .b, .c, .d] \> List.first;
         match f1(input) {
-          .Ok(x) -> .Ok(x),
-          .Other(o) -> f2(o),
+          .ok(x) -> .ok(x),
+          .other(o) -> f2(o),
         };
         '''), isTypeError);
       });
@@ -1013,9 +1013,9 @@ let online = \ -> true;
 let is_auth_expired = \ -> true;
 
 let connect = \ {
-    if unlucky() then return .BadLuck;
-    if !online() then return .Offline;
-    return .Connection({
+    if unlucky() then return .bad_luck;
+    if !online() then return .offline;
+    return .connection({
         some_connection_details: 123,
         download: \ -> {this_is_wrong: "yep"},
     });
@@ -1023,16 +1023,16 @@ let connect = \ {
 ;
 
 let download = \connection {
-    if is_auth_expired() then return .AuthExpired;
-    if unlucky() then return .DownloadInterrupted;
+    if is_auth_expired() then return .auth_expired;
+    if unlucky() then return .download_interrupted;
     let result = connection.download();
-    return .TheData(result);
+    return .the_data(result);
 };
 
 let connect_and_connect = \ {
     let connection = match connect() {
-        .Connection(c) -> c,
-        .Offline -> return .TheData("some default data"),
+        .connection(c) -> c,
+        .offline -> return .the_data("some default data"),
         other -> return other,
     };
 
@@ -1049,36 +1049,36 @@ let connect_and_connect = \ {
       _inferSource(r'''
         let f = \x {
           let remaining = match x {
-            .Green -> return false,
-            .Red -> 2,
+            .green -> return false,
+            .red -> 2,
           };
           let ok = remaining + 0 == 2;
           return ok;
         };
       '''),
-      '.Green | .Red -> Bool',
+      '.green | .red -> Bool',
     );
 
     expect(
       _inferSource(r'''
         let get = \ -> List.first([
-          .Ok(1),
-          .OOM,
-          .BadLuck({attempts_left: 3}),
+          .ok(1),
+          .oom,
+          .bad_luck({attempts_left: 3}),
         ]);
         let f = \x {
           let value = match x {
-            .Ok(value) -> value,
+            .ok(value) -> value,
             err -> return err,
           };
           
-          return .Ok(value + 0 == 2);
+          return .ok(value + 0 == 2);
         };
         
         let data = get();
         let result = f(data);
       '''),
-      '.BadLuck({attempts_left: Num}) | .OOM | .Ok(Bool)',
+      '.bad_luck({attempts_left: Num}) | .ok(Bool) | .oom',
     );
 
     expect(

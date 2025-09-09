@@ -1,6 +1,6 @@
 
-let f = \.Foo {
+let f = \.foo {
 
 };
 
-f(true ? .Foo : .Bar);
+f(true ? .foo : .bar);

@@ -128,22 +128,22 @@ void main() {
       expect(
         _markTypes(r'''
         let x = [
-          .A(.One),
-          .A(.Two),
-          .B(.One),
-          .B(.Two),
+          .a(.one),
+          .a(.two),
+          .b(.one),
+          .b(.two),
         ] \> List.first;
         
         let y = match x {
-          .A(.One) -> 1,
-          .A(.Two) -> 1,
-          .B(.One) -> 1,
-          .B(.Two) -> 1,
+          .a(.one) -> 1,
+          .a(.two) -> 1,
+          .b(.one) -> 1,
+          .b(.two) -> 1,
         };
         ''').map((x) => x.display).where((x) => x.startsWith('x:')),
         [
-          'x: .A(.One | .Two) | .B(.One | .Two)',
-          'x: .A(.One | .Two) | .B(.One | .Two)',
+          'x: .a(.one | .two) | .b(.one | .two)',
+          'x: .a(.one | .two) | .b(.one | .two)',
         ],
       );
     }, skip: 'Type checking nested tag patterns is not supported yet');
@@ -152,12 +152,12 @@ void main() {
       expect(
         _markError(r'''
         let x = [
-          .A(.One),
-          .A(.Two),
+          .a(.one),
+          .a(.two),
         ] \> List.first;
         
         let y = match x {
-          .A(.One) -> 1,
+          .a(.one) -> 1,
         };
         ''').map((x) => 'line ${x.$1.from.line}: ${x.display}'),
         [
@@ -170,18 +170,18 @@ void main() {
       expect(
         _markError(r'''
         let x = [
-          .A(.One),
-          .A(.Two),
+          .a(.one),
+          .a(.two),
         ] \> List.first;
         
         let y = match x {
-          .A(.One) -> 1,
-          .A(.Two) -> 1,
+          .a(.one) -> 1,
+          .a(.two) -> 1,
         };
         ''').map((x) => x.display).where((x) => x.startsWith('x:')),
         [
-          'x: .A(.One | .Two)',
-          'x: .A(.One | .Two)',
+          'x: .a(.one | .two)',
+          'x: .a(.one | .two)',
         ],
       );
     }, skip: 'Type checking nested tag patterns is not supported yet');
@@ -190,31 +190,31 @@ void main() {
       expect(
         _markTypes(r'''
         let x = [
-          .A(.One),
-          .A(.Two),
-          .B(.One),
-          .B(.Two),
+          .a(.one),
+          .a(.two),
+          .b(.one),
+          .b(.two),
         ] \> List.first;
         
         let y = match x {
-          .A(a) -> match a {
-            .One -> 1,
-            .Two -> 1,
+          .a(a) -> match a {
+            .one -> 1,
+            .two -> 1,
           },
-          .B(b) -> match b {
-            .One -> 1,
-            .Two -> 1,
+          .b(b) -> match b {
+            .one -> 1,
+            .two -> 1,
           },
         };
         ''').map((x) => x.display).where((x) => x.startsWith(RegExp('[xyab]'))),
         [
-            'x: .A(.One | .Two) | .B(.One | .Two)',
+            'x: .a(.one | .two) | .b(.one | .two)',
             'y: Num',
-            'x: .A(.One | .Two) | .B(.One | .Two)',
-            'a: .One | .Two',
-            'a: .One | .Two',
-            'b: .One | .Two',
-            'b: .One | .Two',
+            'x: .a(.one | .two) | .b(.one | .two)',
+            'a: .one | .two',
+            'a: .one | .two',
+            'b: .one | .two',
+            'b: .one | .two',
         ],
       );
     });
@@ -223,23 +223,23 @@ void main() {
       expect(
         _markTypes(r'''
         let x = [
-          .A(.One),
-          .A(.Two),
+          .a(.one),
+          .a(.two),
         ] \> List.first;
         
         let y = match x {
-          .A(a) -> match a {
-            .One -> 1,
-            .Two -> 1,
+          .a(a) -> match a {
+            .one -> 1,
+            .two -> 1,
           },
         };
         ''').map((x) => x.display).where((x) => x.startsWith(RegExp('[xya]'))),
         [
-            'x: .A(.One | .Two)',
+            'x: .a(.one | .two)',
             'y: Num',
-            'x: .A(.One | .Two)',
-            'a: .One | .Two',
-            'a: .One | .Two'
+            'x: .a(.one | .two)',
+            'a: .one | .two',
+            'a: .one | .two'
         ],
       );
     });

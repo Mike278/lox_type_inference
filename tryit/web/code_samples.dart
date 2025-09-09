@@ -44,7 +44,7 @@ let boss = {
     name: "Bob Vance",
     company: "Vance Refrigeration",
 };
-let updated = {..boss, line_of_work: .Refrigeration};
+let updated = {..boss, line_of_work: .refrigeration};
 print boss;
 print updated.company;
 let {
@@ -57,24 +57,24 @@ print subtitle;
 //
 // Variants
 //
-let green = .Green;
-let red = .Red;
+let green = .green;
+let red = .red;
 let either = true ? green : red;
 print match either {
-    .Green -> 0,
-    .Red -> 1,
+    .green -> 0,
+    .red -> 1,
 };
 
 let send_email = \x {
-  if x == "a" then return .MissingSubject;
-  if x == "b" then return .NetworkError(123);
-  if x == "c" then return .OOM;
-  return .Sent;
+  if x == "a" then return .missing_subject;
+  if x == "b" then return .network_error(123);
+  if x == "c" then return .oom;
+  return .sent;
 };
 let result = match send_email("a") {
-  .Sent           -> .Alert("success"),
-  .MissingSubject -> .Alert("missing subject line"),
-  something_bad   -> something_bad,
+  .sent            -> .alert("success"),
+  .missing_subject -> .alert("missing subject line"),
+  something_bad    -> something_bad,
 };
 
 //
@@ -94,10 +94,10 @@ print numbers \> first \> sub(_, 1);
 let make_user = \data {
     if data.name == "null" then {
         print "hmm";
-        return .Anonymous;
+        return .anonymous;
     }
     let random_id = 123;
-    return .User({
+    return .user({
         user_id: random_id,
         name: data.name,
         birth_year: data.birth_year,
@@ -106,33 +106,33 @@ let make_user = \data {
 };
 let user = make_user({name: "Bob", birth_year: 1974});
 print match user {
-    .User(u) -> u.age({as_of_year: 2025}),
-    .Anonymous -> 0,
+    .user(u) -> u.age({as_of_year: 2025}),
+    .anonymous -> 0,
 };''')),
 (SampleName('return_expr.lox'),  SampleContent(r'''let unlucky = \ -> false;
 let online = \ -> false;
 let is_auth_expired = \ -> false;
 
 let connect = \ {
-    if unlucky() then return .BadLuck;
-    if !online() then return .Offline;
-    return .Connection({
+    if unlucky() then return .bad_luck;
+    if !online() then return .offline;
+    return .connection({
         some_connection_details: 123,
         download: \ -> "the data",
     });
 };
 
 let download = \connection {
-    if is_auth_expired() then return .AuthExpired;
-    if unlucky() then return .DownloadInterrupted;
+    if is_auth_expired() then return .auth_expired;
+    if unlucky() then return .download_interrupted;
     let result = connection.download();
-    return .TheData(result);
+    return .the_data(result);
 };
 
 let connect_and_download = \ {
     let connection = match connect() {
-        .Connection(c) -> c,
-        .Offline -> return .TheData("some default data"),
+        .connection(c) -> c,
+        .offline -> return .the_data("some default data"),
         other -> return other,
     };
 
@@ -279,8 +279,8 @@ assert part_1 == 150;
 let update = \state, instr {
 
     let {aim, pos} = match state {
-        .Err(_) -> return state,
-        .Ok(x) -> x,
+        .err(_) -> return state,
+        .ok(x) -> x,
     };
 
     let {
@@ -290,17 +290,17 @@ let update = \state, instr {
 
     // todo: fix type checking bug that prevents using record updates here
 
-    if dir == "down" then return .Ok({
+    if dir == "down" then return .ok({
         aim: aim + mag,
         pos,
     });
 
-    if dir == "up" then return .Ok({
+    if dir == "up" then return .ok({
         aim: aim - mag,
         pos,
     });
 
-    if dir == "forward" then return .Ok({
+    if dir == "forward" then return .ok({
         aim,
         pos: {
             x: pos.x + mag,
@@ -308,17 +308,17 @@ let update = \state, instr {
         },
     });
 
-    return .Err(["unknown direction: '", dir, "' falling back to no-op"] \> join);
+    return .err(["unknown direction: '", dir, "' falling back to no-op"] \> join);
 };
 
-let initial = .Ok({
+let initial = .ok({
     aim: 0,
     pos: {x: 0, y: 0},
 });
 let result = input \> fold(initial, update);
 let part_2 = match result {
-    .Ok({pos: {x, y}}) -> x * y,
-    .Err(_) -> -1,
+    .ok({pos: {x, y}}) -> x * y,
+    .err(_) -> -1,
 };
 
 print part_2;
@@ -393,8 +393,8 @@ let fold_until = \state, fn -> \list {
     if list \> empty then return state;
     let step = fn(state, list \> first);
     return match step {
-        .Continue(new_state) -> list \> rest \> fold_until(new_state, fn),
-        .Break(final_state) -> final_state,
+        .continue(new_state) -> list \> rest \> fold_until(new_state, fn),
+        .break(final_state) -> final_state,
     };
 };
 
@@ -403,8 +403,8 @@ let any = \predicate -> \list ->
         false,
         \state, element ->
             predicate(element)
-                ? .Break(true)
-                : .Continue(state)
+                ? .break(true)
+                : .continue(state)
     );
 
 let all = \predicate -> \list ->
@@ -412,8 +412,8 @@ let all = \predicate -> \list ->
         true,
         \state, element ->
             predicate(element)
-                ? .Continue(state)
-                : .Break(false)
+                ? .continue(state)
+                : .break(false)
     );
 
 let drop_at = \target_index -> \list ->

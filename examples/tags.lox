@@ -1,74 +1,74 @@
 
-let tab = .Key("\t");
-let center = .Mouse({x: 50, y: 50});
+let tab = .key("\t");
+let center = .mouse({x: 50, y: 50});
 let key_or_mouse = false ? tab : center;
 
 let fn = \e -> match e {
-    .Key(char) -> char,
-    .Mouse({x}) -> x > 50 ? "top" : "bottom",
+    .key(char) -> char,
+    .mouse({x}) -> x > 50 ? "top" : "bottom",
 };
 
 print fn(tab);
 print fn(center);
 print fn(key_or_mouse);
 
-let colors = [.Green, .Gold, .Red];
+let colors = [.green, .gold, .red];
 let fav_color = colors \> List.first;
 print match fav_color {
-    .Green -> "green",
-    .Gold -> "gold",
-    .Red -> "red",
+    .green -> "green",
+    .gold -> "gold",
+    .red -> "red",
 };
 
-assert match fav_color { .Gold -> 1, _ -> 2 } == 2;
+assert match fav_color { .gold -> 1, _ -> 2 } == 2;
 
 assert match [
-    .Dark(.Some("oh")),
-    .Light(.None),
-    .Dark(.None),
-    .Dark(.Some("hi")),
-    .Dark(.None),
-    .Light(.Some("ok")),
-    .Light(.Some("yep")),
+    .dark(.some("oh")),
+    .light(.none),
+    .dark(.none),
+    .dark(.some("hi")),
+    .dark(.none),
+    .light(.some("ok")),
+    .light(.some("yep")),
 ] \> List.first {
-    .Light(str)-> match str {
-        .Some(_) -> 1,
-        .None -> 2,
+    .light(str)-> match str {
+        .some(_) -> 1,
+        .none -> 2,
     },
-    .Dark(str) -> match str {
-        .Some(_) -> 3,
-        .None -> 4,
+    .dark(str) -> match str {
+        .some(_) -> 3,
+        .none -> 4,
     },
 } == 3;
 
 assert match [
-    .Dark({title: .Some("oh"), subtitle: "hmm"}),
-    .Light({title: .None, subtitle: "hmm"}),
-    .Dark({title: .None, subtitle: "hmm"}),
-    .Dark({title: .Some("hi"), subtitle: "hmm"}),
-    .Dark({title: .None, subtitle: "hmm"}),
-    .Light({title: .Some("ok"), subtitle: "hmm"}),
-    .Light({title: .Some("yep"), subtitle: "hmm"}),
+    .dark({title: .some("oh"), subtitle: "hmm"}),
+    .light({title: .none, subtitle: "hmm"}),
+    .dark({title: .none, subtitle: "hmm"}),
+    .dark({title: .some("hi"), subtitle: "hmm"}),
+    .dark({title: .none, subtitle: "hmm"}),
+    .light({title: .some("ok"), subtitle: "hmm"}),
+    .light({title: .some("yep"), subtitle: "hmm"}),
 ] \> List.first {
-    .Light({title}) -> match title {
-        .Some(_) -> 1,
-        .None -> 2,
+    .light({title}) -> match title {
+        .some(_) -> 1,
+        .none -> 2,
     },
-    .Dark({title}) -> match title {
-        .Some(_) -> 3,
-        .None -> 4,
+    .dark({title}) -> match title {
+        .some(_) -> 3,
+        .none -> 4,
     },
 } == 3;
 
 assert match [
-    .Dark({title: .Some("oh"), subtitle: "hmm"}),
-    .Light({title: .None, subtitle: "hmm"}),
-    .Dark({title: .None, subtitle: "hmm"}),
-    .Dark({title: .Some("hi"), subtitle: "hmm"}),
-    .Dark({title: .None, subtitle: "hmm"}),
-    .Light({title: .Some("ok"), subtitle: "hmm"}),
-    .Light({title: .Some("yep"), subtitle: "hmm"}),
+    .dark({title: .some("oh"), subtitle: "hmm"}),
+    .light({title: .none, subtitle: "hmm"}),
+    .dark({title: .none, subtitle: "hmm"}),
+    .dark({title: .some("hi"), subtitle: "hmm"}),
+    .dark({title: .none, subtitle: "hmm"}),
+    .light({title: .some("ok"), subtitle: "hmm"}),
+    .light({title: .some("yep"), subtitle: "hmm"}),
 ] \> List.first {
-    .Dark({title})  -> 1,
-    .Light({title}) -> 2,
+    .dark({title})  -> 1,
+    .light({title}) -> 2,
 } == 1;

@@ -49,8 +49,8 @@ assert part_1 == 150;
 let update = \state, instr {
 
     let {aim, pos} = match state {
-        .Err(_) -> return state,
-        .Ok(x) -> x,
+        .err(_) -> return state,
+        .ok(x) -> x,
     };
 
     let {
@@ -60,17 +60,17 @@ let update = \state, instr {
 
     // todo: fix type checking bug that prevents using record updates here
 
-    if dir == "down" then return .Ok({
+    if dir == "down" then return .ok({
         aim: aim + mag,
         pos,
     });
 
-    if dir == "up" then return .Ok({
+    if dir == "up" then return .ok({
         aim: aim - mag,
         pos,
     });
 
-    if dir == "forward" then return .Ok({
+    if dir == "forward" then return .ok({
         aim,
         pos: {
             x: pos.x + mag,
@@ -78,17 +78,17 @@ let update = \state, instr {
         },
     });
 
-    return .Err(["unknown direction: '", dir, "' falling back to no-op"] \> join);
+    return .err(["unknown direction: '", dir, "' falling back to no-op"] \> join);
 };
 
-let initial = .Ok({
+let initial = .ok({
     aim: 0,
     pos: {x: 0, y: 0},
 });
 let result = input \> fold(initial, update);
 let part_2 = match result {
-    .Ok({pos: {x, y}}) -> x * y,
-    .Err(_) -> -1,
+    .ok({pos: {x, y}}) -> x * y,
+    .err(_) -> -1,
 };
 
 print part_2;

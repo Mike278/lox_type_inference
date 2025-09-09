@@ -3,8 +3,8 @@ ___ TYPES ___
 0:5 - 0:9      fold: a, (a, b -> a), List[b] -> a
 0:11 - 0:14    map: (c -> d), List[c] -> List[d]
 0:16 - 0:20    join: List[String] -> String
-0:24 - 0:30    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (l, l -> l), List[l] -> l, reverse: List[m] -> List[m], where: (n -> Bool), List[n] -> List[n], enumerated: List[o] -> List[{element: o, index: Num}], count_where: (p -> Bool), List[p] -> Num, sort: List[Num] -> List[Num], zip: List[q], List[r], (q, r -> s) -> List[s], zip_with_tail: (t, t -> u), List[t] -> List[u], sum: List[Num] -> Num, fold_until: v, (v, w -> .Break(v) | .Continue(v)), List[w] -> v, any: (x -> Bool), List[x] -> Bool, all: (y -> Bool), List[y] -> Bool, drop_at: Num, List[z] -> List[z], join: List[String] -> String}
-0:31 - 0:47    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (l, l -> l), List[l] -> l, reverse: List[m] -> List[m], where: (n -> Bool), List[n] -> List[n], enumerated: List[o] -> List[{element: o, index: Num}], count_where: (p -> Bool), List[p] -> Num, sort: List[Num] -> List[Num], zip: List[q], List[r], (q, r -> s) -> List[s], zip_with_tail: (t, t -> u), List[t] -> List[u], sum: List[Num] -> Num, fold_until: v, (v, w -> .Break(v) | .Continue(v)), List[w] -> v, any: (x -> Bool), List[x] -> Bool, all: (y -> Bool), List[y] -> Bool, drop_at: Num, List[z] -> List[z], join: List[String] -> String}
+0:24 - 0:30    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (l, l -> l), List[l] -> l, reverse: List[m] -> List[m], where: (n -> Bool), List[n] -> List[n], enumerated: List[o] -> List[{element: o, index: Num}], count_where: (p -> Bool), List[p] -> Num, sort: List[Num] -> List[Num], zip: List[q], List[r], (q, r -> s) -> List[s], zip_with_tail: (t, t -> u), List[t] -> List[u], sum: List[Num] -> Num, fold_until: v, (v, w -> .break(v) | .continue(v)), List[w] -> v, any: (x -> Bool), List[x] -> Bool, all: (y -> Bool), List[y] -> Bool, drop_at: Num, List[z] -> List[z], join: List[String] -> String}
+0:31 - 0:47    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (l, l -> l), List[l] -> l, reverse: List[m] -> List[m], where: (n -> Bool), List[n] -> List[n], enumerated: List[o] -> List[{element: o, index: Num}], count_where: (p -> Bool), List[p] -> Num, sort: List[Num] -> List[Num], zip: List[q], List[r], (q, r -> s) -> List[s], zip_with_tail: (t, t -> u), List[t] -> List[u], sum: List[Num] -> Num, fold_until: v, (v, w -> .break(v) | .continue(v)), List[w] -> v, any: (x -> Bool), List[x] -> Bool, all: (y -> Bool), List[y] -> Bool, drop_at: Num, List[z] -> List[z], join: List[String] -> String}
 2:4 - 2:9      input: List[{arg1: String, arg2: Num}]
 9:0 - 9:1      [...]: List[{arg1: String, arg2: Num}]
 3:29 - 3:30    {...}: {arg1: String, arg2: Num}
@@ -126,20 +126,20 @@ ___ TYPES ___
 44:0 - 44:6    assert: Bool
 44:14 - 44:16  ==: Bool
 44:7 - 44:13   part_1: Num
-48:4 - 48:10   update: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: b, arg1: String} -> .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
-48:27 - 48:28  .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: b, arg1: String} -> .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
-81:0 - 81:1    .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: b, arg1: String} -> .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
-48:14 - 48:19  state: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+48:4 - 48:10   update: .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: b, arg1: String} -> .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
+48:27 - 48:28  .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: b, arg1: String} -> .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
+81:0 - 81:1    .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: b, arg1: String} -> .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
+48:14 - 48:19  state: .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
 48:21 - 48:26  instr: {arg2: b, arg1: String}
 50:9 - 50:12   aim: Num
 50:14 - 50:17  pos: {x: Num, y: Num}
 50:21 - 50:26  match: {pos: {x: Num, y: Num}, aim: Num}
-50:27 - 50:32  state: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
-51:9 - 51:12   Err: .Err(String)
+50:27 - 50:32  state: .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
+51:9 - 51:12   err: .err(String)
 51:13 - 51:15  _0: String
-51:19 - 51:25  .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
-51:26 - 51:31  state: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
-52:9 - 52:11   Ok: .Ok({pos: {x: Num, y: Num}, aim: Num})
+51:19 - 51:25  .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
+51:26 - 51:31  state: .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
+52:9 - 52:11   ok: .ok({pos: {x: Num, y: Num}, aim: Num})
 52:12 - 52:13  x: {pos: {x: Num, y: Num}, aim: Num}
 52:18 - 52:19  x: {pos: {x: Num, y: Num}, aim: Num}
 56:8 - 56:12   arg1: String
@@ -149,33 +149,33 @@ ___ TYPES ___
 58:8 - 58:13   instr: {arg2: b, arg1: String}
 62:11 - 62:13  ==: Bool
 62:7 - 62:10   dir: String
-62:26 - 62:32  .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
-62:34 - 62:36  Ok: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+62:26 - 62:32  .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
+62:34 - 62:36  ok: .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
 65:4 - 65:5    {...}: {aim: Num, pos: {x: Num, y: Num}}
 63:8 - 63:11   aim: Num
 63:17 - 63:18  +: Num
 63:13 - 63:16  aim: Num
 63:19 - 63:22  mag: Num
 64:8 - 64:11   pos: {x: Num, y: Num}
-64:13 - 64:16  pos: {x: Num, y: Num}
+64:8 - 64:11   pos: {x: Num, y: Num}
 67:11 - 67:13  ==: Bool
 67:7 - 67:10   dir: String
-67:24 - 67:30  .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
-67:32 - 67:34  Ok: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+67:24 - 67:30  .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
+67:32 - 67:34  ok: .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
 70:4 - 70:5    {...}: {aim: Num, pos: {x: Num, y: Num}}
 68:8 - 68:11   aim: Num
 68:17 - 68:18  -: Num
 68:13 - 68:16  aim: Num
 68:19 - 68:22  mag: Num
 69:8 - 69:11   pos: {x: Num, y: Num}
-69:13 - 69:16  pos: {x: Num, y: Num}
+69:8 - 69:11   pos: {x: Num, y: Num}
 72:11 - 72:13  ==: Bool
 72:7 - 72:10   dir: String
-72:29 - 72:35  .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
-72:37 - 72:39  Ok: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+72:29 - 72:35  .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
+72:37 - 72:39  ok: .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
 78:4 - 78:5    {...}: {aim: Num, pos: {x: Num, y: Num}}
 73:8 - 73:11   aim: Num
-73:13 - 73:16  aim: Num
+73:8 - 73:11   aim: Num
 74:8 - 74:11   pos: {x: Num, y: Num}
 77:8 - 77:9    {...}: {x: Num, y: Num}
 75:12 - 75:13  x: Num
@@ -190,38 +190,38 @@ ___ TYPES ___
 76:27 - 76:28  *: Num
 76:23 - 76:26  mag: Num
 76:29 - 76:32  aim: Num
-80:4 - 80:10   .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
-80:12 - 80:15  Err: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+80:4 - 80:10   .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
+80:12 - 80:15  err: .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
 80:73 - 80:75  \>: String
 80:71 - 80:72  [...]: List[String]
 80:41 - 80:44  dir: String
 80:76 - 80:80  join: List[String] -> String
-83:4 - 83:11   initial: .Ok({aim: Num, pos: {x: Num, y: Num}})
-83:15 - 83:17  Ok: .Ok({aim: Num, pos: {x: Num, y: Num}})
+83:4 - 83:11   initial: .ok({aim: Num, pos: {x: Num, y: Num}})
+83:15 - 83:17  ok: .ok({aim: Num, pos: {x: Num, y: Num}})
 86:0 - 86:1    {...}: {aim: Num, pos: {x: Num, y: Num}}
 84:4 - 84:7    aim: Num
 85:4 - 85:7    pos: {x: Num, y: Num}
 85:20 - 85:21  {...}: {x: Num, y: Num}
 85:10 - 85:11  x: Num
 85:16 - 85:17  y: Num
-87:4 - 87:10   result: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
-87:19 - 87:21  \>: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
+87:4 - 87:10   result: .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
+87:19 - 87:21  \>: .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
 87:13 - 87:18  input: List[{arg1: String, arg2: Num}]
-87:42 - 87:43  List[{arg2: Num, arg1: String}] -> .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
-87:22 - 87:26  fold: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}}), (.Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}}), {arg2: Num, arg1: String} -> .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})), List[{arg2: Num, arg1: String}] -> .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
-87:27 - 87:34  initial: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
-87:36 - 87:42  update: .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: Num, arg1: String} -> .Err(String) | .Ok({pos: {x: Num, y: Num}, aim: Num})
+87:42 - 87:43  List[{arg2: Num, arg1: String}] -> .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
+87:22 - 87:26  fold: .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}}), (.err(String) | .ok({aim: Num, pos: {x: Num, y: Num}}), {arg2: Num, arg1: String} -> .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})), List[{arg2: Num, arg1: String}] -> .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
+87:27 - 87:34  initial: .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
+87:36 - 87:42  update: .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num}), {arg2: Num, arg1: String} -> .err(String) | .ok({pos: {x: Num, y: Num}, aim: Num})
 88:4 - 88:10   part_2: Num
 88:13 - 88:18  match: Num
-88:19 - 88:25  result: .Err(String) | .Ok({aim: Num, pos: {x: Num, y: Num}})
-89:5 - 89:7    Ok: .Ok({aim: Num, pos: {x: Num, y: Num}})
+88:19 - 88:25  result: .err(String) | .ok({aim: Num, pos: {x: Num, y: Num}})
+89:5 - 89:7    ok: .ok({aim: Num, pos: {x: Num, y: Num}})
 89:9 - 89:12   pos: {x: Num, y: Num}
 89:15 - 89:16  x: Num
 89:18 - 89:19  y: Num
 89:28 - 89:29  *: Num
 89:26 - 89:27  x: Num
 89:30 - 89:31  y: Num
-90:5 - 90:8    Err: .Err(String)
+90:5 - 90:8    err: .err(String)
 90:9 - 90:11   _1: String
 90:15 - 90:16  -: Num
 93:0 - 93:5    print: Num
@@ -243,8 +243,8 @@ ___ TYPES ___
 0:35 - 0:38    sum: List[Num] -> Num
 0:40 - 0:45    first: List[g] -> g
 0:47 - 0:51    rest: List[h] -> List[h]
-0:55 - 0:61    util/lists.lox: {plus: Num, Num -> Num, empty: List[i] -> Bool, first: List[j] -> j, rest: List[h] -> List[h], fold: k, (k, l -> k), List[l] -> k, map: (m -> n), List[m] -> List[n], reduce: (o, o -> o), List[o] -> o, reverse: List[p] -> List[p], where: (q -> Bool), List[q] -> List[q], enumerated: List[r] -> List[{element: r, index: Num}], count_where: (s -> Bool), List[s] -> Num, sort: List[Num] -> List[Num], zip: List[t], List[u], (t, u -> v) -> List[v], zip_with_tail: (w, w -> x), List[w] -> List[x], sum: List[Num] -> Num, fold_until: y, (y, z -> .Break(y) | .Continue(y)), List[z] -> y, any: (aa -> Bool), List[aa] -> Bool, all: (bb -> Bool), List[bb] -> Bool, drop_at: Num, List[cc] -> List[cc], join: List[String] -> String}
-0:62 - 0:78    util/lists.lox: {plus: Num, Num -> Num, empty: List[i] -> Bool, first: List[j] -> j, rest: List[h] -> List[h], fold: k, (k, l -> k), List[l] -> k, map: (m -> n), List[m] -> List[n], reduce: (o, o -> o), List[o] -> o, reverse: List[p] -> List[p], where: (q -> Bool), List[q] -> List[q], enumerated: List[r] -> List[{element: r, index: Num}], count_where: (s -> Bool), List[s] -> Num, sort: List[Num] -> List[Num], zip: List[t], List[u], (t, u -> v) -> List[v], zip_with_tail: (w, w -> x), List[w] -> List[x], sum: List[Num] -> Num, fold_until: y, (y, z -> .Break(y) | .Continue(y)), List[z] -> y, any: (aa -> Bool), List[aa] -> Bool, all: (bb -> Bool), List[bb] -> Bool, drop_at: Num, List[cc] -> List[cc], join: List[String] -> String}
+0:55 - 0:61    util/lists.lox: {plus: Num, Num -> Num, empty: List[i] -> Bool, first: List[j] -> j, rest: List[h] -> List[h], fold: k, (k, l -> k), List[l] -> k, map: (m -> n), List[m] -> List[n], reduce: (o, o -> o), List[o] -> o, reverse: List[p] -> List[p], where: (q -> Bool), List[q] -> List[q], enumerated: List[r] -> List[{element: r, index: Num}], count_where: (s -> Bool), List[s] -> Num, sort: List[Num] -> List[Num], zip: List[t], List[u], (t, u -> v) -> List[v], zip_with_tail: (w, w -> x), List[w] -> List[x], sum: List[Num] -> Num, fold_until: y, (y, z -> .break(y) | .continue(y)), List[z] -> y, any: (aa -> Bool), List[aa] -> Bool, all: (bb -> Bool), List[bb] -> Bool, drop_at: Num, List[cc] -> List[cc], join: List[String] -> String}
+0:62 - 0:78    util/lists.lox: {plus: Num, Num -> Num, empty: List[i] -> Bool, first: List[j] -> j, rest: List[h] -> List[h], fold: k, (k, l -> k), List[l] -> k, map: (m -> n), List[m] -> List[n], reduce: (o, o -> o), List[o] -> o, reverse: List[p] -> List[p], where: (q -> Bool), List[q] -> List[q], enumerated: List[r] -> List[{element: r, index: Num}], count_where: (s -> Bool), List[s] -> Num, sort: List[Num] -> List[Num], zip: List[t], List[u], (t, u -> v) -> List[v], zip_with_tail: (w, w -> x), List[w] -> List[x], sum: List[Num] -> Num, fold_until: y, (y, z -> .break(y) | .continue(y)), List[z] -> y, any: (aa -> Bool), List[aa] -> Bool, all: (bb -> Bool), List[bb] -> Bool, drop_at: Num, List[cc] -> List[cc], join: List[String] -> String}
 1:5 - 1:13     abs_diff: Num, Num -> Num
 1:17 - 1:23    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
 1:24 - 1:42    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
@@ -352,12 +352,12 @@ ___ TYPES ___
 0:33 - 0:38    first: List[d] -> d
 0:40 - 0:43    all: (e -> Bool), List[e] -> Bool
 0:45 - 0:55    enumerated: List[f] -> List[{element: f, index: Num}]
-0:57 - 0:67    fold_until: g, (g, h -> .Break(g) | .Continue(g)), List[h] -> g
+0:57 - 0:67    fold_until: g, (g, h -> .break(g) | .continue(g)), List[h] -> g
 0:69 - 0:76    drop_at: Num, List[i] -> List[i]
 0:78 - 0:81    map: (j -> k), List[j] -> List[k]
 0:83 - 0:86    any: (l -> Bool), List[l] -> Bool
-0:90 - 0:96    util/lists.lox: {plus: Num, Num -> Num, empty: List[m] -> Bool, first: List[n] -> n, rest: List[o] -> List[o], fold: p, (p, q -> p), List[q] -> p, map: (r -> s), List[r] -> List[s], reduce: (t, t -> t), List[t] -> t, reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> Num, fold_until: dd, (dd, ee -> .Break(dd) | .Continue(dd)), List[ee] -> dd, any: (l -> Bool), List[l] -> Bool, all: (ff -> Bool), List[ff] -> Bool, drop_at: Num, List[gg] -> List[gg], join: List[String] -> String}
-0:97 - 0:113   util/lists.lox: {plus: Num, Num -> Num, empty: List[m] -> Bool, first: List[n] -> n, rest: List[o] -> List[o], fold: p, (p, q -> p), List[q] -> p, map: (r -> s), List[r] -> List[s], reduce: (t, t -> t), List[t] -> t, reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> Num, fold_until: dd, (dd, ee -> .Break(dd) | .Continue(dd)), List[ee] -> dd, any: (l -> Bool), List[l] -> Bool, all: (ff -> Bool), List[ff] -> Bool, drop_at: Num, List[gg] -> List[gg], join: List[String] -> String}
+0:90 - 0:96    util/lists.lox: {plus: Num, Num -> Num, empty: List[m] -> Bool, first: List[n] -> n, rest: List[o] -> List[o], fold: p, (p, q -> p), List[q] -> p, map: (r -> s), List[r] -> List[s], reduce: (t, t -> t), List[t] -> t, reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> Num, fold_until: dd, (dd, ee -> .break(dd) | .continue(dd)), List[ee] -> dd, any: (l -> Bool), List[l] -> Bool, all: (ff -> Bool), List[ff] -> Bool, drop_at: Num, List[gg] -> List[gg], join: List[String] -> String}
+0:97 - 0:113   util/lists.lox: {plus: Num, Num -> Num, empty: List[m] -> Bool, first: List[n] -> n, rest: List[o] -> List[o], fold: p, (p, q -> p), List[q] -> p, map: (r -> s), List[r] -> List[s], reduce: (t, t -> t), List[t] -> t, reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> Num, fold_until: dd, (dd, ee -> .break(dd) | .continue(dd)), List[ee] -> dd, any: (l -> Bool), List[l] -> Bool, all: (ff -> Bool), List[ff] -> Bool, drop_at: Num, List[gg] -> List[gg], join: List[String] -> String}
 1:5 - 1:10     minus: Num, Num -> Num
 1:12 - 1:16    sign: Num -> Num
 1:18 - 1:21    abs: Num -> Num
@@ -644,65 +644,65 @@ ___ TYPES ___
 19:0 - 19:1    {...}: {name: String, company: String}
 17:4 - 17:8    name: String
 18:4 - 18:11   company: String
-20:4 - 20:11   updated: {name: String, company: String, line_of_work: .Refrigeration}
-20:51 - 20:52  {...}: {name: String, company: String, line_of_work: .Refrigeration}
+20:4 - 20:11   updated: {name: String, company: String, line_of_work: .refrigeration}
+20:51 - 20:52  {...}: {name: String, company: String, line_of_work: .refrigeration}
 20:17 - 20:21  boss: {name: String, company: String}
-20:23 - 20:35  line_of_work: .Refrigeration
-20:38 - 20:51  Refrigeration: .Refrigeration
+20:23 - 20:35  line_of_work: .refrigeration
+20:38 - 20:51  refrigeration: .refrigeration
 21:0 - 21:5    print: {name: String, company: String}
 21:6 - 21:10   boss: {name: String, company: String}
 22:0 - 22:5    print: String
 22:14 - 22:21  company: String
-22:6 - 22:13   updated: {name: String, company: String, line_of_work: .Refrigeration}
+22:6 - 22:13   updated: {name: String, company: String, line_of_work: .refrigeration}
 24:2 - 24:6    name: String
-25:2 - 25:14   line_of_work: .Refrigeration
-25:16 - 25:24  subtitle: .Refrigeration
-26:4 - 26:11   updated: {name: String, company: String, line_of_work: .Refrigeration}
+25:2 - 25:14   line_of_work: .refrigeration
+25:16 - 25:24  subtitle: .refrigeration
+26:4 - 26:11   updated: {name: String, company: String, line_of_work: .refrigeration}
 27:0 - 27:5    print: String
 27:6 - 27:10   name: String
-28:0 - 28:5    print: .Refrigeration
-28:6 - 28:14   subtitle: .Refrigeration
-33:4 - 33:9    green: .Green
-33:13 - 33:18  Green: .Green
-34:4 - 34:7    red: .Red
-34:11 - 34:14  Red: .Red
-35:4 - 35:10   either: .Green | .Red
-35:18 - 35:19  ?: .Green | .Red
-35:20 - 35:25  green: .Green | .Red
-35:28 - 35:31  red: .Green | .Red
+28:0 - 28:5    print: .refrigeration
+28:6 - 28:14   subtitle: .refrigeration
+33:4 - 33:9    green: .green
+33:13 - 33:18  green: .green
+34:4 - 34:7    red: .red
+34:11 - 34:14  red: .red
+35:4 - 35:10   either: .green | .red
+35:18 - 35:19  ?: .green | .red
+35:20 - 35:25  green: .green | .red
+35:28 - 35:31  red: .green | .red
 36:0 - 36:5    print: Num
 36:6 - 36:11   match: Num
-36:12 - 36:18  either: .Green | .Red
-37:5 - 37:10   Green: .Green
-38:5 - 38:8    Red: .Red
-41:4 - 41:14   send_email: String -> .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-41:20 - 41:21  String -> .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-46:0 - 46:1    String -> .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+36:12 - 36:18  either: .green | .red
+37:5 - 37:10   green: .green
+38:5 - 38:8    red: .red
+41:4 - 41:14   send_email: String -> .missing_subject | .network_error(Num) | .oom | .sent
+41:20 - 41:21  String -> .missing_subject | .network_error(Num) | .oom | .sent
+46:0 - 46:1    String -> .missing_subject | .network_error(Num) | .oom | .sent
 41:18 - 41:19  x: String
 42:7 - 42:9    ==: Bool
 42:5 - 42:6    x: String
-42:19 - 42:25  .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-42:27 - 42:41  MissingSubject: .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+42:19 - 42:25  .missing_subject | .network_error(Num) | .oom | .sent
+42:27 - 42:42  missing_subject: .missing_subject | .network_error(Num) | .oom | .sent
 43:7 - 43:9    ==: Bool
 43:5 - 43:6    x: String
-43:19 - 43:25  .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-43:27 - 43:39  NetworkError: .MissingSubject | .NetworkError(Num) | .OOM | .Sent
+43:19 - 43:25  .missing_subject | .network_error(Num) | .oom | .sent
+43:27 - 43:40  network_error: .missing_subject | .network_error(Num) | .oom | .sent
 44:7 - 44:9    ==: Bool
 44:5 - 44:6    x: String
-44:19 - 44:25  .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-44:27 - 44:30  OOM: .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-45:2 - 45:8    .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-45:10 - 45:14  Sent: .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-47:4 - 47:10   result: .Alert(String) | .NetworkError(Num) | .OOM
-47:13 - 47:18  match: .Alert(String) | .NetworkError(Num) | .OOM
-47:33 - 47:34  .Alert(String) | .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-47:19 - 47:29  send_email: String -> .Alert(String) | .MissingSubject | .NetworkError(Num) | .OOM | .Sent
-48:3 - 48:7    Sent: .Sent
-48:22 - 48:27  Alert: .Alert(String) | .NetworkError(Num) | .OOM
-49:3 - 49:17   MissingSubject: .MissingSubject
-49:22 - 49:27  Alert: .Alert(String) | .NetworkError(Num) | .OOM
-50:2 - 50:15   something_bad: .Alert(String) | .NetworkError(Num) | .OOM
-50:21 - 50:34  something_bad: .Alert(String) | .NetworkError(Num) | .OOM
+44:19 - 44:25  .missing_subject | .network_error(Num) | .oom | .sent
+44:27 - 44:30  oom: .missing_subject | .network_error(Num) | .oom | .sent
+45:2 - 45:8    .missing_subject | .network_error(Num) | .oom | .sent
+45:10 - 45:14  sent: .missing_subject | .network_error(Num) | .oom | .sent
+47:4 - 47:10   result: .alert(String) | .network_error(Num) | .oom
+47:13 - 47:18  match: .alert(String) | .network_error(Num) | .oom
+47:33 - 47:34  .alert(String) | .missing_subject | .network_error(Num) | .oom | .sent
+47:19 - 47:29  send_email: String -> .alert(String) | .missing_subject | .network_error(Num) | .oom | .sent
+48:3 - 48:7    sent: .sent
+48:23 - 48:28  alert: .alert(String) | .network_error(Num) | .oom
+49:3 - 49:18   missing_subject: .missing_subject
+49:23 - 49:28  alert: .alert(String) | .network_error(Num) | .oom
+50:2 - 50:15   something_bad: .alert(String) | .network_error(Num) | .oom
+50:22 - 50:35  something_bad: .alert(String) | .network_error(Num) | .oom
 56:4 - 56:7    sub: Num, Num -> Num
 56:16 - 56:18  Num, Num -> Num
 56:21 - 56:22  -: Num
@@ -737,19 +737,19 @@ ___ TYPES ___
 65:34 - 65:35  Num -> Num
 65:30 - 65:31  _: <unknown>
 65:26 - 65:29  sub: Num, Num -> Num
-67:4 - 67:13   make_user: {birth_year: Num, name: String} -> .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-67:22 - 67:23  {birth_year: Num, name: String} -> .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-79:0 - 79:1    {birth_year: Num, name: String} -> .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+67:4 - 67:13   make_user: {birth_year: Num, name: String} -> .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+67:22 - 67:23  {birth_year: Num, name: String} -> .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+79:0 - 79:1    {birth_year: Num, name: String} -> .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
 67:17 - 67:21  data: {birth_year: Num, name: String}
 68:17 - 68:19  ==: Bool
 68:12 - 68:16  name: String
 68:7 - 68:11   data: {birth_year: Num, name: String}
 69:8 - 69:13   print: String
-70:8 - 70:14   .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-70:16 - 70:25  Anonymous: .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+70:8 - 70:14   .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+70:16 - 70:25  anonymous: .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
 72:8 - 72:17   random_id: Num
-73:4 - 73:10   .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-73:12 - 73:16  User: .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+73:4 - 73:10   .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+73:12 - 73:16  user: .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
 78:4 - 78:5    {...}: {user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num}
 74:8 - 74:15   user_id: Num
 74:17 - 74:26  random_id: Num
@@ -767,29 +767,29 @@ ___ TYPES ___
 77:59 - 77:63  data: {birth_year: Num, name: String}
 77:15 - 77:25  as_of_year: Num
 77:27 - 77:39  current_year: Num
-80:4 - 80:8    user: .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-80:52 - 80:53  .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-80:11 - 80:20  make_user: {birth_year: Num, name: String} -> .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+80:4 - 80:8    user: .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+80:52 - 80:53  .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+80:11 - 80:20  make_user: {birth_year: Num, name: String} -> .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
 80:51 - 80:52  {...}: {name: String, birth_year: Num}
 80:22 - 80:26  name: String
 80:35 - 80:45  birth_year: Num
 81:0 - 81:5    print: Num
 81:6 - 81:11   match: Num
-81:12 - 81:16  user: .Anonymous | .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-82:5 - 82:9    User: .User({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+81:12 - 81:16  user: .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
+82:5 - 82:9    user: .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
 82:10 - 82:11  u: {user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num}
 82:40 - 82:41  Num
 82:18 - 82:21  age: {as_of_year: Num} -> Num
 82:16 - 82:17  u: {user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num}
 82:39 - 82:40  {...}: {as_of_year: Num}
 82:23 - 82:33  as_of_year: Num
-83:5 - 83:14   Anonymous: .Anonymous
+83:5 - 83:14   anonymous: .anonymous
 ___ OUTPUT ___
 [alice, bob, john, charlie, devin]
 {name: Bob Vance, company: Vance Refrigeration}
 Vance Refrigeration
 Bob Vance
-.Refrigeration
+.refrigeration
 0
 5
 -2
@@ -844,8 +844,8 @@ b
 ====== imports.lox =====
 ___ TYPES ___
 0:5 - 0:8      map: (a -> b), List[a] -> List[b]
-0:12 - 0:18    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
-0:19 - 0:30    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
+0:12 - 0:18    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
+0:19 - 0:30    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
 2:4 - 2:5      x: List[Num]
 2:16 - 2:18    \>: List[Num]
 2:14 - 2:15    [...]: List[Num]
@@ -868,8 +868,8 @@ ___ TYPES ___
 7:6 - 7:9      rel: {hello_from_relative: String}
 9:0 - 9:5      print: Num
 9:28 - 9:29    a: Num
-9:7 - 9:13     foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
-9:14 - 9:26    foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.Hello(Num) | .Tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
+9:7 - 9:13     foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
+9:14 - 9:26    foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
 ___ OUTPUT ___
 [2, 4, 6]
 {hello_from_relative: yep}
@@ -990,16 +990,16 @@ ___ TYPES ___
 31:0 - 31:5    print: Num
 31:24 - 31:25  Num
 31:6 - 31:23   zero_arg_function: Unit -> Num
-33:4 - 33:13   make_user: a, Num -> {user_id: Num, name: a, age: Num, calc_birth_year: Num -> Num}
-33:27 - 33:29  a, Num -> {user_id: Num, name: a, age: Num, calc_birth_year: Num -> Num}
-38:0 - 38:1    {...}: {user_id: Num, name: a, age: Num, calc_birth_year: Num -> Num}
-34:4 - 34:11   user_id: Num
-34:19 - 34:20  Num
-34:13 - 34:18  clock: Unit -> Num
-35:4 - 35:8    name: a
-35:10 - 35:14  name: a
-36:4 - 36:7    age: Num
-36:9 - 36:12   age: Num
+33:4 - 33:13   make_user: a, Num -> {name: a, age: Num, user_id: Num, calc_birth_year: Num -> Num}
+33:27 - 33:29  a, Num -> {name: a, age: Num, user_id: Num, calc_birth_year: Num -> Num}
+38:0 - 38:1    {...}: {name: a, age: Num, user_id: Num, calc_birth_year: Num -> Num}
+34:4 - 34:8    name: a
+34:4 - 34:8    name: a
+35:4 - 35:7    age: Num
+35:4 - 35:7    age: Num
+36:4 - 36:11   user_id: Num
+36:19 - 36:20  Num
+36:13 - 36:18  clock: Unit -> Num
 37:4 - 37:19   calc_birth_year: Num -> Num
 37:35 - 37:37  Num -> Num
 37:51 - 37:52  -: Num
@@ -1008,16 +1008,16 @@ ___ TYPES ___
 37:22 - 37:34  current_year: Num
 33:17 - 33:21  name: a
 33:23 - 33:26  age: Num
-40:4 - 40:8    user: {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
-40:31 - 40:32  {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
-40:11 - 40:20  make_user: String, Num -> {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
+40:4 - 40:8    user: {name: String, age: Num, user_id: Num, calc_birth_year: Num -> Num}
+40:31 - 40:32  {name: String, age: Num, user_id: Num, calc_birth_year: Num -> Num}
+40:11 - 40:20  make_user: String, Num -> {name: String, age: Num, user_id: Num, calc_birth_year: Num -> Num}
 41:0 - 41:5    print: Num
 41:11 - 41:14  age: Num
-41:6 - 41:10   user: {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
+41:6 - 41:10   user: {name: String, age: Num, user_id: Num, calc_birth_year: Num -> Num}
 42:0 - 42:5    print: Num
 42:31 - 42:32  Num
 42:11 - 42:26  calc_birth_year: Num -> Num
-42:6 - 42:10   user: {user_id: Num, name: String, age: Num, calc_birth_year: Num -> Num}
+42:6 - 42:10   user: {name: String, age: Num, user_id: Num, calc_birth_year: Num -> Num}
 ___ OUTPUT ___
 11
 111
@@ -1040,8 +1040,8 @@ ___ TYPES ___
 0:5 - 0:8      map: (a -> b), List[a] -> List[b]
 0:10 - 0:17    reverse: List[c] -> List[c]
 0:19 - 0:25    reduce: (d, d -> d), List[d] -> d
-0:29 - 0:35    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (d, d -> d), List[d] -> d, reverse: List[l] -> List[l], where: (m -> Bool), List[m] -> List[m], enumerated: List[n] -> List[{element: n, index: Num}], count_where: (o -> Bool), List[o] -> Num, sort: List[Num] -> List[Num], zip: List[p], List[q], (p, q -> r) -> List[r], zip_with_tail: (s, s -> t), List[s] -> List[t], sum: List[Num] -> Num, fold_until: u, (u, v -> .Break(u) | .Continue(u)), List[v] -> u, any: (w -> Bool), List[w] -> Bool, all: (x -> Bool), List[x] -> Bool, drop_at: Num, List[y] -> List[y], join: List[String] -> String}
-0:36 - 0:52    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (d, d -> d), List[d] -> d, reverse: List[l] -> List[l], where: (m -> Bool), List[m] -> List[m], enumerated: List[n] -> List[{element: n, index: Num}], count_where: (o -> Bool), List[o] -> Num, sort: List[Num] -> List[Num], zip: List[p], List[q], (p, q -> r) -> List[r], zip_with_tail: (s, s -> t), List[s] -> List[t], sum: List[Num] -> Num, fold_until: u, (u, v -> .Break(u) | .Continue(u)), List[v] -> u, any: (w -> Bool), List[w] -> Bool, all: (x -> Bool), List[x] -> Bool, drop_at: Num, List[y] -> List[y], join: List[String] -> String}
+0:29 - 0:35    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (d, d -> d), List[d] -> d, reverse: List[l] -> List[l], where: (m -> Bool), List[m] -> List[m], enumerated: List[n] -> List[{element: n, index: Num}], count_where: (o -> Bool), List[o] -> Num, sort: List[Num] -> List[Num], zip: List[p], List[q], (p, q -> r) -> List[r], zip_with_tail: (s, s -> t), List[s] -> List[t], sum: List[Num] -> Num, fold_until: u, (u, v -> .break(u) | .continue(u)), List[v] -> u, any: (w -> Bool), List[w] -> Bool, all: (x -> Bool), List[x] -> Bool, drop_at: Num, List[y] -> List[y], join: List[String] -> String}
+0:36 - 0:52    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (d, d -> d), List[d] -> d, reverse: List[l] -> List[l], where: (m -> Bool), List[m] -> List[m], enumerated: List[n] -> List[{element: n, index: Num}], count_where: (o -> Bool), List[o] -> Num, sort: List[Num] -> List[Num], zip: List[p], List[q], (p, q -> r) -> List[r], zip_with_tail: (s, s -> t), List[s] -> List[t], sum: List[Num] -> Num, fold_until: u, (u, v -> .break(u) | .continue(u)), List[v] -> u, any: (w -> Bool), List[w] -> Bool, all: (x -> Bool), List[x] -> Bool, drop_at: Num, List[y] -> List[y], join: List[String] -> String}
 2:4 - 2:6      xs: List[Num]
 2:17 - 2:18    [...]: List[Num]
 3:0 - 3:5      print: List[Num]
@@ -1058,25 +1058,25 @@ ___ TYPES ___
 9:11 - 9:12    [...]: List[Num]
 10:0 - 10:5    print: List[Num]
 10:6 - 10:8    zs: List[Num]
-12:4 - 12:9    mixed: List[.Hello(Num) | .Tags({two: String})]
-12:45 - 12:46  [...]: List[.Hello(Num) | .Tags({two: String})]
-12:14 - 12:19  Hello: .Hello(Num) | .Tags({two: String})
-12:25 - 12:29  Tags: .Hello(Num) | .Tags({two: String})
+12:4 - 12:9    mixed: List[.hello(Num) | .tags({two: String})]
+12:45 - 12:46  [...]: List[.hello(Num) | .tags({two: String})]
+12:14 - 12:19  hello: .hello(Num) | .tags({two: String})
+12:25 - 12:29  tags: .hello(Num) | .tags({two: String})
 12:43 - 12:44  {...}: {two: String}
 12:31 - 12:34  two: String
 13:0 - 13:5    print: List[String]
 13:12 - 13:14  \>: List[String]
-13:6 - 13:11   mixed: List[.Hello(Num) | .Tags({two: String})]
-16:1 - 16:2    List[.Hello(Num) | .Tags({two: String})] -> List[String]
-13:15 - 13:18  map: (.Hello(Num) | .Tags({two: String}) -> String), List[.Hello(Num) | .Tags({two: String})] -> List[String]
-13:22 - 13:24  .Hello(Num) | .Tags({two: String}) -> String
+13:6 - 13:11   mixed: List[.hello(Num) | .tags({two: String})]
+16:1 - 16:2    List[.hello(Num) | .tags({two: String})] -> List[String]
+13:15 - 13:18  map: (.hello(Num) | .tags({two: String}) -> String), List[.hello(Num) | .tags({two: String})] -> List[String]
+13:22 - 13:24  .hello(Num) | .tags({two: String}) -> String
 13:25 - 13:30  match: String
-13:31 - 13:32  x: .Hello(Num) | .Tags({two: String})
-14:5 - 14:10   Hello: .Hello(Num)
+13:31 - 13:32  x: .hello(Num) | .tags({two: String})
+14:5 - 14:10   hello: .hello(Num)
 14:11 - 14:13  _0: Num
-15:5 - 15:9    Tags: .Tags({two: String})
+15:5 - 15:9    tags: .tags({two: String})
 15:10 - 15:12  _1: {two: String}
-13:20 - 13:21  x: .Hello(Num) | .Tags({two: String})
+13:20 - 13:21  x: .hello(Num) | .tags({two: String})
 20:0 - 20:5    print: List[Bool]
 20:14 - 20:16  \>: List[Bool]
 20:12 - 20:13  [...]: List[Num]
@@ -1088,19 +1088,19 @@ ___ TYPES ___
 20:22 - 20:23  x: Num
 21:0 - 21:5    print: List[Bool]
 21:12 - 21:14  \>: List[Bool]
-21:6 - 21:11   mixed: List[.Hello(Num) | .Tags({two: String})]
-24:1 - 24:2    List[.Hello(Num) | .Tags({two: String})] -> List[Bool]
-21:15 - 21:18  map: (.Hello(Num) | .Tags({two: String}) -> Bool), List[.Hello(Num) | .Tags({two: String})] -> List[Bool]
-21:22 - 21:24  .Hello(Num) | .Tags({two: String}) -> Bool
+21:6 - 21:11   mixed: List[.hello(Num) | .tags({two: String})]
+24:1 - 24:2    List[.hello(Num) | .tags({two: String})] -> List[Bool]
+21:15 - 21:18  map: (.hello(Num) | .tags({two: String}) -> Bool), List[.hello(Num) | .tags({two: String})] -> List[Bool]
+21:22 - 21:24  .hello(Num) | .tags({two: String}) -> Bool
 21:25 - 21:30  match: Bool
-21:31 - 21:32  x: .Hello(Num) | .Tags({two: String})
-22:5 - 22:10   Hello: .Hello(Num)
+21:31 - 21:32  x: .hello(Num) | .tags({two: String})
+22:5 - 22:10   hello: .hello(Num)
 22:11 - 22:12  n: Num
 22:19 - 22:21  ==: Bool
 22:17 - 22:18  n: Num
-23:5 - 23:9    Tags: .Tags({two: String})
+23:5 - 23:9    tags: .tags({two: String})
 23:10 - 23:12  _2: {two: String}
-21:20 - 21:21  x: .Hello(Num) | .Tags({two: String})
+21:20 - 21:21  x: .hello(Num) | .tags({two: String})
 27:4 - 27:13   employees: List[{name: String, age: Num}]
 31:0 - 31:1    [...]: List[{name: String, age: Num}]
 28:26 - 28:27  {...}: {name: String, age: Num}
@@ -1298,7 +1298,7 @@ ___ OUTPUT ___
 [3, 2, 1]
 []
 [1]
-[its a `.Hello` tag, its not]
+[its a `.hello` tag, its not]
 [true, false, false]
 [true, false]
 {name: jane, age: 60}
@@ -1333,8 +1333,8 @@ ___ OUTPUT ___
 ====== patterns.lox =====
 ___ TYPES ___
 0:5 - 0:9      join: List[String] -> String
-0:13 - 0:19    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
-0:20 - 0:36    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .Break(r) | .Continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+0:13 - 0:19    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .break(r) | .continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+0:20 - 0:36    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .break(r) | .continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
 2:4 - 2:12     describe: {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
 2:38 - 2:40    {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
 2:48 - 2:49    {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
@@ -1868,70 +1868,70 @@ ___ TYPES ___
 1:15 - 1:17    a -> Bool
 2:4 - 2:19     is_auth_expired: a -> Bool
 2:24 - 2:26    a -> Bool
-4:4 - 4:11     connect: a -> .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
-4:16 - 4:17    a -> .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
-11:0 - 11:1    a -> .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
+4:4 - 4:11     connect: a -> .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
+4:16 - 4:17    a -> .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
+11:0 - 11:1    a -> .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
 5:15 - 5:16    Bool
 5:7 - 5:14     unlucky: Unit -> Bool
-5:22 - 5:28    .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
-5:30 - 5:37    BadLuck: .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
+5:22 - 5:28    .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
+5:30 - 5:38    bad_luck: .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
 6:7 - 6:8      !: Bool
 6:15 - 6:16    Bool
 6:8 - 6:14     online: Unit -> Bool
-6:22 - 6:28    .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
-6:30 - 6:37    Offline: .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
-7:4 - 7:10     .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
-7:12 - 7:22    Connection: .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .Offline
+6:22 - 6:28    .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
+6:30 - 6:37    offline: .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
+7:4 - 7:10     .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
+7:12 - 7:22    connection: .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
 10:4 - 10:5    {...}: {some_connection_details: Num, download: c -> String}
 8:8 - 8:31     some_connection_details: Num
 9:8 - 9:16     download: c -> String
 9:20 - 9:22    c -> String
-13:4 - 13:12   download: {download: Unit -> b} -> .AuthExpired | .DownloadInterrupted | .TheData(b)
-13:27 - 13:28  {download: Unit -> b} -> .AuthExpired | .DownloadInterrupted | .TheData(b)
-18:0 - 18:1    {download: Unit -> b} -> .AuthExpired | .DownloadInterrupted | .TheData(b)
+13:4 - 13:12   download: {download: Unit -> b} -> .auth_expired | .download_interrupted | .the_data(b)
+13:27 - 13:28  {download: Unit -> b} -> .auth_expired | .download_interrupted | .the_data(b)
+18:0 - 18:1    {download: Unit -> b} -> .auth_expired | .download_interrupted | .the_data(b)
 13:16 - 13:26  connection: {download: Unit -> b}
 14:23 - 14:24  Bool
 14:7 - 14:22   is_auth_expired: Unit -> Bool
-14:30 - 14:36  .AuthExpired | .DownloadInterrupted | .TheData(b)
-14:38 - 14:49  AuthExpired: .AuthExpired | .DownloadInterrupted | .TheData(b)
+14:30 - 14:36  .auth_expired | .download_interrupted | .the_data(b)
+14:38 - 14:50  auth_expired: .auth_expired | .download_interrupted | .the_data(b)
 15:15 - 15:16  Bool
 15:7 - 15:14   unlucky: Unit -> Bool
-15:22 - 15:28  .AuthExpired | .DownloadInterrupted | .TheData(b)
-15:30 - 15:49  DownloadInterrupted: .AuthExpired | .DownloadInterrupted | .TheData(b)
+15:22 - 15:28  .auth_expired | .download_interrupted | .the_data(b)
+15:30 - 15:50  download_interrupted: .auth_expired | .download_interrupted | .the_data(b)
 16:8 - 16:14   result: b
 16:37 - 16:38  b
 16:28 - 16:36  download: Unit -> b
 16:17 - 16:27  connection: {download: Unit -> b}
-17:4 - 17:10   .AuthExpired | .DownloadInterrupted | .TheData(b)
-17:12 - 17:19  TheData: .AuthExpired | .DownloadInterrupted | .TheData(b)
-17:20 - 17:26  result: b
-20:4 - 20:24   connect_and_download: a -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-20:29 - 20:30  a -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-28:0 - 28:1    a -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+17:4 - 17:10   .auth_expired | .download_interrupted | .the_data(b)
+17:12 - 17:20  the_data: .auth_expired | .download_interrupted | .the_data(b)
+17:21 - 17:27  result: b
+20:4 - 20:24   connect_and_download: a -> .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+20:29 - 20:30  a -> .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+28:0 - 28:1    a -> .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
 21:8 - 21:18   connection: {some_connection_details: Num, download: c -> String}
 21:21 - 21:26  match: {some_connection_details: Num, download: c -> String}
-21:35 - 21:36  .AuthExpired | .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .DownloadInterrupted | .Offline | .TheData(String)
-21:27 - 21:34  connect: Unit -> .AuthExpired | .BadLuck | .Connection({some_connection_details: Num, download: c -> String}) | .DownloadInterrupted | .Offline | .TheData(String)
-22:9 - 22:19   Connection: .Connection({some_connection_details: Num, download: c -> String})
+21:35 - 21:36  .auth_expired | .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .download_interrupted | .offline | .the_data(String)
+21:27 - 21:34  connect: Unit -> .auth_expired | .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .download_interrupted | .offline | .the_data(String)
+22:9 - 22:19   connection: .connection({some_connection_details: Num, download: c -> String})
 22:20 - 22:21  c: {some_connection_details: Num, download: c -> String}
 22:26 - 22:27  c: {some_connection_details: Num, download: c -> String}
-23:9 - 23:16   Offline: .Offline
-23:20 - 23:26  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-23:28 - 23:35  TheData: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-24:8 - 24:13   other: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-24:17 - 24:23  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-24:24 - 24:29  other: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-27:4 - 27:10   .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-27:30 - 27:31  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-27:11 - 27:19  download: {some_connection_details: Num, download: Unit -> String} -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+23:9 - 23:16   offline: .offline
+23:20 - 23:26  .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+23:28 - 23:36  the_data: .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+24:8 - 24:13   other: .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+24:17 - 24:23  .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+24:24 - 24:29  other: .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+27:4 - 27:10   .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+27:30 - 27:31  .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+27:11 - 27:19  download: {some_connection_details: Num, download: Unit -> String} -> .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
 27:20 - 27:30  connection: {some_connection_details: Num, download: Unit -> String}
-30:4 - 30:8    data: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-30:32 - 30:33  .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-30:11 - 30:31  connect_and_download: Unit -> .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-31:0 - 31:5    print: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
-31:6 - 31:10   data: .AuthExpired | .BadLuck | .DownloadInterrupted | .TheData(String)
+30:4 - 30:8    data: .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+30:32 - 30:33  .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+30:11 - 30:31  connect_and_download: Unit -> .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+31:0 - 31:5    print: .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
+31:6 - 31:10   data: .auth_expired | .bad_luck | .download_interrupted | .the_data(String)
 ___ OUTPUT ___
-.TheData(some default data)
+.the_data(some default data)
 
 
 ====== scoping.lox =====
@@ -1954,201 +1954,201 @@ global
 
 ====== tags.lox =====
 ___ TYPES ___
-1:4 - 1:7      tab: .Key(String)
-1:11 - 1:14    Key: .Key(String)
-2:4 - 2:10     center: .Mouse({x: Num, y: Num})
-2:14 - 2:19    Mouse: .Mouse({x: Num, y: Num})
+1:4 - 1:7      tab: .key(String)
+1:11 - 1:14    key: .key(String)
+2:4 - 2:10     center: .mouse({x: Num, y: Num})
+2:14 - 2:19    mouse: .mouse({x: Num, y: Num})
 2:33 - 2:34    {...}: {x: Num, y: Num}
 2:21 - 2:22    x: Num
 2:28 - 2:29    y: Num
-3:4 - 3:16     key_or_mouse: .Key(String) | .Mouse({x: Num, y: Num})
-3:25 - 3:26    ?: .Key(String) | .Mouse({x: Num, y: Num})
-3:27 - 3:30    tab: .Key(String) | .Mouse({x: Num, y: Num})
-3:33 - 3:39    center: .Key(String) | .Mouse({x: Num, y: Num})
-5:4 - 5:6      fn: .Key(String) | .Mouse({x: Num}) -> String
-5:12 - 5:14    .Key(String) | .Mouse({x: Num}) -> String
+3:4 - 3:16     key_or_mouse: .key(String) | .mouse({x: Num, y: Num})
+3:25 - 3:26    ?: .key(String) | .mouse({x: Num, y: Num})
+3:27 - 3:30    tab: .key(String) | .mouse({x: Num, y: Num})
+3:33 - 3:39    center: .key(String) | .mouse({x: Num, y: Num})
+5:4 - 5:6      fn: .key(String) | .mouse({x: Num}) -> String
+5:12 - 5:14    .key(String) | .mouse({x: Num}) -> String
 5:15 - 5:20    match: String
-5:21 - 5:22    e: .Key(String) | .Mouse({x: Num})
-6:5 - 6:8      Key: .Key(String)
+5:21 - 5:22    e: .key(String) | .mouse({x: Num})
+6:5 - 6:8      key: .key(String)
 6:9 - 6:13     char: String
 6:18 - 6:22    char: String
-7:5 - 7:10     Mouse: .Mouse({x: Num})
+7:5 - 7:10     mouse: .mouse({x: Num})
 7:12 - 7:13    x: Num
 7:26 - 7:27    ?: String
 7:21 - 7:22    >: Bool
 7:19 - 7:20    x: Num
-5:10 - 5:11    e: .Key(String) | .Mouse({x: Num})
+5:10 - 5:11    e: .key(String) | .mouse({x: Num})
 10:0 - 10:5    print: String
 10:12 - 10:13  String
-10:6 - 10:8    fn: .Key(String) | .Mouse({x: Num}) -> String
-10:9 - 10:12   tab: .Key(String) | .Mouse({x: Num})
+10:6 - 10:8    fn: .key(String) | .mouse({x: Num}) -> String
+10:9 - 10:12   tab: .key(String) | .mouse({x: Num})
 11:0 - 11:5    print: String
 11:15 - 11:16  String
-11:6 - 11:8    fn: .Key(String) | .Mouse({y: Num, x: Num}) -> String
-11:9 - 11:15   center: .Key(String) | .Mouse({x: Num, y: Num})
+11:6 - 11:8    fn: .key(String) | .mouse({y: Num, x: Num}) -> String
+11:9 - 11:15   center: .key(String) | .mouse({x: Num, y: Num})
 12:0 - 12:5    print: String
 12:21 - 12:22  String
-12:6 - 12:8    fn: .Key(String) | .Mouse({y: Num, x: Num}) -> String
-12:9 - 12:21   key_or_mouse: .Key(String) | .Mouse({x: Num, y: Num})
-14:4 - 14:10   colors: List[.Gold | .Green | .Red]
-14:33 - 14:34  [...]: List[.Gold | .Green | .Red]
-14:15 - 14:20  Green: .Gold | .Green | .Red
-14:23 - 14:27  Gold: .Gold | .Green | .Red
-14:30 - 14:33  Red: .Gold | .Green | .Red
-15:4 - 15:13   fav_color: .Gold | .Green | .Red
-15:23 - 15:25  \>: .Gold | .Green | .Red
-15:16 - 15:22  colors: List[.Gold | .Green | .Red]
-15:31 - 15:36  first: List[.Gold | .Green | .Red] -> .Gold | .Green | .Red
-15:26 - 15:30  List: {first: List[.Gold | .Green | .Red] -> .Gold | .Green | .Red, rest: List[b] -> List[b], empty: List[c] -> Bool}
+12:6 - 12:8    fn: .key(String) | .mouse({y: Num, x: Num}) -> String
+12:9 - 12:21   key_or_mouse: .key(String) | .mouse({x: Num, y: Num})
+14:4 - 14:10   colors: List[.gold | .green | .red]
+14:33 - 14:34  [...]: List[.gold | .green | .red]
+14:15 - 14:20  green: .gold | .green | .red
+14:23 - 14:27  gold: .gold | .green | .red
+14:30 - 14:33  red: .gold | .green | .red
+15:4 - 15:13   fav_color: .gold | .green | .red
+15:23 - 15:25  \>: .gold | .green | .red
+15:16 - 15:22  colors: List[.gold | .green | .red]
+15:31 - 15:36  first: List[.gold | .green | .red] -> .gold | .green | .red
+15:26 - 15:30  List: {first: List[.gold | .green | .red] -> .gold | .green | .red, rest: List[b] -> List[b], empty: List[c] -> Bool}
 16:0 - 16:5    print: String
 16:6 - 16:11   match: String
-16:12 - 16:21  fav_color: .Gold | .Green | .Red
-17:5 - 17:10   Green: .Green
-18:5 - 18:9    Gold: .Gold
-19:5 - 19:8    Red: .Red
+16:12 - 16:21  fav_color: .gold | .green | .red
+17:5 - 17:10   green: .green
+18:5 - 18:9    gold: .gold
+19:5 - 19:8    red: .red
 22:0 - 22:6    assert: Bool
 22:46 - 22:48  ==: Bool
 22:7 - 22:12   match: Num
-22:13 - 22:22  fav_color: .Gold | .Green | .Red
-22:26 - 22:30  Gold: .Gold
-22:37 - 22:39  _0: .Green | .Red
+22:13 - 22:22  fav_color: .gold | .green | .red
+22:26 - 22:30  gold: .gold
+22:37 - 22:39  _0: .green | .red
 24:0 - 24:6    assert: Bool
 41:2 - 41:4    ==: Bool
 24:7 - 24:12   match: Num
-32:2 - 32:4    \>: .Dark(.None | .Some(String)) | .Light(.None | .Some(String))
-32:0 - 32:1    [...]: List[.Dark(.None | .Some(String)) | .Light(.None | .Some(String))]
-25:5 - 25:9    Dark: .Dark(.None | .Some(String)) | .Light(.None | .Some(String))
-25:11 - 25:15  Some: .None | .Some(String)
-26:5 - 26:10   Light: .Dark(.None | .Some(String)) | .Light(.None | .Some(String))
-26:12 - 26:16  None: .None | .Some(String)
-27:5 - 27:9    Dark: .Dark(.None | .Some(String)) | .Light(.None | .Some(String))
-27:11 - 27:15  None: .None | .Some(String)
-28:5 - 28:9    Dark: .Dark(.None | .Some(String)) | .Light(.None | .Some(String))
-28:11 - 28:15  Some: .None | .Some(String)
-29:5 - 29:9    Dark: .Dark(.None | .Some(String)) | .Light(.None | .Some(String))
-29:11 - 29:15  None: .None | .Some(String)
-30:5 - 30:10   Light: .Dark(.None | .Some(String)) | .Light(.None | .Some(String))
-30:12 - 30:16  Some: .None | .Some(String)
-31:5 - 31:10   Light: .Dark(.None | .Some(String)) | .Light(.None | .Some(String))
-31:12 - 31:16  Some: .None | .Some(String)
-32:10 - 32:15  first: List[.Dark(.None | .Some(String)) | .Light(.None | .Some(String))] -> .Dark(.None | .Some(String)) | .Light(.None | .Some(String))
-32:5 - 32:9    List: {first: List[.Dark(.None | .Some(String)) | .Light(.None | .Some(String))] -> .Dark(.None | .Some(String)) | .Light(.None | .Some(String)), rest: List[a] -> List[a], empty: List[b] -> Bool}
-33:5 - 33:10   Light: .Light(.None | .Some(String))
-33:11 - 33:14  str: .None | .Some(String)
+32:2 - 32:4    \>: .dark(.none | .some(String)) | .light(.none | .some(String))
+32:0 - 32:1    [...]: List[.dark(.none | .some(String)) | .light(.none | .some(String))]
+25:5 - 25:9    dark: .dark(.none | .some(String)) | .light(.none | .some(String))
+25:11 - 25:15  some: .none | .some(String)
+26:5 - 26:10   light: .dark(.none | .some(String)) | .light(.none | .some(String))
+26:12 - 26:16  none: .none | .some(String)
+27:5 - 27:9    dark: .dark(.none | .some(String)) | .light(.none | .some(String))
+27:11 - 27:15  none: .none | .some(String)
+28:5 - 28:9    dark: .dark(.none | .some(String)) | .light(.none | .some(String))
+28:11 - 28:15  some: .none | .some(String)
+29:5 - 29:9    dark: .dark(.none | .some(String)) | .light(.none | .some(String))
+29:11 - 29:15  none: .none | .some(String)
+30:5 - 30:10   light: .dark(.none | .some(String)) | .light(.none | .some(String))
+30:12 - 30:16  some: .none | .some(String)
+31:5 - 31:10   light: .dark(.none | .some(String)) | .light(.none | .some(String))
+31:12 - 31:16  some: .none | .some(String)
+32:10 - 32:15  first: List[.dark(.none | .some(String)) | .light(.none | .some(String))] -> .dark(.none | .some(String)) | .light(.none | .some(String))
+32:5 - 32:9    List: {first: List[.dark(.none | .some(String)) | .light(.none | .some(String))] -> .dark(.none | .some(String)) | .light(.none | .some(String)), rest: List[a] -> List[a], empty: List[b] -> Bool}
+33:5 - 33:10   light: .light(.none | .some(String))
+33:11 - 33:14  str: .none | .some(String)
 33:18 - 33:23  match: Num
-33:24 - 33:27  str: .None | .Some(String)
-34:9 - 34:13   Some: .Some(String)
+33:24 - 33:27  str: .none | .some(String)
+34:9 - 34:13   some: .some(String)
 34:14 - 34:16  _1: String
-35:9 - 35:13   None: .None
-37:5 - 37:9    Dark: .Dark(.None | .Some(String))
-37:10 - 37:13  str: .None | .Some(String)
+35:9 - 35:13   none: .none
+37:5 - 37:9    dark: .dark(.none | .some(String))
+37:10 - 37:13  str: .none | .some(String)
 37:18 - 37:23  match: Num
-37:24 - 37:27  str: .None | .Some(String)
-38:9 - 38:13   Some: .Some(String)
+37:24 - 37:27  str: .none | .some(String)
+38:9 - 38:13   some: .some(String)
 38:14 - 38:16  _2: String
-39:9 - 39:13   None: .None
+39:9 - 39:13   none: .none
 43:0 - 43:6    assert: Bool
 60:2 - 60:4    ==: Bool
 43:7 - 43:12   match: Num
-51:2 - 51:4    \>: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-51:0 - 51:1    [...]: List[.Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})]
-44:5 - 44:9    Dark: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-44:46 - 44:47  {...}: {title: .None | .Some(String), subtitle: String}
-44:11 - 44:16  title: .None | .Some(String)
-44:19 - 44:23  Some: .None | .Some(String)
+51:2 - 51:4    \>: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+51:0 - 51:1    [...]: List[.dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})]
+44:5 - 44:9    dark: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+44:46 - 44:47  {...}: {title: .none | .some(String), subtitle: String}
+44:11 - 44:16  title: .none | .some(String)
+44:19 - 44:23  some: .none | .some(String)
 44:31 - 44:39  subtitle: String
-45:5 - 45:10   Light: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-45:41 - 45:42  {...}: {title: .None | .Some(String), subtitle: String}
-45:12 - 45:17  title: .None | .Some(String)
-45:20 - 45:24  None: .None | .Some(String)
+45:5 - 45:10   light: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+45:41 - 45:42  {...}: {title: .none | .some(String), subtitle: String}
+45:12 - 45:17  title: .none | .some(String)
+45:20 - 45:24  none: .none | .some(String)
 45:26 - 45:34  subtitle: String
-46:5 - 46:9    Dark: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-46:40 - 46:41  {...}: {title: .None | .Some(String), subtitle: String}
-46:11 - 46:16  title: .None | .Some(String)
-46:19 - 46:23  None: .None | .Some(String)
+46:5 - 46:9    dark: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+46:40 - 46:41  {...}: {title: .none | .some(String), subtitle: String}
+46:11 - 46:16  title: .none | .some(String)
+46:19 - 46:23  none: .none | .some(String)
 46:25 - 46:33  subtitle: String
-47:5 - 47:9    Dark: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-47:46 - 47:47  {...}: {title: .None | .Some(String), subtitle: String}
-47:11 - 47:16  title: .None | .Some(String)
-47:19 - 47:23  Some: .None | .Some(String)
+47:5 - 47:9    dark: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+47:46 - 47:47  {...}: {title: .none | .some(String), subtitle: String}
+47:11 - 47:16  title: .none | .some(String)
+47:19 - 47:23  some: .none | .some(String)
 47:31 - 47:39  subtitle: String
-48:5 - 48:9    Dark: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-48:40 - 48:41  {...}: {title: .None | .Some(String), subtitle: String}
-48:11 - 48:16  title: .None | .Some(String)
-48:19 - 48:23  None: .None | .Some(String)
+48:5 - 48:9    dark: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+48:40 - 48:41  {...}: {title: .none | .some(String), subtitle: String}
+48:11 - 48:16  title: .none | .some(String)
+48:19 - 48:23  none: .none | .some(String)
 48:25 - 48:33  subtitle: String
-49:5 - 49:10   Light: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-49:47 - 49:48  {...}: {title: .None | .Some(String), subtitle: String}
-49:12 - 49:17  title: .None | .Some(String)
-49:20 - 49:24  Some: .None | .Some(String)
+49:5 - 49:10   light: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+49:47 - 49:48  {...}: {title: .none | .some(String), subtitle: String}
+49:12 - 49:17  title: .none | .some(String)
+49:20 - 49:24  some: .none | .some(String)
 49:32 - 49:40  subtitle: String
-50:5 - 50:10   Light: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-50:48 - 50:49  {...}: {title: .None | .Some(String), subtitle: String}
-50:12 - 50:17  title: .None | .Some(String)
-50:20 - 50:24  Some: .None | .Some(String)
+50:5 - 50:10   light: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+50:48 - 50:49  {...}: {title: .none | .some(String), subtitle: String}
+50:12 - 50:17  title: .none | .some(String)
+50:20 - 50:24  some: .none | .some(String)
 50:33 - 50:41  subtitle: String
-51:10 - 51:15  first: List[.Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})] -> .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-51:5 - 51:9    List: {first: List[.Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})] -> .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String}), rest: List[a] -> List[a], empty: List[b] -> Bool}
-52:5 - 52:10   Light: .Light({subtitle: String, title: .None | .Some(String)})
-52:12 - 52:17  title: .None | .Some(String)
+51:10 - 51:15  first: List[.dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})] -> .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+51:5 - 51:9    List: {first: List[.dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})] -> .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String}), rest: List[a] -> List[a], empty: List[b] -> Bool}
+52:5 - 52:10   light: .light({subtitle: String, title: .none | .some(String)})
+52:12 - 52:17  title: .none | .some(String)
 52:23 - 52:28  match: Num
-52:29 - 52:34  title: .None | .Some(String)
-53:9 - 53:13   Some: .Some(String)
+52:29 - 52:34  title: .none | .some(String)
+53:9 - 53:13   some: .some(String)
 53:14 - 53:16  _3: String
-54:9 - 54:13   None: .None
-56:5 - 56:9    Dark: .Dark({subtitle: String, title: .None | .Some(String)})
-56:11 - 56:16  title: .None | .Some(String)
+54:9 - 54:13   none: .none
+56:5 - 56:9    dark: .dark({subtitle: String, title: .none | .some(String)})
+56:11 - 56:16  title: .none | .some(String)
 56:22 - 56:27  match: Num
-56:28 - 56:33  title: .None | .Some(String)
-57:9 - 57:13   Some: .Some(String)
+56:28 - 56:33  title: .none | .some(String)
+57:9 - 57:13   some: .some(String)
 57:14 - 57:16  _4: String
-58:9 - 58:13   None: .None
+58:9 - 58:13   none: .none
 62:0 - 62:6    assert: Bool
 73:2 - 73:4    ==: Bool
 62:7 - 62:12   match: Num
-70:2 - 70:4    \>: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-70:0 - 70:1    [...]: List[.Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})]
-63:5 - 63:9    Dark: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-63:46 - 63:47  {...}: {title: .None | .Some(String), subtitle: String}
-63:11 - 63:16  title: .None | .Some(String)
-63:19 - 63:23  Some: .None | .Some(String)
+70:2 - 70:4    \>: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+70:0 - 70:1    [...]: List[.dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})]
+63:5 - 63:9    dark: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+63:46 - 63:47  {...}: {title: .none | .some(String), subtitle: String}
+63:11 - 63:16  title: .none | .some(String)
+63:19 - 63:23  some: .none | .some(String)
 63:31 - 63:39  subtitle: String
-64:5 - 64:10   Light: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-64:41 - 64:42  {...}: {title: .None | .Some(String), subtitle: String}
-64:12 - 64:17  title: .None | .Some(String)
-64:20 - 64:24  None: .None | .Some(String)
+64:5 - 64:10   light: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+64:41 - 64:42  {...}: {title: .none | .some(String), subtitle: String}
+64:12 - 64:17  title: .none | .some(String)
+64:20 - 64:24  none: .none | .some(String)
 64:26 - 64:34  subtitle: String
-65:5 - 65:9    Dark: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-65:40 - 65:41  {...}: {title: .None | .Some(String), subtitle: String}
-65:11 - 65:16  title: .None | .Some(String)
-65:19 - 65:23  None: .None | .Some(String)
+65:5 - 65:9    dark: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+65:40 - 65:41  {...}: {title: .none | .some(String), subtitle: String}
+65:11 - 65:16  title: .none | .some(String)
+65:19 - 65:23  none: .none | .some(String)
 65:25 - 65:33  subtitle: String
-66:5 - 66:9    Dark: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-66:46 - 66:47  {...}: {title: .None | .Some(String), subtitle: String}
-66:11 - 66:16  title: .None | .Some(String)
-66:19 - 66:23  Some: .None | .Some(String)
+66:5 - 66:9    dark: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+66:46 - 66:47  {...}: {title: .none | .some(String), subtitle: String}
+66:11 - 66:16  title: .none | .some(String)
+66:19 - 66:23  some: .none | .some(String)
 66:31 - 66:39  subtitle: String
-67:5 - 67:9    Dark: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-67:40 - 67:41  {...}: {title: .None | .Some(String), subtitle: String}
-67:11 - 67:16  title: .None | .Some(String)
-67:19 - 67:23  None: .None | .Some(String)
+67:5 - 67:9    dark: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+67:40 - 67:41  {...}: {title: .none | .some(String), subtitle: String}
+67:11 - 67:16  title: .none | .some(String)
+67:19 - 67:23  none: .none | .some(String)
 67:25 - 67:33  subtitle: String
-68:5 - 68:10   Light: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-68:47 - 68:48  {...}: {title: .None | .Some(String), subtitle: String}
-68:12 - 68:17  title: .None | .Some(String)
-68:20 - 68:24  Some: .None | .Some(String)
+68:5 - 68:10   light: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+68:47 - 68:48  {...}: {title: .none | .some(String), subtitle: String}
+68:12 - 68:17  title: .none | .some(String)
+68:20 - 68:24  some: .none | .some(String)
 68:32 - 68:40  subtitle: String
-69:5 - 69:10   Light: .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-69:48 - 69:49  {...}: {title: .None | .Some(String), subtitle: String}
-69:12 - 69:17  title: .None | .Some(String)
-69:20 - 69:24  Some: .None | .Some(String)
+69:5 - 69:10   light: .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+69:48 - 69:49  {...}: {title: .none | .some(String), subtitle: String}
+69:12 - 69:17  title: .none | .some(String)
+69:20 - 69:24  some: .none | .some(String)
 69:33 - 69:41  subtitle: String
-70:10 - 70:15  first: List[.Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})] -> .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})
-70:5 - 70:9    List: {first: List[.Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String})] -> .Dark({title: .None | .Some(String), subtitle: String}) | .Light({title: .None | .Some(String), subtitle: String}), rest: List[c] -> List[c], empty: List[d] -> Bool}
-71:5 - 71:9    Dark: .Dark({subtitle: String, title: .None | .Some(String)})
-71:11 - 71:16  title: .None | .Some(String)
-72:5 - 72:10   Light: .Light({subtitle: String, title: .None | .Some(String)})
-72:12 - 72:17  title: .None | .Some(String)
+70:10 - 70:15  first: List[.dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})] -> .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})
+70:5 - 70:9    List: {first: List[.dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String})] -> .dark({title: .none | .some(String), subtitle: String}) | .light({title: .none | .some(String), subtitle: String}), rest: List[c] -> List[c], empty: List[d] -> Bool}
+71:5 - 71:9    dark: .dark({subtitle: String, title: .none | .some(String)})
+71:11 - 71:16  title: .none | .some(String)
+72:5 - 72:10   light: .light({subtitle: String, title: .none | .some(String)})
+72:12 - 72:17  title: .none | .some(String)
 ___ OUTPUT ___
 \t
 bottom
@@ -2161,7 +2161,7 @@ ___ Type checking failed ___
 (Lambda(null, [Instance of 'Identifier'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
-LoxRuntimeException{token: identifier Foo (ln3:9), message: Tag patterns can only be used in match expressions.}
+LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can only be used in match expressions.}
 
 
 ====== tag_pattern_err_let_no_payload.lox =====
@@ -2169,7 +2169,7 @@ ___ Type checking failed ___
 (Lambda(null, [Instance of 'Identifier'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
-LoxRuntimeException{token: identifier Foo (ln3:9), message: Tag patterns can only be used in match expressions.}
+LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can only be used in match expressions.}
 
 
 ====== tag_pattern_err_param.lox =====
@@ -2177,7 +2177,7 @@ ___ Type checking failed ___
 (Lambda(null, [Instance of 'TagPattern'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
-LoxRuntimeException{token: identifier Foo (ln2:10), message: Tag patterns can only be used in match expressions.}
+LoxRuntimeException{token: identifier foo (ln2:10), message: Tag patterns can only be used in match expressions.}
 
 
 ====== tag_pattern_err_param_no_payload.lox =====
@@ -2185,5 +2185,5 @@ ___ Type checking failed ___
 (Lambda(null, [Instance of 'TagPattern'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
-LoxRuntimeException{token: identifier Foo (ln2:10), message: Tag patterns can only be used in match expressions.}
+LoxRuntimeException{token: identifier foo (ln2:10), message: Tag patterns can only be used in match expressions.}
 

@@ -10,18 +10,18 @@ print ys;
 let zs = [1];
 print zs;
 
-let mixed = [.Hello(1), .Tags({two: "three"})];
+let mixed = [.hello(1), .tags({two: "three"})];
 print mixed \> map(\x -> match x {
-    .Hello(_) -> "its a `.Hello` tag",
-    .Tags(_) -> "its not",
+    .hello(_) -> "its a `.hello` tag",
+    .tags(_) -> "its not",
 });
 
 
 
 print [1,2,3] \> map(\x -> x == 1);
 print mixed \> map(\x -> match x {
-    .Hello(n) -> n == 1,
-    .Tags(_) -> false,
+    .hello(n) -> n == 1,
+    .tags(_) -> false,
 });
 
 

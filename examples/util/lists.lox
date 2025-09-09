@@ -67,8 +67,8 @@ let fold_until = \state, fn -> \list {
     if list \> empty then return state;
     let step = fn(state, list \> first);
     return match step {
-        .Continue(new_state) -> list \> rest \> fold_until(new_state, fn),
-        .Break(final_state) -> final_state,
+        .continue(new_state) -> list \> rest \> fold_until(new_state, fn),
+        .break(final_state) -> final_state,
     };
 };
 
@@ -77,8 +77,8 @@ let any = \predicate -> \list ->
         false,
         \state, element ->
             predicate(element)
-                ? .Break(true)
-                : .Continue(state)
+                ? .break(true)
+                : .continue(state)
     );
 
 let all = \predicate -> \list ->
@@ -86,8 +86,8 @@ let all = \predicate -> \list ->
         true,
         \state, element ->
             predicate(element)
-                ? .Continue(state)
-                : .Break(false)
+                ? .continue(state)
+                : .break(false)
     );
 
 let drop_at = \target_index -> \list ->
