@@ -293,6 +293,12 @@ class Parser {
       consume(.colon, "Expected ':' before last ternary expression");
       final ifFalse = expression();
       return Ternary(questionMark, condition, ifTrue, ifFalse);
+    } else if (matchFirst(.as)) {
+      final as = previous();
+      consume(.dot, 'Expected a dot followed by a tag name');
+      final tagName = consume(.identifier, "Expected a tag name");
+      final fallback = matchFirst(.else_) ? expression() : null;
+      return TagCast(expr: condition, as: as, tagName: tagName, fallback: fallback);
     }
     return condition;
   }
@@ -470,11 +476,6 @@ class Parser {
       } else if (matchFirst(.dot)) {
         final fieldName = consume(.identifier, "Expected field name");
         expr = RecordGet(expr, fieldName);
-      } else if (matchFirst(.bang)) {
-        final bang = previous();
-        consume(.dot, 'Expected a dot followed by a tag name');
-        final tagName = consume(.identifier, "Expected a tag name");
-        expr = TagCast(expr: expr, bang: bang, tagName: tagName);
       } else {
         break;
       }

@@ -136,6 +136,7 @@ typedef ScanError = ({int line, int offset, String message});
 
 final keywords = <String, TokenType>{
   'match' : .match,
+  'as' : .as,
   'assert' : .assert_,
   'and' :    .and,
   'class' :  .class_,

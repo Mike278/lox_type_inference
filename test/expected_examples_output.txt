@@ -2151,62 +2151,87 @@ ___ TYPES ___
 72:12 - 72:17  title: .none | .some(String)
 75:4 - 75:5    a: a -> .nope | .ok(Num)
 75:10 - 75:12  a -> .nope | .ok(Num)
-76:4 - 76:5    ?: .nope | .ok(Num)
-76:7 - 76:9    ok: .nope | .ok(Num)
-77:7 - 77:11   nope: .nope | .ok(Num)
-78:4 - 78:5    b: a -> .err({kind: String}) | .ok(String)
-78:10 - 78:12  a -> .err({kind: String}) | .ok(String)
-79:4 - 79:5    ?: .err({kind: String}) | .ok(String)
-79:7 - 79:9    ok: .err({kind: String}) | .ok(String)
-80:7 - 80:10   err: .err({kind: String}) | .ok(String)
-80:23 - 80:24  {...}: {kind: String}
-80:12 - 80:16  kind: String
-81:4 - 81:5    c: a -> .fatal | .success({data: String, another: Num}) | .timeout
-81:10 - 81:12  a -> .fatal | .success({data: String, another: Num}) | .timeout
-82:4 - 82:5    ?: .fatal | .success({data: String, another: Num}) | .timeout
-82:7 - 82:14   success: .fatal | .success({data: String, another: Num}) | .timeout
-82:37 - 82:38  {...}: {data: String, another: Num}
-82:16 - 82:20  data: String
-82:27 - 82:34  another: Num
-84:8 - 84:9    ?: .fatal | .success({data: String, another: Num}) | .timeout
-84:11 - 84:18  timeout: .fatal | .success({data: String, another: Num}) | .timeout
-85:11 - 85:16  fatal: .fatal | .success({data: String, another: Num}) | .timeout
-86:4 - 86:5    d: a -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-86:10 - 86:11  a -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-92:0 - 92:1    a -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-87:8 - 87:11   num: Num
-87:16 - 87:17  .err({kind: String}) | .fatal | .nope | .ok(Num) | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-87:14 - 87:15  a: Unit -> .err({kind: String}) | .fatal | .nope | .ok(Num) | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-88:8 - 88:11   str: String
-88:16 - 88:17  .err({kind: String}) | .fatal | .nope | .ok(String) | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-88:14 - 88:15  b: Unit -> .err({kind: String}) | .fatal | .nope | .ok(String) | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-89:8 - 89:11   wat: Num
-89:27 - 89:34  another: Num
-89:16 - 89:17  .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .success({data: String, another: Num}) | .timeout
-89:14 - 89:15  c: Unit -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .success({data: String, another: Num}) | .timeout
-90:10 - 90:14  data: String
-90:21 - 90:22  .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .success({data: String, another: Num}) | .timeout
-90:19 - 90:20  c: Unit -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .success({data: String, another: Num}) | .timeout
-91:4 - 91:10   .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-91:12 - 91:14  ok: .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-91:36 - 91:37  {...}: {num: Num, str: String, data: String, wat: Num}
-91:17 - 91:20  num: Num
-91:17 - 91:20  num: Num
-91:22 - 91:25  str: String
-91:22 - 91:25  str: String
-91:27 - 91:31  data: String
-91:27 - 91:31  data: String
-91:33 - 91:36  wat: Num
-91:33 - 91:36  wat: Num
-93:0 - 93:5    print: .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-93:8 - 93:9    .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
-93:6 - 93:7    d: Unit -> .err({kind: String}) | .fatal | .nope | .ok({num: Num, str: String, data: String, wat: Num}) | .timeout
+75:29 - 75:31  \>: .nope | .ok(Num)
+75:27 - 75:28  [...]: List[.nope | .ok(Num)]
+75:15 - 75:17  ok: .nope | .ok(Num)
+75:23 - 75:27  nope: .nope | .ok(Num)
+75:37 - 75:42  first: List[.nope | .ok(Num)] -> .nope | .ok(Num)
+75:32 - 75:36  List: {first: List[.nope | .ok(Num)] -> .nope | .ok(Num), rest: List[c] -> List[c], empty: List[d] -> Bool}
+76:4 - 76:5    b: a -> .err(String) | .ok({first: String, last: String})
+76:10 - 76:12  a -> .err(String) | .ok({first: String, last: String})
+76:63 - 76:65  \>: .err(String) | .ok({first: String, last: String})
+76:61 - 76:62  [...]: List[.err(String) | .ok({first: String, last: String})]
+76:15 - 76:17  ok: .err(String) | .ok({first: String, last: String})
+76:46 - 76:47  {...}: {first: String, last: String}
+76:19 - 76:24  first: String
+76:33 - 76:37  last: String
+76:51 - 76:54  err: .err(String) | .ok({first: String, last: String})
+76:71 - 76:76  first: List[.err(String) | .ok({first: String, last: String})] -> .err(String) | .ok({first: String, last: String})
+76:66 - 76:70  List: {first: List[.err(String) | .ok({first: String, last: String})] -> .err(String) | .ok({first: String, last: String}), rest: List[c] -> List[c], empty: List[d] -> Bool}
+77:4 - 77:5    c: a -> .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type
+77:10 - 77:12  a -> .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type
+77:88 - 77:90  \>: .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type
+77:86 - 77:87  [...]: List[.missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type]
+77:15 - 77:17  ok: .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type
+77:28 - 77:29  {...}: {found: Num}
+77:19 - 77:24  found: Num
+77:33 - 77:40  missing: .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type
+77:43 - 77:86  this_should_not_be_in_the_final_return_type: .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type
+77:96 - 77:101 first: List[.missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type] -> .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type
+77:91 - 77:95  List: {first: List[.missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type] -> .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type, rest: List[c] -> List[c], empty: List[d] -> Bool}
+78:4 - 78:5    d: a -> .fatal | .success({data: String, another: Num}) | .timeout
+78:10 - 78:12  a -> .fatal | .success({data: String, another: Num}) | .timeout
+78:67 - 78:69  \>: .fatal | .success({data: String, another: Num}) | .timeout
+78:65 - 78:66  [...]: List[.fatal | .success({data: String, another: Num}) | .timeout]
+78:15 - 78:22  success: .fatal | .success({data: String, another: Num}) | .timeout
+78:45 - 78:46  {...}: {data: String, another: Num}
+78:24 - 78:28  data: String
+78:35 - 78:42  another: Num
+78:50 - 78:57  timeout: .fatal | .success({data: String, another: Num}) | .timeout
+78:60 - 78:65  fatal: .fatal | .success({data: String, another: Num}) | .timeout
+78:75 - 78:80  first: List[.fatal | .success({data: String, another: Num}) | .timeout] -> .fatal | .success({data: String, another: Num}) | .timeout
+78:70 - 78:74  List: {first: List[.fatal | .success({data: String, another: Num}) | .timeout] -> .fatal | .success({data: String, another: Num}) | .timeout, rest: List[c] -> List[c], empty: List[d] -> Bool}
+79:4 - 79:5    e: a -> .err(String) | .fatal | .nope | .ok(Bool) | .timeout
+79:10 - 79:11  a -> .err(String) | .fatal | .nope | .ok(Bool) | .timeout
+86:0 - 86:1    a -> .err(String) | .fatal | .nope | .ok(Bool) | .timeout
+80:8 - 80:11   num: Num
+80:16 - 80:17  .err(String) | .fatal | .nope | .ok(Bool) | .ok(Num) | .timeout
+80:14 - 80:15  a: Unit -> .err(String) | .fatal | .nope | .ok(Bool) | .ok(Num) | .timeout
+81:10 - 81:15  first: String
+81:22 - 81:23  .err(String) | .fatal | .nope | .ok(Bool) | .ok({first: String, last: String}) | .timeout
+81:20 - 81:21  b: Unit -> .err(String) | .fatal | .nope | .ok(Bool) | .ok({first: String, last: String}) | .timeout
+82:10 - 82:15  found: Num
+82:22 - 82:23  .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type
+82:20 - 82:21  c: Unit -> .missing | .ok({found: Num}) | .this_should_not_be_in_the_final_return_type
+82:45 - 82:46  {...}: {found: Num}
+82:37 - 82:42  found: Num
+83:8 - 83:18   precedence: Num
+83:39 - 83:46  another: Num
+83:24 - 83:25  .err(String) | .fatal | .nope | .ok(Bool) | .success({data: String, another: Num}) | .timeout
+83:22 - 83:23  d: Unit -> .err(String) | .fatal | .nope | .ok(Bool) | .success({data: String, another: Num}) | .timeout
+84:4 - 84:9    print: {num: Num, first: String, found: Num, precedence: Num}
+84:42 - 84:43  {...}: {num: Num, first: String, found: Num, precedence: Num}
+84:12 - 84:15  num: Num
+84:12 - 84:15  num: Num
+84:17 - 84:22  first: String
+84:17 - 84:22  first: String
+84:24 - 84:29  found: Num
+84:24 - 84:29  found: Num
+84:31 - 84:41  precedence: Num
+84:31 - 84:41  precedence: Num
+85:4 - 85:10   .err(String) | .fatal | .nope | .ok(Bool) | .timeout
+85:12 - 85:14  ok: .err(String) | .fatal | .nope | .ok(Bool) | .timeout
+87:0 - 87:6    assert: Bool
+87:11 - 87:13  ==: Bool
+87:9 - 87:10   .err(String) | .fatal | .nope | .ok(Bool) | .timeout
+87:7 - 87:8    e: Unit -> .err(String) | .fatal | .nope | .ok(Bool) | .timeout
+87:15 - 87:17  ok: .err(String) | .fatal | .nope | .ok(Bool) | .timeout
 ___ OUTPUT ___
 \t
 bottom
 bottom
 green
-.ok({num: 5, str: a, data: a, wat: 1})
+{num: 5, first: bob, found: 10, precedence: 1}
 
 
 ====== tag_pattern_err_let.lox =====

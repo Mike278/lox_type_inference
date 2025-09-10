@@ -8,6 +8,7 @@ import 'package:lox/coordinator.dart';
 import 'package:lox/interpreter.dart';
 import 'package:lox/mark_types.dart';
 import 'package:lox/parser.dart';
+import 'package:lox/scanner.dart';
 import 'package:path/path.dart';
 import 'package:web/web.dart' as web;
 
@@ -306,21 +307,7 @@ String? _nextToken(StringStream stream, JSAny state) {
     stream.match(RegExp(r'^[a-zA-Z0-9_]*').toJS);
     final word = stream.current();
 
-    if ({
-      "let",
-      "if",
-      "then",
-      "else",
-      "return",
-      "match",
-      "import",
-      "assert",
-      "print",
-      "true",
-      "false",
-      "and",
-      "or",
-    }.contains(word)) {
+    if (keywords.keys.contains(word)) {
       return _red;
     }
 

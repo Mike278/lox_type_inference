@@ -335,8 +335,10 @@ List<(Token, String)> displayExpression(
     (keyword, '$path: ${displayType(typeOf(expr))}'),
     (target, '$path: ${displayType(typeOf(expr))}'),
   ],
-  TagCast(expr: final tagExpr) =>
-    displayExpression(tagExpr, typeOf),
+  TagCast(expr: final tagExpr, :final fallback) => [
+    ...displayExpression(tagExpr, typeOf),
+    if (fallback != null) ...displayExpression(fallback, typeOf),
+  ],
 };
 
 String displayType(Ty? type) =>
@@ -465,8 +467,8 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
       keyword.span,
 
   TagCast(
-    :final bang,
+    as :final as_,
     :final tagName,
   ) =>
-    bang.span.extendedBy(tagName.span),
+    as_.span.extendedBy(tagName.span),
 };

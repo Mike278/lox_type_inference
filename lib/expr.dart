@@ -216,12 +216,18 @@ typedef ResolveImport = Exports Function(ImportPath);
 
 class TagCast extends Expr with EquatableMixin {
   final Expr expr;
-  final Token bang;
+  final Token as;
+  final Expr? fallback;
   final Token tagName;
 
-  TagCast({required this.expr, required this.bang, required this.tagName});
+  TagCast({
+    required this.expr,
+    required this.as,
+    required this.fallback,
+    required this.tagName,
+  });
 
-  @override get props => [...super.props, expr, bang, tagName];
+  @override get props => [...super.props, expr, as, fallback, tagName];
 }
 
 sealed class Statement {}

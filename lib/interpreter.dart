@@ -389,11 +389,14 @@ class LoxRuntime {
   }
 
   Object? evalTagCast(TagCast cast, Env env) {
-    final tag = evalAs<LoxTag>(cast.expr, cast.bang, env);
+    final tag = evalAs<LoxTag>(cast.expr, cast.as, env);
     final expected = cast.tagName.lexeme;
     final actual = tag.tag.lexeme;
     if (expected == actual) {
       return tag.payload;
+    }
+    if (cast.fallback case final fallback?) {
+      return eval(fallback, env);
     }
     throw _Return(tag);
   }

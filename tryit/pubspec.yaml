@@ -4,7 +4,7 @@ version: 1.0.0
 publish_to: none
 
 environment:
-  sdk: ^3.10.0-edge.745f55f9353dd2cd09c2f9727286cd572bd49dfb
+  sdk: ^3.10.0-edge.ea4afe3ac61037fd9f9b5040d61448acbca984f4
 
 dependencies:
   web:

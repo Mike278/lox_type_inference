@@ -478,7 +478,7 @@ class TypeInference {
         (
           pattern: Identifier(token(.identifier, '#')),
           arrow: token(.arrow, '->'),
-          result: Return(token(.return_, 'return'), Variable(token(.identifier, '#'))),
+          result: expr.fallback ?? Return(token(.return_, 'return'), Variable(token(.identifier, '#'))),
         ),
       ],
     );

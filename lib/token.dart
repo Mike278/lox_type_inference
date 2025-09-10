@@ -17,7 +17,7 @@ enum TokenType {
   identifier, string, number,
 
   // keywords.
-  assert_, and, class_, else_, false_, for_, if_, import, match, nil, or,
+  as, assert_, and, class_, else_, false_, for_, if_, import, match, nil, or,
   print, return_, super_, then, this_, true_, let, while_,
 
   eof;
