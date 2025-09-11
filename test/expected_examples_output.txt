@@ -3,8 +3,8 @@ ___ TYPES ___
 0:5 - 0:9      fold: a, (a, b -> a), List[b] -> a
 0:11 - 0:14    map: (c -> d), List[c] -> List[d]
 0:16 - 0:20    join: List[String] -> String
-0:24 - 0:30    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (l, l -> l), List[l] -> l, reverse: List[m] -> List[m], where: (n -> Bool), List[n] -> List[n], enumerated: List[o] -> List[{element: o, index: Num}], count_where: (p -> Bool), List[p] -> Num, sort: List[Num] -> List[Num], zip: List[q], List[r], (q, r -> s) -> List[s], zip_with_tail: (t, t -> u), List[t] -> List[u], sum: List[Num] -> Num, fold_until: v, (v, w -> .break(v) | .continue(v)), List[w] -> v, any: (x -> Bool), List[x] -> Bool, all: (y -> Bool), List[y] -> Bool, drop_at: Num, List[z] -> List[z], join: List[String] -> String}
-0:31 - 0:47    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (l, l -> l), List[l] -> l, reverse: List[m] -> List[m], where: (n -> Bool), List[n] -> List[n], enumerated: List[o] -> List[{element: o, index: Num}], count_where: (p -> Bool), List[p] -> Num, sort: List[Num] -> List[Num], zip: List[q], List[r], (q, r -> s) -> List[s], zip_with_tail: (t, t -> u), List[t] -> List[u], sum: List[Num] -> Num, fold_until: v, (v, w -> .break(v) | .continue(v)), List[w] -> v, any: (x -> Bool), List[x] -> Bool, all: (y -> Bool), List[y] -> Bool, drop_at: Num, List[z] -> List[z], join: List[String] -> String}
+0:24 - 0:30    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .none | .some({first: e, rest: List[e]}), fold: g, (g, h -> g), List[h] -> g, map: (i -> j), List[i] -> List[j], reduce: (k, k -> k), List[k] -> .list_was_empty | .ok(k), reverse: List[m] -> List[m], where: (n -> Bool), List[n] -> List[n], enumerated: List[o] -> List[{element: o, index: Num}], count_where: (p -> Bool), List[p] -> Num, sort: List[Num] -> List[Num], zip: List[q], List[r], (q, r -> s) -> List[s], zip_with_tail: (t, t -> u), List[t] -> List[u], sum: List[Num] -> .list_was_empty | .ok(Num), fold_until: w, (w, x -> .break(w) | .continue(w)), List[x] -> w, any: (y -> Bool), List[y] -> Bool, all: (z -> Bool), List[z] -> Bool, drop_at: Num, List[aa] -> List[aa], join: List[String] -> String, element_at: Num, List[bb] -> .found(bb) | .out_of_bounds}
+0:31 - 0:47    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .none | .some({first: e, rest: List[e]}), fold: g, (g, h -> g), List[h] -> g, map: (i -> j), List[i] -> List[j], reduce: (k, k -> k), List[k] -> .list_was_empty | .ok(k), reverse: List[m] -> List[m], where: (n -> Bool), List[n] -> List[n], enumerated: List[o] -> List[{element: o, index: Num}], count_where: (p -> Bool), List[p] -> Num, sort: List[Num] -> List[Num], zip: List[q], List[r], (q, r -> s) -> List[s], zip_with_tail: (t, t -> u), List[t] -> List[u], sum: List[Num] -> .list_was_empty | .ok(Num), fold_until: w, (w, x -> .break(w) | .continue(w)), List[x] -> w, any: (y -> Bool), List[y] -> Bool, all: (z -> Bool), List[z] -> Bool, drop_at: Num, List[aa] -> List[aa], join: List[String] -> String, element_at: Num, List[bb] -> .found(bb) | .out_of_bounds}
 2:4 - 2:9      input: List[{arg1: String, arg2: Num}]
 9:0 - 9:1      [...]: List[{arg1: String, arg2: Num}]
 3:29 - 3:30    {...}: {arg1: String, arg2: Num}
@@ -235,111 +235,11 @@ ___ OUTPUT ___
 
 
 ====== advent_of_code_2024_day_1.lox =====
-___ TYPES ___
-0:5 - 0:9      fold: a, (a, b -> a), List[b] -> a
-0:11 - 0:22    count_where: (c -> Bool), List[c] -> Num
-0:24 - 0:27    zip: List[d], List[e], (d, e -> f) -> List[f]
-0:29 - 0:33    sort: List[Num] -> List[Num]
-0:35 - 0:38    sum: List[Num] -> Num
-0:40 - 0:45    first: List[g] -> g
-0:47 - 0:51    rest: List[h] -> List[h]
-0:55 - 0:61    util/lists.lox: {plus: Num, Num -> Num, empty: List[i] -> Bool, first: List[j] -> j, rest: List[h] -> List[h], fold: k, (k, l -> k), List[l] -> k, map: (m -> n), List[m] -> List[n], reduce: (o, o -> o), List[o] -> o, reverse: List[p] -> List[p], where: (q -> Bool), List[q] -> List[q], enumerated: List[r] -> List[{element: r, index: Num}], count_where: (s -> Bool), List[s] -> Num, sort: List[Num] -> List[Num], zip: List[t], List[u], (t, u -> v) -> List[v], zip_with_tail: (w, w -> x), List[w] -> List[x], sum: List[Num] -> Num, fold_until: y, (y, z -> .break(y) | .continue(y)), List[z] -> y, any: (aa -> Bool), List[aa] -> Bool, all: (bb -> Bool), List[bb] -> Bool, drop_at: Num, List[cc] -> List[cc], join: List[String] -> String}
-0:62 - 0:78    util/lists.lox: {plus: Num, Num -> Num, empty: List[i] -> Bool, first: List[j] -> j, rest: List[h] -> List[h], fold: k, (k, l -> k), List[l] -> k, map: (m -> n), List[m] -> List[n], reduce: (o, o -> o), List[o] -> o, reverse: List[p] -> List[p], where: (q -> Bool), List[q] -> List[q], enumerated: List[r] -> List[{element: r, index: Num}], count_where: (s -> Bool), List[s] -> Num, sort: List[Num] -> List[Num], zip: List[t], List[u], (t, u -> v) -> List[v], zip_with_tail: (w, w -> x), List[w] -> List[x], sum: List[Num] -> Num, fold_until: y, (y, z -> .break(y) | .continue(y)), List[z] -> y, any: (aa -> Bool), List[aa] -> Bool, all: (bb -> Bool), List[bb] -> Bool, drop_at: Num, List[cc] -> List[cc], join: List[String] -> String}
-1:5 - 1:13     abs_diff: Num, Num -> Num
-1:17 - 1:23    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
-1:24 - 1:42    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
-2:5 - 2:7      eq: a, a -> Bool
-2:11 - 2:17    util/functions.lox: {eq: a, a -> Bool}
-2:18 - 2:38    util/functions.lox: {eq: a, a -> Bool}
-4:4 - 4:9      input: List[List[Num]]
-11:0 - 11:1    [...]: List[List[Num]]
-5:9 - 5:10     [...]: List[Num]
-6:9 - 6:10     [...]: List[Num]
-7:9 - 7:10     [...]: List[Num]
-8:9 - 8:10     [...]: List[Num]
-9:9 - 9:10     [...]: List[Num]
-10:9 - 10:10   [...]: List[Num]
-13:6 - 13:11   list1: List[Num]
-13:13 - 13:18  list2: List[Num]
-13:29 - 13:31  \>: {list1: List[Num], list2: List[Num]}
-13:23 - 13:28  input: List[List[Num]]
-19:0 - 19:1    List[List[Num]] -> {list1: List[Num], list2: List[Num]}
-13:32 - 13:36  fold: {list1: List[Num], list2: List[Num]}, ({list1: List[Num], list2: List[Num]}, List[Num] -> {list1: List[Num], list2: List[Num]}), List[List[Num]] -> {list1: List[Num], list2: List[Num]}
-14:25 - 14:26  {...}: {list1: List[Num], list2: List[Num]}
-14:5 - 14:10   list1: List[Num]
-14:13 - 14:14  [...]: List[Num]
-14:16 - 14:21  list2: List[Num]
-14:24 - 14:25  [...]: List[Num]
-15:26 - 15:28  {list1: List[Num], list2: List[Num]}, List[Num] -> {list1: List[Num], list2: List[Num]}
-18:4 - 18:5    {...}: {list1: List[Num], list2: List[Num]}
-16:8 - 16:13   list1: List[Num]
-16:38 - 16:39  [...]: List[Num]
-16:18 - 16:23  list1: List[Num]
-16:30 - 16:32  \>: Num
-16:25 - 16:29  pair: List[Num]
-16:33 - 16:38  first: List[Num] -> Num
-17:8 - 17:13   list2: List[Num]
-17:46 - 17:47  [...]: List[Num]
-17:18 - 17:23  list2: List[Num]
-17:38 - 17:40  \>: Num
-17:30 - 17:32  \>: List[Num]
-17:25 - 17:29  pair: List[Num]
-17:33 - 17:37  rest: List[Num] -> List[Num]
-17:41 - 17:46  first: List[Num] -> Num
-15:6 - 15:11   list1: List[Num]
-15:13 - 15:18  list2: List[Num]
-15:21 - 15:25  pair: List[Num]
-20:0 - 20:5    print: List[Num]
-20:6 - 20:11   list1: List[Num]
-21:0 - 21:5    print: List[Num]
-21:6 - 21:11   list2: List[Num]
-25:4 - 25:11   answer1: Num
-29:2 - 29:4    \>: Num
-29:0 - 29:1    List[Num]
-25:14 - 25:17  zip: List[Num], List[Num], (Num, Num -> Num) -> List[Num]
-26:8 - 26:10   \>: List[Num]
-26:2 - 26:7    list1: List[Num]
-26:11 - 26:15  sort: List[Num] -> List[Num]
-27:8 - 27:10   \>: List[Num]
-27:2 - 27:7    list2: List[Num]
-27:11 - 27:15  sort: List[Num] -> List[Num]
-28:2 - 28:10   abs_diff: Num, Num -> Num
-29:5 - 29:8    sum: List[Num] -> Num
-31:0 - 31:6    assert: Bool
-31:15 - 31:17  ==: Bool
-31:7 - 31:14   answer1: Num
-35:4 - 35:32   frequency_of_number_in_list2: Num -> Num
-35:38 - 35:40  Num -> Num
-36:10 - 36:12  \>: Num
-36:4 - 36:9    list2: List[Num]
-36:32 - 36:33  List[Num] -> Num
-36:13 - 36:24  count_where: (Num -> Bool), List[Num] -> Num
-36:27 - 36:29  \>: Num -> Bool
-36:25 - 36:26  n: Num
-36:30 - 36:32  eq: Num, Num -> Bool
-35:36 - 35:37  n: Num
-38:4 - 38:11   answer2: Num
-38:20 - 38:22  \>: Num
-38:14 - 38:19  list1: List[Num]
-41:1 - 41:2    List[Num] -> Num
-38:23 - 38:27  fold: Num, (Num, Num -> Num), List[Num] -> Num
-38:43 - 38:44  Num, Num -> Num
-41:0 - 41:1    Num, Num -> Num
-38:32 - 38:39  running: Num
-38:41 - 38:42  n: Num
-39:8 - 39:13   value: Num
-39:18 - 39:19  *: Num
-39:16 - 39:17  n: Num
-39:50 - 39:51  Num
-39:20 - 39:48  frequency_of_number_in_list2: Num -> Num
-39:49 - 39:50  n: Num
-40:4 - 40:10   Num
-40:19 - 40:20  +: Num
-40:11 - 40:18  running: Num
-40:21 - 40:26  value: Num
-43:0 - 43:6    assert: Bool
-43:15 - 43:17  ==: Bool
-43:7 - 43:14   answer2: Num
+___ Type checking failed ___
+(Call(null, Variable(.ok({list1: List[_3195], list2: List[_3195]}) | .ok({list1: List[_3195], list2: List[_3195]}) | .out_of_bounds, (.ok({list1: List[_3195], list2: List[_3195]}) | .ok({list1: List[_3195], list2: List[_3195]}) | .out_of_bounds, List[_3195] -> .ok({list1: List[_3195], list2: List[_3195]}) | .ok({list1: List[_3195], list2: List[_3195]}) | .out_of_bounds), List[List[_3195]] -> .ok({list1: List[_3195], list2: List[_3195]}) | .ok({list1: List[_3195], list2: List[_3195]}) | .out_of_bounds, identifier fold (ln15:28)), ExpressionArgs([TagConstructor(.ok({list1: List[_3195], list2: List[_3195]}) | .ok({list1: List[_3195], list2: List[_3195]}) | .out_of_bounds, identifier ok (ln16:5), Variable({list1: List[_3195], list2: List[_3195]}, identifier initial (ln16:8))), Lambda(.ok({list1: List[_3195], list2: List[_3195]}) | .ok({list2: List[_3195], list1: List[_3195]}) | .out_of_bounds, List[_3195] -> {ok: {list1: List[_3195], list2: List[_3195]}, out_of_bounds: Unit}, [Instance of 'Identifier', Instance of 'Identifier'], FunctionBody(Instance of 'Block'))]), closeParen ) (ln26:0)), Recursive types:
+{ok: {list1: List[_3195], list2: List[_3195]}}
+_3234)
+___ Continuing with execution ___
 ___ OUTPUT ___
 [3, 4, 2, 1, 3, 3]
 [4, 3, 5, 3, 9, 3]
@@ -347,17 +247,17 @@ ___ OUTPUT ___
 
 ====== advent_of_code_2024_day_2.lox =====
 ___ TYPES ___
-0:5 - 0:18     zip_with_tail: (a, a -> b), List[a] -> List[b]
-0:20 - 0:31    count_where: (c -> Bool), List[c] -> Num
-0:33 - 0:38    first: List[d] -> d
-0:40 - 0:43    all: (e -> Bool), List[e] -> Bool
-0:45 - 0:55    enumerated: List[f] -> List[{element: f, index: Num}]
-0:57 - 0:67    fold_until: g, (g, h -> .break(g) | .continue(g)), List[h] -> g
-0:69 - 0:76    drop_at: Num, List[i] -> List[i]
-0:78 - 0:81    map: (j -> k), List[j] -> List[k]
-0:83 - 0:86    any: (l -> Bool), List[l] -> Bool
-0:90 - 0:96    util/lists.lox: {plus: Num, Num -> Num, empty: List[m] -> Bool, first: List[n] -> n, rest: List[o] -> List[o], fold: p, (p, q -> p), List[q] -> p, map: (r -> s), List[r] -> List[s], reduce: (t, t -> t), List[t] -> t, reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> Num, fold_until: dd, (dd, ee -> .break(dd) | .continue(dd)), List[ee] -> dd, any: (l -> Bool), List[l] -> Bool, all: (ff -> Bool), List[ff] -> Bool, drop_at: Num, List[gg] -> List[gg], join: List[String] -> String}
-0:97 - 0:113   util/lists.lox: {plus: Num, Num -> Num, empty: List[m] -> Bool, first: List[n] -> n, rest: List[o] -> List[o], fold: p, (p, q -> p), List[q] -> p, map: (r -> s), List[r] -> List[s], reduce: (t, t -> t), List[t] -> t, reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> Num, fold_until: dd, (dd, ee -> .break(dd) | .continue(dd)), List[ee] -> dd, any: (l -> Bool), List[l] -> Bool, all: (ff -> Bool), List[ff] -> Bool, drop_at: Num, List[gg] -> List[gg], join: List[String] -> String}
+0:5 - 0:13     elements: List[a] -> .none | .some({first: a, rest: List[a]})
+0:15 - 0:28    zip_with_tail: (c, c -> d), List[c] -> List[d]
+0:30 - 0:41    count_where: (e -> Bool), List[e] -> Num
+0:43 - 0:46    all: (f -> Bool), List[f] -> Bool
+0:48 - 0:58    enumerated: List[g] -> List[{element: g, index: Num}]
+0:60 - 0:70    fold_until: h, (h, i -> .break(h) | .continue(h)), List[i] -> h
+0:72 - 0:79    drop_at: Num, List[j] -> List[j]
+0:81 - 0:84    map: (k -> l), List[k] -> List[l]
+0:86 - 0:89    any: (m -> Bool), List[m] -> Bool
+0:93 - 0:99    util/lists.lox: {plus: Num, Num -> Num, elements: List[n] -> .none | .some({first: n, rest: List[n]}), fold: p, (p, q -> p), List[q] -> p, map: (r -> s), List[r] -> List[s], reduce: (t, t -> t), List[t] -> .list_was_empty | .ok(t), reverse: List[v] -> List[v], where: (w -> Bool), List[w] -> List[w], enumerated: List[x] -> List[{element: x, index: Num}], count_where: (y -> Bool), List[y] -> Num, sort: List[Num] -> List[Num], zip: List[z], List[aa], (z, aa -> bb) -> List[bb], zip_with_tail: (cc, cc -> dd), List[cc] -> List[dd], sum: List[Num] -> .list_was_empty | .ok(Num), fold_until: ff, (ff, gg -> .break(ff) | .continue(ff)), List[gg] -> ff, any: (m -> Bool), List[m] -> Bool, all: (hh -> Bool), List[hh] -> Bool, drop_at: Num, List[ii] -> List[ii], join: List[String] -> String, element_at: Num, List[jj] -> .found(jj) | .out_of_bounds}
+0:100 - 0:116  util/lists.lox: {plus: Num, Num -> Num, elements: List[n] -> .none | .some({first: n, rest: List[n]}), fold: p, (p, q -> p), List[q] -> p, map: (r -> s), List[r] -> List[s], reduce: (t, t -> t), List[t] -> .list_was_empty | .ok(t), reverse: List[v] -> List[v], where: (w -> Bool), List[w] -> List[w], enumerated: List[x] -> List[{element: x, index: Num}], count_where: (y -> Bool), List[y] -> Num, sort: List[Num] -> List[Num], zip: List[z], List[aa], (z, aa -> bb) -> List[bb], zip_with_tail: (cc, cc -> dd), List[cc] -> List[dd], sum: List[Num] -> .list_was_empty | .ok(Num), fold_until: ff, (ff, gg -> .break(ff) | .continue(ff)), List[gg] -> ff, any: (m -> Bool), List[m] -> Bool, all: (hh -> Bool), List[hh] -> Bool, drop_at: Num, List[ii] -> List[ii], join: List[String] -> String, element_at: Num, List[jj] -> .found(jj) | .out_of_bounds}
 1:5 - 1:10     minus: Num, Num -> Num
 1:12 - 1:16    sign: Num -> Num
 1:18 - 1:21    abs: Num -> Num
@@ -373,7 +273,7 @@ ___ TYPES ___
 9:18 - 9:19    [...]: List[Num]
 12:4 - 12:11   is_safe: List[Num] -> Bool
 12:20 - 12:21  List[Num] -> Bool
-21:0 - 21:1    List[Num] -> Bool
+24:0 - 24:1    List[Num] -> Bool
 12:15 - 12:19  list: List[Num]
 13:8 - 13:13   diffs: List[Num]
 13:21 - 13:23  \>: List[Num]
@@ -382,77 +282,83 @@ ___ TYPES ___
 13:24 - 13:37  zip_with_tail: (Num, Num -> Num), List[Num] -> List[Num]
 13:38 - 13:43  minus: Num, Num -> Num
 14:8 - 14:23   first_direction: Num
-14:41 - 14:43  \>: Num
-14:32 - 14:34  \>: Num
-14:26 - 14:31  diffs: List[Num]
-14:35 - 14:40  first: List[Num] -> Num
-14:44 - 14:48  sign: Num -> Num
-15:4 - 15:10   Bool
-15:17 - 15:19  \>: Bool
-15:11 - 15:16  diffs: List[Num]
-20:4 - 20:5    List[Num] -> Bool
-15:20 - 15:23  all: (Num -> Bool), List[Num] -> Bool
-16:14 - 16:16  Num -> Bool
-18:29 - 18:32  and: Bool
-17:44 - 17:47  and: Bool
-17:25 - 17:27  ==: Bool
-17:17 - 17:19  \>: Num
-17:12 - 17:16  diff: Num
-17:20 - 17:24  sign: Num -> Num
-17:28 - 17:43  first_direction: Num
-18:24 - 18:26  >=: Bool
-18:17 - 18:19  \>: Num
-18:12 - 18:16  diff: Num
-18:20 - 18:23  abs: Num -> Num
-19:24 - 19:26  <=: Bool
-19:17 - 19:19  \>: Num
-19:12 - 19:16  diff: Num
-19:20 - 19:23  abs: Num -> Num
-16:9 - 16:13   diff: Num
-25:4 - 25:10   part_1: Num
-25:19 - 25:21  \>: Num
-25:13 - 25:18  input: List[List[Num]]
-25:41 - 25:42  List[List[Num]] -> Num
-25:22 - 25:33  count_where: (List[Num] -> Bool), List[List[Num]] -> Num
-25:34 - 25:41  is_safe: List[Num] -> Bool
-26:0 - 26:5    print: Num
-26:6 - 26:12   part_1: Num
-27:0 - 27:6    assert: Bool
-27:14 - 27:16  ==: Bool
-27:7 - 27:13   part_1: Num
-32:4 - 32:10   part_2: Num
-32:19 - 32:21  \>: Num
-32:13 - 32:18  input: List[List[Num]]
-38:0 - 38:1    List[List[Num]] -> Num
-32:22 - 32:33  count_where: (List[Num] -> Bool), List[List[Num]] -> Num
-33:10 - 33:12  List[Num] -> Bool
-34:24 - 34:26  or: Bool
-34:13 - 34:15  \>: Bool
-34:8 - 34:12   list: List[Num]
-34:16 - 34:23  is_safe: List[Num] -> Bool
+14:26 - 14:31  match: Num
+14:38 - 14:40  \>: .none | .some({first: Num, rest: List[Num]})
+14:32 - 14:37  diffs: List[Num]
+14:41 - 14:49  elements: List[Num] -> .none | .some({first: Num, rest: List[Num]})
+15:9 - 15:13   none: .none
+15:17 - 15:23  Bool
+16:9 - 16:13   some: .some({rest: List[Num], first: Num})
+16:15 - 16:20  first: Num
+16:32 - 16:34  \>: Num
+16:26 - 16:31  first: Num
+16:35 - 16:39  sign: Num -> Num
+18:4 - 18:10   Bool
+18:17 - 18:19  \>: Bool
+18:11 - 18:16  diffs: List[Num]
+23:4 - 23:5    List[Num] -> Bool
+18:20 - 18:23  all: (Num -> Bool), List[Num] -> Bool
+19:14 - 19:16  Num -> Bool
+21:29 - 21:32  and: Bool
+20:44 - 20:47  and: Bool
+20:25 - 20:27  ==: Bool
+20:17 - 20:19  \>: Num
+20:12 - 20:16  diff: Num
+20:20 - 20:24  sign: Num -> Num
+20:28 - 20:43  first_direction: Num
+21:24 - 21:26  >=: Bool
+21:17 - 21:19  \>: Num
+21:12 - 21:16  diff: Num
+21:20 - 21:23  abs: Num -> Num
+22:24 - 22:26  <=: Bool
+22:17 - 22:19  \>: Num
+22:12 - 22:16  diff: Num
+22:20 - 22:23  abs: Num -> Num
+19:9 - 19:13   diff: Num
+28:4 - 28:10   part_1: Num
+28:19 - 28:21  \>: Num
+28:13 - 28:18  input: List[List[Num]]
+28:41 - 28:42  List[List[Num]] -> Num
+28:22 - 28:33  count_where: (List[Num] -> Bool), List[List[Num]] -> Num
+28:34 - 28:41  is_safe: List[Num] -> Bool
+29:0 - 29:5    print: Num
+29:6 - 29:12   part_1: Num
+30:0 - 30:6    assert: Bool
+30:14 - 30:16  ==: Bool
+30:7 - 30:13   part_1: Num
+35:4 - 35:10   part_2: Num
+35:19 - 35:21  \>: Num
+35:13 - 35:18  input: List[List[Num]]
+41:0 - 41:1    List[List[Num]] -> Num
+35:22 - 35:33  count_where: (List[Num] -> Bool), List[List[Num]] -> Num
+36:10 - 36:12  List[Num] -> Bool
+37:24 - 37:26  or: Bool
 37:13 - 37:15  \>: Bool
-36:13 - 36:15  \>: List[List[Num]]
-35:13 - 35:15  \>: List[{element: Num, index: Num}]
-35:8 - 35:12   list: List[Num]
-35:16 - 35:26  enumerated: List[Num] -> List[{element: Num, index: Num}]
-36:54 - 36:55  List[{element: Num, index: Num}] -> List[List[Num]]
-36:16 - 36:19  map: ({element: Num, index: Num} -> List[Num]), List[{element: Num, index: Num}] -> List[List[Num]]
-36:29 - 36:31  {element: Num, index: Num} -> List[Num]
-36:37 - 36:39  \>: List[Num]
-36:32 - 36:36  list: List[Num]
-36:53 - 36:54  List[Num] -> List[Num]
-36:40 - 36:47  drop_at: Num, List[Num] -> List[Num]
-36:48 - 36:53  index: Num
-36:22 - 36:27  index: Num
-37:27 - 37:28  List[List[Num]] -> Bool
-37:16 - 37:19  any: (List[Num] -> Bool), List[List[Num]] -> Bool
-37:20 - 37:27  is_safe: List[Num] -> Bool
-33:5 - 33:9    list: List[Num]
-39:0 - 39:5    print: Num
-39:6 - 39:12   part_2: Num
-40:0 - 40:6    assert: Bool
-40:14 - 40:16  ==: Bool
-40:7 - 40:13   part_2: Num
+37:8 - 37:12   list: List[Num]
+37:16 - 37:23  is_safe: List[Num] -> Bool
+40:13 - 40:15  \>: Bool
+39:13 - 39:15  \>: List[List[Num]]
+38:13 - 38:15  \>: List[{element: Num, index: Num}]
+38:8 - 38:12   list: List[Num]
+38:16 - 38:26  enumerated: List[Num] -> List[{element: Num, index: Num}]
+39:54 - 39:55  List[{element: Num, index: Num}] -> List[List[Num]]
+39:16 - 39:19  map: ({element: Num, index: Num} -> List[Num]), List[{element: Num, index: Num}] -> List[List[Num]]
+39:29 - 39:31  {element: Num, index: Num} -> List[Num]
+39:37 - 39:39  \>: List[Num]
+39:32 - 39:36  list: List[Num]
+39:53 - 39:54  List[Num] -> List[Num]
+39:40 - 39:47  drop_at: Num, List[Num] -> List[Num]
+39:48 - 39:53  index: Num
+39:22 - 39:27  index: Num
+40:27 - 40:28  List[List[Num]] -> Bool
+40:16 - 40:19  any: (List[Num] -> Bool), List[List[Num]] -> Bool
+40:20 - 40:27  is_safe: List[Num] -> Bool
+36:5 - 36:9    list: List[Num]
+42:0 - 42:5    print: Num
+42:6 - 42:12   part_2: Num
+43:0 - 43:6    assert: Bool
+43:14 - 43:16  ==: Bool
+43:7 - 43:13   part_2: Num
 ___ OUTPUT ___
 2
 4
@@ -844,8 +750,8 @@ b
 ====== imports.lox =====
 ___ TYPES ___
 0:5 - 0:8      map: (a -> b), List[a] -> List[b]
-0:12 - 0:18    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
-0:19 - 0:30    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
+0:12 - 0:18    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> .list_was_empty | .ok(d), xs: List[Num], ys: List[f], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: .list_was_empty | .ok({name: String, age: Num}), max_age: .list_was_empty | .ok(Num), max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: j -> j, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
+0:19 - 0:30    lists.lox: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> .list_was_empty | .ok(d), xs: List[Num], ys: List[f], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: .list_was_empty | .ok({name: String, age: Num}), max_age: .list_was_empty | .ok(Num), max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: j -> j, one_minus_x: Num -> Num, x_minus_one: Num -> Num}
 2:4 - 2:5      x: List[Num]
 2:16 - 2:18    \>: List[Num]
 2:14 - 2:15    [...]: List[Num]
@@ -868,8 +774,8 @@ ___ TYPES ___
 7:6 - 7:9      rel: {hello_from_relative: String}
 9:0 - 9:5      print: Num
 9:28 - 9:29    a: Num
-9:7 - 9:13     foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
-9:14 - 9:26    foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> d, xs: List[Num], ys: List[e], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: {name: String, age: Num}, max_age: Num, max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: g -> g, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
+9:7 - 9:13     foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> .list_was_empty | .ok(d), xs: List[Num], ys: List[f], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: .list_was_empty | .ok({name: String, age: Num}), max_age: .list_was_empty | .ok(Num), max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: j -> j, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
+9:14 - 9:26    foo/up.lox: {from_up: {map: (a -> b), List[a] -> List[b], reverse: List[c] -> List[c], reduce: (d, d -> d), List[d] -> .list_was_empty | .ok(d), xs: List[Num], ys: List[f], zs: List[Num], mixed: List[.hello(Num) | .tags({two: String})], employees: List[{name: String, age: Num}], employee_with_max_age: .list_was_empty | .ok({name: String, age: Num}), max_age: .list_was_empty | .ok(Num), max: Num, Num -> Num, min: Num, Num -> Num, sub: Num, Num -> Num, id: j -> j, one_minus_x: Num -> Num, x_minus_one: Num -> Num}, a: Num}
 ___ OUTPUT ___
 [2, 4, 6]
 {hello_from_relative: yep}
@@ -1039,9 +945,9 @@ hello
 ___ TYPES ___
 0:5 - 0:8      map: (a -> b), List[a] -> List[b]
 0:10 - 0:17    reverse: List[c] -> List[c]
-0:19 - 0:25    reduce: (d, d -> d), List[d] -> d
-0:29 - 0:35    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (d, d -> d), List[d] -> d, reverse: List[l] -> List[l], where: (m -> Bool), List[m] -> List[m], enumerated: List[n] -> List[{element: n, index: Num}], count_where: (o -> Bool), List[o] -> Num, sort: List[Num] -> List[Num], zip: List[p], List[q], (p, q -> r) -> List[r], zip_with_tail: (s, s -> t), List[s] -> List[t], sum: List[Num] -> Num, fold_until: u, (u, v -> .break(u) | .continue(u)), List[v] -> u, any: (w -> Bool), List[w] -> Bool, all: (x -> Bool), List[x] -> Bool, drop_at: Num, List[y] -> List[y], join: List[String] -> String}
-0:36 - 0:52    util/lists.lox: {plus: Num, Num -> Num, empty: List[e] -> Bool, first: List[f] -> f, rest: List[g] -> List[g], fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (d, d -> d), List[d] -> d, reverse: List[l] -> List[l], where: (m -> Bool), List[m] -> List[m], enumerated: List[n] -> List[{element: n, index: Num}], count_where: (o -> Bool), List[o] -> Num, sort: List[Num] -> List[Num], zip: List[p], List[q], (p, q -> r) -> List[r], zip_with_tail: (s, s -> t), List[s] -> List[t], sum: List[Num] -> Num, fold_until: u, (u, v -> .break(u) | .continue(u)), List[v] -> u, any: (w -> Bool), List[w] -> Bool, all: (x -> Bool), List[x] -> Bool, drop_at: Num, List[y] -> List[y], join: List[String] -> String}
+0:19 - 0:25    reduce: (d, d -> d), List[d] -> .list_was_empty | .ok(d)
+0:29 - 0:35    util/lists.lox: {plus: Num, Num -> Num, elements: List[f] -> .none | .some({first: f, rest: List[f]}), fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (d, d -> d), List[d] -> .list_was_empty | .ok(d), reverse: List[l] -> List[l], where: (m -> Bool), List[m] -> List[m], enumerated: List[n] -> List[{element: n, index: Num}], count_where: (o -> Bool), List[o] -> Num, sort: List[Num] -> List[Num], zip: List[p], List[q], (p, q -> r) -> List[r], zip_with_tail: (s, s -> t), List[s] -> List[t], sum: List[Num] -> .list_was_empty | .ok(Num), fold_until: v, (v, w -> .break(v) | .continue(v)), List[w] -> v, any: (x -> Bool), List[x] -> Bool, all: (y -> Bool), List[y] -> Bool, drop_at: Num, List[z] -> List[z], join: List[String] -> String, element_at: Num, List[aa] -> .found(aa) | .out_of_bounds}
+0:36 - 0:52    util/lists.lox: {plus: Num, Num -> Num, elements: List[f] -> .none | .some({first: f, rest: List[f]}), fold: h, (h, i -> h), List[i] -> h, map: (j -> k), List[j] -> List[k], reduce: (d, d -> d), List[d] -> .list_was_empty | .ok(d), reverse: List[l] -> List[l], where: (m -> Bool), List[m] -> List[m], enumerated: List[n] -> List[{element: n, index: Num}], count_where: (o -> Bool), List[o] -> Num, sort: List[Num] -> List[Num], zip: List[p], List[q], (p, q -> r) -> List[r], zip_with_tail: (s, s -> t), List[s] -> List[t], sum: List[Num] -> .list_was_empty | .ok(Num), fold_until: v, (v, w -> .break(v) | .continue(v)), List[w] -> v, any: (x -> Bool), List[x] -> Bool, all: (y -> Bool), List[y] -> Bool, drop_at: Num, List[z] -> List[z], join: List[String] -> String, element_at: Num, List[aa] -> .found(aa) | .out_of_bounds}
 2:4 - 2:6      xs: List[Num]
 2:17 - 2:18    [...]: List[Num]
 3:0 - 3:5      print: List[Num]
@@ -1112,11 +1018,11 @@ ___ TYPES ___
 30:25 - 30:26  {...}: {name: String, age: Num}
 30:5 - 30:9    name: String
 30:18 - 30:21  age: Num
-33:4 - 33:25   employee_with_max_age: {name: String, age: Num}
-33:38 - 33:40  \>: {name: String, age: Num}
+33:4 - 33:25   employee_with_max_age: .list_was_empty | .ok({name: String, age: Num})
+33:38 - 33:40  \>: .list_was_empty | .ok({name: String, age: Num})
 33:28 - 33:37  employees: List[{name: String, age: Num}]
-38:0 - 38:1    List[{name: String, age: Num}] -> {name: String, age: Num}
-33:41 - 33:47  reduce: ({name: String, age: Num}, {name: String, age: Num} -> {name: String, age: Num}), List[{name: String, age: Num}] -> {name: String, age: Num}
+38:0 - 38:1    List[{name: String, age: Num}] -> .list_was_empty | .ok({name: String, age: Num})
+33:41 - 33:47  reduce: ({name: String, age: Num}, {name: String, age: Num} -> {name: String, age: Num}), List[{name: String, age: Num}] -> .list_was_empty | .ok({name: String, age: Num})
 34:23 - 34:25  {name: String, age: Num}, {name: String, age: Num} -> {name: String, age: Num}
 36:12 - 36:13  ?: {name: String, age: Num}
 35:21 - 35:22  >: Bool
@@ -1128,10 +1034,10 @@ ___ TYPES ___
 37:14 - 37:21  highest: {name: String, age: Num}
 34:5 - 34:12   highest: {name: String, age: Num}
 34:14 - 34:22  employee: {name: String, age: Num}
-39:0 - 39:5    print: {name: String, age: Num}
-39:6 - 39:27   employee_with_max_age: {name: String, age: Num}
-41:4 - 41:11   max_age: Num
-43:4 - 43:6    \>: Num
+39:0 - 39:5    print: .list_was_empty | .ok({name: String, age: Num})
+39:6 - 39:27   employee_with_max_age: .list_was_empty | .ok({name: String, age: Num})
+41:4 - 41:11   max_age: .list_was_empty | .ok(Num)
+43:4 - 43:6    \>: .list_was_empty | .ok(Num)
 42:4 - 42:6    \>: List[Num]
 41:14 - 41:23  employees: List[{name: String, age: Num}]
 42:22 - 42:23  List[{name: String, age: Num}] -> List[Num]
@@ -1140,8 +1046,8 @@ ___ TYPES ___
 42:19 - 42:22  age: Num
 42:17 - 42:18  e: {name: String, age: Num}
 42:12 - 42:13  e: {name: String, age: Num}
-43:60 - 43:61  List[Num] -> Num
-43:7 - 43:13   reduce: (Num, Num -> Num), List[Num] -> Num
+43:60 - 43:61  List[Num] -> .list_was_empty | .ok(Num)
+43:7 - 43:13   reduce: (Num, Num -> Num), List[Num] -> .list_was_empty | .ok(Num)
 43:28 - 43:30  Num, Num -> Num
 43:45 - 43:46  ?: Num
 43:35 - 43:36  >: Bool
@@ -1151,8 +1057,8 @@ ___ TYPES ___
 43:53 - 43:60  highest: Num
 43:15 - 43:22  highest: Num
 43:24 - 43:27  age: Num
-45:0 - 45:5    print: Num
-45:6 - 45:13   max_age: Num
+45:0 - 45:5    print: .list_was_empty | .ok(Num)
+45:6 - 45:13   max_age: .list_was_empty | .ok(Num)
 47:4 - 47:7    max: Num, Num -> Num
 47:16 - 47:18  Num, Num -> Num
 47:25 - 47:26  ?: Num
@@ -1173,8 +1079,8 @@ ___ TYPES ___
 48:31 - 48:32  y: Num
 48:11 - 48:12  x: Num
 48:14 - 48:15  y: Num
-50:0 - 50:5    print: Num
-52:4 - 52:6    \>: Num
+50:0 - 50:5    print: .list_was_empty | .ok(Num)
+52:4 - 52:6    \>: .list_was_empty | .ok(Num)
 51:4 - 51:6    \>: List[Num]
 50:6 - 50:15   employees: List[{name: String, age: Num}]
 51:22 - 51:23  List[{name: String, age: Num}] -> List[Num]
@@ -1183,11 +1089,11 @@ ___ TYPES ___
 51:19 - 51:22  age: Num
 51:17 - 51:18  e: {name: String, age: Num}
 51:12 - 51:13  e: {name: String, age: Num}
-52:17 - 52:18  List[Num] -> Num
-52:7 - 52:13   reduce: (Num, Num -> Num), List[Num] -> Num
+52:17 - 52:18  List[Num] -> .list_was_empty | .ok(Num)
+52:7 - 52:13   reduce: (Num, Num -> Num), List[Num] -> .list_was_empty | .ok(Num)
 52:14 - 52:17  max: Num, Num -> Num
-55:0 - 55:5    print: Num
-57:4 - 57:6    \>: Num
+55:0 - 55:5    print: .list_was_empty | .ok(Num)
+57:4 - 57:6    \>: .list_was_empty | .ok(Num)
 56:4 - 56:6    \>: List[Num]
 55:6 - 55:15   employees: List[{name: String, age: Num}]
 56:22 - 56:23  List[{name: String, age: Num}] -> List[Num]
@@ -1196,8 +1102,8 @@ ___ TYPES ___
 56:19 - 56:22  age: Num
 56:17 - 56:18  e: {name: String, age: Num}
 56:12 - 56:13  e: {name: String, age: Num}
-57:17 - 57:18  List[Num] -> Num
-57:7 - 57:13   reduce: (Num, Num -> Num), List[Num] -> Num
+57:17 - 57:18  List[Num] -> .list_was_empty | .ok(Num)
+57:7 - 57:13   reduce: (Num, Num -> Num), List[Num] -> .list_was_empty | .ok(Num)
 57:14 - 57:17  min: Num, Num -> Num
 60:0 - 60:5    print: {name: String, age: Num}
 60:16 - 60:18  \>: {name: String, age: Num}
@@ -1286,13 +1192,14 @@ ___ TYPES ___
 83:48 - 83:49  [...]: List[Num]
 84:0 - 84:6    assert: Bool
 84:37 - 84:39  ==: Bool
-84:15 - 84:17  \>: Num
+84:15 - 84:17  \>: .list_was_empty | .ok(Num)
 84:13 - 84:14  [...]: List[Num]
-84:35 - 84:36  List[Num] -> Num
-84:18 - 84:24  reduce: (Num, Num -> Num), List[Num] -> Num
+84:35 - 84:36  List[Num] -> .list_was_empty | .ok(Num)
+84:18 - 84:24  reduce: (Num, Num -> Num), List[Num] -> .list_was_empty | .ok(Num)
 84:31 - 84:33  Num, Num -> Num
 84:26 - 84:28  _4: Num
 84:29 - 84:31  _5: Num
+84:41 - 84:43  ok: .list_was_empty | .ok(Num)
 ___ OUTPUT ___
 [1, 2, 3]
 [3, 2, 1]
@@ -1301,10 +1208,10 @@ ___ OUTPUT ___
 [its a `.hello` tag, its not]
 [true, false, false]
 [true, false]
-{name: jane, age: 60}
-60
-60
-30
+.ok({name: jane, age: 60})
+.ok(60)
+.ok(60)
+.ok(30)
 {name: mike, age: 30}
 -2
 2
@@ -1333,8 +1240,8 @@ ___ OUTPUT ___
 ====== patterns.lox =====
 ___ TYPES ___
 0:5 - 0:9      join: List[String] -> String
-0:13 - 0:19    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .break(r) | .continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
-0:20 - 0:36    util/lists.lox: {plus: Num, Num -> Num, empty: List[a] -> Bool, first: List[b] -> b, rest: List[c] -> List[c], fold: d, (d, e -> d), List[e] -> d, map: (f -> g), List[f] -> List[g], reduce: (h, h -> h), List[h] -> h, reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> Num, fold_until: r, (r, s -> .break(r) | .continue(r)), List[s] -> r, any: (t -> Bool), List[t] -> Bool, all: (u -> Bool), List[u] -> Bool, drop_at: Num, List[v] -> List[v], join: List[String] -> String}
+0:13 - 0:19    util/lists.lox: {plus: Num, Num -> Num, elements: List[a] -> .none | .some({first: a, rest: List[a]}), fold: c, (c, d -> c), List[d] -> c, map: (e -> f), List[e] -> List[f], reduce: (g, g -> g), List[g] -> .list_was_empty | .ok(g), reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> .list_was_empty | .ok(Num), fold_until: s, (s, t -> .break(s) | .continue(s)), List[t] -> s, any: (u -> Bool), List[u] -> Bool, all: (v -> Bool), List[v] -> Bool, drop_at: Num, List[w] -> List[w], join: List[String] -> String, element_at: Num, List[x] -> .found(x) | .out_of_bounds}
+0:20 - 0:36    util/lists.lox: {plus: Num, Num -> Num, elements: List[a] -> .none | .some({first: a, rest: List[a]}), fold: c, (c, d -> c), List[d] -> c, map: (e -> f), List[e] -> List[f], reduce: (g, g -> g), List[g] -> .list_was_empty | .ok(g), reverse: List[i] -> List[i], where: (j -> Bool), List[j] -> List[j], enumerated: List[k] -> List[{element: k, index: Num}], count_where: (l -> Bool), List[l] -> Num, sort: List[Num] -> List[Num], zip: List[m], List[n], (m, n -> o) -> List[o], zip_with_tail: (p, p -> q), List[p] -> List[q], sum: List[Num] -> .list_was_empty | .ok(Num), fold_until: s, (s, t -> .break(s) | .continue(s)), List[t] -> s, any: (u -> Bool), List[u] -> Bool, all: (v -> Bool), List[v] -> Bool, drop_at: Num, List[w] -> List[w], join: List[String] -> String, element_at: Num, List[x] -> .found(x) | .out_of_bounds}
 2:4 - 2:12     describe: {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
 2:38 - 2:40    {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
 2:48 - 2:49    {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String

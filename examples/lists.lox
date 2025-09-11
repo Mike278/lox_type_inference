@@ -82,4 +82,4 @@ print (\list, item -> [..list, item])([], false);
 print (\list, item -> [..list, item])(_, false)([]);
 
 assert [1,2,3] \>    map(\_    -> 5) == [5, 5, 5];
-assert [1,2,3] \> reduce(\_, _ -> 5) == 5;
+assert [1,2,3] \> reduce(\_, _ -> 5) == .ok(5);

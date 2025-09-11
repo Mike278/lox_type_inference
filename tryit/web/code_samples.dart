@@ -142,7 +142,7 @@ let connect_and_download = \ {
 let data = connect_and_download();
 print data;
 ''')),
-(SampleName('advent_of_code_2024_day_1.lox'),  SampleContent(r'''let {fold, count_where, zip, sort, sum, first, rest} = import "util/lists.lox";
+(SampleName('advent_of_code_2024_day_1.lox'),  SampleContent(r'''let {fold, count_where, zip, sort, sum, elements, element_at} = import "util/lists.lox";
 let {abs_diff} = import "util/numeric.lox";
 let {eq} = import "util/functions.lox";
 
@@ -155,13 +155,21 @@ let input = [
     [3, 3]
 ];
 
-let { list1, list2 } = input \> fold(
-    {list1: [], list2: []},
-    \{list1, list2}, pair -> {
-        list1: [..list1, pair \> first],
-        list2: [..list2, pair \> rest \> first],
+let initial = {list1: [], list2: []};
+let parse_result = input \> fold(
+    .ok(initial),
+    \state, pair {
+      let left = pair \> element_at(0) as .found;
+      let right = pair \> element_at(1) as .found;
+      let {list1, list2} = state as .ok;
+      return .ok({
+        list1: [..list1, left],
+        list2: [..list2, right],
+      });
     }
 );
+
+let {list1, list2} = parse_result as .ok else initial;
 print list1;
 print list2;
 
@@ -173,7 +181,7 @@ let answer1 = zip(
   abs_diff
 ) \> sum;
 
-assert answer1 == 11;
+assert answer1 == .ok(11);
 
 /////// Part 2 ///////
 
@@ -186,7 +194,7 @@ let answer2 = list1 \> fold(0, \running, n {
 });
 
 assert answer2 == 31;''')),
-(SampleName('advent_of_code_2024_day_2.lox'),  SampleContent(r'''let {zip_with_tail, count_where, first, all, enumerated, fold_until, drop_at, map, any} = import "util/lists.lox";
+(SampleName('advent_of_code_2024_day_2.lox'),  SampleContent(r'''let {elements, zip_with_tail, count_where, all, enumerated, fold_until, drop_at, map, any} = import "util/lists.lox";
 let {minus, sign, abs} = import "util/numeric.lox";
 
 let input = [
@@ -200,7 +208,10 @@ let input = [
 
 let is_safe = \list {
     let diffs = list \> zip_with_tail(minus);
-    let first_direction = diffs \> first \> sign;
+    let first_direction = match diffs \> elements {
+        .none -> return false,
+        .some({first}) -> first \> sign,
+    };
     return diffs \> all(
         \diff ->
             diff \> sign == first_direction and
@@ -325,20 +336,30 @@ print part_2;
 assert part_2 == 900;
 ''')),
 (SampleName('util/lists.lox'),  SampleContent(r'''let {plus} = import "numeric.lox";
-let {empty, first, rest} = List;
+
+let elements = \list ->
+    list \> List.empty
+        ? .none
+        : .some({
+            first: list \> List.first,
+            rest: list \> List.rest,
+          })
+;
 
 let fold = \state, fn -> \list {
-    if list \> empty then return state;
-    let element = list \> first;
-    let new_state = fn(state, element);
-    return list \> rest \> fold(new_state, fn);
+    let {first, rest} = list \> elements as .some else return state;
+    let new_state = fn(state, first);
+    return rest \> fold(new_state, fn);
 };
 
 let map = \fn -> \list ->
     list \> fold([], \state, element -> [..state, fn(element)]);
 
 let reduce = \fn -> \list ->
-    list \> rest \> fold(list \> first, fn);
+  match list \> elements {
+    .none -> .list_was_empty,
+    .some({first, rest}) -> .ok(rest \> fold(first, fn))
+  };
 
 let reverse = \list ->
     list \> fold([], \state, element -> [element, ..state]);
@@ -362,9 +383,7 @@ let count_where = \predicate -> \list ->
     list \> fold(0, \count, element -> predicate(element) ? count + 1 : count);
 
 let sort = \list {
-  if list \> empty then return [];
-  let x = list \> first;
-  let xs = list \> rest;
+  let {first: x, rest: xs} = list \> elements as .some else return [];
   let is_before = \e -> e < x;
   let is_after = \e -> e >= x;
   return [
@@ -374,26 +393,30 @@ let sort = \list {
   ];
 };
 
-let zip = \l1, l2, fn ->
-    (l1 \> empty) or
-    (l2 \> empty) ? [] :
-    [
-        fn(l1 \> first, l2 \> first),
-        ..zip(l1 \> rest, l2 \> rest, fn)
-    ];
+let zip = \list1, list2, fn {
+  let l1 = list1 \> elements as .some else return [];
+  let l2 = list2 \> elements as .some else return [];
+  return [
+      fn(l1.first, l2.first),
+      ..zip(l1.rest, l2.rest, fn),
+  ];
+};
 
 let zip_with_tail = \fn -> \list ->
-    zip(list, list \> rest, fn);
+  match list \> elements {
+    .none -> [],
+    .some({rest}) -> zip(list, rest, fn)
+  };
 
 let sum = reduce(plus);
 
 
 
 let fold_until = \state, fn -> \list {
-    if list \> empty then return state;
-    let step = fn(state, list \> first);
+    let {first, rest} = list \> elements as .some else return state;
+    let step = fn(state, first);
     return match step {
-        .continue(new_state) -> list \> rest \> fold_until(new_state, fn),
+        .continue(new_state) -> rest \> fold_until(new_state, fn),
         .break(final_state) -> final_state,
     };
 };
@@ -422,7 +445,19 @@ let drop_at = \target_index -> \list ->
         \> where(\{index} -> index != target_index)
         \> map(\{element} -> element);
 
-let join = fold("", String.concat);''')),
+let join = fold("", String.concat);
+
+let element_at = \target_index -> \list ->
+    list
+        \> enumerated
+        \> fold_until(
+               .out_of_bounds,
+               \state, {index, element} ->
+                 index == target_index
+                   ? .break(.found(element))
+                   : .continue(state),
+           );
+''')),
 (SampleName('util/functions.lox'),  SampleContent(r'''let eq = \a -> \b -> a == b;
 ''')),
 (SampleName('util/numeric.lox'),  SampleContent(r'''

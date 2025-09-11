@@ -1,4 +1,4 @@
-let {fold, count_where, zip, sort, sum, first, rest} = import "util/lists.lox";
+let {fold, count_where, zip, sort, sum, elements, element_at} = import "util/lists.lox";
 let {abs_diff} = import "util/numeric.lox";
 let {eq} = import "util/functions.lox";
 
@@ -11,13 +11,21 @@ let input = [
     [3, 3]
 ];
 
-let { list1, list2 } = input \> fold(
-    {list1: [], list2: []},
-    \{list1, list2}, pair -> {
-        list1: [..list1, pair \> first],
-        list2: [..list2, pair \> rest \> first],
+let initial = {list1: [], list2: []};
+let parse_result = input \> fold(
+    .ok(initial),
+    \state, pair {
+      let left = pair \> element_at(0) as .found;
+      let right = pair \> element_at(1) as .found;
+      let {list1, list2} = state as .ok;
+      return .ok({
+        list1: [..list1, left],
+        list2: [..list2, right],
+      });
     }
 );
+
+let {list1, list2} = parse_result as .ok else initial;
 print list1;
 print list2;
 
@@ -29,7 +37,7 @@ let answer1 = zip(
   abs_diff
 ) \> sum;
 
-assert answer1 == 11;
+assert answer1 == .ok(11);
 
 /////// Part 2 ///////
 

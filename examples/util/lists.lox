@@ -1,18 +1,28 @@
 let {plus} = import "numeric.lox";
-let {empty, first, rest} = List;
+
+let elements = \list ->
+    list \> List.empty
+        ? .none
+        : .some({
+            first: list \> List.first,
+            rest: list \> List.rest,
+          })
+;
 
 let fold = \state, fn -> \list {
-    if list \> empty then return state;
-    let element = list \> first;
-    let new_state = fn(state, element);
-    return list \> rest \> fold(new_state, fn);
+    let {first, rest} = list \> elements as .some else return state;
+    let new_state = fn(state, first);
+    return rest \> fold(new_state, fn);
 };
 
 let map = \fn -> \list ->
     list \> fold([], \state, element -> [..state, fn(element)]);
 
 let reduce = \fn -> \list ->
-    list \> rest \> fold(list \> first, fn);
+  match list \> elements {
+    .none -> .list_was_empty,
+    .some({first, rest}) -> .ok(rest \> fold(first, fn))
+  };
 
 let reverse = \list ->
     list \> fold([], \state, element -> [element, ..state]);
@@ -36,9 +46,7 @@ let count_where = \predicate -> \list ->
     list \> fold(0, \count, element -> predicate(element) ? count + 1 : count);
 
 let sort = \list {
-  if list \> empty then return [];
-  let x = list \> first;
-  let xs = list \> rest;
+  let {first: x, rest: xs} = list \> elements as .some else return [];
   let is_before = \e -> e < x;
   let is_after = \e -> e >= x;
   return [
@@ -48,26 +56,30 @@ let sort = \list {
   ];
 };
 
-let zip = \l1, l2, fn ->
-    (l1 \> empty) or
-    (l2 \> empty) ? [] :
-    [
-        fn(l1 \> first, l2 \> first),
-        ..zip(l1 \> rest, l2 \> rest, fn)
-    ];
+let zip = \list1, list2, fn {
+  let l1 = list1 \> elements as .some else return [];
+  let l2 = list2 \> elements as .some else return [];
+  return [
+      fn(l1.first, l2.first),
+      ..zip(l1.rest, l2.rest, fn),
+  ];
+};
 
 let zip_with_tail = \fn -> \list ->
-    zip(list, list \> rest, fn);
+  match list \> elements {
+    .none -> [],
+    .some({rest}) -> zip(list, rest, fn)
+  };
 
 let sum = reduce(plus);
 
 
 
 let fold_until = \state, fn -> \list {
-    if list \> empty then return state;
-    let step = fn(state, list \> first);
+    let {first, rest} = list \> elements as .some else return state;
+    let step = fn(state, first);
     return match step {
-        .continue(new_state) -> list \> rest \> fold_until(new_state, fn),
+        .continue(new_state) -> rest \> fold_until(new_state, fn),
         .break(final_state) -> final_state,
     };
 };
@@ -97,3 +109,14 @@ let drop_at = \target_index -> \list ->
         \> map(\{element} -> element);
 
 let join = fold("", String.concat);
+
+let element_at = \target_index -> \list ->
+    list
+        \> enumerated
+        \> fold_until(
+               .out_of_bounds,
+               \state, {index, element} ->
+                 index == target_index
+                   ? .break(.found(element))
+                   : .continue(state),
+           );

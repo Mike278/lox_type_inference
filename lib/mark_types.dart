@@ -65,20 +65,6 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
   try {
     TypeInference(resolveImport).inferProgramTypes(statements);
     justSpentTime('type checking');
-    normalizeProgramTypeVariableIds(statements);
-    justSpentTime('normalizing type variables');
-
-    final typeOf = (Expr expr) => expr.type;
-    final hovers = buildHoverInfo(statements, typeOf);
-    justSpentTime('building hovers');
-    for (final (token, :display) in hovers) {
-      marks.add((
-        toSpan(token),
-        display: display,
-        isError: false,
-      ));
-    }
-
   } catch (e) {
     if (e case (Expr expr, TypeCheckException typeError)) {
       final span = locationForErrorUnderline(expr);
@@ -95,6 +81,20 @@ CodeSpan extend(CodeSpan a, CodeSpan b) => (
     } else {
       reportError('typecheck error')(e);
     }
+  }
+
+  normalizeProgramTypeVariableIds(statements);
+  justSpentTime('normalizing type variables');
+
+  final typeOf = (Expr expr) => expr.type;
+  final hovers = buildHoverInfo(statements, typeOf);
+  justSpentTime('building hovers');
+  for (final (token, :display) in hovers) {
+    marks.add((
+      toSpan(token),
+      display: display,
+      isError: false,
+    ));
   }
 
   sw.stop();

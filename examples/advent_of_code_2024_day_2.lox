@@ -1,4 +1,4 @@
-let {zip_with_tail, count_where, first, all, enumerated, fold_until, drop_at, map, any} = import "util/lists.lox";
+let {elements, zip_with_tail, count_where, all, enumerated, fold_until, drop_at, map, any} = import "util/lists.lox";
 let {minus, sign, abs} = import "util/numeric.lox";
 
 let input = [
@@ -12,7 +12,10 @@ let input = [
 
 let is_safe = \list {
     let diffs = list \> zip_with_tail(minus);
-    let first_direction = diffs \> first \> sign;
+    let first_direction = match diffs \> elements {
+        .none -> return false,
+        .some({first}) -> first \> sign,
+    };
     return diffs \> all(
         \diff ->
             diff \> sign == first_direction and
