@@ -286,21 +286,19 @@ class Parser {
 
   // ternary        → logical_or "?" expression ":" expression ";";
   Expr ternary() {
-    final condition = or();
+    final expr = or();
     if (matchFirst(.question)) {
       final questionMark = previous();
       final ifTrue = expression();
       consume(.colon, "Expected ':' before last ternary expression");
       final ifFalse = expression();
-      return Ternary(questionMark, condition, ifTrue, ifFalse);
-    } else if (matchFirst(.as)) {
-      final as = previous();
-      consume(.dot, 'Expected a dot followed by a tag name');
-      final tagName = consume(.identifier, "Expected a tag name");
-      final fallback = matchFirst(.else_) ? expression() : null;
-      return TagCast(expr: condition, as: as, tagName: tagName, fallback: fallback);
+      return Ternary(questionMark, expr, ifTrue, ifFalse);
+    } else if (matchFirst(.questionQuestion)) {
+      final qq = previous();
+      final fallback = expression();
+      return TagCastOk(expr, qq, fallback);
     }
-    return condition;
+    return expr;
   }
 
   // logical_or     → logical_and ( "or" logical_and)* ;
@@ -476,6 +474,9 @@ class Parser {
       } else if (matchFirst(.dot)) {
         final fieldName = consume(.identifier, "Expected field name");
         expr = RecordGet(expr, fieldName);
+      } else if (matchFirst(.bang)) {
+        final bang = previous();
+        expr = TagCastOk(expr, bang, null);
       } else {
         break;
       }

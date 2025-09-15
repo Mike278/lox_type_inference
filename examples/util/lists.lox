@@ -2,26 +2,32 @@ let {plus} = import "numeric.lox";
 
 let elements = \list ->
     list \> List.empty
-        ? .none
-        : .some({
+        ? .err(.empty_list)
+        : .ok({
             first: list \> List.first,
             rest: list \> List.rest,
           })
 ;
 
 let fold = \state, fn -> \list {
-    let {first, rest} = list \> elements as .some else return state;
+    let {first, rest} = list \> elements ?? return state;
     let new_state = fn(state, first);
     return rest \> fold(new_state, fn);
 };
+
+let try_fold = \initial, fn
+  fold(
+    .ok(initial),
+    \state, element -> fn(state!, element),
+  );
 
 let map = \fn -> \list ->
     list \> fold([], \state, element -> [..state, fn(element)]);
 
 let reduce = \fn -> \list ->
   match list \> elements {
-    .none -> .list_was_empty,
-    .some({first, rest}) -> .ok(rest \> fold(first, fn))
+    .err(e) -> .err(e),
+    .ok({first, rest}) -> .ok(rest \> fold(first, fn))
   };
 
 let reverse = \list ->
@@ -46,7 +52,7 @@ let count_where = \predicate -> \list ->
     list \> fold(0, \count, element -> predicate(element) ? count + 1 : count);
 
 let sort = \list {
-  let {first: x, rest: xs} = list \> elements as .some else return [];
+  let {first: x, rest: xs} = list \> elements ?? return [];
   let is_before = \e -> e < x;
   let is_after = \e -> e >= x;
   return [
@@ -57,8 +63,8 @@ let sort = \list {
 };
 
 let zip = \list1, list2, fn {
-  let l1 = list1 \> elements as .some else return [];
-  let l2 = list2 \> elements as .some else return [];
+  let l1 = list1 \> elements ?? return [];
+  let l2 = list2 \> elements ?? return [];
   return [
       fn(l1.first, l2.first),
       ..zip(l1.rest, l2.rest, fn),
@@ -67,8 +73,8 @@ let zip = \list1, list2, fn {
 
 let zip_with_tail = \fn -> \list ->
   match list \> elements {
-    .none -> [],
-    .some({rest}) -> zip(list, rest, fn)
+    .err(_) -> [],
+    .ok({rest}) -> zip(list, rest, fn)
   };
 
 let sum = reduce(plus);
@@ -76,7 +82,7 @@ let sum = reduce(plus);
 
 
 let fold_until = \state, fn -> \list {
-    let {first, rest} = list \> elements as .some else return state;
+    let {first, rest} = list \> elements ?? return state;
     let step = fn(state, first);
     return match step {
         .continue(new_state) -> rest \> fold_until(new_state, fn),
@@ -114,9 +120,9 @@ let element_at = \target_index -> \list ->
     list
         \> enumerated
         \> fold_until(
-               .out_of_bounds,
+               .err(.out_of_bounds),
                \state, {index, element} ->
                  index == target_index
-                   ? .break(.found(element))
+                   ? .break(.ok(element))
                    : .continue(state),
            );

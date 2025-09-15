@@ -13,8 +13,8 @@ let input = [
 let is_safe = \list {
     let diffs = list \> zip_with_tail(minus);
     let first_direction = match diffs \> elements {
-        .none -> return false,
-        .some({first}) -> first \> sign,
+        .err(_) -> return false,
+        .ok({first}) -> first \> sign,
     };
     return diffs \> all(
         \diff ->

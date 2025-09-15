@@ -48,10 +48,7 @@ assert part_1 == 150;
 
 let update = \state, instr {
 
-    let {aim, pos} = match state {
-        .err(_) -> return state,
-        .ok(x) -> x,
-    };
+    let {aim, pos} = state!;
 
     let {
         arg1: dir,

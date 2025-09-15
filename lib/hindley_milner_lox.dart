@@ -154,7 +154,7 @@ class TypeInference {
         ListLiteral()    => inferList(env, level, expr),
         TagConstructor() => inferTagConstructor(env, level, expr),
         TagMatch()       => inferTagMatch(env, level, expr),
-        TagCast()        => inferTagCast(env, level, expr),
+        TagCastOk()        => inferTagCast(env, level, expr),
         Ternary()        => inferTernary(env, level, expr),
         Import()         => inferImport(env, level, expr),
         UnaryMinus()     => inferUnaryOperation(env, level, expr),
@@ -460,7 +460,7 @@ class TypeInference {
     return .record(fields, tail: .fresh(level));
   }
 
-  LoxType inferTagCast(Map<String, LoxType> env, int level, TagCast expr) {
+  LoxType inferTagCast(Map<String, LoxType> env, int level, TagCastOk expr) {
     final token = (TokenType type, String lexeme) => Token(type, lexeme, null, 0, 0, 0);
     final match = TagMatch(
       token(.match, 'match'),
@@ -471,14 +471,14 @@ class TypeInference {
       ),
       [
         (
-          pattern: TagPattern(expr.tagName, Identifier(token(.identifier, '#'))),
+          pattern: TagPattern(token(.identifier, ('ok')), Identifier(token(.identifier, '#'))),
           arrow: token(.arrow, '->'),
           result: Variable(token(.identifier, '#')),
         ),
         (
-          pattern: Identifier(token(.identifier, '#')),
+          pattern: TagPattern(token(.identifier, ('err')), Identifier(token(.identifier, '#'))),
           arrow: token(.arrow, '->'),
-          result: expr.fallback ?? Return(token(.return_, 'return'), Variable(token(.identifier, '#'))),
+          result: expr.fallback ?? Return(token(.return_, 'return'), TagConstructor(token(.identifier, 'err'), Variable(token(.identifier, '#')))),
         ),
       ],
     );

@@ -9,10 +9,11 @@ sealed class Expr with EquatableMixin  {
   @override get props => [type];
 }
 
-class Return extends Expr {
+class Return extends Expr with EquatableMixin {
   final Token keyword;
   final Expr? expr;
   Return(this.keyword, this.expr);
+  @override get props => [...super.props, keyword, expr];
 }
 
 sealed class Literal extends Expr with EquatableMixin {
@@ -214,20 +215,12 @@ extension type ImportPath(String literal) {}
 typedef Exports = Map<Pattern, Expr>;
 typedef ResolveImport = Exports Function(ImportPath);
 
-class TagCast extends Expr with EquatableMixin {
+class TagCastOk extends Expr with EquatableMixin {
   final Expr expr;
-  final Token as;
+  final Token operator;
   final Expr? fallback;
-  final Token tagName;
-
-  TagCast({
-    required this.expr,
-    required this.as,
-    required this.fallback,
-    required this.tagName,
-  });
-
-  @override get props => [...super.props, expr, as, fallback, tagName];
+  TagCastOk(this.expr, this.operator, this.fallback);
+  @override get props => [...super.props, expr, operator, fallback];
 }
 
 sealed class Statement {}
@@ -399,8 +392,9 @@ extension ExprAPI on Expr {
       case TagMatch(:final tag, :final cases):
         yield* tag.subExpressions();
         for (final case_ in cases) yield* case_.result.subExpressions();
-      case TagCast(:final expr):
+      case TagCastOk(:final expr, :final fallback):
         yield* expr.subExpressions();
+        if (fallback != null) yield* fallback.subExpressions();
       case Import():
       case Variable():
       case StringLiteral():
@@ -471,8 +465,9 @@ extension ExprAPI on Expr {
           yield* pattern.subPatterns();
           yield* result.allPatterns();
         }
-      case TagCast(:final expr):
+      case TagCastOk(:final expr, :final fallback):
         yield* expr.allPatterns();
+        if (fallback != null) yield* fallback.allPatterns();
       case Import():
       case Variable():
       case StringLiteral():

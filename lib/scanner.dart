@@ -102,7 +102,7 @@ typedef ScanError = ({int line, int offset, String message});
       case '|': addToken(.pipe);
       case ';': addToken(.semicolon);
       case '*': addToken(.star);
-      case '?': addToken(.question);
+      case '?': addToken(match('?') ? .questionQuestion : .question);
       case '!': addToken(match('=') ? .bangEqual : .bang);
       case '=': addToken(match('=') ? .equalEqual : .equal);
       case '<': addToken(match('=') ? .lessEqual : .less);

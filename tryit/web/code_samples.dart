@@ -142,7 +142,7 @@ let connect_and_download = \ {
 let data = connect_and_download();
 print data;
 ''')),
-(SampleName('advent_of_code_2024_day_1.lox'),  SampleContent(r'''let {fold, count_where, zip, sort, sum, elements, element_at} = import "util/lists.lox";
+(SampleName('advent_of_code_2024_day_1.lox'),  SampleContent(r'''let {fold, try_fold, count_where, zip, sort, sum, elements, element_at} = import "util/lists.lox";
 let {abs_diff} = import "util/numeric.lox";
 let {eq} = import "util/functions.lox";
 
@@ -156,20 +156,19 @@ let input = [
 ];
 
 let initial = {list1: [], list2: []};
-let parse_result = input \> fold(
-    .ok(initial),
+let {list1, list2} = input \> try_fold(
+    initial,
     \state, pair {
-      let left = pair \> element_at(0) as .found;
-      let right = pair \> element_at(1) as .found;
-      let {list1, list2} = state as .ok;
+      let {list1, list2} = state;
+      let left = pair \> element_at(0);
+      let right = pair \> element_at(1);
       return .ok({
-        list1: [..list1, left],
-        list2: [..list2, right],
+        list1: [..list1, left!],
+        list2: [..list2, right!],
       });
     }
-);
+) ?? initial;
 
-let {list1, list2} = parse_result as .ok else initial;
 print list1;
 print list2;
 
@@ -209,8 +208,8 @@ let input = [
 let is_safe = \list {
     let diffs = list \> zip_with_tail(minus);
     let first_direction = match diffs \> elements {
-        .none -> return false,
-        .some({first}) -> first \> sign,
+        .err(_) -> return false,
+        .ok({first}) -> first \> sign,
     };
     return diffs \> all(
         \diff ->
@@ -289,10 +288,7 @@ assert part_1 == 150;
 
 let update = \state, instr {
 
-    let {aim, pos} = match state {
-        .err(_) -> return state,
-        .ok(x) -> x,
-    };
+    let {aim, pos} = state!;
 
     let {
         arg1: dir,
@@ -339,26 +335,32 @@ assert part_2 == 900;
 
 let elements = \list ->
     list \> List.empty
-        ? .none
-        : .some({
+        ? .err(.empty_list)
+        : .ok({
             first: list \> List.first,
             rest: list \> List.rest,
           })
 ;
 
 let fold = \state, fn -> \list {
-    let {first, rest} = list \> elements as .some else return state;
+    let {first, rest} = list \> elements ?? return state;
     let new_state = fn(state, first);
     return rest \> fold(new_state, fn);
 };
+
+let try_fold = \initial, fn
+  fold(
+    .ok(initial),
+    \state, element -> fn(state!, element),
+  );
 
 let map = \fn -> \list ->
     list \> fold([], \state, element -> [..state, fn(element)]);
 
 let reduce = \fn -> \list ->
   match list \> elements {
-    .none -> .list_was_empty,
-    .some({first, rest}) -> .ok(rest \> fold(first, fn))
+    .err(e) -> .err(e),
+    .ok({first, rest}) -> .ok(rest \> fold(first, fn))
   };
 
 let reverse = \list ->
@@ -383,7 +385,7 @@ let count_where = \predicate -> \list ->
     list \> fold(0, \count, element -> predicate(element) ? count + 1 : count);
 
 let sort = \list {
-  let {first: x, rest: xs} = list \> elements as .some else return [];
+  let {first: x, rest: xs} = list \> elements ?? return [];
   let is_before = \e -> e < x;
   let is_after = \e -> e >= x;
   return [
@@ -394,8 +396,8 @@ let sort = \list {
 };
 
 let zip = \list1, list2, fn {
-  let l1 = list1 \> elements as .some else return [];
-  let l2 = list2 \> elements as .some else return [];
+  let l1 = list1 \> elements ?? return [];
+  let l2 = list2 \> elements ?? return [];
   return [
       fn(l1.first, l2.first),
       ..zip(l1.rest, l2.rest, fn),
@@ -404,8 +406,8 @@ let zip = \list1, list2, fn {
 
 let zip_with_tail = \fn -> \list ->
   match list \> elements {
-    .none -> [],
-    .some({rest}) -> zip(list, rest, fn)
+    .err(_) -> [],
+    .ok({rest}) -> zip(list, rest, fn)
   };
 
 let sum = reduce(plus);
@@ -413,7 +415,7 @@ let sum = reduce(plus);
 
 
 let fold_until = \state, fn -> \list {
-    let {first, rest} = list \> elements as .some else return state;
+    let {first, rest} = list \> elements ?? return state;
     let step = fn(state, first);
     return match step {
         .continue(new_state) -> rest \> fold_until(new_state, fn),
@@ -451,10 +453,10 @@ let element_at = \target_index -> \list ->
     list
         \> enumerated
         \> fold_until(
-               .out_of_bounds,
+               .err(.out_of_bounds),
                \state, {index, element} ->
                  index == target_index
-                   ? .break(.found(element))
+                   ? .break(.ok(element))
                    : .continue(state),
            );
 ''')),

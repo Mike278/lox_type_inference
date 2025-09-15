@@ -366,7 +366,8 @@ String prettyPrint(
   TyRowEmpty()
       => '{}',
 
-  TyVariant(type: TyRowExtend(:final label, :final type, :final row))
+  TyVariant(type: TyRowExtend(:final label, :final type, :final row)) ||
+  TyVariant(type: TyVariable(mutableRef: Resolved(type: TyRowExtend(:final label, :final type, :final row))))
       => prettyPrintVariant(label, type, row, displayTypeVariable),
 
   TyVariant(:final type)

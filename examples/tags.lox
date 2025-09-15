@@ -73,16 +73,20 @@ assert match [
     .light({title}) -> 2,
 } == 1;
 
-let a = \ -> [.ok(5), .nope] \> List.first;
-let b = \ -> [.ok({first: "bob", last: "vance"}), .err("nah")] \> List.first;
-let c = \ -> [.ok({found: 10}), .missing, .this_should_not_be_in_the_final_return_type] \> List.first;
-let d = \ -> [.success({data: "a", another: 1}), .timeout, .fatal] \> List.first;
-let e = \ {
-    let num = a() as .ok;
-    let { first } = b() as .ok;
-    let { found } = c() as .ok else {found: 0};
-    let precedence = (d() as .success).another;
-    print { num, first, found, precedence };
+let a = \ -> [.ok(5), .err(.missing)] \> List.first;
+let b = \ -> [.ok({first: "bob", last: "vance"}), .err(.denied("nah"))] \> List.first;
+let c = \ -> [.ok({found: 10}), .err(.missing), .err(.this_should_not_be_in_the_final_return_type)] \> List.first;
+let d = \ -> [.ok({data: "a", another: 1}), .err(.timeout), .err(.fatal)] \> List.first;
+let e = \ -> {the_result : [.ok({data: "a", another: 1}), .err(.timeout), .err(.fatal)] \> List.first};
+let f = \ {
+    let num = a()!;
+    let { first } = b()!;
+    let { found } = c() ?? {found: 0};
+    let precedence = d()!.another;
+    let result = d();
+    let precedence2 = result!.another;
+    let { another } = e().the_result!;
+    print { num, first, found, precedence, precedence2, another };
     return .ok(true);
 };
-assert e() == .ok(true);
+assert f() == .ok(true);

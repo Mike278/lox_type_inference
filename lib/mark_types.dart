@@ -335,7 +335,7 @@ List<(Token, String)> displayExpression(
     (keyword, '$path: ${displayType(typeOf(expr))}'),
     (target, '$path: ${displayType(typeOf(expr))}'),
   ],
-  TagCast(expr: final tagExpr, :final fallback) => [
+  TagCastOk(expr: final tagExpr, :final fallback) => [
     ...displayExpression(tagExpr, typeOf),
     if (fallback != null) ...displayExpression(fallback, typeOf),
   ],
@@ -466,9 +466,6 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
   Import(:final keyword) =>
       keyword.span,
 
-  TagCast(
-    as :final as_,
-    :final tagName,
-  ) =>
-    as_.span.extendedBy(tagName.span),
+  TagCastOk(:final operator) =>
+      operator.span,
 };

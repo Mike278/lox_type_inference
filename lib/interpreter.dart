@@ -155,7 +155,7 @@ class LoxRuntime {
       TagConstructor(:final tag, payload: null) => LoxTag(tag: tag, payload: null),
       TagMatch() => evalMatch(expr, env),
       Import(:final keyword, :final path) => instantiateImport(keyword, path),
-      TagCast() => evalTagCast(expr, env),
+      TagCastOk() => evalTagCast(expr, env),
     };
   }
 
@@ -388,11 +388,9 @@ class LoxRuntime {
     };
   }
 
-  Object? evalTagCast(TagCast cast, Env env) {
-    final tag = evalAs<LoxTag>(cast.expr, cast.as, env);
-    final expected = cast.tagName.lexeme;
-    final actual = tag.tag.lexeme;
-    if (expected == actual) {
+  Object? evalTagCast(TagCastOk cast, Env env) {
+    final tag = evalAs<LoxTag>(cast.expr, cast.operator, env);
+    if (tag.tag.lexeme == 'ok') {
       return tag.payload;
     }
     if (cast.fallback case final fallback?) {

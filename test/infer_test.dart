@@ -1164,7 +1164,7 @@ final isTypeError = isA<TypeCheckException>();
 dynamic _inferSource(String source, [Map<String, String> files = const {}]) {
   try {
     if (!source.contains(';')) source = '$source;';
-    final statements = inferSource(source, (path) => files[path]!);
+    final statements = inferSource(source, (path) => files[path] ?? fail('no import for $path'));
     return statements.typeOfLastStatement.toString();
   } on (Expr, TypeCheckException) catch (e) {
     return e.$2;

@@ -12,6 +12,7 @@ enum TokenType {
   greater, greaterEqual,
   less, lessEqual,
   pipeline,
+  questionQuestion,
 
   // literals.
   identifier, string, number,
