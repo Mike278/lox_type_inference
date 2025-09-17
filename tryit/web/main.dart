@@ -191,12 +191,12 @@ String exec(SampleName sample, Source source) {
 
 ReadFile webImportFile(SampleName relativeTo) =>
   (path) {
-    final dir = dirname(relativeTo);
-    final collapsed = path.replaceAll('../', '');
-    final resolved = dir == '.'
-        ? collapsed
-        : '$dir/$collapsed';
-    return documentsState[resolved] ?? (throw 'failed to import $path relative to $relativeTo ($resolved)');
+    final fileName = basename(path);
+    final key = documentsState.keys.singleWhere(
+      // assume unique base names to keep this simple
+      (sample) => basename(sample) == fileName
+    );
+    return documentsState[key] ?? (throw 'failed to import $path relative to $relativeTo');
   };
 
 

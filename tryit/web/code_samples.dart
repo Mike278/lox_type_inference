@@ -238,6 +238,52 @@ let part_2 = input \> count_where(
 print part_2;
 assert part_2 == 4;
 ''')),
+(SampleName('advent_of_code_2024_day_3.lox'),  SampleContent(r'''let {map, sum} = import "util/lists.lox";
+let {split, split_at, parse_int} = import "util/strings.lox";
+
+let parse_operand = \{until: separator} -> \str {
+  let {before, after} = (str \> split_at({separator}))!;
+  let number = parse_int(before)!;
+  return .ok({number, rest: after});
+};
+
+let compute_product = \str ->
+    str
+      \> split({separator: "mul("})
+      \> map(\part {
+        let {number: lhs, rest} = (part \> parse_operand({until: ","}))!;
+        let {number: rhs} = (rest \> parse_operand({until: ")"}))!;
+        return .ok(lhs * rhs);
+      })
+      \> map(\product -> product ?? 0)
+      \> sum;
+
+
+/////// Part 1 ///////
+let input1 = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
+let part_1 = \ -> compute_product(input1);
+let part_1_result = part_1();
+print part_1_result;
+assert part_1_result == .ok(161);
+
+/////// Part 2 ///////
+let input2 = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
+let part_2 = \ ->
+input2
+  \> split({separator: "do()"})
+  \> map(\part ->
+       match part \> split_at({separator: "don't()"}) {
+         .ok({before}) -> compute_product(before),
+         .err(_) -> compute_product(part),
+       }
+     )
+  \> map(\product -> product ?? 0)
+  \> sum;
+
+let part_2_result = part_2();
+print part_2_result;
+assert part_2_result == .ok(48);
+''')),
 (SampleName('advent_of_code_2021_day_2.lox'),  SampleContent(r'''let {fold, map, join} = import "util/lists.lox";
 
 let input = [
@@ -348,7 +394,7 @@ let fold = \state, fn -> \list {
     return rest \> fold(new_state, fn);
 };
 
-let try_fold = \initial, fn
+let try_fold = \initial, fn ->
   fold(
     .ok(initial),
     \state, element -> fn(state!, element),
@@ -459,6 +505,8 @@ let element_at = \target_index -> \list ->
                    ? .break(.ok(element))
                    : .continue(state),
            );
+
+let length = fold(0, \count, _ -> count + 1);
 ''')),
 (SampleName('util/functions.lox'),  SampleContent(r'''let eq = \a -> \b -> a == b;
 ''')),
@@ -472,5 +520,41 @@ let sign = \n {
     if n < 0 then return -1;
     assert n > 0;
     return 1;
-};'''))
+};''')),
+(SampleName('util/strings.lox'),  SampleContent(r'''let { fold, join, elements, map } = import "lists.lox";
+
+let split = \{separator} -> \str -> String.split(str, separator);
+
+let split_at = \{separator} -> \str {
+    let { first, rest } = str
+      \> split({separator})
+      \> elements
+      ?? return .err(.separator_not_found);
+    return .ok({
+      before: first,
+      after: rest \> join,
+    });
+};
+
+let as_digit = \str ->
+    str == "0" ? .ok(0) :
+    str == "1" ? .ok(1) :
+    str == "2" ? .ok(2) :
+    str == "3" ? .ok(3) :
+    str == "4" ? .ok(4) :
+    str == "5" ? .ok(5) :
+    str == "6" ? .ok(6) :
+    str == "7" ? .ok(7) :
+    str == "8" ? .ok(8) :
+    str == "9" ? .ok(9) :
+    .err(.invalid_digit(str));
+
+let parse_int = \str -> str
+  \> split({separator: ""})
+  \> map(as_digit)
+  \> fold(
+    .ok(0),
+    \number, digit -> .ok(number! * 10 + digit!)
+  );
+'''))
 ];

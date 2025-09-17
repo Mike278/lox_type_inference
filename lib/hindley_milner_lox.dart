@@ -757,6 +757,7 @@ final loxStandardLibraryEnv = <String, LoxType>{
   }),
   'String' : .record({
     'concat': .function(from: [.string, .string], to: .string),
+    'split': .function(from: [.string, .string], to: .list(of: .string)),
   }),
   'clock': .function(from: [a], to: .num),
 };

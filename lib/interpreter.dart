@@ -414,6 +414,7 @@ final builtins = UnmodifiableMapView({
   },
   'String': {
     'concat': concat,
+    'split': split,
   },
 });
 
@@ -447,6 +448,10 @@ final LoxFunction empty = (
 final LoxFunction concat = (
   arity: 2,
   impl: (args) => args.join(),
+);
+final LoxFunction split = (
+  arity: 2,
+  impl: (args) => (args.first as String).split(args.last as String),
 );
 
 

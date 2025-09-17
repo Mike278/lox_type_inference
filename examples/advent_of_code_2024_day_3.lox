@@ -1,0 +1,45 @@
+let {map, sum} = import "util/lists.lox";
+let {split, split_at, parse_int} = import "util/strings.lox";
+
+let parse_operand = \{until: separator} -> \str {
+  let {before, after} = (str \> split_at({separator}))!;
+  let number = parse_int(before)!;
+  return .ok({number, rest: after});
+};
+
+let compute_product = \str ->
+    str
+      \> split({separator: "mul("})
+      \> map(\part {
+        let {number: lhs, rest} = (part \> parse_operand({until: ","}))!;
+        let {number: rhs} = (rest \> parse_operand({until: ")"}))!;
+        return .ok(lhs * rhs);
+      })
+      \> map(\product -> product ?? 0)
+      \> sum;
+
+
+/////// Part 1 ///////
+let input1 = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
+let part_1 = \ -> compute_product(input1);
+let part_1_result = part_1();
+print part_1_result;
+assert part_1_result == .ok(161);
+
+/////// Part 2 ///////
+let input2 = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
+let part_2 = \ ->
+input2
+  \> split({separator: "do()"})
+  \> map(\part ->
+       match part \> split_at({separator: "don't()"}) {
+         .ok({before}) -> compute_product(before),
+         .err(_) -> compute_product(part),
+       }
+     )
+  \> map(\product -> product ?? 0)
+  \> sum;
+
+let part_2_result = part_2();
+print part_2_result;
+assert part_2_result == .ok(48);

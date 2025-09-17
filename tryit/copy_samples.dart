@@ -9,10 +9,12 @@ void main() async {
     'return_expr.lox',
     'advent_of_code_2024_day_1.lox',
     'advent_of_code_2024_day_2.lox',
+    'advent_of_code_2024_day_3.lox',
     'advent_of_code_2021_day_2.lox',
     'util/lists.lox',
     'util/functions.lox',
     'util/numeric.lox',
+    'util/strings.lox',
   ];
   final skip = {
     'foo/relative.lox',

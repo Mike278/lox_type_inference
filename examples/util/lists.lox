@@ -15,7 +15,7 @@ let fold = \state, fn -> \list {
     return rest \> fold(new_state, fn);
 };
 
-let try_fold = \initial, fn
+let try_fold = \initial, fn ->
   fold(
     .ok(initial),
     \state, element -> fn(state!, element),
@@ -126,3 +126,5 @@ let element_at = \target_index -> \list ->
                    ? .break(.ok(element))
                    : .continue(state),
            );
+
+let length = fold(0, \count, _ -> count + 1);
