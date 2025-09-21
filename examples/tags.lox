@@ -78,6 +78,9 @@ let b = \ -> [.ok({first: "bob", last: "vance"}), .err(.denied("nah"))] \> List.
 let c = \ -> [.ok({found: 10}), .err(.missing), .err(.this_should_not_be_in_the_final_return_type)] \> List.first;
 let d = \ -> [.ok({data: "a", another: 1}), .err(.timeout), .err(.fatal)] \> List.first;
 let e = \ -> {the_result : [.ok({data: "a", another: 1}), .err(.timeout), .err(.fatal)] \> List.first};
+let ee = \_ -> \_ -> [.ok({hello: "world"}), .err(.idk)] \> List.first;
+let eee = \ -> [.ok(\x -> x), .err(.timeout)] \> List.first;
+let eeee = \ -> [.ok({id: \x -> x}), .err(.timeout)] \> List.first;
 let f = \ {
     let num = a()!;
     let { first } = b()!;
@@ -86,7 +89,10 @@ let f = \ {
     let result = d();
     let precedence2 = result!.another;
     let { another } = e().the_result!;
-    print { num, first, found, precedence, precedence2, another };
+    let { hello } = 1 \> ee(2)!;
+    let str = eee()!("a");
+    let bool = eeee()!.id(false);
+    print { num, first, found, precedence, precedence2, another, hello, str, bool };
     return .ok(true);
 };
 assert f() == .ok(true);

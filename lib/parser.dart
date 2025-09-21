@@ -297,6 +297,10 @@ class Parser {
       final qq = previous();
       final fallback = expression();
       return TagCastOk(expr, qq, fallback);
+    } else if (matchFirst(.bang)) {
+      final bang = previous();
+      final cast = TagCastOk(expr, bang, null);
+      return chain(cast);
     }
     return expr;
   }
@@ -436,7 +440,10 @@ class Parser {
   // argument       → "_" | expression;
   Expr call() {
     final callee = primary();
-    var expr = callee;
+    return chain(callee);
+  }
+
+  Expr chain(Expr expr) {
     while (true) {
       if (matchFirst(.openParen)) {
         final before = <Expr>[];
@@ -474,9 +481,6 @@ class Parser {
       } else if (matchFirst(.dot)) {
         final fieldName = consume(.identifier, "Expected field name");
         expr = RecordGet(expr, fieldName);
-      } else if (matchFirst(.bang)) {
-        final bang = previous();
-        expr = TagCastOk(expr, bang, null);
       } else {
         break;
       }
@@ -638,6 +642,14 @@ class Parser {
   //                | IDENTIFIER
   //                ;
   Expr primary() {
+    final expr = p();
+    if (matchFirst(.bang)) {
+      return TagCastOk(expr, previous(), null);
+    }
+    return expr;
+  }
+
+  Expr p() {
     if (matchFirst(.number)) return NumberLiteral(previous());
     if (matchFirst(.string)) return StringLiteral(previous());
     if (matchFirst(.true_)) return TrueLiteral(previous());

@@ -489,13 +489,13 @@ ___ TYPES ___
 3:44 - 3:47    str: String
 4:7 - 4:13     before: String
 4:15 - 4:20    after: String
-4:29 - 4:31    \>: .err(.invalid_digit(String) | .separator_not_found) | .ok({before: String, after: String})
-4:25 - 4:28    str: String
-4:52 - 4:53    String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({before: String, after: String})
-4:32 - 4:40    split_at: {separator: String}, String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({before: String, after: String})
-4:51 - 4:52    {...}: {separator: String}
-4:42 - 4:51    separator: String
-4:42 - 4:51    separator: String
+4:28 - 4:30    \>: .err(.invalid_digit(String) | .separator_not_found) | .ok({before: String, after: String})
+4:24 - 4:27    str: String
+4:51 - 4:52    String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({before: String, after: String})
+4:31 - 4:39    split_at: {separator: String}, String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({before: String, after: String})
+4:50 - 4:51    {...}: {separator: String}
+4:41 - 4:50    separator: String
+4:41 - 4:50    separator: String
 5:6 - 5:12     number: Num
 5:31 - 5:32    .err(.invalid_digit(String) | .separator_not_found) | .ok(Num)
 5:15 - 5:24    parse_int: String -> .err(.invalid_digit(String) | .separator_not_found) | .ok(Num)
@@ -528,20 +528,20 @@ ___ TYPES ___
 13:13 - 13:19  number: Num
 13:21 - 13:24  lhs: Num
 13:26 - 13:30  rest: String
-13:40 - 13:42  \>: .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
-13:35 - 13:39  part: String
-13:69 - 13:70  String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
-13:43 - 13:56  parse_operand: {until: String}, String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
-13:68 - 13:69  {...}: {until: String}
-13:58 - 13:63  until: String
+13:39 - 13:41  \>: .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
+13:34 - 13:38  part: String
+13:68 - 13:69  String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
+13:42 - 13:55  parse_operand: {until: String}, String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
+13:67 - 13:68  {...}: {until: String}
+13:57 - 13:62  until: String
 14:13 - 14:19  number: Num
 14:21 - 14:24  rhs: Num
-14:34 - 14:36  \>: .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
-14:29 - 14:33  rest: String
-14:63 - 14:64  String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
-14:37 - 14:50  parse_operand: {until: String}, String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
-14:62 - 14:63  {...}: {until: String}
-14:52 - 14:57  until: String
+14:33 - 14:35  \>: .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
+14:28 - 14:32  rest: String
+14:62 - 14:63  String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
+14:36 - 14:49  parse_operand: {until: String}, String -> .err(.invalid_digit(String) | .separator_not_found) | .ok({number: Num, rest: String})
+14:61 - 14:62  {...}: {until: String}
+14:51 - 14:56  until: String
 15:8 - 15:14   .err(.invalid_digit(String) | .separator_not_found) | .ok(Num)
 15:16 - 15:18  ok: .err(.invalid_digit(String) | .separator_not_found) | .ok(Num)
 15:23 - 15:24  *: Num
@@ -2378,61 +2378,120 @@ ___ TYPES ___
 79:80 - 79:85  fatal: .fatal | .timeout
 79:96 - 79:101 first: List[.err(.fatal | .timeout) | .ok({data: String, another: Num})] -> .err(.fatal | .timeout) | .ok({data: String, another: Num})
 79:91 - 79:95  List: {first: List[.err(.fatal | .timeout) | .ok({data: String, another: Num})] -> .err(.fatal | .timeout) | .ok({data: String, another: Num}), rest: List[d] -> List[d], empty: List[e] -> Bool}
-80:4 - 80:5    f: a -> .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Bool)
-80:10 - 80:11  a -> .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Bool)
-90:0 - 90:1    a -> .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Bool)
-81:8 - 81:11   num: Num
-81:16 - 81:17  .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Num)
-81:14 - 81:15  a: Unit -> .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Num)
-82:10 - 82:15  first: String
-82:22 - 82:23  .err(.denied(String) | .fatal | .missing | .timeout) | .ok({first: String, last: String})
-82:20 - 82:21  b: Unit -> .err(.denied(String) | .fatal | .missing | .timeout) | .ok({first: String, last: String})
-83:10 - 83:15  found: Num
-83:22 - 83:23  .err(.missing | .this_should_not_be_in_the_final_return_type) | .ok({found: Num})
-83:20 - 83:21  c: Unit -> .err(.missing | .this_should_not_be_in_the_final_return_type) | .ok({found: Num})
-83:36 - 83:37  {...}: {found: Num}
-83:28 - 83:33  found: Num
-84:8 - 84:18   precedence: Num
-84:26 - 84:33  another: Num
-84:23 - 84:24  .err(.denied(String) | .fatal | .missing | .timeout) | .ok({data: String, another: Num})
-84:21 - 84:22  d: Unit -> .err(.denied(String) | .fatal | .missing | .timeout) | .ok({data: String, another: Num})
-85:8 - 85:14   result: .err(.fatal | .timeout) | .ok({data: String, another: Num})
-85:19 - 85:20  .err(.fatal | .timeout) | .ok({data: String, another: Num})
-85:17 - 85:18  d: Unit -> .err(.fatal | .timeout) | .ok({data: String, another: Num})
-86:8 - 86:19   precedence2: Num
-86:30 - 86:37  another: Num
-86:22 - 86:28  result: .err(.denied(String) | .fatal | .missing | .timeout) | .ok({data: String, another: Num})
-87:10 - 87:17  another: Num
-87:26 - 87:36  the_result: .err(.denied(String) | .fatal | .missing | .timeout) | .ok({data: String, another: Num})
-87:24 - 87:25  {the_result: .err(.denied(String) | .fatal | .missing | .timeout) | .ok({data: String, another: Num})}
-87:22 - 87:23  e: Unit -> {the_result: .err(.denied(String) | .fatal | .missing | .timeout) | .ok({data: String, another: Num})}
-88:4 - 88:9    print: {num: Num, first: String, found: Num, precedence: Num, precedence2: Num, another: Num}
-88:64 - 88:65  {...}: {num: Num, first: String, found: Num, precedence: Num, precedence2: Num, another: Num}
-88:12 - 88:15  num: Num
-88:12 - 88:15  num: Num
-88:17 - 88:22  first: String
-88:17 - 88:22  first: String
-88:24 - 88:29  found: Num
-88:24 - 88:29  found: Num
-88:31 - 88:41  precedence: Num
-88:31 - 88:41  precedence: Num
-88:43 - 88:54  precedence2: Num
-88:43 - 88:54  precedence2: Num
-88:56 - 88:63  another: Num
-88:56 - 88:63  another: Num
-89:4 - 89:10   .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Bool)
-89:12 - 89:14  ok: .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Bool)
-91:0 - 91:6    assert: Bool
-91:11 - 91:13  ==: Bool
-91:9 - 91:10   .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Bool)
-91:7 - 91:8    f: Unit -> .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Bool)
-91:15 - 91:17  ok: .err(.denied(String) | .fatal | .missing | .timeout) | .ok(Bool)
+80:4 - 80:6    ee: a, b -> .err(.idk) | .ok({hello: String})
+80:12 - 80:14  a, b -> .err(.idk) | .ok({hello: String})
+80:18 - 80:20  b -> .err(.idk) | .ok({hello: String})
+80:57 - 80:59  \>: .err(.idk) | .ok({hello: String})
+80:55 - 80:56  [...]: List[.err(.idk) | .ok({hello: String})]
+80:23 - 80:25  ok: .err(.idk) | .ok({hello: String})
+80:41 - 80:42  {...}: {hello: String}
+80:27 - 80:32  hello: String
+80:46 - 80:49  err: .err(.idk) | .ok({hello: String})
+80:51 - 80:54  idk: .idk
+80:65 - 80:70  first: List[.err(.idk) | .ok({hello: String})] -> .err(.idk) | .ok({hello: String})
+80:60 - 80:64  List: {first: List[.err(.idk) | .ok({hello: String})] -> .err(.idk) | .ok({hello: String}), rest: List[e] -> List[e], empty: List[f] -> Bool}
+80:16 - 80:18  _6: b
+80:10 - 80:12  _5: a
+81:4 - 81:7    eee: a -> .err(.timeout) | .ok(d -> d)
+81:12 - 81:14  a -> .err(.timeout) | .ok(d -> d)
+81:46 - 81:48  \>: .err(.timeout) | .ok(d -> d)
+81:44 - 81:45  [...]: List[.err(.timeout) | .ok(d -> d)]
+81:17 - 81:19  ok: .err(.timeout) | .ok(d -> d)
+81:23 - 81:25  d -> d
+81:26 - 81:27  x: d
+81:21 - 81:22  x: d
+81:31 - 81:34  err: .err(.timeout) | .ok(d -> d)
+81:36 - 81:43  timeout: .timeout
+81:54 - 81:59  first: List[.err(.timeout) | .ok(d -> d)] -> .err(.timeout) | .ok(d -> d)
+81:49 - 81:53  List: {first: List[.err(.timeout) | .ok(d -> d)] -> .err(.timeout) | .ok(d -> d), rest: List[e] -> List[e], empty: List[f] -> Bool}
+82:4 - 82:8    eeee: a -> .err(.timeout) | .ok({id: d -> d})
+82:13 - 82:15  a -> .err(.timeout) | .ok({id: d -> d})
+82:53 - 82:55  \>: .err(.timeout) | .ok({id: d -> d})
+82:51 - 82:52  [...]: List[.err(.timeout) | .ok({id: d -> d})]
+82:18 - 82:20  ok: .err(.timeout) | .ok({id: d -> d})
+82:33 - 82:34  {...}: {id: d -> d}
+82:22 - 82:24  id: d -> d
+82:29 - 82:31  d -> d
+82:32 - 82:33  x: d
+82:27 - 82:28  x: d
+82:38 - 82:41  err: .err(.timeout) | .ok({id: d -> d})
+82:43 - 82:50  timeout: .timeout
+82:61 - 82:66  first: List[.err(.timeout) | .ok({id: d -> d})] -> .err(.timeout) | .ok({id: d -> d})
+82:56 - 82:60  List: {first: List[.err(.timeout) | .ok({id: d -> d})] -> .err(.timeout) | .ok({id: d -> d}), rest: List[e] -> List[e], empty: List[f] -> Bool}
+83:4 - 83:5    f: a -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Bool)
+83:10 - 83:11  a -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Bool)
+96:0 - 96:1    a -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Bool)
+84:8 - 84:11   num: Num
+84:16 - 84:17  .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Num)
+84:14 - 84:15  a: Unit -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Num)
+85:10 - 85:15  first: String
+85:22 - 85:23  .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({first: String, last: String})
+85:20 - 85:21  b: Unit -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({first: String, last: String})
+86:10 - 86:15  found: Num
+86:22 - 86:23  .err(.missing | .this_should_not_be_in_the_final_return_type) | .ok({found: Num})
+86:20 - 86:21  c: Unit -> .err(.missing | .this_should_not_be_in_the_final_return_type) | .ok({found: Num})
+86:36 - 86:37  {...}: {found: Num}
+86:28 - 86:33  found: Num
+87:8 - 87:18   precedence: Num
+87:26 - 87:33  another: Num
+87:23 - 87:24  .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({data: String, another: Num})
+87:21 - 87:22  d: Unit -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({data: String, another: Num})
+88:8 - 88:14   result: .err(.fatal | .timeout) | .ok({data: String, another: Num})
+88:19 - 88:20  .err(.fatal | .timeout) | .ok({data: String, another: Num})
+88:17 - 88:18  d: Unit -> .err(.fatal | .timeout) | .ok({data: String, another: Num})
+89:8 - 89:19   precedence2: Num
+89:30 - 89:37  another: Num
+89:22 - 89:28  result: .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({data: String, another: Num})
+90:10 - 90:17  another: Num
+90:26 - 90:36  the_result: .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({data: String, another: Num})
+90:24 - 90:25  {the_result: .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({data: String, another: Num})}
+90:22 - 90:23  e: Unit -> {the_result: .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({data: String, another: Num})}
+91:10 - 91:15  hello: String
+91:22 - 91:24  \>: .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({hello: String})
+91:29 - 91:30  Num -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({hello: String})
+91:25 - 91:27  ee: Num, Num -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({hello: String})
+92:8 - 92:11   str: String
+92:24 - 92:25  String
+92:18 - 92:19  .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(String -> String)
+92:14 - 92:17  eee: Unit -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(String -> String)
+93:8 - 93:12   bool: Bool
+93:31 - 93:32  Bool
+93:23 - 93:25  id: Bool -> Bool
+93:20 - 93:21  .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({id: Bool -> Bool})
+93:15 - 93:19  eeee: Unit -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok({id: Bool -> Bool})
+94:4 - 94:9    print: {num: Num, first: String, found: Num, precedence: Num, precedence2: Num, another: Num, hello: String, str: String, bool: Bool}
+94:82 - 94:83  {...}: {num: Num, first: String, found: Num, precedence: Num, precedence2: Num, another: Num, hello: String, str: String, bool: Bool}
+94:12 - 94:15  num: Num
+94:12 - 94:15  num: Num
+94:17 - 94:22  first: String
+94:17 - 94:22  first: String
+94:24 - 94:29  found: Num
+94:24 - 94:29  found: Num
+94:31 - 94:41  precedence: Num
+94:31 - 94:41  precedence: Num
+94:43 - 94:54  precedence2: Num
+94:43 - 94:54  precedence2: Num
+94:56 - 94:63  another: Num
+94:56 - 94:63  another: Num
+94:65 - 94:70  hello: String
+94:65 - 94:70  hello: String
+94:72 - 94:75  str: String
+94:72 - 94:75  str: String
+94:77 - 94:81  bool: Bool
+94:77 - 94:81  bool: Bool
+95:4 - 95:10   .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Bool)
+95:12 - 95:14  ok: .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Bool)
+97:0 - 97:6    assert: Bool
+97:11 - 97:13  ==: Bool
+97:9 - 97:10   .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Bool)
+97:7 - 97:8    f: Unit -> .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Bool)
+97:15 - 97:17  ok: .err(.denied(String) | .fatal | .idk | .missing | .timeout) | .ok(Bool)
 ___ OUTPUT ___
 \t
 bottom
 bottom
 green
-{num: 5, first: bob, found: 10, precedence: 1, precedence2: 1, another: 1}
+{num: 5, first: bob, found: 10, precedence: 1, precedence2: 1, another: 1, hello: world, str: a, bool: false}
 
 
 ====== tag_pattern_err_let.lox =====

@@ -242,7 +242,7 @@ assert part_2 == 4;
 let {split, split_at, parse_int} = import "util/strings.lox";
 
 let parse_operand = \{until: separator} -> \str {
-  let {before, after} = (str \> split_at({separator}))!;
+  let {before, after} = str \> split_at({separator})!;
   let number = parse_int(before)!;
   return .ok({number, rest: after});
 };
@@ -251,8 +251,8 @@ let compute_product = \str ->
     str
       \> split({separator: "mul("})
       \> map(\part {
-        let {number: lhs, rest} = (part \> parse_operand({until: ","}))!;
-        let {number: rhs} = (rest \> parse_operand({until: ")"}))!;
+        let {number: lhs, rest} = part \> parse_operand({until: ","})!;
+        let {number: rhs} = rest \> parse_operand({until: ")"})!;
         return .ok(lhs * rhs);
       })
       \> map(\product -> product ?? 0)
