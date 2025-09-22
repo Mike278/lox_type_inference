@@ -132,7 +132,7 @@ void main() {
           .a(.two),
           .b(.one),
           .b(.two),
-        ] \> List.first;
+        ] |> List.first;
         
         let y = match x {
           .a(.one) -> 1,
@@ -154,7 +154,7 @@ void main() {
         let x = [
           .a(.one),
           .a(.two),
-        ] \> List.first;
+        ] |> List.first;
         
         let y = match x {
           .a(.one) -> 1,
@@ -172,7 +172,7 @@ void main() {
         let x = [
           .a(.one),
           .a(.two),
-        ] \> List.first;
+        ] |> List.first;
         
         let y = match x {
           .a(.one) -> 1,
@@ -194,7 +194,7 @@ void main() {
           .a(.two),
           .b(.one),
           .b(.two),
-        ] \> List.first;
+        ] |> List.first;
         
         let y = match x {
           .a(a) -> match a {
@@ -225,7 +225,7 @@ void main() {
         let x = [
           .a(.one),
           .a(.two),
-        ] \> List.first;
+        ] |> List.first;
         
         let y = match x {
           .a(a) -> match a {

@@ -293,7 +293,7 @@ String? _nextToken(StringStream stream, JSAny state) {
   if (ch == '<' && stream.eat('='.toJS) != null) return _orange;
   if (ch == '>' && stream.eat('='.toJS) != null) return _orange;
   if (ch == '.' && stream.eat('.'.toJS) != null) return _orange;
-  if (ch == '\\' && stream.eat('>'.toJS) != null) return _orange;
+  if (ch == '|' && stream.eat('>'.toJS) != null) return _orange;
   if (ch == '-' && stream.eat('>'.toJS) != null) return _orange;
 
   // Variants (starting with .)

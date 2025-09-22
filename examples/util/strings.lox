@@ -5,12 +5,12 @@ let split = \{separator} -> \str -> String.split(str, separator);
 
 let split_at = \{separator} -> \str {
     let { first, rest } = str
-      \> split({separator})
-      \> elements
+      |> split({separator})
+      |> elements
       ?? return .err(.separator_not_found);
     return .ok({
       before: first,
-      after: rest \> join,
+      after: rest |> join,
     });
 };
 
@@ -28,6 +28,6 @@ let as_digit = \str ->
     .err(.invalid_digit(str));
 
 let parse_int = \str -> str
-  \> split({separator: ""})
-  \> try_map(as_digit)
-  \> try(fold(0, \number, digit -> number * 10 + digit));
+  |> split({separator: ""})
+  |> try_map(as_digit)
+  |> try(fold(0, \number, digit -> number * 10 + digit));

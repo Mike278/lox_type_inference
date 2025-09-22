@@ -315,9 +315,9 @@ make_counter(0, \value { print value*value; })
       let first = List.first(list);
       let rest = List.rest(list);
       return [
-        ..rest \> where (_, \e -> e < first) \> sort,
+        ..rest |> where (_, \e -> e < first) |> sort,
         first,
-        ..rest \> where (_, \e -> e >= first) \> sort
+        ..rest |> where (_, \e -> e >= first) |> sort
       ];
     };
     '''), 'List[Num] -> List[Num]');
@@ -857,7 +857,7 @@ make_counter(0, \value { print value*value; })
            .b -> .ok(2),
            other -> .other(other),
         };
-        let input = [.a, .b, .c, .d] \> List.first;
+        let input = [.a, .b, .c, .d] |> List.first;
         let result = f(input);
         '''), '.ok(Num) | .other(.c | .d)');
       });
@@ -868,7 +868,7 @@ make_counter(0, \value { print value*value; })
            .b -> .ok(2),
            other -> .other(other),
         };
-        let input = [.a, .b, .c, .d] \> List.first;
+        let input = [.a, .b, .c, .d] |> List.first;
         match f(input) {
           .ok(x) -> "a or b",
           .other(o) -> match o {
@@ -885,7 +885,7 @@ make_counter(0, \value { print value*value; })
            .b -> .ok(2),
            other -> .other(other),
         };
-        let input = [.a, .b, .c, .d] \> List.first;
+        let input = [.a, .b, .c, .d] |> List.first;
         match f(input) {
           .ok(x) -> "a or b",
           .other(o) -> match o {
@@ -906,7 +906,7 @@ make_counter(0, \value { print value*value; })
            .c -> .ok(3),
            .d -> .ok(4),
         };
-        let input = [.a, .b, .c, .d] \> List.first;
+        let input = [.a, .b, .c, .d] |> List.first;
         match f1(input) {
           .ok(x) -> .ok(x),
           .other(o) -> f2(o),
@@ -924,7 +924,7 @@ make_counter(0, \value { print value*value; })
            .c -> .ok(3),
       //     .d -> .ok(4),
         };
-        let input = [.a, .b, .c, .d] \> List.first;
+        let input = [.a, .b, .c, .d] |> List.first;
         match f1(input) {
           .ok(x) -> .ok(x),
           .other(o) -> f2(o),

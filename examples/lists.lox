@@ -11,15 +11,15 @@ let zs = [1];
 print zs;
 
 let mixed = [.hello(1), .tags({two: "three"})];
-print mixed \> map(\x -> match x {
+print mixed |> map(\x -> match x {
     .hello(_) -> "its a `.hello` tag",
     .tags(_) -> "its not",
 });
 
 
 
-print [1,2,3] \> map(\x -> x == 1);
-print mixed \> map(\x -> match x {
+print [1,2,3] |> map(\x -> x == 1);
+print mixed |> map(\x -> match x {
     .hello(n) -> n == 1,
     .tags(_) -> false,
 });
@@ -31,7 +31,7 @@ let employees = [
     {name: "joe", age: 50}
 ];
 
-let employee_with_max_age = employees \> reduce(
+let employee_with_max_age = employees |> reduce(
     \highest, employee ->
         employee.age > highest.age
             ? employee
@@ -40,8 +40,8 @@ let employee_with_max_age = employees \> reduce(
 print employee_with_max_age;
 
 let max_age = employees
-    \> map(\e -> e.age)
-    \> reduce(\highest, age -> age > highest ? age : highest)
+    |> map(\e -> e.age)
+    |> reduce(\highest, age -> age > highest ? age : highest)
 ;
 print max_age;
 
@@ -49,16 +49,16 @@ let max = \x, y -> x > y ? x : y;
 let min = \x, y -> x < y ? x : y;
 
 print employees
-    \> map(\e -> e.age)
-    \> reduce(max)
+    |> map(\e -> e.age)
+    |> reduce(max)
 ;
 
 print employees
-    \> map(\e -> e.age)
-    \> reduce(min)
+    |> map(\e -> e.age)
+    |> reduce(min)
 ;
 
-print employees \> List.first;
+print employees |> List.first;
 
 let sub = \x, y -> x-y;
 let id = \x -> x;
@@ -69,17 +69,17 @@ let x_minus_one = sub(_, 1);
 print one_minus_x(3);
 print x_minus_one(3);
 
-print "[1] \> List.first \> id";
-print [1] \> List.first \> id;
+print "[1] |> List.first |> id";
+print [1] |> List.first |> id;
 
-print "1 \> x_minus_one \> x_minus_one";
-print 1 \> x_minus_one \> x_minus_one;
+print "1 |> x_minus_one |> x_minus_one";
+print 1 |> x_minus_one |> x_minus_one;
 
-print "[1] \> List.first \> id \> sub(_, 1)";
-print [1] \> List.first \> id \> sub(_, 1);
+print "[1] |> List.first |> id |> sub(_, 1)";
+print [1] |> List.first |> id |> sub(_, 1);
 
 print (\list, item -> [..list, item])([], false);
 print (\list, item -> [..list, item])(_, false)([]);
 
-assert [1,2,3] \>    map(\_    -> 5) == [5, 5, 5];
-assert [1,2,3] \> reduce(\_, _ -> 5) == .ok(5);
+assert [1,2,3] |>    map(\_    -> 5) == [5, 5, 5];
+assert [1,2,3] |> reduce(\_, _ -> 5) == .ok(5);

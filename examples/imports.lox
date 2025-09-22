@@ -1,6 +1,6 @@
 let {map} = import "lists.lox";
 
-let x = [1,2,3] \> map(\n -> n * 2);
+let x = [1,2,3] |> map(\n -> n * 2);
 print x;
 
 print import "foo/relative.lox";

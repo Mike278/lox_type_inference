@@ -12,12 +12,12 @@ let input = [
 ];
 
 let initial = {list1: [], list2: []};
-let {list1, list2} = input \> try_fold(
+let {list1, list2} = input |> try_fold(
     initial,
     \state, pair {
       let {list1, list2} = state;
-      let left = pair \> element_at(0);
-      let right = pair \> element_at(1);
+      let left = pair |> element_at(0);
+      let right = pair |> element_at(1);
       return .ok({
         list1: [..list1, left!],
         list2: [..list2, right!],
@@ -31,19 +31,19 @@ print list2;
 /////// Part 1 ///////
 
 let answer1 = zip(
-  list1 \> sort,
-  list2 \> sort,
+  list1 |> sort,
+  list2 |> sort,
   abs_diff
-) \> sum;
+) |> sum;
 
 assert answer1 == .ok(11);
 
 /////// Part 2 ///////
 
 let frequency_of_number_in_list2 = \n ->
-    list2 \> count_where(n \> eq);
+    list2 |> count_where(n |> eq);
 
-let answer2 = list1 \> fold(0, \running, n {
+let answer2 = list1 |> fold(0, \running, n {
     let value = n * frequency_of_number_in_list2(n);
     return running + value;
 });

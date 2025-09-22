@@ -13,7 +13,7 @@ print fn(center);
 print fn(key_or_mouse);
 
 let colors = [.green, .gold, .red];
-let fav_color = colors \> List.first;
+let fav_color = colors |> List.first;
 print match fav_color {
     .green -> "green",
     .gold -> "gold",
@@ -30,7 +30,7 @@ assert match [
     .dark(.none),
     .light(.some("ok")),
     .light(.some("yep")),
-] \> List.first {
+] |> List.first {
     .light(str)-> match str {
         .some(_) -> 1,
         .none -> 2,
@@ -49,7 +49,7 @@ assert match [
     .dark({title: .none, subtitle: "hmm"}),
     .light({title: .some("ok"), subtitle: "hmm"}),
     .light({title: .some("yep"), subtitle: "hmm"}),
-] \> List.first {
+] |> List.first {
     .light({title}) -> match title {
         .some(_) -> 1,
         .none -> 2,
@@ -68,19 +68,19 @@ assert match [
     .dark({title: .none, subtitle: "hmm"}),
     .light({title: .some("ok"), subtitle: "hmm"}),
     .light({title: .some("yep"), subtitle: "hmm"}),
-] \> List.first {
+] |> List.first {
     .dark({title})  -> 1,
     .light({title}) -> 2,
 } == 1;
 
-let a = \ -> [.ok(5), .err(.missing)] \> List.first;
-let b = \ -> [.ok({first: "bob", last: "vance"}), .err(.denied("nah"))] \> List.first;
-let c = \ -> [.ok({found: 10}), .err(.missing), .err(.this_should_not_be_in_the_final_return_type)] \> List.first;
-let d = \ -> [.ok({data: "a", another: 1}), .err(.timeout), .err(.fatal)] \> List.first;
-let e = \ -> {the_result : [.ok({data: "a", another: 1}), .err(.timeout), .err(.fatal)] \> List.first};
-let ee = \_ -> \_ -> [.ok({hello: "world"}), .err(.idk)] \> List.first;
-let eee = \ -> [.ok(\x -> x), .err(.timeout)] \> List.first;
-let eeee = \ -> [.ok({id: \x -> x}), .err(.timeout)] \> List.first;
+let a = \ -> [.ok(5), .err(.missing)] |> List.first;
+let b = \ -> [.ok({first: "bob", last: "vance"}), .err(.denied("nah"))] |> List.first;
+let c = \ -> [.ok({found: 10}), .err(.missing), .err(.this_should_not_be_in_the_final_return_type)] |> List.first;
+let d = \ -> [.ok({data: "a", another: 1}), .err(.timeout), .err(.fatal)] |> List.first;
+let e = \ -> {the_result : [.ok({data: "a", another: 1}), .err(.timeout), .err(.fatal)] |> List.first};
+let ee = \_ -> \_ -> [.ok({hello: "world"}), .err(.idk)] |> List.first;
+let eee = \ -> [.ok(\x -> x), .err(.timeout)] |> List.first;
+let eeee = \ -> [.ok({id: \x -> x}), .err(.timeout)] |> List.first;
 let f = \ {
     let num = a()!;
     let { first } = b()!;
@@ -89,7 +89,7 @@ let f = \ {
     let result = d();
     let precedence2 = result!.another;
     let { another } = e().the_result!;
-    let { hello } = 1 \> ee(2)!;
+    let { hello } = 1 |> ee(2)!;
     let str = eee()!("a");
     let bool = eeee()!.id(false);
     print { num, first, found, precedence, precedence2, another, hello, str, bool };

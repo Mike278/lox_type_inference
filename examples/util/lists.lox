@@ -1,18 +1,18 @@
 let {plus} = import "numeric.lox";
 
 let elements = \list ->
-    list \> List.empty
+    list |> List.empty
         ? .err(.empty_list)
         : .ok({
-            first: list \> List.first,
-            rest: list \> List.rest,
+            first: list |> List.first,
+            rest: list |> List.rest,
           })
 ;
 
 let fold = \state, fn -> \list {
-    let {first, rest} = list \> elements ?? return state;
+    let {first, rest} = list |> elements ?? return state;
     let new_state = fn(state, first);
-    return rest \> fold(new_state, fn);
+    return rest |> fold(new_state, fn);
 };
 
 let try_fold = \initial, fn ->
@@ -22,7 +22,7 @@ let try_fold = \initial, fn ->
   );
 
 let map = \fn -> \list ->
-    list \> fold([], \state, element -> [..state, fn(element)]);
+    list |> fold([], \state, element -> [..state, fn(element)]);
 
 let try_map = \fn ->
   fold(
@@ -34,20 +34,20 @@ let try_map = \fn ->
   );
 
 let reduce = \fn -> \list ->
-  match list \> elements {
+  match list |> elements {
     .err(e) -> .err(e),
-    .ok({first, rest}) -> .ok(rest \> fold(first, fn))
+    .ok({first, rest}) -> .ok(rest |> fold(first, fn))
   };
 
 let reverse = \list ->
-    list \> fold([], \state, element -> [element, ..state]);
+    list |> fold([], \state, element -> [element, ..state]);
 
 let where = \fn -> \list ->
-    list \> fold([], \state, element ->
+    list |> fold([], \state, element ->
         fn(element) ? [..state, element] : state);
 
 let enumerated = \list {
-    let result = list \> fold(
+    let result = list |> fold(
         {index: 0, list: []},
         \{index, list}, element -> {
             index: index + 1,
@@ -58,22 +58,22 @@ let enumerated = \list {
 };
 
 let count_where = \predicate -> \list ->
-    list \> fold(0, \count, element -> predicate(element) ? count + 1 : count);
+    list |> fold(0, \count, element -> predicate(element) ? count + 1 : count);
 
 let sort = \list {
-  let {first: x, rest: xs} = list \> elements ?? return [];
+  let {first: x, rest: xs} = list |> elements ?? return [];
   let is_before = \e -> e < x;
   let is_after = \e -> e >= x;
   return [
-    ..xs \> where(is_before) \> sort,
+    ..xs |> where(is_before) |> sort,
     x,
-    ..xs \> where(is_after) \> sort
+    ..xs |> where(is_after) |> sort
   ];
 };
 
 let zip = \list1, list2, fn {
-  let l1 = list1 \> elements ?? return [];
-  let l2 = list2 \> elements ?? return [];
+  let l1 = list1 |> elements ?? return [];
+  let l2 = list2 |> elements ?? return [];
   return [
       fn(l1.first, l2.first),
       ..zip(l1.rest, l2.rest, fn),
@@ -81,7 +81,7 @@ let zip = \list1, list2, fn {
 };
 
 let zip_with_tail = \fn -> \list ->
-  match list \> elements {
+  match list |> elements {
     .err(_) -> [],
     .ok({rest}) -> zip(list, rest, fn)
   };
@@ -91,16 +91,16 @@ let sum = reduce(plus);
 
 
 let fold_until = \state, fn -> \list {
-    let {first, rest} = list \> elements ?? return state;
+    let {first, rest} = list |> elements ?? return state;
     let step = fn(state, first);
     return match step {
-        .continue(new_state) -> rest \> fold_until(new_state, fn),
+        .continue(new_state) -> rest |> fold_until(new_state, fn),
         .break(final_state) -> final_state,
     };
 };
 
 let any = \predicate -> \list ->
-    list \> fold_until(
+    list |> fold_until(
         false,
         \state, element ->
             predicate(element)
@@ -109,7 +109,7 @@ let any = \predicate -> \list ->
     );
 
 let all = \predicate -> \list ->
-    list \> fold_until(
+    list |> fold_until(
         true,
         \state, element ->
             predicate(element)
@@ -119,16 +119,16 @@ let all = \predicate -> \list ->
 
 let drop_at = \target_index -> \list ->
     list
-        \> enumerated
-        \> where(\{index} -> index != target_index)
-        \> map(\{element} -> element);
+        |> enumerated
+        |> where(\{index} -> index != target_index)
+        |> map(\{element} -> element);
 
 let join = fold("", String.concat);
 
 let element_at = \target_index -> \list ->
     list
-        \> enumerated
-        \> fold_until(
+        |> enumerated
+        |> fold_until(
                .err(.out_of_bounds),
                \state, {index, element} ->
                  index == target_index

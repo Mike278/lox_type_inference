@@ -89,7 +89,7 @@ print one_minus_x(3);
 print x_minus_one(3);
 
 let numbers = [1,2,3];
-print numbers \> first \> sub(_, 1);
+print numbers |> first |> sub(_, 1);
 
 let make_user = \data {
     if data.name == "null" then {
@@ -156,12 +156,12 @@ let input = [
 ];
 
 let initial = {list1: [], list2: []};
-let {list1, list2} = input \> try_fold(
+let {list1, list2} = input |> try_fold(
     initial,
     \state, pair {
       let {list1, list2} = state;
-      let left = pair \> element_at(0);
-      let right = pair \> element_at(1);
+      let left = pair |> element_at(0);
+      let right = pair |> element_at(1);
       return .ok({
         list1: [..list1, left!],
         list2: [..list2, right!],
@@ -175,19 +175,19 @@ print list2;
 /////// Part 1 ///////
 
 let answer1 = zip(
-  list1 \> sort,
-  list2 \> sort,
+  list1 |> sort,
+  list2 |> sort,
   abs_diff
-) \> sum;
+) |> sum;
 
 assert answer1 == .ok(11);
 
 /////// Part 2 ///////
 
 let frequency_of_number_in_list2 = \n ->
-    list2 \> count_where(n \> eq);
+    list2 |> count_where(n |> eq);
 
-let answer2 = list1 \> fold(0, \running, n {
+let answer2 = list1 |> fold(0, \running, n {
     let value = n * frequency_of_number_in_list2(n);
     return running + value;
 });
@@ -206,34 +206,34 @@ let input = [
 ];
 
 let is_safe = \list {
-    let diffs = list \> zip_with_tail(minus);
-    let first_direction = match diffs \> elements {
+    let diffs = list |> zip_with_tail(minus);
+    let first_direction = match diffs |> elements {
         .err(_) -> return false,
-        .ok({first}) -> first \> sign,
+        .ok({first}) -> first |> sign,
     };
-    return diffs \> all(
+    return diffs |> all(
         \diff ->
-            diff \> sign == first_direction and
-            diff \> abs >= 1 and
-            diff \> abs <= 3
+            diff |> sign == first_direction and
+            diff |> abs >= 1 and
+            diff |> abs <= 3
     );
 };
 
 /////// Part 1 ///////
 
-let part_1 = input \> count_where(is_safe);
+let part_1 = input |> count_where(is_safe);
 print part_1;
 assert part_1 == 2;
 
 /////// Part 2 ///////
 
 
-let part_2 = input \> count_where(
+let part_2 = input |> count_where(
     \list ->
-        list \> is_safe or
-        list \> enumerated
-             \> map(\{index} -> list \> drop_at(index))
-             \> any(is_safe)
+        list |> is_safe or
+        list |> enumerated
+             |> map(\{index} -> list |> drop_at(index))
+             |> any(is_safe)
 );
 print part_2;
 assert part_2 == 4;
@@ -242,21 +242,21 @@ assert part_2 == 4;
 let {split, split_at, parse_int} = import "util/strings.lox";
 
 let parse_operand = \{until: separator} -> \str {
-  let {before, after} = str \> split_at({separator})!;
+  let {before, after} = str |> split_at({separator})!;
   let number = parse_int(before)!;
   return .ok({number, rest: after});
 };
 
 let compute_product = \str ->
     str
-      \> split({separator: "mul("})
-      \> map(\part {
-        let {number: lhs, rest} = part \> parse_operand({until: ","})!;
-        let {number: rhs} = rest \> parse_operand({until: ")"})!;
+      |> split({separator: "mul("})
+      |> map(\part {
+        let {number: lhs, rest} = part |> parse_operand({until: ","})!;
+        let {number: rhs} = rest |> parse_operand({until: ")"})!;
         return .ok(lhs * rhs);
       })
-      \> map(\product -> product ?? 0)
-      \> sum;
+      |> map(\product -> product ?? 0)
+      |> sum;
 
 
 /////// Part 1 ///////
@@ -270,15 +270,15 @@ assert part_1_result == .ok(161);
 let input2 = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
 let part_2 = \ ->
 input2
-  \> split({separator: "do()"})
-  \> map(\part ->
-       match part \> split_at({separator: "don't()"}) {
+  |> split({separator: "do()"})
+  |> map(\part ->
+       match part |> split_at({separator: "don't()"}) {
          .ok({before}) -> compute_product(before),
          .err(_) -> compute_product(part),
        }
      )
-  \> map(\product -> product ?? 0)
-  \> sum;
+  |> map(\product -> product ?? 0)
+  |> sum;
 
 let part_2_result = part_2();
 print part_2_result;
@@ -313,19 +313,19 @@ let offset_for_direction = \dir {
     if dir == "up"      then return {y: -1, x: 0};
     if dir == "down"    then return {y: 1, x: 0};
     if dir == "forward" then return {y: 0, x: 1};
-    print ["unknown direction: '", dir, "' falling back to no-op"] \> join;
+    print ["unknown direction: '", dir, "' falling back to no-op"] |> join;
     return {y: 0, x: 0};
 };
 
 let to_movement = \instr ->
     offset_for_direction(instr.arg1)
-    \> scale_by(instr.arg2)
+    |> scale_by(instr.arg2)
 ;
 
 let part_1 = input
-    \> map(to_movement)
-    \> fold({y: 0, x: 0}, add)
-    \> \{x, y} -> x * y
+    |> map(to_movement)
+    |> fold({y: 0, x: 0}, add)
+    |> \{x, y} -> x * y
 ;
 print part_1;
 assert part_1 == 150;
@@ -361,14 +361,14 @@ let update = \state, instr {
         },
     });
 
-    return .err(["unknown direction: '", dir, "' falling back to no-op"] \> join);
+    return .err(["unknown direction: '", dir, "' falling back to no-op"] |> join);
 };
 
 let initial = .ok({
     aim: 0,
     pos: {x: 0, y: 0},
 });
-let result = input \> fold(initial, update);
+let result = input |> fold(initial, update);
 let part_2 = match result {
     .ok({pos: {x, y}}) -> x * y,
     .err(_) -> -1,
@@ -380,18 +380,18 @@ assert part_2 == 900;
 (SampleName('util/lists.lox'),  SampleContent(r'''let {plus} = import "numeric.lox";
 
 let elements = \list ->
-    list \> List.empty
+    list |> List.empty
         ? .err(.empty_list)
         : .ok({
-            first: list \> List.first,
-            rest: list \> List.rest,
+            first: list |> List.first,
+            rest: list |> List.rest,
           })
 ;
 
 let fold = \state, fn -> \list {
-    let {first, rest} = list \> elements ?? return state;
+    let {first, rest} = list |> elements ?? return state;
     let new_state = fn(state, first);
-    return rest \> fold(new_state, fn);
+    return rest |> fold(new_state, fn);
 };
 
 let try_fold = \initial, fn ->
@@ -401,7 +401,7 @@ let try_fold = \initial, fn ->
   );
 
 let map = \fn -> \list ->
-    list \> fold([], \state, element -> [..state, fn(element)]);
+    list |> fold([], \state, element -> [..state, fn(element)]);
 
 let try_map = \fn ->
   fold(
@@ -413,20 +413,20 @@ let try_map = \fn ->
   );
 
 let reduce = \fn -> \list ->
-  match list \> elements {
+  match list |> elements {
     .err(e) -> .err(e),
-    .ok({first, rest}) -> .ok(rest \> fold(first, fn))
+    .ok({first, rest}) -> .ok(rest |> fold(first, fn))
   };
 
 let reverse = \list ->
-    list \> fold([], \state, element -> [element, ..state]);
+    list |> fold([], \state, element -> [element, ..state]);
 
 let where = \fn -> \list ->
-    list \> fold([], \state, element ->
+    list |> fold([], \state, element ->
         fn(element) ? [..state, element] : state);
 
 let enumerated = \list {
-    let result = list \> fold(
+    let result = list |> fold(
         {index: 0, list: []},
         \{index, list}, element -> {
             index: index + 1,
@@ -437,22 +437,22 @@ let enumerated = \list {
 };
 
 let count_where = \predicate -> \list ->
-    list \> fold(0, \count, element -> predicate(element) ? count + 1 : count);
+    list |> fold(0, \count, element -> predicate(element) ? count + 1 : count);
 
 let sort = \list {
-  let {first: x, rest: xs} = list \> elements ?? return [];
+  let {first: x, rest: xs} = list |> elements ?? return [];
   let is_before = \e -> e < x;
   let is_after = \e -> e >= x;
   return [
-    ..xs \> where(is_before) \> sort,
+    ..xs |> where(is_before) |> sort,
     x,
-    ..xs \> where(is_after) \> sort
+    ..xs |> where(is_after) |> sort
   ];
 };
 
 let zip = \list1, list2, fn {
-  let l1 = list1 \> elements ?? return [];
-  let l2 = list2 \> elements ?? return [];
+  let l1 = list1 |> elements ?? return [];
+  let l2 = list2 |> elements ?? return [];
   return [
       fn(l1.first, l2.first),
       ..zip(l1.rest, l2.rest, fn),
@@ -460,7 +460,7 @@ let zip = \list1, list2, fn {
 };
 
 let zip_with_tail = \fn -> \list ->
-  match list \> elements {
+  match list |> elements {
     .err(_) -> [],
     .ok({rest}) -> zip(list, rest, fn)
   };
@@ -470,16 +470,16 @@ let sum = reduce(plus);
 
 
 let fold_until = \state, fn -> \list {
-    let {first, rest} = list \> elements ?? return state;
+    let {first, rest} = list |> elements ?? return state;
     let step = fn(state, first);
     return match step {
-        .continue(new_state) -> rest \> fold_until(new_state, fn),
+        .continue(new_state) -> rest |> fold_until(new_state, fn),
         .break(final_state) -> final_state,
     };
 };
 
 let any = \predicate -> \list ->
-    list \> fold_until(
+    list |> fold_until(
         false,
         \state, element ->
             predicate(element)
@@ -488,7 +488,7 @@ let any = \predicate -> \list ->
     );
 
 let all = \predicate -> \list ->
-    list \> fold_until(
+    list |> fold_until(
         true,
         \state, element ->
             predicate(element)
@@ -498,16 +498,16 @@ let all = \predicate -> \list ->
 
 let drop_at = \target_index -> \list ->
     list
-        \> enumerated
-        \> where(\{index} -> index != target_index)
-        \> map(\{element} -> element);
+        |> enumerated
+        |> where(\{index} -> index != target_index)
+        |> map(\{element} -> element);
 
 let join = fold("", String.concat);
 
 let element_at = \target_index -> \list ->
     list
-        \> enumerated
-        \> fold_until(
+        |> enumerated
+        |> fold_until(
                .err(.out_of_bounds),
                \state, {index, element} ->
                  index == target_index
@@ -542,12 +542,12 @@ let split = \{separator} -> \str -> String.split(str, separator);
 
 let split_at = \{separator} -> \str {
     let { first, rest } = str
-      \> split({separator})
-      \> elements
+      |> split({separator})
+      |> elements
       ?? return .err(.separator_not_found);
     return .ok({
       before: first,
-      after: rest \> join,
+      after: rest |> join,
     });
 };
 
@@ -565,8 +565,8 @@ let as_digit = \str ->
     .err(.invalid_digit(str));
 
 let parse_int = \str -> str
-  \> split({separator: ""})
-  \> try_map(as_digit)
-  \> try(fold(0, \number, digit -> number * 10 + digit));
+  |> split({separator: ""})
+  |> try_map(as_digit)
+  |> try(fold(0, \number, digit -> number * 10 + digit));
 '''))
 ];
