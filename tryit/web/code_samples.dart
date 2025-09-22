@@ -403,6 +403,15 @@ let try_fold = \initial, fn ->
 let map = \fn -> \list ->
     list \> fold([], \state, element -> [..state, fn(element)]);
 
+let try_map = \fn ->
+  fold(
+    .ok([]),
+    \state, element -> .ok([
+      ..state!,
+      fn(element)!,
+    ]),
+  );
+
 let reduce = \fn -> \list ->
   match list \> elements {
     .err(e) -> .err(e),
@@ -509,6 +518,11 @@ let element_at = \target_index -> \list ->
 let length = fold(0, \count, _ -> count + 1);
 ''')),
 (SampleName('util/functions.lox'),  SampleContent(r'''let eq = \a -> \b -> a == b;
+
+let try = \f -> \r -> match r {
+  .ok(x) -> .ok(f(x)),
+  .err(e) -> .err(e),
+};
 ''')),
 (SampleName('util/numeric.lox'),  SampleContent(r'''
 let abs_diff = \a, b -> a > b ? a - b : b - a;
@@ -521,7 +535,8 @@ let sign = \n {
     assert n > 0;
     return 1;
 };''')),
-(SampleName('util/strings.lox'),  SampleContent(r'''let { fold, join, elements, map } = import "lists.lox";
+(SampleName('util/strings.lox'),  SampleContent(r'''let { fold, join, elements, try_map } = import "lists.lox";
+let { try } = import "functions.lox";
 
 let split = \{separator} -> \str -> String.split(str, separator);
 
@@ -551,10 +566,7 @@ let as_digit = \str ->
 
 let parse_int = \str -> str
   \> split({separator: ""})
-  \> map(as_digit)
-  \> fold(
-    .ok(0),
-    \number, digit -> .ok(number! * 10 + digit!)
-  );
+  \> try_map(as_digit)
+  \> try(fold(0, \number, digit -> number * 10 + digit));
 '''))
 ];

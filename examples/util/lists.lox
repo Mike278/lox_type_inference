@@ -24,6 +24,15 @@ let try_fold = \initial, fn ->
 let map = \fn -> \list ->
     list \> fold([], \state, element -> [..state, fn(element)]);
 
+let try_map = \fn ->
+  fold(
+    .ok([]),
+    \state, element -> .ok([
+      ..state!,
+      fn(element)!,
+    ]),
+  );
+
 let reduce = \fn -> \list ->
   match list \> elements {
     .err(e) -> .err(e),

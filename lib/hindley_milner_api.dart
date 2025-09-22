@@ -429,7 +429,15 @@ String prettyPrintVariant(String tag, Ty payload, Ty tail, DisplayTypeVariable d
     rows.add(_formatTag(t.label, t.type, displayTypeVariable));
     tail = t.row;
   } else break;
-  final pairs = rows.sorted().join(' | ');
+  final pairs = rows
+      .sorted(
+        (a, b) => a.startsWith('.ok')
+            ? -1
+            : b.startsWith('.ok')
+            ? 1
+            : a.compareTo(b),
+      )
+      .join(' | ');
   return pairs;
 }
 

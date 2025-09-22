@@ -1,1 +1,6 @@
 let eq = \a -> \b -> a == b;
+
+let try = \f -> \r -> match r {
+  .ok(x) -> .ok(f(x)),
+  .err(e) -> .err(e),
+};
