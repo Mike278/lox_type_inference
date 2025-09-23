@@ -400,8 +400,8 @@ let try_fold = \initial, fn ->
     \state, element -> fn(state!, element),
   );
 
-let map = \fn -> \list ->
-    list |> fold([], \state, element -> [..state, fn(element)]);
+let map = \fn ->
+    fold([], \state, element -> [..state, fn(element)]);
 
 let try_map = \fn ->
   fold(
@@ -418,12 +418,11 @@ let reduce = \fn -> \list ->
     .ok({first, rest}) -> .ok(rest |> fold(first, fn))
   };
 
-let reverse = \list ->
-    list |> fold([], \state, element -> [element, ..state]);
+let reverse =
+    fold([], \state, element -> [element, ..state]);
 
-let where = \fn -> \list ->
-    list |> fold([], \state, element ->
-        fn(element) ? [..state, element] : state);
+let where = \fn ->
+    fold([], \state, element -> fn(element) ? [..state, element] : state);
 
 let enumerated = \list {
     let result = list |> fold(
@@ -436,8 +435,8 @@ let enumerated = \list {
     return result.list;
 };
 
-let count_where = \predicate -> \list ->
-    list |> fold(0, \count, element -> predicate(element) ? count + 1 : count);
+let count_where = \predicate ->
+    fold(0, \count, element -> predicate(element) ? count + 1 : count);
 
 let sort = \list {
   let {first: x, rest: xs} = list |> elements ?? return [];
@@ -478,8 +477,8 @@ let fold_until = \state, fn -> \list {
     };
 };
 
-let any = \predicate -> \list ->
-    list |> fold_until(
+let any = \predicate ->
+    fold_until(
         false,
         \state, element ->
             predicate(element)
@@ -487,8 +486,8 @@ let any = \predicate -> \list ->
                 : .continue(state)
     );
 
-let all = \predicate -> \list ->
-    list |> fold_until(
+let all = \predicate ->
+    fold_until(
         true,
         \state, element ->
             predicate(element)
