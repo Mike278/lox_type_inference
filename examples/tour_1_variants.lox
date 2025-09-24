@@ -17,6 +17,7 @@ print match either {
     .green -> 0,
     .red -> 1,
 };
+
 print match event {
     .key(char) -> char,
     .mouse({ x }) -> x > 50 ? "top" : "bottom",
@@ -28,6 +29,7 @@ print match either {
     .green -> .good,
     other -> other,
 };
+
 print match event {
     .key(char) -> char,
     _ -> "<ignored>"

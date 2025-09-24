@@ -10,7 +10,9 @@ let people = ["joe", ..friends, "john", ..family];
 // Destructure a list
 let { elements, is_empty } = import "util/lists.lox";
 print match people |> elements {
+
     .err(_) -> "none",
+
     .ok({ first, rest }) ->
         rest |> is_empty
             ? String.concat("just ", first)

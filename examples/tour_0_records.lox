@@ -19,13 +19,14 @@ let { name: boss_name, company } = boss;
 
 // Update an existing field
 let fixed_name = {..boss, name: "Bob Vance"};
+
 print boss.name;
+
 print fixed_name.name;
 
 
 // Add a new field
-let updated = { ..fixed_name, line_of_work: "Refrigeration" };
-print updated;
+print { ..fixed_name, line_of_work: "Refrigeration" };
 
 
 // You can use a variable's name as the field name - these two records are equivalent

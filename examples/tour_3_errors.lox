@@ -31,10 +31,12 @@ let process = \ {
 };
 
 print match process() {
+
     .ok(status) -> match status {
         .done -> "no problems",
         .low_stock(_) -> "finished but low stock",
     },
+
     .err(e) -> match e {
         .out_of_stock -> "out of stock",
         .insufficient_stock(amount) -> "tried to buy too many"
@@ -45,4 +47,5 @@ print match process() {
 // Use the ?? operator to extract the payload from an `.ok` variant,
 // or provide a fallback value if it's an `.err` variant.
 let download = \url -> true ? .ok("some data") : .err(.offline);
+
 print download() ?? "some default data";
