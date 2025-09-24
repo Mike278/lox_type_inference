@@ -45,13 +45,14 @@ let { name: boss_name, company } = boss;
 
 // Update an existing field
 let fixed_name = {..boss, name: "Bob Vance"};
+
 print boss.name;
+
 print fixed_name.name;
 
 
 // Add a new field
-let updated = { ..fixed_name, line_of_work: "Refrigeration" };
-print updated;
+print { ..fixed_name, line_of_work: "Refrigeration" };
 
 
 // You can use a variable's name as the field name - these two records are equivalent
@@ -78,6 +79,7 @@ print match either {
     .green -> 0,
     .red -> 1,
 };
+
 print match event {
     .key(char) -> char,
     .mouse({ x }) -> x > 50 ? "top" : "bottom",
@@ -89,6 +91,7 @@ print match either {
     .green -> .good,
     other -> other,
 };
+
 print match event {
     .key(char) -> char,
     _ -> "<ignored>"
@@ -105,7 +108,9 @@ print add_one(5);
 // Here's a function with multiple parameters and a block body
 let describe = \x, y {
     let good = x or y;
+
     if good then print "nice";
+
     return good;
 };
 
@@ -113,24 +118,34 @@ let describe = \x, y {
 // When calling a function you can use _ to omit a parameter.
 // This creates new function that takes the remaining parameter.
 let always_good = describe(true, _);
+
 print always_good(true);
+
 print always_good(false);
 
 
 // Parameters can use record destructuring to emulate named parameters.
 let has_silly_name = \{ first, last } -> first == last;
+
 print has_silly_name({ first: "Joe", last: "Joe" });
+
 
 // Destructuring with an alias allows both caller and callee to use an appropriate name.
 let is_new = \{ as_of_year: current_year } -> current_year > 2025;
+
 print is_new({ as_of_year: 1999 });
 
 
 // Functions can also be called with the pipeline operator
 let new_user = \username -> { username, registered: true };
+
 let grant_admin = \user -> { ..user, is_admin: true };
+
 let display_name = \user -> user.is_admin ? "<Admin>" : user.username;
+
+
 let nested = display_name(grant_admin(new_user("Bob")));
+
 let flat =
     "Bob"
     |> new_user
@@ -171,10 +186,12 @@ let process = \ {
 };
 
 print match process() {
+
     .ok(status) -> match status {
         .done -> "no problems",
         .low_stock(_) -> "finished but low stock",
     },
+
     .err(e) -> match e {
         .out_of_stock -> "out of stock",
         .insufficient_stock(amount) -> "tried to buy too many"
@@ -185,6 +202,7 @@ print match process() {
 // Use the ?? operator to extract the payload from an `.ok` variant,
 // or provide a fallback value if it's an `.err` variant.
 let download = \url -> true ? .ok("some data") : .err(.offline);
+
 print download() ?? "some default data";
 ''')),
 (SampleName('tour_4_lists.lox'),  SampleContent(r'''// List literal syntax
@@ -199,7 +217,9 @@ let people = ["joe", ..friends, "john", ..family];
 // Destructure a list
 let { elements, is_empty } = import "util/lists.lox";
 print match people |> elements {
+
     .err(_) -> "none",
+
     .ok({ first, rest }) ->
         rest |> is_empty
             ? String.concat("just ", first)

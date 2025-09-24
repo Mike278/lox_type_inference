@@ -2364,29 +2364,27 @@ ___ TYPES ___
 20:43 - 20:44  {...}: {name: String, company: String, name: String}
 20:20 - 20:24  boss: {name: String, company: String}
 20:26 - 20:30  name: String
-21:0 - 21:5    print: String
-21:11 - 21:15  name: String
-21:6 - 21:10   boss: {name: String, company: String}
 22:0 - 22:5    print: String
-22:17 - 22:21  name: String
-22:6 - 22:16   fixed_name: {name: String, company: String, name: String}
-26:4 - 26:11   updated: {name: String, company: String, name: String, line_of_work: String}
-26:60 - 26:61  {...}: {name: String, company: String, name: String, line_of_work: String}
-26:18 - 26:28  fixed_name: {name: String, company: String, name: String}
-26:30 - 26:42  line_of_work: String
-27:0 - 27:5    print: {name: String, company: String, name: String, line_of_work: String}
-27:6 - 27:13   updated: {name: String, company: String, name: String, line_of_work: String}
-31:4 - 31:12   subtitle: String
-32:4 - 32:8    card: {title: String, subtitle: String}
-32:48 - 32:49  {...}: {title: String, subtitle: String}
-32:13 - 32:18  title: String
-32:29 - 32:37  subtitle: String
-32:39 - 32:47  subtitle: String
-33:4 - 33:8    same: {title: String, subtitle: String}
-33:38 - 33:39  {...}: {title: String, subtitle: String}
+22:11 - 22:15  name: String
+22:6 - 22:10   boss: {name: String, company: String}
+24:0 - 24:5    print: String
+24:17 - 24:21  name: String
+24:6 - 24:16   fixed_name: {name: String, company: String, name: String}
+28:0 - 28:5    print: {name: String, company: String, name: String, line_of_work: String}
+28:52 - 28:53  {...}: {name: String, company: String, name: String, line_of_work: String}
+28:10 - 28:20  fixed_name: {name: String, company: String, name: String}
+28:22 - 28:34  line_of_work: String
+32:4 - 32:12   subtitle: String
+33:4 - 33:8    card: {title: String, subtitle: String}
+33:48 - 33:49  {...}: {title: String, subtitle: String}
 33:13 - 33:18  title: String
 33:29 - 33:37  subtitle: String
-33:29 - 33:37  subtitle: String
+33:39 - 33:47  subtitle: String
+34:4 - 34:8    same: {title: String, subtitle: String}
+34:38 - 34:39  {...}: {title: String, subtitle: String}
+34:13 - 34:18  title: String
+34:29 - 34:37  subtitle: String
+34:29 - 34:37  subtitle: String
 ___ OUTPUT ___
 Vance Refrigeration
 Bob
@@ -2414,31 +2412,31 @@ ___ TYPES ___
 15:12 - 15:18  either: .green | .red
 16:5 - 16:10   green: .green
 17:5 - 17:8    red: .red
-19:0 - 19:5    print: String
-19:6 - 19:11   match: String
-19:12 - 19:17  event: .key(String) | .mouse({x: Num, y: Num})
-20:5 - 20:8    key: .key(String)
-20:9 - 20:13   char: String
-20:18 - 20:22  char: String
-21:5 - 21:10   mouse: .mouse({y: Num, x: Num})
-21:13 - 21:14  x: Num
-21:28 - 21:29  ?: String
-21:23 - 21:24  >: Bool
-21:21 - 21:22  x: Num
-26:0 - 26:5    print: .good | .red
-26:6 - 26:11   match: .good | .red
-26:12 - 26:18  either: .good | .green | .red
-27:5 - 27:10   green: .green
-27:15 - 27:19  good: .good | .red
-28:4 - 28:9    other: .good | .red
-28:13 - 28:18  other: .good | .red
-30:0 - 30:5    print: String
-30:6 - 30:11   match: String
-30:12 - 30:17  event: .key(String) | .mouse({x: Num, y: Num})
-31:5 - 31:8    key: .key(String)
-31:9 - 31:13   char: String
-31:18 - 31:22  char: String
-32:4 - 32:6    _0: .mouse({x: Num, y: Num})
+20:0 - 20:5    print: String
+20:6 - 20:11   match: String
+20:12 - 20:17  event: .key(String) | .mouse({x: Num, y: Num})
+21:5 - 21:8    key: .key(String)
+21:9 - 21:13   char: String
+21:18 - 21:22  char: String
+22:5 - 22:10   mouse: .mouse({y: Num, x: Num})
+22:13 - 22:14  x: Num
+22:28 - 22:29  ?: String
+22:23 - 22:24  >: Bool
+22:21 - 22:22  x: Num
+27:0 - 27:5    print: .good | .red
+27:6 - 27:11   match: .good | .red
+27:12 - 27:18  either: .good | .green | .red
+28:5 - 28:10   green: .green
+28:15 - 28:19  good: .good | .red
+29:4 - 29:9    other: .good | .red
+29:13 - 29:18  other: .good | .red
+32:0 - 32:5    print: String
+32:6 - 32:11   match: String
+32:12 - 32:17  event: .key(String) | .mouse({x: Num, y: Num})
+33:5 - 33:8    key: .key(String)
+33:9 - 33:13   char: String
+33:18 - 33:22  char: String
+34:4 - 34:6    _0: .mouse({x: Num, y: Num})
 ___ OUTPUT ___
 0
 \n
@@ -2458,86 +2456,86 @@ ___ TYPES ___
 5:6 - 5:13     add_one: Num -> Num
 9:4 - 9:12     describe: Bool, Bool -> Bool
 9:21 - 9:22    Bool, Bool -> Bool
-13:0 - 13:1    Bool, Bool -> Bool
+15:0 - 15:1    Bool, Bool -> Bool
 9:16 - 9:17    x: Bool
 9:19 - 9:20    y: Bool
 10:8 - 10:12   good: Bool
 10:17 - 10:19  or: Bool
 10:15 - 10:16  x: Bool
 10:20 - 10:21  y: Bool
-11:7 - 11:11   good: Bool
-11:17 - 11:22  print: String
-12:4 - 12:10   Bool
-12:11 - 12:15  good: Bool
-18:4 - 18:15   always_good: Bool -> Bool
-18:34 - 18:35  Bool -> Bool
-18:33 - 18:34  _: <unknown>
-18:18 - 18:26  describe: Bool, Bool -> Bool
-19:0 - 19:5    print: Bool
-19:22 - 19:23  Bool
-19:6 - 19:17   always_good: Bool -> Bool
-20:0 - 20:5    print: Bool
-20:23 - 20:24  Bool
-20:6 - 20:17   always_good: Bool -> Bool
-24:4 - 24:18   has_silly_name: {first: b, last: b} -> Bool
-24:38 - 24:40  {first: b, last: b} -> Bool
-24:47 - 24:49  ==: Bool
-24:41 - 24:46  first: b
-24:50 - 24:54  last: b
-24:24 - 24:29  first: b
-24:31 - 24:35  last: b
-25:0 - 25:5    print: Bool
-25:50 - 25:51  Bool
-25:6 - 25:20   has_silly_name: {first: String, last: String} -> Bool
-25:49 - 25:50  {...}: {first: String, last: String}
-25:23 - 25:28  first: String
-25:37 - 25:41  last: String
-28:4 - 28:10   is_new: {as_of_year: Num} -> Bool
-28:43 - 28:45  {as_of_year: Num} -> Bool
-28:59 - 28:60  >: Bool
-28:46 - 28:58  current_year: Num
-28:16 - 28:26  as_of_year: Num
-28:28 - 28:40  current_year: Num
-29:0 - 29:5    print: Bool
-29:33 - 29:34  Bool
-29:6 - 29:12   is_new: {as_of_year: Num} -> Bool
-29:32 - 29:33  {...}: {as_of_year: Num}
-29:15 - 29:25  as_of_year: Num
-33:4 - 33:12   new_user: a -> {username: a, registered: Bool}
-33:25 - 33:27  a -> {username: a, registered: Bool}
-33:57 - 33:58  {...}: {username: a, registered: Bool}
-33:30 - 33:38  username: a
-33:30 - 33:38  username: a
-33:40 - 33:50  registered: Bool
-33:16 - 33:24  username: a
-34:4 - 34:15   grant_admin: a -> {is_admin: Bool}
-34:24 - 34:26  a -> {is_admin: Bool}
-34:52 - 34:53  {...}: {is_admin: Bool}
-34:31 - 34:35  user: a
-34:37 - 34:45  is_admin: Bool
-34:19 - 34:23  user: a
-35:4 - 35:16   display_name: {username: String, is_admin: Bool} -> String
-35:25 - 35:27  {username: String, is_admin: Bool} -> String
-35:42 - 35:43  ?: String
-35:33 - 35:41  is_admin: Bool
-35:28 - 35:32  user: {username: String, is_admin: Bool}
-35:61 - 35:69  username: String
-35:56 - 35:60  user: {username: String, is_admin: Bool}
-35:20 - 35:24  user: {username: String, is_admin: Bool}
-36:4 - 36:10   nested: String
-36:54 - 36:55  String
-36:13 - 36:25  display_name: {registered: Bool, username: String, is_admin: Bool} -> String
-36:53 - 36:54  {username: String, registered: Bool, is_admin: Bool}
-36:26 - 36:37  grant_admin: {username: String, registered: Bool} -> {username: String, registered: Bool, is_admin: Bool}
-36:52 - 36:53  {username: String, registered: Bool}
-36:38 - 36:46  new_user: String -> {username: String, registered: Bool}
-37:4 - 37:8    flat: String
-41:4 - 41:6    |>: String
-40:4 - 40:6    |>: {username: String, registered: Bool, is_admin: Bool}
-39:4 - 39:6    |>: {username: String, registered: Bool}
-39:7 - 39:15   new_user: String -> {username: String, registered: Bool}
-40:7 - 40:18   grant_admin: {username: String, registered: Bool} -> {username: String, registered: Bool, is_admin: Bool}
-41:7 - 41:19   display_name: {registered: Bool, username: String, is_admin: Bool} -> String
+12:7 - 12:11   good: Bool
+12:17 - 12:22  print: String
+14:4 - 14:10   Bool
+14:11 - 14:15  good: Bool
+20:4 - 20:15   always_good: Bool -> Bool
+20:34 - 20:35  Bool -> Bool
+20:33 - 20:34  _: <unknown>
+20:18 - 20:26  describe: Bool, Bool -> Bool
+22:0 - 22:5    print: Bool
+22:22 - 22:23  Bool
+22:6 - 22:17   always_good: Bool -> Bool
+24:0 - 24:5    print: Bool
+24:23 - 24:24  Bool
+24:6 - 24:17   always_good: Bool -> Bool
+28:4 - 28:18   has_silly_name: {first: b, last: b} -> Bool
+28:38 - 28:40  {first: b, last: b} -> Bool
+28:47 - 28:49  ==: Bool
+28:41 - 28:46  first: b
+28:50 - 28:54  last: b
+28:24 - 28:29  first: b
+28:31 - 28:35  last: b
+30:0 - 30:5    print: Bool
+30:50 - 30:51  Bool
+30:6 - 30:20   has_silly_name: {first: String, last: String} -> Bool
+30:49 - 30:50  {...}: {first: String, last: String}
+30:23 - 30:28  first: String
+30:37 - 30:41  last: String
+34:4 - 34:10   is_new: {as_of_year: Num} -> Bool
+34:43 - 34:45  {as_of_year: Num} -> Bool
+34:59 - 34:60  >: Bool
+34:46 - 34:58  current_year: Num
+34:16 - 34:26  as_of_year: Num
+34:28 - 34:40  current_year: Num
+36:0 - 36:5    print: Bool
+36:33 - 36:34  Bool
+36:6 - 36:12   is_new: {as_of_year: Num} -> Bool
+36:32 - 36:33  {...}: {as_of_year: Num}
+36:15 - 36:25  as_of_year: Num
+40:4 - 40:12   new_user: a -> {username: a, registered: Bool}
+40:25 - 40:27  a -> {username: a, registered: Bool}
+40:57 - 40:58  {...}: {username: a, registered: Bool}
+40:30 - 40:38  username: a
+40:30 - 40:38  username: a
+40:40 - 40:50  registered: Bool
+40:16 - 40:24  username: a
+42:4 - 42:15   grant_admin: a -> {is_admin: Bool}
+42:24 - 42:26  a -> {is_admin: Bool}
+42:52 - 42:53  {...}: {is_admin: Bool}
+42:31 - 42:35  user: a
+42:37 - 42:45  is_admin: Bool
+42:19 - 42:23  user: a
+44:4 - 44:16   display_name: {username: String, is_admin: Bool} -> String
+44:25 - 44:27  {username: String, is_admin: Bool} -> String
+44:42 - 44:43  ?: String
+44:33 - 44:41  is_admin: Bool
+44:28 - 44:32  user: {username: String, is_admin: Bool}
+44:61 - 44:69  username: String
+44:56 - 44:60  user: {username: String, is_admin: Bool}
+44:20 - 44:24  user: {username: String, is_admin: Bool}
+47:4 - 47:10   nested: String
+47:54 - 47:55  String
+47:13 - 47:25  display_name: {registered: Bool, username: String, is_admin: Bool} -> String
+47:53 - 47:54  {username: String, registered: Bool, is_admin: Bool}
+47:26 - 47:37  grant_admin: {username: String, registered: Bool} -> {username: String, registered: Bool, is_admin: Bool}
+47:52 - 47:53  {username: String, registered: Bool}
+47:38 - 47:46  new_user: String -> {username: String, registered: Bool}
+49:4 - 49:8    flat: String
+53:4 - 53:6    |>: String
+52:4 - 52:6    |>: {username: String, registered: Bool, is_admin: Bool}
+51:4 - 51:6    |>: {username: String, registered: Bool}
+51:7 - 51:15   new_user: String -> {username: String, registered: Bool}
+52:7 - 52:18   grant_admin: {username: String, registered: Bool} -> {username: String, registered: Bool, is_admin: Bool}
+53:7 - 53:19   display_name: {registered: Bool, username: String, is_admin: Bool} -> String
 ___ OUTPUT ___
 6
 nice
@@ -2608,33 +2606,33 @@ ___ TYPES ___
 32:6 - 32:11   match: String
 32:20 - 32:21  .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
 32:12 - 32:19  process: Unit -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
-33:5 - 33:7    ok: .ok(.done | .low_stock(Num))
-33:8 - 33:14   status: .done | .low_stock(Num)
-33:19 - 33:24  match: String
-33:25 - 33:31  status: .done | .low_stock(Num)
-34:9 - 34:13   done: .done
-35:9 - 35:18   low_stock: .low_stock(Num)
-35:19 - 35:21  _0: Num
-37:5 - 37:8    err: .err(.insufficient_stock(Num) | .out_of_stock)
-37:9 - 37:10   e: .insufficient_stock(Num) | .out_of_stock
-37:15 - 37:20  match: String
-37:21 - 37:22  e: .insufficient_stock(Num) | .out_of_stock
-38:9 - 38:21   out_of_stock: .out_of_stock
-39:9 - 39:27   insufficient_stock: .insufficient_stock(Num)
-39:28 - 39:34  amount: Num
-46:4 - 46:12   download: a -> .ok(String) | .err(.offline)
-46:20 - 46:22  a -> .ok(String) | .err(.offline)
-46:28 - 46:29  ?: .ok(String) | .err(.offline)
-46:31 - 46:33  ok: .ok(String) | .err(.offline)
-46:50 - 46:53  err: .ok(String) | .err(.offline)
-46:55 - 46:62  offline: .offline
-46:16 - 46:19  url: a
-47:0 - 47:5    print: String
-47:15 - 47:16  .ok(String) | .err(.offline)
-47:6 - 47:14   download: Unit -> .ok(String) | .err(.offline)
+34:5 - 34:7    ok: .ok(.done | .low_stock(Num))
+34:8 - 34:14   status: .done | .low_stock(Num)
+34:19 - 34:24  match: String
+34:25 - 34:31  status: .done | .low_stock(Num)
+35:9 - 35:13   done: .done
+36:9 - 36:18   low_stock: .low_stock(Num)
+36:19 - 36:21  _0: Num
+39:5 - 39:8    err: .err(.insufficient_stock(Num) | .out_of_stock)
+39:9 - 39:10   e: .insufficient_stock(Num) | .out_of_stock
+39:15 - 39:20  match: String
+39:21 - 39:22  e: .insufficient_stock(Num) | .out_of_stock
+40:9 - 40:21   out_of_stock: .out_of_stock
+41:9 - 41:27   insufficient_stock: .insufficient_stock(Num)
+41:28 - 41:34  amount: Num
+48:4 - 48:12   download: a -> .ok(String) | .err(.offline)
+48:20 - 48:22  a -> .ok(String) | .err(.offline)
+48:28 - 48:29  ?: .ok(String) | .err(.offline)
+48:31 - 48:33  ok: .ok(String) | .err(.offline)
+48:50 - 48:53  err: .ok(String) | .err(.offline)
+48:55 - 48:62  offline: .offline
+48:16 - 48:19  url: a
+50:0 - 50:5    print: String
+50:15 - 50:16  .ok(String) | .err(.offline)
+50:6 - 50:14   download: Unit -> .ok(String) | .err(.offline)
 ___ OUTPUT ___
 finished but low stock
-LoxRuntimeException{token: closeParen ) (ln48:15), message: Expected 1 arguments but got 0}
+LoxRuntimeException{token: closeParen ) (ln51:15), message: Expected 1 arguments but got 0}
 
 
 ====== tour_4_lists.lox =====
@@ -2656,23 +2654,23 @@ ___ TYPES ___
 11:19 - 11:21  |>: .ok({first: String, rest: List[String]}) | .err(.empty_list)
 11:12 - 11:18  people: List[String]
 11:22 - 11:30  elements: List[String] -> .ok({first: String, rest: List[String]}) | .err(.empty_list)
-12:5 - 12:8    err: .err(.empty_list)
-12:9 - 12:11   _0: .empty_list
-13:5 - 13:7    ok: .ok({first: String, rest: List[String]})
-13:10 - 13:15  first: String
-13:17 - 13:21  rest: List[String]
-15:12 - 15:13  ?: String
-14:13 - 14:15  |>: Bool
-14:8 - 14:12   rest: List[String]
-14:16 - 14:24  is_empty: List[String] -> Bool
-15:42 - 15:43  String
-15:21 - 15:27  concat: String, String -> String
-15:14 - 15:20  String: {concat: String, String -> String, split: String, String -> List[String]}
-15:37 - 15:42  first: String
-16:48 - 16:49  String
-16:21 - 16:27  concat: String, String -> String
-16:14 - 16:20  String: {concat: String, String -> String, split: String, String -> List[String]}
-16:28 - 16:33  first: String
+13:5 - 13:8    err: .err(.empty_list)
+13:9 - 13:11   _0: .empty_list
+15:5 - 15:7    ok: .ok({first: String, rest: List[String]})
+15:10 - 15:15  first: String
+15:17 - 15:21  rest: List[String]
+17:12 - 17:13  ?: String
+16:13 - 16:15  |>: Bool
+16:8 - 16:12   rest: List[String]
+16:16 - 16:24  is_empty: List[String] -> Bool
+17:42 - 17:43  String
+17:21 - 17:27  concat: String, String -> String
+17:14 - 17:20  String: {concat: String, String -> String, split: String, String -> List[String]}
+17:37 - 17:42  first: String
+18:48 - 18:49  String
+18:21 - 18:27  concat: String, String -> String
+18:14 - 18:20  String: {concat: String, String -> String, split: String, String -> List[String]}
+18:28 - 18:33  first: String
 ___ OUTPUT ___
 joe and others
 
