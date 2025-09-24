@@ -24,123 +24,187 @@ extension SampleAPI on Sample {
 }
 
 final samples = [
-  (SampleName('grab_bag.lox'),  SampleContent(r'''// Built-ins
-let empty = List.empty;
-let first = List.first;
-let rest = List.rest;
-
-//
-// Lists
-//
-let friends = ["alice", "bob"];
-let family = ["charlie", "devin"];
-let people = ["joe", ..friends, "john", ..family];
-print rest(people);
-
-//
-// Records
-//
+  (SampleName('tour_0_records.lox'),  SampleContent(r'''// Create a record
 let boss = {
-    name: "Bob Vance",
+    name: "Bob",
     company: "Vance Refrigeration",
 };
-let updated = {..boss, line_of_work: .refrigeration};
-print boss;
-print updated.company;
-let {
-  name,
-  line_of_work: subtitle,
-} = updated;
-print name;
-print subtitle;
 
-//
-// Variants
-//
-let green = .green;
-let red = .red;
-let either = true ? green : red;
+
+// Access a record's fields using the dot operator
+print boss.company;
+
+
+// Destructure some or all of its fields
+let { name } = boss;
+
+
+// Optionally give destructured fields a new name
+let { name: boss_name, company } = boss;
+
+
+// Update an existing field
+let fixed_name = {..boss, name: "Bob Vance"};
+print boss.name;
+print fixed_name.name;
+
+
+// Add a new field
+let updated = { ..fixed_name, line_of_work: "Refrigeration" };
+print updated;
+
+
+// You can use a variable's name as the field name - these two records are equivalent
+let subtitle = "world";
+let card = { title: "hello", subtitle: subtitle };
+let same = { title: "hello", subtitle };
+''')),
+(SampleName('tour_1_variants.lox'),  SampleContent(r'''// Create a variant
+let color = .green;
+
+
+// Variants can union with other variants
+let either = true ? color : .red;
+
+
+// Variants can have a payload
+let event = true
+    ? .key("\n")
+    : .mouse({ x: 50, y: 50 });
+
+
+// Use the match keyword to act on each possible variant
 print match either {
     .green -> 0,
     .red -> 1,
 };
-
-let send_email = \x {
-  if x == "a" then return .missing_subject;
-  if x == "b" then return .network_error(123);
-  if x == "c" then return .oom;
-  return .sent;
-};
-let result = match send_email("a") {
-  .sent            -> .alert("success"),
-  .missing_subject -> .alert("missing subject line"),
-  something_bad    -> something_bad,
+print match event {
+    .key(char) -> char,
+    .mouse({ x }) -> x > 50 ? "top" : "bottom",
 };
 
-//
-// Functions
-//
-let sub = \x, y -> x - y;
-print sub(7, 2);
 
-let one_minus_x = sub(1, _);
-let x_minus_one = sub(_, 1);
-print one_minus_x(3);
-print x_minus_one(3);
-
-let numbers = [1,2,3];
-print numbers |> first |> sub(_, 1);
-
-let make_user = \data {
-    if data.name == "null" then {
-        print "hmm";
-        return .anonymous;
-    }
-    let random_id = 123;
-    return .user({
-        user_id: random_id,
-        name: data.name,
-        birth_year: data.birth_year,
-        age: \{as_of_year: current_year} -> current_year - data.birth_year,
-    });
+// Or use a final catch-all branch to act on only some variants
+print match either {
+    .green -> .good,
+    other -> other,
 };
-let user = make_user({name: "Bob", birth_year: 1974});
-print match user {
-    .user(u) -> u.age({as_of_year: 2025}),
-    .anonymous -> 0,
-};''')),
-(SampleName('return_expr.lox'),  SampleContent(r'''let unlucky = \ -> false;
-let online = \ -> false;
-let is_auth_expired = \ -> false;
+print match event {
+    .key(char) -> char,
+    _ -> "<ignored>"
+};
+''')),
+(SampleName('tour_2_functions.lox'),  SampleContent(r'''// Create a function
+let add_one = \x -> x + 1;
 
-let connect = \ {
-    if unlucky() then return .bad_luck;
-    if !online() then return .offline;
-    return .connection({
-        some_connection_details: 123,
-        download: \ -> "the data",
-    });
+
+// Call a function
+print add_one(5);
+
+
+// Here's a function with multiple parameters and a block body
+let describe = \x, y {
+    let good = x or y;
+    if good then print "nice";
+    return good;
 };
 
-let download = \connection {
-    if is_auth_expired() then return .auth_expired;
-    if unlucky() then return .download_interrupted;
-    let result = connection.download();
-    return .the_data(result);
-};
 
-let connect_and_download = \ {
-    let connection = match connect() {
-        .connection(c) -> c,
-        .offline -> return .the_data("some default data"),
-        other -> return other,
+// When calling a function you can use _ to omit a parameter.
+// This creates new function that takes the remaining parameter.
+let always_good = describe(true, _);
+print always_good(true);
+print always_good(false);
+
+
+// Parameters can use record destructuring to emulate named parameters.
+let has_silly_name = \{ first, last } -> first == last;
+print has_silly_name({ first: "Joe", last: "Joe" });
+
+// Destructuring with an alias allows both caller and callee to use an appropriate name.
+let is_new = \{ as_of_year: current_year } -> current_year > 2025;
+print is_new({ as_of_year: 1999 });
+
+
+// Functions can also be called with the pipeline operator
+let new_user = \username -> { username, registered: true };
+let grant_admin = \user -> { ..user, is_admin: true };
+let display_name = \user -> user.is_admin ? "<Admin>" : user.username;
+let nested = display_name(grant_admin(new_user("Bob")));
+let flat =
+    "Bob"
+    |> new_user
+    |> grant_admin
+    |> display_name
+    ;
+''')),
+(SampleName('tour_3_errors.lox'),  SampleContent(r'''// Functions that can fail should return `.ok(data)` on success or `.err(e)` on error.
+let sell_eggs = \amount, stock {
+
+    if stock.eggs == 0
+    then return .err(.out_of_stock);
+
+    if stock.eggs < amount
+    then return .err(.insufficient_stock(stock.eggs));
+
+    let new_stock = {
+        ..stock,
+        eggs: stock.eggs - amount,
     };
 
-    return download(connection);
+    return .ok(new_stock);
 };
 
-let data = connect_and_download();
-print data;
+
+// Use the ! operator inside a function to extract the payload from an `.ok` variant,
+// or else return from the function with the `.err` variant.
+let process = \ {
+    let stock = { eggs: 5, bacon: 1 };
+
+    let new_stock = sell_eggs(5, stock)!;
+
+    let status = new_stock.eggs < 2
+        ? .low_stock(new_stock.eggs)
+        : .done;
+
+    return .ok(status);
+};
+
+print match process() {
+    .ok(status) -> match status {
+        .done -> "no problems",
+        .low_stock(_) -> "finished but low stock",
+    },
+    .err(e) -> match e {
+        .out_of_stock -> "out of stock",
+        .insufficient_stock(amount) -> "tried to buy too many"
+    }
+};
+
+
+// Use the ?? operator to extract the payload from an `.ok` variant,
+// or provide a fallback value if it's an `.err` variant.
+let download = \url -> true ? .ok("some data") : .err(.offline);
+print download() ?? "some default data";
+''')),
+(SampleName('tour_4_lists.lox'),  SampleContent(r'''// List literal syntax
+let friends = ["alice", "bob"];
+let family = ["charlie", "devin"];
+
+
+// Use the .. operator to expand a list inside another list
+let people = ["joe", ..friends, "john", ..family];
+
+
+// Destructure a list
+let { elements, is_empty } = import "util/lists.lox";
+print match people |> elements {
+    .err(_) -> "none",
+    .ok({ first, rest }) ->
+        rest |> is_empty
+            ? String.concat("just ", first)
+            : String.concat(first, " and others")
+};
 ''')),
 (SampleName('advent_of_code_2024_day_1.lox'),  SampleContent(r'''let {fold, try_fold, count_where, zip, sort, sum, elements, element_at} = import "util/lists.lox";
 let {abs_diff} = import "util/numeric.lox";
@@ -515,6 +579,12 @@ let element_at = \target_index -> \list ->
            );
 
 let length = fold(0, \count, _ -> count + 1);
+
+let is_empty = \list ->
+    match list |> elements {
+        .ok(_) -> false,
+        .err(_) -> true,
+    };
 ''')),
 (SampleName('util/functions.lox'),  SampleContent(r'''let eq = \a -> \b -> a == b;
 

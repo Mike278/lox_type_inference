@@ -3,8 +3,8 @@ ___ TYPES ___
 0:5 - 0:9      fold: a, (a, b -> a), List[b] -> a
 0:11 - 0:14    map: (c -> d), List[c] -> List[d]
 0:16 - 0:20    join: List[String] -> String
-0:24 - 0:30    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ff, (ff, gg -> .break(ff) | .continue(ff)), List[gg] -> ff, any: (hh -> Bool), List[hh] -> Bool, all: (ii -> Bool), List[ii] -> Bool, drop_at: Num, List[jj] -> List[jj], join: List[String] -> String, element_at: Num, List[kk] -> .ok(kk) | .err(.out_of_bounds), length: List[nn] -> Num}
-0:31 - 0:47    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ff, (ff, gg -> .break(ff) | .continue(ff)), List[gg] -> ff, any: (hh -> Bool), List[hh] -> Bool, all: (ii -> Bool), List[ii] -> Bool, drop_at: Num, List[jj] -> List[jj], join: List[String] -> String, element_at: Num, List[kk] -> .ok(kk) | .err(.out_of_bounds), length: List[nn] -> Num}
+0:24 - 0:30    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ff, (ff, gg -> .break(ff) | .continue(ff)), List[gg] -> ff, any: (hh -> Bool), List[hh] -> Bool, all: (ii -> Bool), List[ii] -> Bool, drop_at: Num, List[jj] -> List[jj], join: List[String] -> String, element_at: Num, List[kk] -> .ok(kk) | .err(.out_of_bounds), length: List[nn] -> Num, is_empty: List[oo] -> Bool}
+0:31 - 0:47    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ff, (ff, gg -> .break(ff) | .continue(ff)), List[gg] -> ff, any: (hh -> Bool), List[hh] -> Bool, all: (ii -> Bool), List[ii] -> Bool, drop_at: Num, List[jj] -> List[jj], join: List[String] -> String, element_at: Num, List[kk] -> .ok(kk) | .err(.out_of_bounds), length: List[nn] -> Num, is_empty: List[oo] -> Bool}
 2:4 - 2:9      input: List[{arg1: String, arg2: Num}]
 9:0 - 9:1      [...]: List[{arg1: String, arg2: Num}]
 3:29 - 3:30    {...}: {arg1: String, arg2: Num}
@@ -236,8 +236,8 @@ ___ TYPES ___
 0:45 - 0:48    sum: List[Num] -> .ok(Num) | .err(.empty_list)
 0:50 - 0:58    elements: List[l] -> .ok({first: l, rest: List[l]}) | .err(.empty_list)
 0:60 - 0:70    element_at: Num, List[o] -> .ok(o) | .err(.out_of_bounds)
-0:74 - 0:80    util/lists.lox: {plus: Num, Num -> Num, elements: List[r] -> .ok({first: r, rest: List[r]}) | .err(.empty_list), fold: u, (u, v -> u), List[v] -> u, try_fold: w, (w, x -> .ok(w) | .err(y)), List[x] -> .ok(w) | .err(y), map: (z -> aa), List[z] -> List[aa], try_map: (bb -> .ok(cc) | .err(dd)), List[bb] -> .ok(List[cc]) | .err(dd), reduce: (ee, ee -> ee), List[ee] -> .ok(ee) | .err(.empty_list), reverse: List[hh] -> List[hh], where: (ii -> Bool), List[ii] -> List[ii], enumerated: List[jj] -> List[{element: jj, index: Num}], count_where: (kk -> Bool), List[kk] -> Num, sort: List[Num] -> List[Num], zip: List[ll], List[mm], (ll, mm -> nn) -> List[nn], zip_with_tail: (oo, oo -> pp), List[oo] -> List[pp], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ss, (ss, tt -> .break(ss) | .continue(ss)), List[tt] -> ss, any: (uu -> Bool), List[uu] -> Bool, all: (vv -> Bool), List[vv] -> Bool, drop_at: Num, List[ww] -> List[ww], join: List[String] -> String, element_at: Num, List[o] -> .ok(o) | .err(.out_of_bounds), length: List[xx] -> Num}
-0:81 - 0:97    util/lists.lox: {plus: Num, Num -> Num, elements: List[r] -> .ok({first: r, rest: List[r]}) | .err(.empty_list), fold: u, (u, v -> u), List[v] -> u, try_fold: w, (w, x -> .ok(w) | .err(y)), List[x] -> .ok(w) | .err(y), map: (z -> aa), List[z] -> List[aa], try_map: (bb -> .ok(cc) | .err(dd)), List[bb] -> .ok(List[cc]) | .err(dd), reduce: (ee, ee -> ee), List[ee] -> .ok(ee) | .err(.empty_list), reverse: List[hh] -> List[hh], where: (ii -> Bool), List[ii] -> List[ii], enumerated: List[jj] -> List[{element: jj, index: Num}], count_where: (kk -> Bool), List[kk] -> Num, sort: List[Num] -> List[Num], zip: List[ll], List[mm], (ll, mm -> nn) -> List[nn], zip_with_tail: (oo, oo -> pp), List[oo] -> List[pp], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ss, (ss, tt -> .break(ss) | .continue(ss)), List[tt] -> ss, any: (uu -> Bool), List[uu] -> Bool, all: (vv -> Bool), List[vv] -> Bool, drop_at: Num, List[ww] -> List[ww], join: List[String] -> String, element_at: Num, List[o] -> .ok(o) | .err(.out_of_bounds), length: List[xx] -> Num}
+0:74 - 0:80    util/lists.lox: {plus: Num, Num -> Num, elements: List[r] -> .ok({first: r, rest: List[r]}) | .err(.empty_list), fold: u, (u, v -> u), List[v] -> u, try_fold: w, (w, x -> .ok(w) | .err(y)), List[x] -> .ok(w) | .err(y), map: (z -> aa), List[z] -> List[aa], try_map: (bb -> .ok(cc) | .err(dd)), List[bb] -> .ok(List[cc]) | .err(dd), reduce: (ee, ee -> ee), List[ee] -> .ok(ee) | .err(.empty_list), reverse: List[hh] -> List[hh], where: (ii -> Bool), List[ii] -> List[ii], enumerated: List[jj] -> List[{element: jj, index: Num}], count_where: (kk -> Bool), List[kk] -> Num, sort: List[Num] -> List[Num], zip: List[ll], List[mm], (ll, mm -> nn) -> List[nn], zip_with_tail: (oo, oo -> pp), List[oo] -> List[pp], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ss, (ss, tt -> .break(ss) | .continue(ss)), List[tt] -> ss, any: (uu -> Bool), List[uu] -> Bool, all: (vv -> Bool), List[vv] -> Bool, drop_at: Num, List[ww] -> List[ww], join: List[String] -> String, element_at: Num, List[o] -> .ok(o) | .err(.out_of_bounds), length: List[xx] -> Num, is_empty: List[yy] -> Bool}
+0:81 - 0:97    util/lists.lox: {plus: Num, Num -> Num, elements: List[r] -> .ok({first: r, rest: List[r]}) | .err(.empty_list), fold: u, (u, v -> u), List[v] -> u, try_fold: w, (w, x -> .ok(w) | .err(y)), List[x] -> .ok(w) | .err(y), map: (z -> aa), List[z] -> List[aa], try_map: (bb -> .ok(cc) | .err(dd)), List[bb] -> .ok(List[cc]) | .err(dd), reduce: (ee, ee -> ee), List[ee] -> .ok(ee) | .err(.empty_list), reverse: List[hh] -> List[hh], where: (ii -> Bool), List[ii] -> List[ii], enumerated: List[jj] -> List[{element: jj, index: Num}], count_where: (kk -> Bool), List[kk] -> Num, sort: List[Num] -> List[Num], zip: List[ll], List[mm], (ll, mm -> nn) -> List[nn], zip_with_tail: (oo, oo -> pp), List[oo] -> List[pp], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ss, (ss, tt -> .break(ss) | .continue(ss)), List[tt] -> ss, any: (uu -> Bool), List[uu] -> Bool, all: (vv -> Bool), List[vv] -> Bool, drop_at: Num, List[ww] -> List[ww], join: List[String] -> String, element_at: Num, List[o] -> .ok(o) | .err(.out_of_bounds), length: List[xx] -> Num, is_empty: List[yy] -> Bool}
 1:5 - 1:13     abs_diff: Num, Num -> Num
 1:17 - 1:23    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
 1:24 - 1:42    util/numeric.lox: {abs_diff: Num, Num -> Num, abs: Num -> Num, plus: Num, Num -> Num, minus: Num, Num -> Num, sign: Num -> Num}
@@ -362,8 +362,8 @@ ___ TYPES ___
 0:72 - 0:79    drop_at: Num, List[k] -> List[k]
 0:81 - 0:84    map: (l -> m), List[l] -> List[m]
 0:86 - 0:89    any: (n -> Bool), List[n] -> Bool
-0:93 - 0:99    util/lists.lox: {plus: Num, Num -> Num, elements: List[o] -> .ok({first: o, rest: List[o]}) | .err(.empty_list), fold: r, (r, s -> r), List[s] -> r, try_fold: t, (t, u -> .ok(t) | .err(v)), List[u] -> .ok(t) | .err(v), map: (w -> x), List[w] -> List[x], try_map: (y -> .ok(z) | .err(aa)), List[y] -> .ok(List[z]) | .err(aa), reduce: (bb, bb -> bb), List[bb] -> .ok(bb) | .err(.empty_list), reverse: List[ee] -> List[ee], where: (ff -> Bool), List[ff] -> List[ff], enumerated: List[gg] -> List[{element: gg, index: Num}], count_where: (hh -> Bool), List[hh] -> Num, sort: List[Num] -> List[Num], zip: List[ii], List[jj], (ii, jj -> kk) -> List[kk], zip_with_tail: (ll, ll -> mm), List[ll] -> List[mm], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: pp, (pp, qq -> .break(pp) | .continue(pp)), List[qq] -> pp, any: (n -> Bool), List[n] -> Bool, all: (rr -> Bool), List[rr] -> Bool, drop_at: Num, List[ss] -> List[ss], join: List[String] -> String, element_at: Num, List[tt] -> .ok(tt) | .err(.out_of_bounds), length: List[ww] -> Num}
-0:100 - 0:116  util/lists.lox: {plus: Num, Num -> Num, elements: List[o] -> .ok({first: o, rest: List[o]}) | .err(.empty_list), fold: r, (r, s -> r), List[s] -> r, try_fold: t, (t, u -> .ok(t) | .err(v)), List[u] -> .ok(t) | .err(v), map: (w -> x), List[w] -> List[x], try_map: (y -> .ok(z) | .err(aa)), List[y] -> .ok(List[z]) | .err(aa), reduce: (bb, bb -> bb), List[bb] -> .ok(bb) | .err(.empty_list), reverse: List[ee] -> List[ee], where: (ff -> Bool), List[ff] -> List[ff], enumerated: List[gg] -> List[{element: gg, index: Num}], count_where: (hh -> Bool), List[hh] -> Num, sort: List[Num] -> List[Num], zip: List[ii], List[jj], (ii, jj -> kk) -> List[kk], zip_with_tail: (ll, ll -> mm), List[ll] -> List[mm], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: pp, (pp, qq -> .break(pp) | .continue(pp)), List[qq] -> pp, any: (n -> Bool), List[n] -> Bool, all: (rr -> Bool), List[rr] -> Bool, drop_at: Num, List[ss] -> List[ss], join: List[String] -> String, element_at: Num, List[tt] -> .ok(tt) | .err(.out_of_bounds), length: List[ww] -> Num}
+0:93 - 0:99    util/lists.lox: {plus: Num, Num -> Num, elements: List[o] -> .ok({first: o, rest: List[o]}) | .err(.empty_list), fold: r, (r, s -> r), List[s] -> r, try_fold: t, (t, u -> .ok(t) | .err(v)), List[u] -> .ok(t) | .err(v), map: (w -> x), List[w] -> List[x], try_map: (y -> .ok(z) | .err(aa)), List[y] -> .ok(List[z]) | .err(aa), reduce: (bb, bb -> bb), List[bb] -> .ok(bb) | .err(.empty_list), reverse: List[ee] -> List[ee], where: (ff -> Bool), List[ff] -> List[ff], enumerated: List[gg] -> List[{element: gg, index: Num}], count_where: (hh -> Bool), List[hh] -> Num, sort: List[Num] -> List[Num], zip: List[ii], List[jj], (ii, jj -> kk) -> List[kk], zip_with_tail: (ll, ll -> mm), List[ll] -> List[mm], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: pp, (pp, qq -> .break(pp) | .continue(pp)), List[qq] -> pp, any: (n -> Bool), List[n] -> Bool, all: (rr -> Bool), List[rr] -> Bool, drop_at: Num, List[ss] -> List[ss], join: List[String] -> String, element_at: Num, List[tt] -> .ok(tt) | .err(.out_of_bounds), length: List[ww] -> Num, is_empty: List[xx] -> Bool}
+0:100 - 0:116  util/lists.lox: {plus: Num, Num -> Num, elements: List[o] -> .ok({first: o, rest: List[o]}) | .err(.empty_list), fold: r, (r, s -> r), List[s] -> r, try_fold: t, (t, u -> .ok(t) | .err(v)), List[u] -> .ok(t) | .err(v), map: (w -> x), List[w] -> List[x], try_map: (y -> .ok(z) | .err(aa)), List[y] -> .ok(List[z]) | .err(aa), reduce: (bb, bb -> bb), List[bb] -> .ok(bb) | .err(.empty_list), reverse: List[ee] -> List[ee], where: (ff -> Bool), List[ff] -> List[ff], enumerated: List[gg] -> List[{element: gg, index: Num}], count_where: (hh -> Bool), List[hh] -> Num, sort: List[Num] -> List[Num], zip: List[ii], List[jj], (ii, jj -> kk) -> List[kk], zip_with_tail: (ll, ll -> mm), List[ll] -> List[mm], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: pp, (pp, qq -> .break(pp) | .continue(pp)), List[qq] -> pp, any: (n -> Bool), List[n] -> Bool, all: (rr -> Bool), List[rr] -> Bool, drop_at: Num, List[ss] -> List[ss], join: List[String] -> String, element_at: Num, List[tt] -> .ok(tt) | .err(.out_of_bounds), length: List[ww] -> Num, is_empty: List[xx] -> Bool}
 1:5 - 1:10     minus: Num, Num -> Num
 1:12 - 1:16    sign: Num -> Num
 1:18 - 1:21    abs: Num -> Num
@@ -475,8 +475,8 @@ ___ OUTPUT ___
 ___ TYPES ___
 0:5 - 0:8      map: (a -> b), List[a] -> List[b]
 0:10 - 0:13    sum: List[Num] -> .ok(Num) | .err(.empty_list)
-0:17 - 0:23    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: dd, (dd, ee -> .break(dd) | .continue(dd)), List[ee] -> dd, any: (ff -> Bool), List[ff] -> Bool, all: (gg -> Bool), List[gg] -> Bool, drop_at: Num, List[hh] -> List[hh], join: List[String] -> String, element_at: Num, List[ii] -> .ok(ii) | .err(.out_of_bounds), length: List[ll] -> Num}
-0:24 - 0:40    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: dd, (dd, ee -> .break(dd) | .continue(dd)), List[ee] -> dd, any: (ff -> Bool), List[ff] -> Bool, all: (gg -> Bool), List[gg] -> Bool, drop_at: Num, List[hh] -> List[hh], join: List[String] -> String, element_at: Num, List[ii] -> .ok(ii) | .err(.out_of_bounds), length: List[ll] -> Num}
+0:17 - 0:23    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: dd, (dd, ee -> .break(dd) | .continue(dd)), List[ee] -> dd, any: (ff -> Bool), List[ff] -> Bool, all: (gg -> Bool), List[gg] -> Bool, drop_at: Num, List[hh] -> List[hh], join: List[String] -> String, element_at: Num, List[ii] -> .ok(ii) | .err(.out_of_bounds), length: List[ll] -> Num, is_empty: List[mm] -> Bool}
+0:24 - 0:40    util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: dd, (dd, ee -> .break(dd) | .continue(dd)), List[ee] -> dd, any: (ff -> Bool), List[ff] -> Bool, all: (gg -> Bool), List[gg] -> Bool, drop_at: Num, List[hh] -> List[hh], join: List[String] -> String, element_at: Num, List[ii] -> .ok(ii) | .err(.out_of_bounds), length: List[ll] -> Num, is_empty: List[mm] -> Bool}
 1:5 - 1:10     split: {separator: String}, String -> List[String]
 1:12 - 1:20    split_at: {separator: String}, String -> .ok({before: String, after: String}) | .err(.separator_not_found)
 1:22 - 1:31    parse_int: String -> .ok(Num) | .err(.invalid_digit(String))
@@ -781,187 +781,6 @@ side effect!
 true
 
 
-====== grab_bag.lox =====
-___ TYPES ___
-1:4 - 1:9      empty: List[a] -> Bool
-1:17 - 1:22    empty: List[a] -> Bool
-1:12 - 1:16    List: {first: List[b] -> b, rest: List[c] -> List[c], empty: List[a] -> Bool}
-2:4 - 2:9      first: List[a] -> a
-2:17 - 2:22    first: List[a] -> a
-2:12 - 2:16    List: {first: List[a] -> a, rest: List[b] -> List[b], empty: List[c] -> Bool}
-3:4 - 3:8      rest: List[a] -> List[a]
-3:16 - 3:20    rest: List[a] -> List[a]
-3:11 - 3:15    List: {first: List[b] -> b, rest: List[a] -> List[a], empty: List[c] -> Bool}
-8:4 - 8:11     friends: List[String]
-8:29 - 8:30    [...]: List[String]
-9:4 - 9:10     family: List[String]
-9:32 - 9:33    [...]: List[String]
-10:4 - 10:10   people: List[String]
-10:48 - 10:49  [...]: List[String]
-10:23 - 10:30  friends: List[String]
-10:42 - 10:48  family: List[String]
-11:0 - 11:5    print: List[String]
-11:17 - 11:18  List[String]
-11:6 - 11:10   rest: List[String] -> List[String]
-11:11 - 11:17  people: List[String]
-16:4 - 16:8    boss: {name: String, company: String}
-19:0 - 19:1    {...}: {name: String, company: String}
-17:4 - 17:8    name: String
-18:4 - 18:11   company: String
-20:4 - 20:11   updated: {name: String, company: String, line_of_work: .refrigeration}
-20:51 - 20:52  {...}: {name: String, company: String, line_of_work: .refrigeration}
-20:17 - 20:21  boss: {name: String, company: String}
-20:23 - 20:35  line_of_work: .refrigeration
-20:38 - 20:51  refrigeration: .refrigeration
-21:0 - 21:5    print: {name: String, company: String}
-21:6 - 21:10   boss: {name: String, company: String}
-22:0 - 22:5    print: String
-22:14 - 22:21  company: String
-22:6 - 22:13   updated: {name: String, company: String, line_of_work: .refrigeration}
-24:2 - 24:6    name: String
-25:2 - 25:14   line_of_work: .refrigeration
-25:16 - 25:24  subtitle: .refrigeration
-26:4 - 26:11   updated: {name: String, company: String, line_of_work: .refrigeration}
-27:0 - 27:5    print: String
-27:6 - 27:10   name: String
-28:0 - 28:5    print: .refrigeration
-28:6 - 28:14   subtitle: .refrigeration
-33:4 - 33:9    green: .green
-33:13 - 33:18  green: .green
-34:4 - 34:7    red: .red
-34:11 - 34:14  red: .red
-35:4 - 35:10   either: .green | .red
-35:18 - 35:19  ?: .green | .red
-35:20 - 35:25  green: .green | .red
-35:28 - 35:31  red: .green | .red
-36:0 - 36:5    print: Num
-36:6 - 36:11   match: Num
-36:12 - 36:18  either: .green | .red
-37:5 - 37:10   green: .green
-38:5 - 38:8    red: .red
-41:4 - 41:14   send_email: String -> .missing_subject | .network_error(Num) | .oom | .sent
-41:20 - 41:21  String -> .missing_subject | .network_error(Num) | .oom | .sent
-46:0 - 46:1    String -> .missing_subject | .network_error(Num) | .oom | .sent
-41:18 - 41:19  x: String
-42:7 - 42:9    ==: Bool
-42:5 - 42:6    x: String
-42:19 - 42:25  .missing_subject | .network_error(Num) | .oom | .sent
-42:27 - 42:42  missing_subject: .missing_subject | .network_error(Num) | .oom | .sent
-43:7 - 43:9    ==: Bool
-43:5 - 43:6    x: String
-43:19 - 43:25  .missing_subject | .network_error(Num) | .oom | .sent
-43:27 - 43:40  network_error: .missing_subject | .network_error(Num) | .oom | .sent
-44:7 - 44:9    ==: Bool
-44:5 - 44:6    x: String
-44:19 - 44:25  .missing_subject | .network_error(Num) | .oom | .sent
-44:27 - 44:30  oom: .missing_subject | .network_error(Num) | .oom | .sent
-45:2 - 45:8    .missing_subject | .network_error(Num) | .oom | .sent
-45:10 - 45:14  sent: .missing_subject | .network_error(Num) | .oom | .sent
-47:4 - 47:10   result: .alert(String) | .network_error(Num) | .oom
-47:13 - 47:18  match: .alert(String) | .network_error(Num) | .oom
-47:33 - 47:34  .alert(String) | .missing_subject | .network_error(Num) | .oom | .sent
-47:19 - 47:29  send_email: String -> .alert(String) | .missing_subject | .network_error(Num) | .oom | .sent
-48:3 - 48:7    sent: .sent
-48:23 - 48:28  alert: .alert(String) | .network_error(Num) | .oom
-49:3 - 49:18   missing_subject: .missing_subject
-49:23 - 49:28  alert: .alert(String) | .network_error(Num) | .oom
-50:2 - 50:15   something_bad: .alert(String) | .network_error(Num) | .oom
-50:22 - 50:35  something_bad: .alert(String) | .network_error(Num) | .oom
-56:4 - 56:7    sub: Num, Num -> Num
-56:16 - 56:18  Num, Num -> Num
-56:21 - 56:22  -: Num
-56:19 - 56:20  x: Num
-56:23 - 56:24  y: Num
-56:11 - 56:12  x: Num
-56:14 - 56:15  y: Num
-57:0 - 57:5    print: Num
-57:14 - 57:15  Num
-57:6 - 57:9    sub: Num, Num -> Num
-59:4 - 59:15   one_minus_x: Num -> Num
-59:26 - 59:27  Num -> Num
-59:25 - 59:26  _: <unknown>
-59:18 - 59:21  sub: Num, Num -> Num
-60:4 - 60:15   x_minus_one: Num -> Num
-60:26 - 60:27  Num -> Num
-60:22 - 60:23  _: <unknown>
-60:18 - 60:21  sub: Num, Num -> Num
-61:0 - 61:5    print: Num
-61:19 - 61:20  Num
-61:6 - 61:17   one_minus_x: Num -> Num
-62:0 - 62:5    print: Num
-62:19 - 62:20  Num
-62:6 - 62:17   x_minus_one: Num -> Num
-64:4 - 64:11   numbers: List[Num]
-64:20 - 64:21  [...]: List[Num]
-65:0 - 65:5    print: Num
-65:23 - 65:25  |>: Num
-65:14 - 65:16  |>: Num
-65:6 - 65:13   numbers: List[Num]
-65:17 - 65:22  first: List[Num] -> Num
-65:34 - 65:35  Num -> Num
-65:30 - 65:31  _: <unknown>
-65:26 - 65:29  sub: Num, Num -> Num
-67:4 - 67:13   make_user: {birth_year: Num, name: String} -> .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-67:22 - 67:23  {birth_year: Num, name: String} -> .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-79:0 - 79:1    {birth_year: Num, name: String} -> .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-67:17 - 67:21  data: {birth_year: Num, name: String}
-68:17 - 68:19  ==: Bool
-68:12 - 68:16  name: String
-68:7 - 68:11   data: {birth_year: Num, name: String}
-69:8 - 69:13   print: String
-70:8 - 70:14   .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-70:16 - 70:25  anonymous: .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-72:8 - 72:17   random_id: Num
-73:4 - 73:10   .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-73:12 - 73:16  user: .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-78:4 - 78:5    {...}: {user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num}
-74:8 - 74:15   user_id: Num
-74:17 - 74:26  random_id: Num
-75:8 - 75:12   name: String
-75:19 - 75:23  name: String
-75:14 - 75:18  data: {birth_year: Num, name: String}
-76:8 - 76:18   birth_year: Num
-76:25 - 76:35  birth_year: Num
-76:20 - 76:24  data: {birth_year: Num, name: String}
-77:8 - 77:11   age: {as_of_year: Num} -> Num
-77:41 - 77:43  {as_of_year: Num} -> Num
-77:57 - 77:58  -: Num
-77:44 - 77:56  current_year: Num
-77:64 - 77:74  birth_year: Num
-77:59 - 77:63  data: {birth_year: Num, name: String}
-77:15 - 77:25  as_of_year: Num
-77:27 - 77:39  current_year: Num
-80:4 - 80:8    user: .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-80:52 - 80:53  .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-80:11 - 80:20  make_user: {birth_year: Num, name: String} -> .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-80:51 - 80:52  {...}: {name: String, birth_year: Num}
-80:22 - 80:26  name: String
-80:35 - 80:45  birth_year: Num
-81:0 - 81:5    print: Num
-81:6 - 81:11   match: Num
-81:12 - 81:16  user: .anonymous | .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-82:5 - 82:9    user: .user({user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num})
-82:10 - 82:11  u: {user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num}
-82:40 - 82:41  Num
-82:18 - 82:21  age: {as_of_year: Num} -> Num
-82:16 - 82:17  u: {user_id: Num, name: String, birth_year: Num, age: {as_of_year: Num} -> Num}
-82:39 - 82:40  {...}: {as_of_year: Num}
-82:23 - 82:33  as_of_year: Num
-83:5 - 83:14   anonymous: .anonymous
-___ OUTPUT ___
-[alice, bob, john, charlie, devin]
-{name: Bob Vance, company: Vance Refrigeration}
-Vance Refrigeration
-Bob Vance
-.refrigeration
-0
-5
--2
-2
-0
-51
-
-
 ====== if.lox =====
 ___ TYPES ___
 1:9 - 1:11     or: Bool
@@ -1204,8 +1023,8 @@ ___ TYPES ___
 0:5 - 0:8      map: (a -> b), List[a] -> List[b]
 0:10 - 0:17    reverse: List[c] -> List[c]
 0:19 - 0:25    reduce: (d, d -> d), List[d] -> .ok(d) | .err(.empty_list)
-0:29 - 0:35    util/lists.lox: {plus: Num, Num -> Num, elements: List[g] -> .ok({first: g, rest: List[g]}) | .err(.empty_list), fold: j, (j, k -> j), List[k] -> j, try_fold: l, (l, m -> .ok(l) | .err(n)), List[m] -> .ok(l) | .err(n), map: (o -> p), List[o] -> List[p], try_map: (q -> .ok(r) | .err(s)), List[q] -> .ok(List[r]) | .err(s), reduce: (d, d -> d), List[d] -> .ok(d) | .err(.empty_list), reverse: List[t] -> List[t], where: (u -> Bool), List[u] -> List[u], enumerated: List[v] -> List[{element: v, index: Num}], count_where: (w -> Bool), List[w] -> Num, sort: List[Num] -> List[Num], zip: List[x], List[y], (x, y -> z) -> List[z], zip_with_tail: (aa, aa -> bb), List[aa] -> List[bb], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ee, (ee, ff -> .break(ee) | .continue(ee)), List[ff] -> ee, any: (gg -> Bool), List[gg] -> Bool, all: (hh -> Bool), List[hh] -> Bool, drop_at: Num, List[ii] -> List[ii], join: List[String] -> String, element_at: Num, List[jj] -> .ok(jj) | .err(.out_of_bounds), length: List[mm] -> Num}
-0:36 - 0:52    util/lists.lox: {plus: Num, Num -> Num, elements: List[g] -> .ok({first: g, rest: List[g]}) | .err(.empty_list), fold: j, (j, k -> j), List[k] -> j, try_fold: l, (l, m -> .ok(l) | .err(n)), List[m] -> .ok(l) | .err(n), map: (o -> p), List[o] -> List[p], try_map: (q -> .ok(r) | .err(s)), List[q] -> .ok(List[r]) | .err(s), reduce: (d, d -> d), List[d] -> .ok(d) | .err(.empty_list), reverse: List[t] -> List[t], where: (u -> Bool), List[u] -> List[u], enumerated: List[v] -> List[{element: v, index: Num}], count_where: (w -> Bool), List[w] -> Num, sort: List[Num] -> List[Num], zip: List[x], List[y], (x, y -> z) -> List[z], zip_with_tail: (aa, aa -> bb), List[aa] -> List[bb], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ee, (ee, ff -> .break(ee) | .continue(ee)), List[ff] -> ee, any: (gg -> Bool), List[gg] -> Bool, all: (hh -> Bool), List[hh] -> Bool, drop_at: Num, List[ii] -> List[ii], join: List[String] -> String, element_at: Num, List[jj] -> .ok(jj) | .err(.out_of_bounds), length: List[mm] -> Num}
+0:29 - 0:35    util/lists.lox: {plus: Num, Num -> Num, elements: List[g] -> .ok({first: g, rest: List[g]}) | .err(.empty_list), fold: j, (j, k -> j), List[k] -> j, try_fold: l, (l, m -> .ok(l) | .err(n)), List[m] -> .ok(l) | .err(n), map: (o -> p), List[o] -> List[p], try_map: (q -> .ok(r) | .err(s)), List[q] -> .ok(List[r]) | .err(s), reduce: (d, d -> d), List[d] -> .ok(d) | .err(.empty_list), reverse: List[t] -> List[t], where: (u -> Bool), List[u] -> List[u], enumerated: List[v] -> List[{element: v, index: Num}], count_where: (w -> Bool), List[w] -> Num, sort: List[Num] -> List[Num], zip: List[x], List[y], (x, y -> z) -> List[z], zip_with_tail: (aa, aa -> bb), List[aa] -> List[bb], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ee, (ee, ff -> .break(ee) | .continue(ee)), List[ff] -> ee, any: (gg -> Bool), List[gg] -> Bool, all: (hh -> Bool), List[hh] -> Bool, drop_at: Num, List[ii] -> List[ii], join: List[String] -> String, element_at: Num, List[jj] -> .ok(jj) | .err(.out_of_bounds), length: List[mm] -> Num, is_empty: List[nn] -> Bool}
+0:36 - 0:52    util/lists.lox: {plus: Num, Num -> Num, elements: List[g] -> .ok({first: g, rest: List[g]}) | .err(.empty_list), fold: j, (j, k -> j), List[k] -> j, try_fold: l, (l, m -> .ok(l) | .err(n)), List[m] -> .ok(l) | .err(n), map: (o -> p), List[o] -> List[p], try_map: (q -> .ok(r) | .err(s)), List[q] -> .ok(List[r]) | .err(s), reduce: (d, d -> d), List[d] -> .ok(d) | .err(.empty_list), reverse: List[t] -> List[t], where: (u -> Bool), List[u] -> List[u], enumerated: List[v] -> List[{element: v, index: Num}], count_where: (w -> Bool), List[w] -> Num, sort: List[Num] -> List[Num], zip: List[x], List[y], (x, y -> z) -> List[z], zip_with_tail: (aa, aa -> bb), List[aa] -> List[bb], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ee, (ee, ff -> .break(ee) | .continue(ee)), List[ff] -> ee, any: (gg -> Bool), List[gg] -> Bool, all: (hh -> Bool), List[hh] -> Bool, drop_at: Num, List[ii] -> List[ii], join: List[String] -> String, element_at: Num, List[jj] -> .ok(jj) | .err(.out_of_bounds), length: List[mm] -> Num, is_empty: List[nn] -> Bool}
 2:4 - 2:6      xs: List[Num]
 2:17 - 2:18    [...]: List[Num]
 3:0 - 3:5      print: List[Num]
@@ -1498,8 +1317,8 @@ ___ OUTPUT ___
 ====== patterns.lox =====
 ___ TYPES ___
 0:5 - 0:9      join: List[String] -> String
-0:13 - 0:19    util/lists.lox: {plus: Num, Num -> Num, elements: List[a] -> .ok({first: a, rest: List[a]}) | .err(.empty_list), fold: d, (d, e -> d), List[e] -> d, try_fold: f, (f, g -> .ok(f) | .err(h)), List[g] -> .ok(f) | .err(h), map: (i -> j), List[i] -> List[j], try_map: (k -> .ok(l) | .err(m)), List[k] -> .ok(List[l]) | .err(m), reduce: (n, n -> n), List[n] -> .ok(n) | .err(.empty_list), reverse: List[q] -> List[q], where: (r -> Bool), List[r] -> List[r], enumerated: List[s] -> List[{element: s, index: Num}], count_where: (t -> Bool), List[t] -> Num, sort: List[Num] -> List[Num], zip: List[u], List[v], (u, v -> w) -> List[w], zip_with_tail: (x, x -> y), List[x] -> List[y], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: bb, (bb, cc -> .break(bb) | .continue(bb)), List[cc] -> bb, any: (dd -> Bool), List[dd] -> Bool, all: (ee -> Bool), List[ee] -> Bool, drop_at: Num, List[ff] -> List[ff], join: List[String] -> String, element_at: Num, List[gg] -> .ok(gg) | .err(.out_of_bounds), length: List[jj] -> Num}
-0:20 - 0:36    util/lists.lox: {plus: Num, Num -> Num, elements: List[a] -> .ok({first: a, rest: List[a]}) | .err(.empty_list), fold: d, (d, e -> d), List[e] -> d, try_fold: f, (f, g -> .ok(f) | .err(h)), List[g] -> .ok(f) | .err(h), map: (i -> j), List[i] -> List[j], try_map: (k -> .ok(l) | .err(m)), List[k] -> .ok(List[l]) | .err(m), reduce: (n, n -> n), List[n] -> .ok(n) | .err(.empty_list), reverse: List[q] -> List[q], where: (r -> Bool), List[r] -> List[r], enumerated: List[s] -> List[{element: s, index: Num}], count_where: (t -> Bool), List[t] -> Num, sort: List[Num] -> List[Num], zip: List[u], List[v], (u, v -> w) -> List[w], zip_with_tail: (x, x -> y), List[x] -> List[y], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: bb, (bb, cc -> .break(bb) | .continue(bb)), List[cc] -> bb, any: (dd -> Bool), List[dd] -> Bool, all: (ee -> Bool), List[ee] -> Bool, drop_at: Num, List[ff] -> List[ff], join: List[String] -> String, element_at: Num, List[gg] -> .ok(gg) | .err(.out_of_bounds), length: List[jj] -> Num}
+0:13 - 0:19    util/lists.lox: {plus: Num, Num -> Num, elements: List[a] -> .ok({first: a, rest: List[a]}) | .err(.empty_list), fold: d, (d, e -> d), List[e] -> d, try_fold: f, (f, g -> .ok(f) | .err(h)), List[g] -> .ok(f) | .err(h), map: (i -> j), List[i] -> List[j], try_map: (k -> .ok(l) | .err(m)), List[k] -> .ok(List[l]) | .err(m), reduce: (n, n -> n), List[n] -> .ok(n) | .err(.empty_list), reverse: List[q] -> List[q], where: (r -> Bool), List[r] -> List[r], enumerated: List[s] -> List[{element: s, index: Num}], count_where: (t -> Bool), List[t] -> Num, sort: List[Num] -> List[Num], zip: List[u], List[v], (u, v -> w) -> List[w], zip_with_tail: (x, x -> y), List[x] -> List[y], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: bb, (bb, cc -> .break(bb) | .continue(bb)), List[cc] -> bb, any: (dd -> Bool), List[dd] -> Bool, all: (ee -> Bool), List[ee] -> Bool, drop_at: Num, List[ff] -> List[ff], join: List[String] -> String, element_at: Num, List[gg] -> .ok(gg) | .err(.out_of_bounds), length: List[jj] -> Num, is_empty: List[kk] -> Bool}
+0:20 - 0:36    util/lists.lox: {plus: Num, Num -> Num, elements: List[a] -> .ok({first: a, rest: List[a]}) | .err(.empty_list), fold: d, (d, e -> d), List[e] -> d, try_fold: f, (f, g -> .ok(f) | .err(h)), List[g] -> .ok(f) | .err(h), map: (i -> j), List[i] -> List[j], try_map: (k -> .ok(l) | .err(m)), List[k] -> .ok(List[l]) | .err(m), reduce: (n, n -> n), List[n] -> .ok(n) | .err(.empty_list), reverse: List[q] -> List[q], where: (r -> Bool), List[r] -> List[r], enumerated: List[s] -> List[{element: s, index: Num}], count_where: (t -> Bool), List[t] -> Num, sort: List[Num] -> List[Num], zip: List[u], List[v], (u, v -> w) -> List[w], zip_with_tail: (x, x -> y), List[x] -> List[y], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: bb, (bb, cc -> .break(bb) | .continue(bb)), List[cc] -> bb, any: (dd -> Bool), List[dd] -> Bool, all: (ee -> Bool), List[ee] -> Bool, drop_at: Num, List[ff] -> List[ff], join: List[String] -> String, element_at: Num, List[gg] -> .ok(gg) | .err(.out_of_bounds), length: List[jj] -> Num, is_empty: List[kk] -> Bool}
 2:4 - 2:12     describe: {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
 2:38 - 2:40    {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
 2:48 - 2:49    {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
@@ -2524,4 +2343,336 @@ ___ Type checking failed ___
 ___ Continuing with execution ___
 ___ OUTPUT ___
 LoxRuntimeException{token: identifier foo (ln2:10), message: Tag patterns can only be used in match expressions.}
+
+
+====== tour_0_records.lox =====
+___ TYPES ___
+1:4 - 1:8      boss: {name: String, company: String}
+4:0 - 4:1      {...}: {name: String, company: String}
+2:4 - 2:8      name: String
+3:4 - 3:11     company: String
+8:0 - 8:5      print: String
+8:11 - 8:18    company: String
+8:6 - 8:10     boss: {name: String, company: String}
+12:6 - 12:10   name: String
+12:15 - 12:19  boss: {name: String, company: String}
+16:6 - 16:10   name: String
+16:12 - 16:21  boss_name: String
+16:23 - 16:30  company: String
+16:35 - 16:39  boss: {name: String, company: String}
+20:4 - 20:14   fixed_name: {name: String, company: String, name: String}
+20:43 - 20:44  {...}: {name: String, company: String, name: String}
+20:20 - 20:24  boss: {name: String, company: String}
+20:26 - 20:30  name: String
+21:0 - 21:5    print: String
+21:11 - 21:15  name: String
+21:6 - 21:10   boss: {name: String, company: String}
+22:0 - 22:5    print: String
+22:17 - 22:21  name: String
+22:6 - 22:16   fixed_name: {name: String, company: String, name: String}
+26:4 - 26:11   updated: {name: String, company: String, name: String, line_of_work: String}
+26:60 - 26:61  {...}: {name: String, company: String, name: String, line_of_work: String}
+26:18 - 26:28  fixed_name: {name: String, company: String, name: String}
+26:30 - 26:42  line_of_work: String
+27:0 - 27:5    print: {name: String, company: String, name: String, line_of_work: String}
+27:6 - 27:13   updated: {name: String, company: String, name: String, line_of_work: String}
+31:4 - 31:12   subtitle: String
+32:4 - 32:8    card: {title: String, subtitle: String}
+32:48 - 32:49  {...}: {title: String, subtitle: String}
+32:13 - 32:18  title: String
+32:29 - 32:37  subtitle: String
+32:39 - 32:47  subtitle: String
+33:4 - 33:8    same: {title: String, subtitle: String}
+33:38 - 33:39  {...}: {title: String, subtitle: String}
+33:13 - 33:18  title: String
+33:29 - 33:37  subtitle: String
+33:29 - 33:37  subtitle: String
+___ OUTPUT ___
+Vance Refrigeration
+Bob
+Bob Vance
+{name: Bob Vance, company: Vance Refrigeration, line_of_work: Refrigeration}
+
+
+====== tour_1_variants.lox =====
+___ TYPES ___
+1:4 - 1:9      color: .green
+1:13 - 1:18    green: .green
+5:4 - 5:10     either: .green | .red
+5:18 - 5:19    ?: .green | .red
+5:20 - 5:25    color: .green | .red
+5:29 - 5:32    red: .green | .red
+9:4 - 9:9      event: .key(String) | .mouse({x: Num, y: Num})
+10:4 - 10:5    ?: .key(String) | .mouse({x: Num, y: Num})
+10:7 - 10:10   key: .key(String) | .mouse({x: Num, y: Num})
+11:7 - 11:12   mouse: .key(String) | .mouse({x: Num, y: Num})
+11:28 - 11:29  {...}: {x: Num, y: Num}
+11:15 - 11:16  x: Num
+11:22 - 11:23  y: Num
+15:0 - 15:5    print: Num
+15:6 - 15:11   match: Num
+15:12 - 15:18  either: .green | .red
+16:5 - 16:10   green: .green
+17:5 - 17:8    red: .red
+19:0 - 19:5    print: String
+19:6 - 19:11   match: String
+19:12 - 19:17  event: .key(String) | .mouse({x: Num, y: Num})
+20:5 - 20:8    key: .key(String)
+20:9 - 20:13   char: String
+20:18 - 20:22  char: String
+21:5 - 21:10   mouse: .mouse({y: Num, x: Num})
+21:13 - 21:14  x: Num
+21:28 - 21:29  ?: String
+21:23 - 21:24  >: Bool
+21:21 - 21:22  x: Num
+26:0 - 26:5    print: .good | .red
+26:6 - 26:11   match: .good | .red
+26:12 - 26:18  either: .good | .green | .red
+27:5 - 27:10   green: .green
+27:15 - 27:19  good: .good | .red
+28:4 - 28:9    other: .good | .red
+28:13 - 28:18  other: .good | .red
+30:0 - 30:5    print: String
+30:6 - 30:11   match: String
+30:12 - 30:17  event: .key(String) | .mouse({x: Num, y: Num})
+31:5 - 31:8    key: .key(String)
+31:9 - 31:13   char: String
+31:18 - 31:22  char: String
+32:4 - 32:6    _0: .mouse({x: Num, y: Num})
+___ OUTPUT ___
+0
+\n
+.good
+\n
+
+
+====== tour_2_functions.lox =====
+___ TYPES ___
+1:4 - 1:11     add_one: Num -> Num
+1:17 - 1:19    Num -> Num
+1:22 - 1:23    +: Num
+1:20 - 1:21    x: Num
+1:15 - 1:16    x: Num
+5:0 - 5:5      print: Num
+5:15 - 5:16    Num
+5:6 - 5:13     add_one: Num -> Num
+9:4 - 9:12     describe: Bool, Bool -> Bool
+9:21 - 9:22    Bool, Bool -> Bool
+13:0 - 13:1    Bool, Bool -> Bool
+9:16 - 9:17    x: Bool
+9:19 - 9:20    y: Bool
+10:8 - 10:12   good: Bool
+10:17 - 10:19  or: Bool
+10:15 - 10:16  x: Bool
+10:20 - 10:21  y: Bool
+11:7 - 11:11   good: Bool
+11:17 - 11:22  print: String
+12:4 - 12:10   Bool
+12:11 - 12:15  good: Bool
+18:4 - 18:15   always_good: Bool -> Bool
+18:34 - 18:35  Bool -> Bool
+18:33 - 18:34  _: <unknown>
+18:18 - 18:26  describe: Bool, Bool -> Bool
+19:0 - 19:5    print: Bool
+19:22 - 19:23  Bool
+19:6 - 19:17   always_good: Bool -> Bool
+20:0 - 20:5    print: Bool
+20:23 - 20:24  Bool
+20:6 - 20:17   always_good: Bool -> Bool
+24:4 - 24:18   has_silly_name: {first: b, last: b} -> Bool
+24:38 - 24:40  {first: b, last: b} -> Bool
+24:47 - 24:49  ==: Bool
+24:41 - 24:46  first: b
+24:50 - 24:54  last: b
+24:24 - 24:29  first: b
+24:31 - 24:35  last: b
+25:0 - 25:5    print: Bool
+25:50 - 25:51  Bool
+25:6 - 25:20   has_silly_name: {first: String, last: String} -> Bool
+25:49 - 25:50  {...}: {first: String, last: String}
+25:23 - 25:28  first: String
+25:37 - 25:41  last: String
+28:4 - 28:10   is_new: {as_of_year: Num} -> Bool
+28:43 - 28:45  {as_of_year: Num} -> Bool
+28:59 - 28:60  >: Bool
+28:46 - 28:58  current_year: Num
+28:16 - 28:26  as_of_year: Num
+28:28 - 28:40  current_year: Num
+29:0 - 29:5    print: Bool
+29:33 - 29:34  Bool
+29:6 - 29:12   is_new: {as_of_year: Num} -> Bool
+29:32 - 29:33  {...}: {as_of_year: Num}
+29:15 - 29:25  as_of_year: Num
+33:4 - 33:12   new_user: a -> {username: a, registered: Bool}
+33:25 - 33:27  a -> {username: a, registered: Bool}
+33:57 - 33:58  {...}: {username: a, registered: Bool}
+33:30 - 33:38  username: a
+33:30 - 33:38  username: a
+33:40 - 33:50  registered: Bool
+33:16 - 33:24  username: a
+34:4 - 34:15   grant_admin: a -> {is_admin: Bool}
+34:24 - 34:26  a -> {is_admin: Bool}
+34:52 - 34:53  {...}: {is_admin: Bool}
+34:31 - 34:35  user: a
+34:37 - 34:45  is_admin: Bool
+34:19 - 34:23  user: a
+35:4 - 35:16   display_name: {username: String, is_admin: Bool} -> String
+35:25 - 35:27  {username: String, is_admin: Bool} -> String
+35:42 - 35:43  ?: String
+35:33 - 35:41  is_admin: Bool
+35:28 - 35:32  user: {username: String, is_admin: Bool}
+35:61 - 35:69  username: String
+35:56 - 35:60  user: {username: String, is_admin: Bool}
+35:20 - 35:24  user: {username: String, is_admin: Bool}
+36:4 - 36:10   nested: String
+36:54 - 36:55  String
+36:13 - 36:25  display_name: {registered: Bool, username: String, is_admin: Bool} -> String
+36:53 - 36:54  {username: String, registered: Bool, is_admin: Bool}
+36:26 - 36:37  grant_admin: {username: String, registered: Bool} -> {username: String, registered: Bool, is_admin: Bool}
+36:52 - 36:53  {username: String, registered: Bool}
+36:38 - 36:46  new_user: String -> {username: String, registered: Bool}
+37:4 - 37:8    flat: String
+41:4 - 41:6    |>: String
+40:4 - 40:6    |>: {username: String, registered: Bool, is_admin: Bool}
+39:4 - 39:6    |>: {username: String, registered: Bool}
+39:7 - 39:15   new_user: String -> {username: String, registered: Bool}
+40:7 - 40:18   grant_admin: {username: String, registered: Bool} -> {username: String, registered: Bool, is_admin: Bool}
+41:7 - 41:19   display_name: {registered: Bool, username: String, is_admin: Bool} -> String
+___ OUTPUT ___
+6
+nice
+true
+nice
+true
+true
+false
+
+
+====== tour_3_errors.lox =====
+___ TYPES ___
+1:4 - 1:13     sell_eggs: Num, {eggs: Num} -> .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+1:31 - 1:32    Num, {eggs: Num} -> .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+15:0 - 15:1    Num, {eggs: Num} -> .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+1:17 - 1:23    amount: Num
+1:25 - 1:30    stock: {eggs: Num}
+3:18 - 3:20    ==: Bool
+3:13 - 3:17    eggs: Num
+3:7 - 3:12     stock: {eggs: Num}
+4:9 - 4:15     .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+4:17 - 4:20    err: .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+4:22 - 4:34    out_of_stock: .insufficient_stock(Num) | .out_of_stock
+6:18 - 6:19    <: Bool
+6:13 - 6:17    eggs: Num
+6:7 - 6:12     stock: {eggs: Num}
+6:20 - 6:26    amount: Num
+7:9 - 7:15     .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+7:17 - 7:20    err: .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+7:22 - 7:40    insufficient_stock: .insufficient_stock(Num) | .out_of_stock
+7:47 - 7:51    eggs: Num
+7:41 - 7:46    stock: {eggs: Num}
+9:8 - 9:17     new_stock: {eggs: Num, eggs: Num}
+12:4 - 12:5    {...}: {eggs: Num, eggs: Num}
+10:10 - 10:15  stock: {eggs: Num}
+11:8 - 11:12   eggs: Num
+11:25 - 11:26  -: Num
+11:20 - 11:24  eggs: Num
+11:14 - 11:19  stock: {eggs: Num}
+11:27 - 11:33  amount: Num
+14:4 - 14:10   .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+14:12 - 14:14  ok: .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+14:15 - 14:24  new_stock: {eggs: Num, eggs: Num}
+20:4 - 20:11   process: a -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+20:16 - 20:17  a -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+30:0 - 30:1    a -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+21:8 - 21:13   stock: {eggs: Num, bacon: Num}
+21:36 - 21:37  {...}: {eggs: Num, bacon: Num}
+21:18 - 21:22  eggs: Num
+21:27 - 21:32  bacon: Num
+23:8 - 23:17   new_stock: {bacon: Num, eggs: Num, eggs: Num}
+23:38 - 23:39  .ok({bacon: Num, eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+23:20 - 23:29  sell_eggs: Num, {bacon: Num, eggs: Num} -> .ok({bacon: Num, eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
+23:33 - 23:38  stock: {eggs: Num, bacon: Num}
+25:8 - 25:14   status: .done | .low_stock(Num)
+26:8 - 26:9    ?: .done | .low_stock(Num)
+25:32 - 25:33  <: Bool
+25:27 - 25:31  eggs: Num
+25:17 - 25:26  new_stock: {bacon: Num, eggs: Num, eggs: Num}
+26:11 - 26:20  low_stock: .done | .low_stock(Num)
+26:31 - 26:35  eggs: Num
+26:21 - 26:30  new_stock: {bacon: Num, eggs: Num, eggs: Num}
+27:11 - 27:15  done: .done | .low_stock(Num)
+29:4 - 29:10   .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+29:12 - 29:14  ok: .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+29:15 - 29:21  status: .done | .low_stock(Num)
+32:0 - 32:5    print: String
+32:6 - 32:11   match: String
+32:20 - 32:21  .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+32:12 - 32:19  process: Unit -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+33:5 - 33:7    ok: .ok(.done | .low_stock(Num))
+33:8 - 33:14   status: .done | .low_stock(Num)
+33:19 - 33:24  match: String
+33:25 - 33:31  status: .done | .low_stock(Num)
+34:9 - 34:13   done: .done
+35:9 - 35:18   low_stock: .low_stock(Num)
+35:19 - 35:21  _0: Num
+37:5 - 37:8    err: .err(.insufficient_stock(Num) | .out_of_stock)
+37:9 - 37:10   e: .insufficient_stock(Num) | .out_of_stock
+37:15 - 37:20  match: String
+37:21 - 37:22  e: .insufficient_stock(Num) | .out_of_stock
+38:9 - 38:21   out_of_stock: .out_of_stock
+39:9 - 39:27   insufficient_stock: .insufficient_stock(Num)
+39:28 - 39:34  amount: Num
+46:4 - 46:12   download: a -> .ok(String) | .err(.offline)
+46:20 - 46:22  a -> .ok(String) | .err(.offline)
+46:28 - 46:29  ?: .ok(String) | .err(.offline)
+46:31 - 46:33  ok: .ok(String) | .err(.offline)
+46:50 - 46:53  err: .ok(String) | .err(.offline)
+46:55 - 46:62  offline: .offline
+46:16 - 46:19  url: a
+47:0 - 47:5    print: String
+47:15 - 47:16  .ok(String) | .err(.offline)
+47:6 - 47:14   download: Unit -> .ok(String) | .err(.offline)
+___ OUTPUT ___
+finished but low stock
+LoxRuntimeException{token: closeParen ) (ln48:15), message: Expected 1 arguments but got 0}
+
+
+====== tour_4_lists.lox =====
+___ TYPES ___
+1:4 - 1:11     friends: List[String]
+1:29 - 1:30    [...]: List[String]
+2:4 - 2:10     family: List[String]
+2:32 - 2:33    [...]: List[String]
+6:4 - 6:10     people: List[String]
+6:48 - 6:49    [...]: List[String]
+6:23 - 6:30    friends: List[String]
+6:42 - 6:48    family: List[String]
+10:6 - 10:14   elements: List[a] -> .ok({first: a, rest: List[a]}) | .err(.empty_list)
+10:16 - 10:24  is_empty: List[d] -> Bool
+10:29 - 10:35  util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ff, (ff, gg -> .break(ff) | .continue(ff)), List[gg] -> ff, any: (hh -> Bool), List[hh] -> Bool, all: (ii -> Bool), List[ii] -> Bool, drop_at: Num, List[jj] -> List[jj], join: List[String] -> String, element_at: Num, List[kk] -> .ok(kk) | .err(.out_of_bounds), length: List[nn] -> Num, is_empty: List[d] -> Bool}
+10:36 - 10:52  util/lists.lox: {plus: Num, Num -> Num, elements: List[e] -> .ok({first: e, rest: List[e]}) | .err(.empty_list), fold: h, (h, i -> h), List[i] -> h, try_fold: j, (j, k -> .ok(j) | .err(l)), List[k] -> .ok(j) | .err(l), map: (m -> n), List[m] -> List[n], try_map: (o -> .ok(p) | .err(q)), List[o] -> .ok(List[p]) | .err(q), reduce: (r, r -> r), List[r] -> .ok(r) | .err(.empty_list), reverse: List[u] -> List[u], where: (v -> Bool), List[v] -> List[v], enumerated: List[w] -> List[{element: w, index: Num}], count_where: (x -> Bool), List[x] -> Num, sort: List[Num] -> List[Num], zip: List[y], List[z], (y, z -> aa) -> List[aa], zip_with_tail: (bb, bb -> cc), List[bb] -> List[cc], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: ff, (ff, gg -> .break(ff) | .continue(ff)), List[gg] -> ff, any: (hh -> Bool), List[hh] -> Bool, all: (ii -> Bool), List[ii] -> Bool, drop_at: Num, List[jj] -> List[jj], join: List[String] -> String, element_at: Num, List[kk] -> .ok(kk) | .err(.out_of_bounds), length: List[nn] -> Num, is_empty: List[d] -> Bool}
+11:0 - 11:5    print: String
+11:6 - 11:11   match: String
+11:19 - 11:21  |>: .ok({first: String, rest: List[String]}) | .err(.empty_list)
+11:12 - 11:18  people: List[String]
+11:22 - 11:30  elements: List[String] -> .ok({first: String, rest: List[String]}) | .err(.empty_list)
+12:5 - 12:8    err: .err(.empty_list)
+12:9 - 12:11   _0: .empty_list
+13:5 - 13:7    ok: .ok({first: String, rest: List[String]})
+13:10 - 13:15  first: String
+13:17 - 13:21  rest: List[String]
+15:12 - 15:13  ?: String
+14:13 - 14:15  |>: Bool
+14:8 - 14:12   rest: List[String]
+14:16 - 14:24  is_empty: List[String] -> Bool
+15:42 - 15:43  String
+15:21 - 15:27  concat: String, String -> String
+15:14 - 15:20  String: {concat: String, String -> String, split: String, String -> List[String]}
+15:37 - 15:42  first: String
+16:48 - 16:49  String
+16:21 - 16:27  concat: String, String -> String
+16:14 - 16:20  String: {concat: String, String -> String, split: String, String -> List[String]}
+16:28 - 16:33  first: String
+___ OUTPUT ___
+joe and others
 

@@ -98,7 +98,8 @@ void main() {
 
   queueTypecheck(editor.state.doc.value);
 
-  populateExamplesMenu(examplesMenu, (sample) => updateSelectedExample(editor, sample));
+  populateExamplesMenu(true, examplesMenu, (sample) => updateSelectedExample(editor, sample));
+  populateExamplesMenu(false, examplesMenu, (sample) => updateSelectedExample(editor, sample));
 }
 
 JSFunction hoverTooltipCallback(Map<int, List<MarkText>> marksByLine) =>
@@ -140,15 +141,16 @@ JSFunction linterCallback(Map<int, List<MarkText>> marksByLine) =>
   }.toJS;
 
 
-void populateExamplesMenu(web.Element menuElement, void Function(SampleName) onSelected) {
+void populateExamplesMenu(bool tour, web.Element menuElement, void Function(SampleName) onSelected) {
   final list = web.document.createElement('ul');
   final title = web.document.createElement('h3');
-  title.textContent = 'Examples';
+  title.textContent = tour ? 'Tour' : 'Other';
   menuElement.append(title);
 
   for (final name in documentsState.keys) {
+    if (tour != name.startsWith('tour')) continue;
     final item = web.document.createElement('li');
-    item.textContent = name;
+    item.textContent = tour ? name.replaceAll(RegExp(r'(tour_\d_)|(\.lox)'), '') : name;
     item.onClick.listen((_) {
       menuElement.querySelector('.active')?.classList.remove('active');
       item.classList.add('active');
@@ -158,7 +160,7 @@ void populateExamplesMenu(web.Element menuElement, void Function(SampleName) onS
   }
 
   // Set the first item as active by default
-  (list.firstChild as web.HTMLLIElement?)?.classList.add('active');
+  if (tour) (list.firstChild as web.HTMLLIElement?)?.classList.add('active');
 
   menuElement.append(list);
 }

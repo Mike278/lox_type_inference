@@ -1,0 +1,34 @@
+// Create a variant
+let color = .green;
+
+
+// Variants can union with other variants
+let either = true ? color : .red;
+
+
+// Variants can have a payload
+let event = true
+    ? .key("\n")
+    : .mouse({ x: 50, y: 50 });
+
+
+// Use the match keyword to act on each possible variant
+print match either {
+    .green -> 0,
+    .red -> 1,
+};
+print match event {
+    .key(char) -> char,
+    .mouse({ x }) -> x > 50 ? "top" : "bottom",
+};
+
+
+// Or use a final catch-all branch to act on only some variants
+print match either {
+    .green -> .good,
+    other -> other,
+};
+print match event {
+    .key(char) -> char,
+    _ -> "<ignored>"
+};

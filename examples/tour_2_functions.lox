@@ -1,0 +1,43 @@
+// Create a function
+let add_one = \x -> x + 1;
+
+
+// Call a function
+print add_one(5);
+
+
+// Here's a function with multiple parameters and a block body
+let describe = \x, y {
+    let good = x or y;
+    if good then print "nice";
+    return good;
+};
+
+
+// When calling a function you can use _ to omit a parameter.
+// This creates new function that takes the remaining parameter.
+let always_good = describe(true, _);
+print always_good(true);
+print always_good(false);
+
+
+// Parameters can use record destructuring to emulate named parameters.
+let has_silly_name = \{ first, last } -> first == last;
+print has_silly_name({ first: "Joe", last: "Joe" });
+
+// Destructuring with an alias allows both caller and callee to use an appropriate name.
+let is_new = \{ as_of_year: current_year } -> current_year > 2025;
+print is_new({ as_of_year: 1999 });
+
+
+// Functions can also be called with the pipeline operator
+let new_user = \username -> { username, registered: true };
+let grant_admin = \user -> { ..user, is_admin: true };
+let display_name = \user -> user.is_admin ? "<Admin>" : user.username;
+let nested = display_name(grant_admin(new_user("Bob")));
+let flat =
+    "Bob"
+    |> new_user
+    |> grant_admin
+    |> display_name
+    ;

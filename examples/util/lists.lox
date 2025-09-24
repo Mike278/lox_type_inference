@@ -136,3 +136,9 @@ let element_at = \target_index -> \list ->
            );
 
 let length = fold(0, \count, _ -> count + 1);
+
+let is_empty = \list ->
+    match list |> elements {
+        .ok(_) -> false,
+        .err(_) -> true,
+    };
