@@ -14,7 +14,7 @@ print match people |> elements {
     .err(_) -> "none",
 
     .ok({ first, rest }) ->
-        rest |> is_empty
-            ? String.concat("just ", first)
-            : String.concat(first, " and others")
+        if rest |> is_empty
+        then String.concat("just ", first)
+        else String.concat(first, " and others")
 };

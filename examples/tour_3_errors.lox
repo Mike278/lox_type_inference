@@ -23,9 +23,10 @@ let process = \ {
 
     let new_stock = sell_eggs(5, stock)!;
 
-    let status = new_stock.eggs < 2
-        ? .low_stock(new_stock.eggs)
-        : .done;
+    let status =
+        if new_stock.eggs < 2
+        then .low_stock(new_stock.eggs)
+        else .done;
 
     return .ok(status);
 };
@@ -46,6 +47,6 @@ print match process() {
 
 // Use the ?? operator to extract the payload from an `.ok` variant,
 // or provide a fallback value if it's an `.err` variant.
-let download = \url -> true ? .ok("some data") : .err(.offline);
+let download = \url -> if true then .ok("some data") else .err(.offline);
 
 print download() ?? "some default data";

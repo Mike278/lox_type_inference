@@ -106,7 +106,7 @@ assert point1 == {y: 1, x: 0};
 
 let summarize = \{wins, losses, draws} {
     let total = wins + losses + draws;
-    let win_rate = total > 0 ? wins / total : 0;
+    let win_rate = if total > 0 then wins / total else 0;
     return { total, win_rate };
 };
 

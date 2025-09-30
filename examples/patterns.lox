@@ -7,7 +7,7 @@ let describe = \{as_of: current_year} -> \robot {
         serial_number,
     } = robot;
     let is_old_tech = current_year - creation_year > 1;
-    return [label, " - ", serial_number, is_old_tech ? " (VINTAGE)" : " (NEW)"] |> join;
+    return [label, " - ", serial_number, if is_old_tech then " (VINTAGE)" else " (NEW)"] |> join;
 };
 
 let robot = {

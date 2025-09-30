@@ -3,4 +3,4 @@ let f = \.foo(y) {
 
 };
 
-f(true ? .foo(1) : .bar);
+f(if true then .foo(1) else .bar);

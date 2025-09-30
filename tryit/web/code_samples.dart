@@ -65,13 +65,14 @@ let color = .green;
 
 
 // Variants can union with other variants
-let either = true ? color : .red;
+let either = if true then color else .red;
 
 
 // Variants can have a payload
-let event = true
-    ? .key("\n")
-    : .mouse({ x: 50, y: 50 });
+let event =
+    if true
+    then .key("\n")
+    else .mouse({ x: 50, y: 50 });
 
 
 // Use the match keyword to act on each possible variant
@@ -82,7 +83,7 @@ print match either {
 
 print match event {
     .key(char) -> char,
-    .mouse({ x }) -> x > 50 ? "top" : "bottom",
+    .mouse({ x }) -> if x > 50 then "top" else "bottom",
 };
 
 
@@ -141,7 +142,7 @@ let new_user = \username -> { username, registered: true };
 
 let grant_admin = \user -> { ..user, is_admin: true };
 
-let display_name = \user -> user.is_admin ? "<Admin>" : user.username;
+let display_name = \user -> if user.is_admin then "<Admin>" else user.username; 
 
 
 let nested = display_name(grant_admin(new_user("Bob")));
@@ -178,9 +179,10 @@ let process = \ {
 
     let new_stock = sell_eggs(5, stock)!;
 
-    let status = new_stock.eggs < 2
-        ? .low_stock(new_stock.eggs)
-        : .done;
+    let status =
+        if new_stock.eggs < 2
+        then .low_stock(new_stock.eggs)
+        else .done;
 
     return .ok(status);
 };
@@ -201,7 +203,7 @@ print match process() {
 
 // Use the ?? operator to extract the payload from an `.ok` variant,
 // or provide a fallback value if it's an `.err` variant.
-let download = \url -> true ? .ok("some data") : .err(.offline);
+let download = \url -> if true then .ok("some data") else .err(.offline);
 
 print download() ?? "some default data";
 ''')),
@@ -221,9 +223,9 @@ print match people |> elements {
     .err(_) -> "none",
 
     .ok({ first, rest }) ->
-        rest |> is_empty
-            ? String.concat("just ", first)
-            : String.concat(first, " and others")
+        if rest |> is_empty
+        then String.concat("just ", first)
+        else String.concat(first, " and others")
 };
 ''')),
 (SampleName('advent_of_code_2024_day_1.lox'),  SampleContent(r'''let {fold, try_fold, count_where, zip, sort, sum, elements, element_at} = import "util/lists.lox";
@@ -464,9 +466,9 @@ assert part_2 == 900;
 (SampleName('util/lists.lox'),  SampleContent(r'''let {plus} = import "numeric.lox";
 
 let elements = \list ->
-    list |> List.empty
-        ? .err(.empty_list)
-        : .ok({
+    if list |> List.empty
+    then .err(.empty_list)
+    else .ok({
             first: list |> List.first,
             rest: list |> List.rest,
           })
@@ -506,7 +508,7 @@ let reverse =
     fold([], \state, element -> [element, ..state]);
 
 let where = \fn ->
-    fold([], \state, element -> fn(element) ? [..state, element] : state);
+    fold([], \state, element -> if fn(element) then [..state, element] else state);
 
 let enumerated = \list {
     let result = list |> fold(
@@ -520,7 +522,7 @@ let enumerated = \list {
 };
 
 let count_where = \predicate ->
-    fold(0, \count, element -> predicate(element) ? count + 1 : count);
+    fold(0, \count, element -> if predicate(element) then count + 1 else count);
 
 let sort = \list {
   let {first: x, rest: xs} = list |> elements ?? return [];
@@ -565,18 +567,18 @@ let any = \predicate ->
     fold_until(
         false,
         \state, element ->
-            predicate(element)
-                ? .break(true)
-                : .continue(state)
+            if predicate(element)
+            then .break(true)
+            else .continue(state)
     );
 
 let all = \predicate ->
     fold_until(
         true,
         \state, element ->
-            predicate(element)
-                ? .continue(state)
-                : .break(false)
+            if predicate(element)
+            then .continue(state)
+            else .break(false)
     );
 
 let drop_at = \target_index -> \list ->
@@ -593,9 +595,9 @@ let element_at = \target_index -> \list ->
         |> fold_until(
                .err(.out_of_bounds),
                \state, {index, element} ->
-                 index == target_index
-                   ? .break(.ok(element))
-                   : .continue(state),
+                   if index == target_index
+                   then .break(.ok(element))
+                   else .continue(state),
            );
 
 let length = fold(0, \count, _ -> count + 1);
@@ -614,8 +616,8 @@ let try = \f -> \r -> match r {
 };
 ''')),
 (SampleName('util/numeric.lox'),  SampleContent(r'''
-let abs_diff = \a, b -> a > b ? a - b : b - a;
-let abs = \a -> a >= 0 ? a : a * -1;
+let abs_diff = \a, b -> if a > b then a - b else b - a;
+let abs = \a -> if a >= 0 then a else a * -1;
 let plus = \a, b -> a + b;
 let minus = \a, b -> a - b;
 let sign = \n {
@@ -641,16 +643,16 @@ let split_at = \{separator} -> \str {
 };
 
 let as_digit = \str ->
-    str == "0" ? .ok(0) :
-    str == "1" ? .ok(1) :
-    str == "2" ? .ok(2) :
-    str == "3" ? .ok(3) :
-    str == "4" ? .ok(4) :
-    str == "5" ? .ok(5) :
-    str == "6" ? .ok(6) :
-    str == "7" ? .ok(7) :
-    str == "8" ? .ok(8) :
-    str == "9" ? .ok(9) :
+    if str == "0" then .ok(0) else
+    if str == "1" then .ok(1) else
+    if str == "2" then .ok(2) else
+    if str == "3" then .ok(3) else
+    if str == "4" then .ok(4) else
+    if str == "5" then .ok(5) else
+    if str == "6" then .ok(6) else
+    if str == "7" then .ok(7) else
+    if str == "8" then .ok(8) else
+    if str == "9" then .ok(9) else
     .err(.invalid_digit(str));
 
 let parse_int = \str -> str

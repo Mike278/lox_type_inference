@@ -135,8 +135,8 @@ class LoxRuntime {
       Call(:final callee, :final args, :final closingParen) => handleInvocation(callee, args, closingParen, env),
       LogicalAnd(:final left, :final keyword, :final right) => evalAs<bool>(left, keyword, env) && evalAs<bool>(right, keyword, env),
       LogicalOr(:final left, :final keyword, :final right) => evalAs<bool>(left, keyword, env) || evalAs<bool>(right, keyword, env),
-      Ternary(:final questionMark, :final condition, :final ifTrue, :final ifFalse) =>
-        evalAs<bool>(condition, questionMark, env)
+      IfExpression(:final ifKeyword, :final condition, :final ifTrue, :final ifFalse) =>
+        evalAs<bool>(condition, ifKeyword, env)
           ? eval(ifTrue, env)
           : eval(ifFalse, env),
       Record(:final fields) => {

@@ -42,7 +42,7 @@ let new_user = \username -> { username, registered: true };
 
 let grant_admin = \user -> { ..user, is_admin: true };
 
-let display_name = \user -> user.is_admin ? "<Admin>" : user.username;
+let display_name = \user -> if user.is_admin then "<Admin>" else user.username; 
 
 
 let nested = display_name(grant_admin(new_user("Bob")));

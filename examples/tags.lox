@@ -1,11 +1,11 @@
 
 let tab = .key("\t");
 let center = .mouse({x: 50, y: 50});
-let key_or_mouse = false ? tab : center;
+let key_or_mouse = if false then tab else center;
 
 let fn = \e -> match e {
     .key(char) -> char,
-    .mouse({x}) -> x > 50 ? "top" : "bottom",
+    .mouse({x}) -> if x > 50 then "top" else "bottom",
 };
 
 print fn(tab);

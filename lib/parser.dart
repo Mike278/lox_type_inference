@@ -267,7 +267,6 @@ class Parser {
     return TagPattern(tagName, payload);
   }
 
-  // expression     → ternary;
   Expr expression() => return_();
 
   Expr return_() {
@@ -281,19 +280,12 @@ class Parser {
       }
       return Return(keyword, value);
     }
-    return ternary();
+    return postfix();
   }
 
-  // ternary        → logical_or "?" expression ":" expression ";";
-  Expr ternary() {
+  Expr postfix() {
     final expr = or();
-    if (matchFirst(.question)) {
-      final questionMark = previous();
-      final ifTrue = expression();
-      consume(.colon, "Expected ':' before last ternary expression");
-      final ifFalse = expression();
-      return Ternary(questionMark, expr, ifTrue, ifFalse);
-    } else if (matchFirst(.questionQuestion)) {
+    if (matchFirst(.questionQuestion)) {
       final qq = previous();
       final fallback = expression();
       return TagCastOk(expr, qq, fallback);
@@ -430,6 +422,15 @@ class Parser {
     }
     if (matchFirst(.import)) {
       return import();
+    }
+    if (matchFirst(.if_)) {
+      final keyword = previous();
+      final condition = expression();
+      consume(.then, 'Expected "then"');
+      final ifTrue = expression();
+      consume(.else_, 'Expected "else"');
+      final ifFalse = expression();
+      return IfExpression(keyword, condition, ifTrue, ifFalse);
     }
 
     return call();

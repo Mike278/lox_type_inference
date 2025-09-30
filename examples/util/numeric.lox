@@ -1,6 +1,6 @@
 
-let abs_diff = \a, b -> a > b ? a - b : b - a;
-let abs = \a -> a >= 0 ? a : a * -1;
+let abs_diff = \a, b -> if a > b then a - b else b - a;
+let abs = \a -> if a >= 0 then a else a * -1;
 let plus = \a, b -> a + b;
 let minus = \a, b -> a - b;
 let sign = \n {

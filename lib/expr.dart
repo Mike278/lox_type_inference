@@ -133,13 +133,13 @@ class ExpressionArgs with EquatableMixin implements CallArgs {
   @override get props => [exprs];
 }
 
-class Ternary extends Expr with EquatableMixin {
-  final Token questionMark;
+class IfExpression extends Expr with EquatableMixin {
+  final Token ifKeyword;
   final Expr condition;
   final Expr ifTrue;
   final Expr ifFalse;
-  Ternary(this.questionMark, this.condition, this.ifTrue, this.ifFalse);
-  @override get props => [...super.props, questionMark, condition, ifTrue, ifFalse];
+  IfExpression(this.ifKeyword, this.condition, this.ifTrue, this.ifFalse);
+  @override get props => [...super.props, ifKeyword, condition, ifTrue, ifFalse];
 }
 
 class Record extends Expr with EquatableMixin {
@@ -367,7 +367,7 @@ extension ExprAPI on Expr {
           case ExpressionArgs(:final exprs):
             for (final expr in exprs) yield* expr.subExpressions();
         }
-      case Ternary(:final condition, :final ifTrue, :final ifFalse):
+      case IfExpression(:final condition, :final ifTrue, :final ifFalse):
         yield* condition.subExpressions();
         yield* ifTrue.subExpressions();
         yield* ifFalse.subExpressions();
@@ -437,7 +437,7 @@ extension ExprAPI on Expr {
           case ExpressionArgs(:final exprs):
             for (final expr in exprs) yield* expr.allPatterns();
         }
-      case Ternary(:final condition, :final ifTrue, :final ifFalse):
+      case IfExpression(:final condition, :final ifTrue, :final ifFalse):
         yield* condition.allPatterns();
         yield* ifTrue.allPatterns();
         yield* ifFalse.allPatterns();

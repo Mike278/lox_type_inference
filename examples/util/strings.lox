@@ -15,16 +15,16 @@ let split_at = \{separator} -> \str {
 };
 
 let as_digit = \str ->
-    str == "0" ? .ok(0) :
-    str == "1" ? .ok(1) :
-    str == "2" ? .ok(2) :
-    str == "3" ? .ok(3) :
-    str == "4" ? .ok(4) :
-    str == "5" ? .ok(5) :
-    str == "6" ? .ok(6) :
-    str == "7" ? .ok(7) :
-    str == "8" ? .ok(8) :
-    str == "9" ? .ok(9) :
+    if str == "0" then .ok(0) else
+    if str == "1" then .ok(1) else
+    if str == "2" then .ok(2) else
+    if str == "3" then .ok(3) else
+    if str == "4" then .ok(4) else
+    if str == "5" then .ok(5) else
+    if str == "6" then .ok(6) else
+    if str == "7" then .ok(7) else
+    if str == "8" then .ok(8) else
+    if str == "9" then .ok(9) else
     .err(.invalid_digit(str));
 
 let parse_int = \str -> str

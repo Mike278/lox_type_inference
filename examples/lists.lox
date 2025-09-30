@@ -33,20 +33,20 @@ let employees = [
 
 let employee_with_max_age = employees |> reduce(
     \highest, employee ->
-        employee.age > highest.age
-            ? employee
-            : highest
+        if employee.age > highest.age
+        then employee
+        else highest
 );
 print employee_with_max_age;
 
 let max_age = employees
     |> map(\e -> e.age)
-    |> reduce(\highest, age -> age > highest ? age : highest)
+    |> reduce(\highest, age -> if age > highest then age else highest)
 ;
 print max_age;
 
-let max = \x, y -> x > y ? x : y;
-let min = \x, y -> x < y ? x : y;
+let max = \x, y -> if x > y then x else y;
+let min = \x, y -> if x < y then x else y;
 
 print employees
     |> map(\e -> e.age)

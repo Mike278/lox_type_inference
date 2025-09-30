@@ -154,8 +154,8 @@ class TypeInference {
         ListLiteral()    => inferList(env, level, expr),
         TagConstructor() => inferTagConstructor(env, level, expr),
         TagMatch()       => inferTagMatch(env, level, expr),
-        TagCastOk()        => inferTagCast(env, level, expr),
-        Ternary()        => inferTernary(env, level, expr),
+        TagCastOk()      => inferTagCast(env, level, expr),
+        IfExpression()   => inferIfExpression(env, level, expr),
         Import()         => inferImport(env, level, expr),
         UnaryMinus()     => inferUnaryOperation(env, level, expr),
         UnaryBang()      => inferUnaryOperation(env, level, expr),
@@ -271,7 +271,7 @@ class TypeInference {
     return setType(expr, evaluatesToType);
   }
 
-  LoxType inferTernary(Map<String, LoxType> env, int level, Ternary expr) {
+  LoxType inferIfExpression(Map<String, LoxType> env, int level, IfExpression expr) {
     final evaluatesToType = LoxType.fresh(level);
     final expectedOperationType = LoxType.function(
       from: [
@@ -282,7 +282,7 @@ class TypeInference {
       to: evaluatesToType,
     );
 
-    final actualOperationType = inferExpr(env, level, Variable(expr.questionMark));
+    final actualOperationType = inferExpr(env, level, Variable(expr.ifKeyword));
 
     unify(
       expectedOperationType,
@@ -749,7 +749,7 @@ final loxStandardLibraryEnv = <String, LoxType>{
   for (final symbol in {'or', 'and'})          symbol : .function(from: [.bool, .bool], to: .bool),
   for (final symbol in {'>', '>=', '<', '<='}) symbol : .function(from: [.num, .num], to: .bool),
   for (final symbol in {'!=', '=='})           symbol : .function(from: [a, a], to: .bool),
-  '?': .function(from: [.bool, a, a], to: a),
+  'if': .function(from: [.bool, a, a], to: a),
   'List' : .record({
     'first': .function(from: [.list(of: a)], to: a),
     'rest': .function(from: [.list(of: b)], to: .list(of: b)),

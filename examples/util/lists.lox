@@ -1,9 +1,9 @@
 let {plus} = import "numeric.lox";
 
 let elements = \list ->
-    list |> List.empty
-        ? .err(.empty_list)
-        : .ok({
+    if list |> List.empty
+    then .err(.empty_list)
+    else .ok({
             first: list |> List.first,
             rest: list |> List.rest,
           })
@@ -43,7 +43,7 @@ let reverse =
     fold([], \state, element -> [element, ..state]);
 
 let where = \fn ->
-    fold([], \state, element -> fn(element) ? [..state, element] : state);
+    fold([], \state, element -> if fn(element) then [..state, element] else state);
 
 let enumerated = \list {
     let result = list |> fold(
@@ -57,7 +57,7 @@ let enumerated = \list {
 };
 
 let count_where = \predicate ->
-    fold(0, \count, element -> predicate(element) ? count + 1 : count);
+    fold(0, \count, element -> if predicate(element) then count + 1 else count);
 
 let sort = \list {
   let {first: x, rest: xs} = list |> elements ?? return [];
@@ -102,18 +102,18 @@ let any = \predicate ->
     fold_until(
         false,
         \state, element ->
-            predicate(element)
-                ? .break(true)
-                : .continue(state)
+            if predicate(element)
+            then .break(true)
+            else .continue(state)
     );
 
 let all = \predicate ->
     fold_until(
         true,
         \state, element ->
-            predicate(element)
-                ? .continue(state)
-                : .break(false)
+            if predicate(element)
+            then .continue(state)
+            else .break(false)
     );
 
 let drop_at = \target_index -> \list ->
@@ -130,9 +130,9 @@ let element_at = \target_index -> \list ->
         |> fold_until(
                .err(.out_of_bounds),
                \state, {index, element} ->
-                 index == target_index
-                   ? .break(.ok(element))
-                   : .continue(state),
+                   if index == target_index
+                   then .break(.ok(element))
+                   else .continue(state),
            );
 
 let length = fold(0, \count, _ -> count + 1);

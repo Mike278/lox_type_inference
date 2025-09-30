@@ -813,8 +813,8 @@ ___ TYPES ___
 17:7 - 17:8    Unit
 17:0 - 17:5    count: Num -> Unit
 19:0 - 19:5    print: String
-19:12 - 19:13  ?: String
-19:8 - 19:9    >: Bool
+19:6 - 19:8    if: String
+19:11 - 19:12  >: Bool
 ___ OUTPUT ___
 a
 b
@@ -1101,14 +1101,14 @@ ___ TYPES ___
 38:0 - 38:1    List[{name: String, age: Num}] -> .ok({name: String, age: Num}) | .err(.empty_list)
 33:41 - 33:47  reduce: ({name: String, age: Num}, {name: String, age: Num} -> {name: String, age: Num}), List[{name: String, age: Num}] -> .ok({name: String, age: Num}) | .err(.empty_list)
 34:23 - 34:25  {name: String, age: Num}, {name: String, age: Num} -> {name: String, age: Num}
-36:12 - 36:13  ?: {name: String, age: Num}
-35:21 - 35:22  >: Bool
-35:17 - 35:20  age: Num
-35:8 - 35:16   employee: {name: String, age: Num}
-35:31 - 35:34  age: Num
-35:23 - 35:30  highest: {name: String, age: Num}
-36:14 - 36:22  employee: {name: String, age: Num}
-37:14 - 37:21  highest: {name: String, age: Num}
+35:8 - 35:10   if: {name: String, age: Num}
+35:24 - 35:25  >: Bool
+35:20 - 35:23  age: Num
+35:11 - 35:19  employee: {name: String, age: Num}
+35:34 - 35:37  age: Num
+35:26 - 35:33  highest: {name: String, age: Num}
+36:13 - 36:21  employee: {name: String, age: Num}
+37:13 - 37:20  highest: {name: String, age: Num}
 34:5 - 34:12   highest: {name: String, age: Num}
 34:14 - 34:22  employee: {name: String, age: Num}
 39:0 - 39:5    print: .ok({name: String, age: Num}) | .err(.empty_list)
@@ -1123,37 +1123,37 @@ ___ TYPES ___
 42:19 - 42:22  age: Num
 42:17 - 42:18  e: {name: String, age: Num}
 42:12 - 42:13  e: {name: String, age: Num}
-43:60 - 43:61  List[Num] -> .ok(Num) | .err(.empty_list)
+43:69 - 43:70  List[Num] -> .ok(Num) | .err(.empty_list)
 43:7 - 43:13   reduce: (Num, Num -> Num), List[Num] -> .ok(Num) | .err(.empty_list)
 43:28 - 43:30  Num, Num -> Num
-43:45 - 43:46  ?: Num
-43:35 - 43:36  >: Bool
-43:31 - 43:34  age: Num
-43:37 - 43:44  highest: Num
-43:47 - 43:50  age: Num
-43:53 - 43:60  highest: Num
+43:31 - 43:33  if: Num
+43:38 - 43:39  >: Bool
+43:34 - 43:37  age: Num
+43:40 - 43:47  highest: Num
+43:53 - 43:56  age: Num
+43:62 - 43:69  highest: Num
 43:15 - 43:22  highest: Num
 43:24 - 43:27  age: Num
 45:0 - 45:5    print: .ok(Num) | .err(.empty_list)
 45:6 - 45:13   max_age: .ok(Num) | .err(.empty_list)
 47:4 - 47:7    max: Num, Num -> Num
 47:16 - 47:18  Num, Num -> Num
-47:25 - 47:26  ?: Num
-47:21 - 47:22  >: Bool
-47:19 - 47:20  x: Num
-47:23 - 47:24  y: Num
-47:27 - 47:28  x: Num
-47:31 - 47:32  y: Num
+47:19 - 47:21  if: Num
+47:24 - 47:25  >: Bool
+47:22 - 47:23  x: Num
+47:26 - 47:27  y: Num
+47:33 - 47:34  x: Num
+47:40 - 47:41  y: Num
 47:11 - 47:12  x: Num
 47:14 - 47:15  y: Num
 48:4 - 48:7    min: Num, Num -> Num
 48:16 - 48:18  Num, Num -> Num
-48:25 - 48:26  ?: Num
-48:21 - 48:22  <: Bool
-48:19 - 48:20  x: Num
-48:23 - 48:24  y: Num
-48:27 - 48:28  x: Num
-48:31 - 48:32  y: Num
+48:19 - 48:21  if: Num
+48:24 - 48:25  <: Bool
+48:22 - 48:23  x: Num
+48:26 - 48:27  y: Num
+48:33 - 48:34  x: Num
+48:40 - 48:41  y: Num
 48:11 - 48:12  x: Num
 48:14 - 48:15  y: Num
 50:0 - 50:5    print: .ok(Num) | .err(.empty_list)
@@ -1337,13 +1337,13 @@ ___ TYPES ___
 8:22 - 8:34    current_year: Num
 8:37 - 8:50    creation_year: Num
 9:4 - 9:10     String
-9:80 - 9:82    |>: String
-9:78 - 9:79    [...]: List[String]
+9:89 - 9:91    |>: String
+9:87 - 9:88    [...]: List[String]
 9:12 - 9:17    label: String
 9:26 - 9:39    serial_number: String
-9:53 - 9:54    ?: String
-9:41 - 9:52    is_old_tech: Bool
-9:83 - 9:87    join: List[String] -> String
+9:41 - 9:43    if: String
+9:44 - 9:55    is_old_tech: Bool
+9:92 - 9:96    join: List[String] -> String
 2:17 - 2:22    as_of: Num
 2:24 - 2:36    current_year: Num
 12:4 - 12:9    robot: {name: {label: String, title: String, version: String}, manufacture_date: {year: Num, month: Num, day: Num}, serial_number: String}
@@ -1798,12 +1798,12 @@ ___ TYPES ___
 107:23 - 107:29 losses: Num
 107:32 - 107:37 draws: Num
 108:8 - 108:16 win_rate: Num
-108:29 - 108:30 ?: Num
-108:25 - 108:26 >: Bool
-108:19 - 108:24 total: Num
-108:36 - 108:37 /: Num
-108:31 - 108:35 wins: Num
-108:38 - 108:43 total: Num
+108:19 - 108:21 if: Num
+108:28 - 108:29 >: Bool
+108:22 - 108:27 total: Num
+108:42 - 108:43 /: Num
+108:37 - 108:41 wins: Num
+108:44 - 108:49 total: Num
 109:4 - 109:10 {total: Num, win_rate: Num}
 109:29 - 109:30 {...}: {total: Num, win_rate: Num}
 109:13 - 109:18 total: Num
@@ -1946,9 +1946,9 @@ ___ TYPES ___
 2:21 - 2:22    x: Num
 2:28 - 2:29    y: Num
 3:4 - 3:16     key_or_mouse: .key(String) | .mouse({x: Num, y: Num})
-3:25 - 3:26    ?: .key(String) | .mouse({x: Num, y: Num})
-3:27 - 3:30    tab: .key(String) | .mouse({x: Num, y: Num})
-3:33 - 3:39    center: .key(String) | .mouse({x: Num, y: Num})
+3:19 - 3:21    if: .key(String) | .mouse({x: Num, y: Num})
+3:33 - 3:36    tab: .key(String) | .mouse({x: Num, y: Num})
+3:42 - 3:48    center: .key(String) | .mouse({x: Num, y: Num})
 5:4 - 5:6      fn: .key(String) | .mouse({x: Num}) -> String
 5:12 - 5:14    .key(String) | .mouse({x: Num}) -> String
 5:15 - 5:20    match: String
@@ -1958,9 +1958,9 @@ ___ TYPES ___
 6:18 - 6:22    char: String
 7:5 - 7:10     mouse: .mouse({x: Num})
 7:12 - 7:13    x: Num
-7:26 - 7:27    ?: String
-7:21 - 7:22    >: Bool
-7:19 - 7:20    x: Num
+7:19 - 7:21    if: String
+7:24 - 7:25    >: Bool
+7:22 - 7:23    x: Num
 5:10 - 5:11    e: .key(String) | .mouse({x: Num})
 10:0 - 10:5    print: String
 10:12 - 10:13  String
@@ -2397,46 +2397,46 @@ ___ TYPES ___
 1:4 - 1:9      color: .green
 1:13 - 1:18    green: .green
 5:4 - 5:10     either: .green | .red
-5:18 - 5:19    ?: .green | .red
-5:20 - 5:25    color: .green | .red
-5:29 - 5:32    red: .green | .red
+5:13 - 5:15    if: .green | .red
+5:26 - 5:31    color: .green | .red
+5:38 - 5:41    red: .green | .red
 9:4 - 9:9      event: .key(String) | .mouse({x: Num, y: Num})
-10:4 - 10:5    ?: .key(String) | .mouse({x: Num, y: Num})
-10:7 - 10:10   key: .key(String) | .mouse({x: Num, y: Num})
-11:7 - 11:12   mouse: .key(String) | .mouse({x: Num, y: Num})
-11:28 - 11:29  {...}: {x: Num, y: Num}
-11:15 - 11:16  x: Num
-11:22 - 11:23  y: Num
-15:0 - 15:5    print: Num
-15:6 - 15:11   match: Num
-15:12 - 15:18  either: .green | .red
-16:5 - 16:10   green: .green
-17:5 - 17:8    red: .red
-20:0 - 20:5    print: String
-20:6 - 20:11   match: String
-20:12 - 20:17  event: .key(String) | .mouse({x: Num, y: Num})
-21:5 - 21:8    key: .key(String)
-21:9 - 21:13   char: String
-21:18 - 21:22  char: String
-22:5 - 22:10   mouse: .mouse({y: Num, x: Num})
-22:13 - 22:14  x: Num
-22:28 - 22:29  ?: String
-22:23 - 22:24  >: Bool
-22:21 - 22:22  x: Num
-27:0 - 27:5    print: .good | .red
-27:6 - 27:11   match: .good | .red
-27:12 - 27:18  either: .good | .green | .red
-28:5 - 28:10   green: .green
-28:15 - 28:19  good: .good | .red
-29:4 - 29:9    other: .good | .red
-29:13 - 29:18  other: .good | .red
-32:0 - 32:5    print: String
-32:6 - 32:11   match: String
-32:12 - 32:17  event: .key(String) | .mouse({x: Num, y: Num})
-33:5 - 33:8    key: .key(String)
-33:9 - 33:13   char: String
-33:18 - 33:22  char: String
-34:4 - 34:6    _0: .mouse({x: Num, y: Num})
+10:4 - 10:6    if: .key(String) | .mouse({x: Num, y: Num})
+11:10 - 11:13  key: .key(String) | .mouse({x: Num, y: Num})
+12:10 - 12:15  mouse: .key(String) | .mouse({x: Num, y: Num})
+12:31 - 12:32  {...}: {x: Num, y: Num}
+12:18 - 12:19  x: Num
+12:25 - 12:26  y: Num
+16:0 - 16:5    print: Num
+16:6 - 16:11   match: Num
+16:12 - 16:18  either: .green | .red
+17:5 - 17:10   green: .green
+18:5 - 18:8    red: .red
+21:0 - 21:5    print: String
+21:6 - 21:11   match: String
+21:12 - 21:17  event: .key(String) | .mouse({x: Num, y: Num})
+22:5 - 22:8    key: .key(String)
+22:9 - 22:13   char: String
+22:18 - 22:22  char: String
+23:5 - 23:10   mouse: .mouse({y: Num, x: Num})
+23:13 - 23:14  x: Num
+23:21 - 23:23  if: String
+23:26 - 23:27  >: Bool
+23:24 - 23:25  x: Num
+28:0 - 28:5    print: .good | .red
+28:6 - 28:11   match: .good | .red
+28:12 - 28:18  either: .good | .green | .red
+29:5 - 29:10   green: .green
+29:15 - 29:19  good: .good | .red
+30:4 - 30:9    other: .good | .red
+30:13 - 30:18  other: .good | .red
+33:0 - 33:5    print: String
+33:6 - 33:11   match: String
+33:12 - 33:17  event: .key(String) | .mouse({x: Num, y: Num})
+34:5 - 34:8    key: .key(String)
+34:9 - 34:13   char: String
+34:18 - 34:22  char: String
+35:4 - 35:6    _0: .mouse({x: Num, y: Num})
 ___ OUTPUT ___
 0
 \n
@@ -2516,11 +2516,11 @@ ___ TYPES ___
 42:19 - 42:23  user: a
 44:4 - 44:16   display_name: {username: String, is_admin: Bool} -> String
 44:25 - 44:27  {username: String, is_admin: Bool} -> String
-44:42 - 44:43  ?: String
-44:33 - 44:41  is_admin: Bool
-44:28 - 44:32  user: {username: String, is_admin: Bool}
-44:61 - 44:69  username: String
-44:56 - 44:60  user: {username: String, is_admin: Bool}
+44:28 - 44:30  if: String
+44:36 - 44:44  is_admin: Bool
+44:31 - 44:35  user: {username: String, is_admin: Bool}
+44:70 - 44:78  username: String
+44:65 - 44:69  user: {username: String, is_admin: Bool}
 44:20 - 44:24  user: {username: String, is_admin: Bool}
 47:4 - 47:10   nested: String
 47:54 - 47:55  String
@@ -2581,7 +2581,7 @@ ___ TYPES ___
 14:15 - 14:24  new_stock: {eggs: Num, eggs: Num}
 20:4 - 20:11   process: a -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
 20:16 - 20:17  a -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
-30:0 - 30:1    a -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+31:0 - 31:1    a -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
 21:8 - 21:13   stock: {eggs: Num, bacon: Num}
 21:36 - 21:37  {...}: {eggs: Num, bacon: Num}
 21:18 - 21:22  eggs: Num
@@ -2591,48 +2591,48 @@ ___ TYPES ___
 23:20 - 23:29  sell_eggs: Num, {bacon: Num, eggs: Num} -> .ok({bacon: Num, eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
 23:33 - 23:38  stock: {eggs: Num, bacon: Num}
 25:8 - 25:14   status: .done | .low_stock(Num)
-26:8 - 26:9    ?: .done | .low_stock(Num)
-25:32 - 25:33  <: Bool
-25:27 - 25:31  eggs: Num
-25:17 - 25:26  new_stock: {bacon: Num, eggs: Num, eggs: Num}
-26:11 - 26:20  low_stock: .done | .low_stock(Num)
-26:31 - 26:35  eggs: Num
-26:21 - 26:30  new_stock: {bacon: Num, eggs: Num, eggs: Num}
-27:11 - 27:15  done: .done | .low_stock(Num)
-29:4 - 29:10   .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
-29:12 - 29:14  ok: .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
-29:15 - 29:21  status: .done | .low_stock(Num)
-32:0 - 32:5    print: String
-32:6 - 32:11   match: String
-32:20 - 32:21  .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
-32:12 - 32:19  process: Unit -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
-34:5 - 34:7    ok: .ok(.done | .low_stock(Num))
-34:8 - 34:14   status: .done | .low_stock(Num)
-34:19 - 34:24  match: String
-34:25 - 34:31  status: .done | .low_stock(Num)
-35:9 - 35:13   done: .done
-36:9 - 36:18   low_stock: .low_stock(Num)
-36:19 - 36:21  _0: Num
-39:5 - 39:8    err: .err(.insufficient_stock(Num) | .out_of_stock)
-39:9 - 39:10   e: .insufficient_stock(Num) | .out_of_stock
-39:15 - 39:20  match: String
-39:21 - 39:22  e: .insufficient_stock(Num) | .out_of_stock
-40:9 - 40:21   out_of_stock: .out_of_stock
-41:9 - 41:27   insufficient_stock: .insufficient_stock(Num)
-41:28 - 41:34  amount: Num
-48:4 - 48:12   download: a -> .ok(String) | .err(.offline)
-48:20 - 48:22  a -> .ok(String) | .err(.offline)
-48:28 - 48:29  ?: .ok(String) | .err(.offline)
-48:31 - 48:33  ok: .ok(String) | .err(.offline)
-48:50 - 48:53  err: .ok(String) | .err(.offline)
-48:55 - 48:62  offline: .offline
-48:16 - 48:19  url: a
-50:0 - 50:5    print: String
-50:15 - 50:16  .ok(String) | .err(.offline)
-50:6 - 50:14   download: Unit -> .ok(String) | .err(.offline)
+26:8 - 26:10   if: .done | .low_stock(Num)
+26:26 - 26:27  <: Bool
+26:21 - 26:25  eggs: Num
+26:11 - 26:20  new_stock: {bacon: Num, eggs: Num, eggs: Num}
+27:14 - 27:23  low_stock: .done | .low_stock(Num)
+27:34 - 27:38  eggs: Num
+27:24 - 27:33  new_stock: {bacon: Num, eggs: Num, eggs: Num}
+28:14 - 28:18  done: .done | .low_stock(Num)
+30:4 - 30:10   .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+30:12 - 30:14  ok: .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+30:15 - 30:21  status: .done | .low_stock(Num)
+33:0 - 33:5    print: String
+33:6 - 33:11   match: String
+33:20 - 33:21  .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+33:12 - 33:19  process: Unit -> .ok(.done | .low_stock(Num)) | .err(.insufficient_stock(Num) | .out_of_stock)
+35:5 - 35:7    ok: .ok(.done | .low_stock(Num))
+35:8 - 35:14   status: .done | .low_stock(Num)
+35:19 - 35:24  match: String
+35:25 - 35:31  status: .done | .low_stock(Num)
+36:9 - 36:13   done: .done
+37:9 - 37:18   low_stock: .low_stock(Num)
+37:19 - 37:21  _0: Num
+40:5 - 40:8    err: .err(.insufficient_stock(Num) | .out_of_stock)
+40:9 - 40:10   e: .insufficient_stock(Num) | .out_of_stock
+40:15 - 40:20  match: String
+40:21 - 40:22  e: .insufficient_stock(Num) | .out_of_stock
+41:9 - 41:21   out_of_stock: .out_of_stock
+42:9 - 42:27   insufficient_stock: .insufficient_stock(Num)
+42:28 - 42:34  amount: Num
+49:4 - 49:12   download: a -> .ok(String) | .err(.offline)
+49:20 - 49:22  a -> .ok(String) | .err(.offline)
+49:23 - 49:25  if: .ok(String) | .err(.offline)
+49:37 - 49:39  ok: .ok(String) | .err(.offline)
+49:59 - 49:62  err: .ok(String) | .err(.offline)
+49:64 - 49:71  offline: .offline
+49:16 - 49:19  url: a
+51:0 - 51:5    print: String
+51:15 - 51:16  .ok(String) | .err(.offline)
+51:6 - 51:14   download: Unit -> .ok(String) | .err(.offline)
 ___ OUTPUT ___
 finished but low stock
-LoxRuntimeException{token: closeParen ) (ln51:15), message: Expected 1 arguments but got 0}
+LoxRuntimeException{token: closeParen ) (ln52:15), message: Expected 1 arguments but got 0}
 
 
 ====== tour_4_lists.lox =====
@@ -2659,18 +2659,18 @@ ___ TYPES ___
 15:5 - 15:7    ok: .ok({first: String, rest: List[String]})
 15:10 - 15:15  first: String
 15:17 - 15:21  rest: List[String]
-17:12 - 17:13  ?: String
-16:13 - 16:15  |>: Bool
-16:8 - 16:12   rest: List[String]
-16:16 - 16:24  is_empty: List[String] -> Bool
-17:42 - 17:43  String
-17:21 - 17:27  concat: String, String -> String
-17:14 - 17:20  String: {concat: String, String -> String, split: String, String -> List[String]}
-17:37 - 17:42  first: String
-18:48 - 18:49  String
-18:21 - 18:27  concat: String, String -> String
-18:14 - 18:20  String: {concat: String, String -> String, split: String, String -> List[String]}
-18:28 - 18:33  first: String
+16:8 - 16:10   if: String
+16:16 - 16:18  |>: Bool
+16:11 - 16:15  rest: List[String]
+16:19 - 16:27  is_empty: List[String] -> Bool
+17:41 - 17:42  String
+17:20 - 17:26  concat: String, String -> String
+17:13 - 17:19  String: {concat: String, String -> String, split: String, String -> List[String]}
+17:36 - 17:41  first: String
+18:47 - 18:48  String
+18:20 - 18:26  concat: String, String -> String
+18:13 - 18:19  String: {concat: String, String -> String, split: String, String -> List[String]}
+18:27 - 18:32  first: String
 ___ OUTPUT ___
 joe and others
 

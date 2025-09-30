@@ -17,4 +17,4 @@ let count = \n {
 
 count(3);
 
-print 1 > 2 ? "a" : "b";
+print if 1 > 2 then "a" else "b";

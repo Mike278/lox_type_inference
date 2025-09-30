@@ -263,13 +263,13 @@ List<(Token, String)> displayExpression(
   ],
 
 
-  Ternary(
-    :final questionMark,
+  IfExpression(
+    :final ifKeyword,
     :final condition,
     :final ifTrue,
     :final ifFalse,
   ) => [
-    (questionMark, '?: ${displayType(typeOf(expr))}'),
+    (ifKeyword, 'if: ${displayType(typeOf(expr))}'),
     ...displayExpression(condition, typeOf),
     ...displayExpression(ifTrue, typeOf),
     ...displayExpression(ifFalse, typeOf),
@@ -406,15 +406,15 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
       openBracket.span.extendedBy(closingBracket.span),
 
 
-  Ternary(
-    :final questionMark,
+  IfExpression(
+    :final ifKeyword,
     :final condition,
     :final ifTrue,
     :final ifFalse,
   ) =>
       [
+        ifKeyword.span,
         locationForErrorUnderline(condition),
-        questionMark.span,
         locationForErrorUnderline(ifTrue),
         locationForErrorUnderline(ifFalse),
       ].whereNotNull().reduce(extend),

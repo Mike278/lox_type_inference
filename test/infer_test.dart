@@ -53,12 +53,12 @@ void main() {
   testInferFunction(r'\x, y -> x / y',    'Num, Num -> Num');
   testInferFunction(r'\x, y -> x - -y',   'Num, Num -> Num');
 
-  // ternary function body
-  testInferFunction(r'\c, x, y -> c ? x : y',            'Bool, t0, t0 -> t0');
-  testInferFunction(r'\c, x, y -> c ? x : y+1',          'Bool, Num, Num -> Num');
-  testInferFunction(r'\c, x, y -> c ? x : -y',           'Bool, Num, Num -> Num');
-  testInferFunction(r'\c, x, y -> c ? x : y or false',   'Bool, Bool, Bool -> Bool');
-  testInferFunction(r'\c, x, y -> c ? x : !y',           'Bool, Bool, Bool -> Bool');
+  // if expression function body
+  testInferFunction(r'\c, x, y -> if c then x else y',            'Bool, t0, t0 -> t0');
+  testInferFunction(r'\c, x, y -> if c then x else y+1',          'Bool, Num, Num -> Num');
+  testInferFunction(r'\c, x, y -> if c then x else -y',           'Bool, Num, Num -> Num');
+  testInferFunction(r'\c, x, y -> if c then x else y or false',   'Bool, Bool, Bool -> Bool');
+  testInferFunction(r'\c, x, y -> if c then x else !y',           'Bool, Bool, Bool -> Bool');
 
   // function call in function body
   testInferFunction(r'\x -> x("h", 1)', '(String, Num -> t0) -> t0');
