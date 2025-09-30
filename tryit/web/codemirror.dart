@@ -41,6 +41,7 @@ extension type EditorView._(JSObject o) implements JSObject {
 
   void replaceContent(String newContent) {
     dispatch(TransactionSpec(
+      scrollIntoView: true,
       changes: ChangeSpec(
         from: 0,
         to: state.doc.value.length,
@@ -89,7 +90,10 @@ extension type Line._(JSObject o) implements JSObject {
 }
 
 extension type TransactionSpec._(JSObject o) implements JSObject {
-  external factory TransactionSpec({ChangeSpec changes});
+  external factory TransactionSpec({
+    ChangeSpec changes,
+    bool scrollIntoView,
+  });
 }
 
 extension type ChangeSpec._(JSObject o) implements JSObject {
