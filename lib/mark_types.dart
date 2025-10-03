@@ -138,19 +138,14 @@ List<(Token, String)> displayStatement(
       ...displayExpression(initializer, typeOf),
   ],
 
-  Block(:final statements) => [
-      for (final s in statements)
-        ...displayStatement(s, typeOf)
-  ],
-
   IfStatement(
     :final condition,
     :final thenBranch,
     :final elseBranch,
   ) => [
       ...displayExpression(condition, typeOf),
-      ...displayStatement(thenBranch, typeOf),
-      if (elseBranch != null) ...displayStatement(elseBranch, typeOf),
+    for (final statement in thenBranch) ...displayStatement(statement, typeOf),
+    for (final statement in elseBranch) ...displayStatement(statement, typeOf),
   ],
 };
 
@@ -212,17 +207,15 @@ List<(Token, String)> displayExpression(
   Lambda(
     :final params,
     body: FunctionBody(
-      body: Block(
-        :final statements,
-        :final openBrace,
-        :final closeBrace,
-      )
+      :final body,
+      :final openBrace,
+      :final closeBrace,
     )
   ) =>[
     (openBrace, displayType(typeOf(expr))),
     (closeBrace, displayType(typeOf(expr))),
     ...params.expand(displayPattern),
-    for (final s in statements)
+    for (final s in body)
       ...displayStatement(s, typeOf),
   ],
 
@@ -396,7 +389,7 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
 
   Lambda(
     :final params,
-    body: FunctionBody(body: Block(:final openBrace)),
+    body: FunctionBody(:final openBrace),
   ) =>
       params
         .map(locationForErrorUnderlineOfPattern)

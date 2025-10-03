@@ -921,6 +921,7 @@ ___ Type checking failed ___
 (IfExpression(null, if_ if (ln4:12), TrueLiteral(Bool, true), Record({x: Num}, closeBrace } (ln4:29), {identifier x (ln4:27): Variable(Num, identifier x (ln4:27))}), Record({y: Num}, closeBrace } (ln4:40), {identifier y (ln4:38): Variable(Num, identifier y (ln4:38))})), row does not contain label y)
 ___ Continuing with execution ___
 ___ OUTPUT ___
+{x: 1}
 
 
 ====== imports.lox =====
@@ -2020,6 +2021,8 @@ ___ OUTPUT ___
 ====== scoping.lox =====
 ___ TYPES ___
 1:4 - 1:5      a: String
+2:0 - 2:1      { ... }: Unit
+10:0 - 10:1    { ... }: Unit
 3:6 - 3:12     show_a: a -> Unit
 3:17 - 3:18    a -> Unit
 5:2 - 5:3      a -> Unit
@@ -2414,7 +2417,7 @@ green
 
 ====== tag_pattern_err_let.lox =====
 ___ Type checking failed ___
-(Lambda(null, [Instance of 'Identifier'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
+(Lambda(null, [Instance of 'Identifier'], FunctionBody(openBrace { (ln2:11), [Instance of 'LetDeclaration'], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
 LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can only be used in match expressions.}
@@ -2422,7 +2425,7 @@ LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can onl
 
 ====== tag_pattern_err_let_no_payload.lox =====
 ___ Type checking failed ___
-(Lambda(null, [Instance of 'Identifier'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
+(Lambda(null, [Instance of 'Identifier'], FunctionBody(openBrace { (ln2:11), [Instance of 'LetDeclaration'], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
 LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can only be used in match expressions.}
@@ -2430,7 +2433,7 @@ LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can onl
 
 ====== tag_pattern_err_param.lox =====
 ___ Type checking failed ___
-(Lambda(null, [Instance of 'TagPattern'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
+(Lambda(null, [Instance of 'TagPattern'], FunctionBody(openBrace { (ln2:17), [], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
 LoxRuntimeException{token: identifier foo (ln2:10), message: Tag patterns can only be used in match expressions.}
@@ -2438,7 +2441,7 @@ LoxRuntimeException{token: identifier foo (ln2:10), message: Tag patterns can on
 
 ====== tag_pattern_err_param_no_payload.lox =====
 ___ Type checking failed ___
-(Lambda(null, [Instance of 'TagPattern'], FunctionBody(Instance of 'Block')), Tag patterns can only be used in match expressions.)
+(Lambda(null, [Instance of 'TagPattern'], FunctionBody(openBrace { (ln2:14), [], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
 LoxRuntimeException{token: identifier foo (ln2:10), message: Tag patterns can only be used in match expressions.}

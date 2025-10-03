@@ -1120,10 +1120,10 @@ let connect_and_connect = \ {
       ExpressionStatement(
         expr: Lambda(
           params: [Identifier dataParam],
-          body: FunctionBody(body: Block(statements: [
+          body: FunctionBody(body: [
             LetDeclaration(initializer: Binary(left: RecordGet(:final record))),
             ...
-          ])),
+          ]),
         ),
       ),
     ]) {
@@ -1184,9 +1184,6 @@ extension on List<Statement> {
 
     LetDeclaration(:final initializer)
       => initializer.type,
-
-    Block(:final statements)
-      => statements.typeOfLastStatement,
 
     IfStatement()
       => fail('doesnt make sense'),

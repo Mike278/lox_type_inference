@@ -8,4 +8,4 @@ let a = "global";
   show_a();
   let a = "block";
   show_a();
-}
+};

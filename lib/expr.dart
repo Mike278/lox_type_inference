@@ -89,9 +89,11 @@ class ArrowExpression with EquatableMixin implements LambdaBody {
   @override get props => [arrow, body];
 }
 class FunctionBody with EquatableMixin  implements LambdaBody {
-  final Block body;
-  FunctionBody(this.body);
-  @override get props => [body];
+  final Token openBrace;
+  final List<Statement> body;
+  final Token closeBrace;
+  FunctionBody(this.openBrace, this.body, this.closeBrace);
+  @override get props => [openBrace, body, closeBrace];
 }
 class Lambda extends Expr with EquatableMixin {
   final List<Pattern> params;
@@ -253,17 +255,11 @@ class LetDeclaration extends Statement {
   final Expr initializer;
   LetDeclaration(this.keyword, this.pattern, this.initializer);
 }
-class Block extends Statement {
-  final Token openBrace;
-  final List<Statement> statements;
-  final Token closeBrace;
-  Block(this.openBrace, this.statements, this.closeBrace);
-}
 class IfStatement extends Statement {
   final Token keyword;
   final Expr condition;
-  final Statement thenBranch;
-  final Statement? elseBranch;
+  final List<Statement> thenBranch;
+  final List<Statement> elseBranch;
   IfStatement(this.keyword, this.condition, this.thenBranch, this.elseBranch);
 }
 
@@ -312,14 +308,10 @@ extension StatementAPI on Statement {
         yield* expr.subExpressions();
       case LetDeclaration(:final initializer):
         yield* initializer.subExpressions();
-      case Block(:final statements):
-        for (final statement in statements) {
-          yield* statement.allExpressions();
-        }
       case IfStatement(:final condition, :final thenBranch, :final elseBranch):
         yield* condition.subExpressions();
-        yield* thenBranch.allExpressions();
-        if (elseBranch != null) yield* elseBranch.allExpressions();
+        for (final branch in thenBranch) yield* branch.allExpressions();
+        for (final branch in elseBranch) yield* branch.allExpressions();
     }
   }
   Iterable<Pattern> allPatterns() sync* {
@@ -331,14 +323,10 @@ extension StatementAPI on Statement {
       case LetDeclaration(:final pattern, :final initializer):
         yield* pattern.subPatterns();
         yield* initializer.allPatterns();
-      case Block(:final statements):
-        for (final statement in statements) {
-          yield* statement.allPatterns();
-        }
       case IfStatement(:final condition, :final thenBranch, :final elseBranch):
         yield* condition.allPatterns();
-        yield* thenBranch.allPatterns();
-        if (elseBranch != null) yield* elseBranch.allPatterns();
+        for (final branch in thenBranch) yield* branch.allPatterns();
+        for (final branch in elseBranch) yield* branch.allPatterns();
     }
   }
 }
@@ -362,7 +350,7 @@ extension ExprAPI on Expr {
         case ArrowExpression(:final body):
           yield* body.subExpressions();
         case FunctionBody(:final body):
-          for (final statement in body.statements) {
+          for (final statement in body) {
             yield* statement.allExpressions();
           }
       }
@@ -435,7 +423,7 @@ extension ExprAPI on Expr {
           case ArrowExpression(:final body):
             yield* body.allPatterns();
           case FunctionBody(:final body):
-            for (final statement in body.statements) {
+            for (final statement in body) {
               yield* statement.allPatterns();
             }
         }

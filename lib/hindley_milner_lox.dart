@@ -58,12 +58,6 @@ class TypeInference {
       case LetDeclaration():
         env = inferLet(env, level, statement);
 
-      case Block(:final statements):
-        var localEnv = {...env};
-        for (final statement in statements) {
-          localEnv = inferStatement(localEnv, level, statement);
-        }
-
       case IfStatement(
         :final condition,
         :final thenBranch,
@@ -71,10 +65,8 @@ class TypeInference {
       ):
         final type = inferExpr(env, level, condition);
         unify(type, LoxType.bool);
-        env = inferStatement(env, level, thenBranch);
-        if (elseBranch != null) {
-          env = inferStatement(env, level, elseBranch);
-        }
+        for (final statement in thenBranch) env = inferStatement(env, level, statement);
+        for (final statement in elseBranch) env = inferStatement(env, level, statement);
     }
 
     return env;
@@ -507,7 +499,7 @@ class TypeInference {
     return setType(function, functionType);
   }
 
-  LoxType inferBlockFunction(Map<String, LoxType> env, int level, Lambda function, Block body) {
+  LoxType inferBlockFunction(Map<String, LoxType> env, int level, Lambda function, List<Statement> body) {
     final (:parameterTypes, :parametersEnv) = setupFunctionParameters(function.params, level);
 
     env = {
@@ -517,7 +509,7 @@ class TypeInference {
 
     final returnType = LoxType.fresh(level);
     onEnterFunctionBody(expectedReturnType: returnType);
-    for (final statement in body.statements) {
+    for (final statement in body) {
       env = inferStatement(env, level, statement);
     }
     final anyReturnExpressions = _getCurrentFunction().anyReturnExpressions;
@@ -692,7 +684,6 @@ class TypeInference {
       PrintStatement() ||
       AssertStatement() ||
       IfStatement() ||
-      Block() ||
       LetDeclaration() =>
         throw BlockMustEndWithExpr(),
     };

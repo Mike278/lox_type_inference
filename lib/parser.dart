@@ -159,21 +159,8 @@ class Parser {
   Statement statement() {
     if (matchFirst(.assert_)) return assertStatement();
     if (matchFirst(.print)) return printStatement();
-    if (matchFirst(.openBrace)) return block();
     if (matchFirst(.if_)) return ifStatement();
     return expressionStatement();
-  }
-
-  // block          → "{" declaration* "}" ;
-  // Expects open brace is already consumed.
-  Block block() {
-    final openBrace = previous();
-    final statements = [
-      for (;!check(.closeBrace) && !isAtEnd();)
-        declaration()
-    ];
-    final closeBrace = consume(.closeBrace, "Expected '}' after block.");
-    return Block(openBrace, statements, closeBrace);
   }
 
   // ifStmt         → "if" expression "then" statement
@@ -182,8 +169,28 @@ class Parser {
     final keyword = previous();
     final condition = expression();
     consume(.then, "Expected 'then' after if condition.");
-    final thenBranch = statement();
-    final elseBranch = matchFirst(.else_) ? statement() : null;
+
+    final List<Statement> thenBranch;
+    final List<Statement> elseBranch;
+
+    if (matchFirst(.openBrace)) {
+      thenBranch = [ for (;!check(.closeBrace) && !isAtEnd();) declaration() ];
+      consume(.closeBrace, "Expected '}'");
+    } else {
+      thenBranch = [ statement() ];
+    }
+
+    if (matchFirst(.else_)) {
+      if (matchFirst(.openBrace)) {
+        elseBranch = [ for (;!check(.closeBrace) && !isAtEnd();) declaration() ];
+        consume(.closeBrace, "Expected '}'");
+      } else {
+        elseBranch = [ statement() ];
+      }
+    } else {
+      elseBranch = [];
+    }
+
     return IfStatement(keyword, condition, thenBranch, elseBranch);
   }
 
@@ -672,8 +679,13 @@ class Parser {
       final arrow = previous();
       body = ArrowExpression(arrow, expression());
     } else {
-      consume(.openBrace, "Expected '{' before body.");
-      body = FunctionBody(block());
+      final openBrace = consume(.openBrace, "Expected '{' before body.");
+      final statements = [
+        for (;!check(.closeBrace) && !isAtEnd();)
+          declaration()
+      ];
+      final closeBrace = consume(.closeBrace, "Expected '}' after block.");
+      body = FunctionBody(openBrace, statements, closeBrace);
     }
 
     return Lambda(params, body);

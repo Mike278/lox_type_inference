@@ -24,6 +24,8 @@ void main() async {
     'foo/up.lox',
     'basic_test.lox',
     'if.lox',
+    'if_expr_err_block_missing_semi.lox',
+    'if_expr_err_record_implicit_label.lox',
     'imports.lox',
     'lambdas.lox',
     'lists.lox',
