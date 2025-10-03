@@ -156,6 +156,7 @@ class LoxRuntime {
       TagMatch() => evalMatch(expr, env),
       Import(:final keyword, :final path) => instantiateImport(keyword, path),
       TagCastOk() => evalTagCast(expr, env),
+      BlockExpr() => evalBlockExpr(expr, env),
     };
   }
 
@@ -397,6 +398,22 @@ class LoxRuntime {
       return eval(fallback, env);
     }
     throw _Return(tag);
+  }
+
+  Object? evalBlockExpr(BlockExpr expr, Env env) {
+    env = Env(env);
+    for (final statement in expr.statements.skipLast()) {
+      env = execute(env, statement);
+    }
+    return switch (expr.statements.last) {
+      ExpressionStatement(:final expr) => eval(expr, env),
+      PrintStatement(:final keyword) ||
+      AssertStatement(:final keyword) ||
+      IfStatement(:final keyword) ||
+      Block(openBrace: final keyword) ||
+      LetDeclaration(:final keyword) =>
+        throw LoxRuntimeException(keyword, 'Block must end with an expression'),
+    };
   }
 }
 

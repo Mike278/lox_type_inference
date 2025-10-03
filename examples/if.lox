@@ -18,3 +18,47 @@ let count = \n {
 count(3);
 
 print if 1 > 2 then "a" else "b";
+
+{
+    let z = if true then { 1; } else { 1; };
+    print z;
+    z;
+};
+
+{
+    let x = 1;
+    let z = if true then { x } else { x };
+    print z;
+    z;
+};
+
+{
+    let x = 1;
+    let z = if true then { x; } else { x; };
+    print z;
+    z;
+};
+
+{
+    let x = 1;
+    let y = 1;
+    let z = if true then { x } else { x: y };
+    print z;
+    z;
+};
+
+{
+    let x = 1;
+    let y = 1;
+    let z = if true then { x; } else { y; };
+    print z;
+    z;
+};
+
+{
+    let x = 1;
+    let y = 1;
+    let z = if true then x else y;
+    print z;
+    z;
+};

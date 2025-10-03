@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:lox/coordinator.dart';
+import 'package:lox/expr.dart';
 import 'package:lox/hindley_milner_lox.dart';
 import 'package:lox/interpreter.dart';
 import 'package:lox/mark_types.dart';
@@ -36,11 +37,19 @@ List<Object?> eval(File file) {
   final output = [];
   final relativeToDir = dirname(file.path);
   final source = Source(dartIOReadFile(file.path), path: file.path);
-  final (statements, resolveImport) = parseSourceAndResolveImports(
-    relativeToDir,
-    source,
-    dartIOReadFile,
-  );
+  final List<Statement> statements;
+  final ResolveImport resolveImport;
+  try {
+    (statements, resolveImport) = parseSourceAndResolveImports(
+      relativeToDir,
+      source,
+      dartIOReadFile,
+    );
+  } catch (e) {
+    output.add('___ Parsing failed ___');
+    output.add('$e\n\n');
+    return output;
+  }
 
   try {
     TypeInference(resolveImport).inferProgramTypes(statements);
@@ -67,9 +76,8 @@ List<Object?> eval(File file) {
       statements,
       Env.global(),
     );
-  } catch (e, s) {
+  } catch (e) {
     output.add(e);
-    print(s);
   }
   output.add('');
   output.add('');

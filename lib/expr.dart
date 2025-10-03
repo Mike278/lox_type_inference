@@ -223,6 +223,13 @@ class TagCastOk extends Expr with EquatableMixin {
   @override get props => [...super.props, expr, operator, fallback];
 }
 
+class BlockExpr extends Expr with EquatableMixin {
+  final Token openBrace;
+  final List<Statement> statements;
+  final Token closeBrace;
+  BlockExpr(this.openBrace, this.statements, this.closeBrace) : assert(statements.isNotEmpty);
+}
+
 sealed class Statement {}
 class ExpressionStatement extends Statement {
   final Expr expr;
@@ -241,9 +248,10 @@ class AssertStatement extends Statement {
   AssertStatement(this.keyword, this.source, this.expr);
 }
 class LetDeclaration extends Statement {
+  final Token keyword;
   final Pattern pattern;
   final Expr initializer;
-  LetDeclaration(this.pattern, this.initializer);
+  LetDeclaration(this.keyword, this.pattern, this.initializer);
 }
 class Block extends Statement {
   final Token openBrace;
@@ -395,6 +403,9 @@ extension ExprAPI on Expr {
       case TagCastOk(:final expr, :final fallback):
         yield* expr.subExpressions();
         if (fallback != null) yield* fallback.subExpressions();
+      case BlockExpr(:final statements):
+        for (final statement in statements)
+          yield* statement.allExpressions();
       case Import():
       case Variable():
       case StringLiteral():
@@ -468,6 +479,9 @@ extension ExprAPI on Expr {
       case TagCastOk(:final expr, :final fallback):
         yield* expr.allPatterns();
         if (fallback != null) yield* fallback.allPatterns();
+      case BlockExpr(:final statements):
+        for (final statement in statements)
+          yield* statement.allPatterns();
       case Import():
       case Variable():
       case StringLiteral():

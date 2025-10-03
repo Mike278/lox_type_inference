@@ -7,6 +7,7 @@ extension ListUtils<T> on List<T> {
 extension IterableExtensions<T> on Iterable<T> {
   Iterable<U> zipWith<U, V>(Iterable<V> other, U Function(T, V) f) =>
       zip(this, other, f);
+  Iterable<T> skipLast() => take(length - 1);
 }
 
 extension NullableTypeIterableExtensions<T extends Object> on Iterable<T?> {

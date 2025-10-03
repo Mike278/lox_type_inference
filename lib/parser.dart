@@ -143,11 +143,12 @@ class Parser {
 
   // letDecl       → "let" pattern "=" expression ";" ;
   Statement letDeclaration() {
+    final keyword = previous();
     final pat = pattern();
     consume(.equal, "Expected '=' before variable declaration.");
     final initializer = expression();
     consume(.semicolon, "Expected ';' after variable declaration.");
-    return LetDeclaration(pat, initializer);
+    return LetDeclaration(keyword, pat, initializer);
   }
 
   // statement      → printStmt
@@ -412,7 +413,37 @@ class Parser {
       return listLiteral();
     }
     if (matchFirst(.openBrace)) {
-      return recordLiteral();
+
+      // Need to disambiguate between the opening brace of a record literal:
+      //     { a: a + 1 }
+      //     { a: 1 }
+      //     { a: b }
+      //     { a: a }
+      //     { a }
+      //     { }
+      //     { ..a, b: 2}
+      // or the opening brace of a block expression:
+      //     { let a = 1; a + 1; }
+      //     { a + 1; }
+      //     { print 1; a; }
+      //     { a; }
+      //
+      // Try to detect a record since records have a more constrained syntax.
+      // If it's not a record then assume it's a block.
+      final next2 = peekN(2).map((t) => t.type).toList();
+      final isBeginningOfRecord = switch (next2) {
+        [.identifier, .colon] => true,
+        [.identifier, .comma] => true,
+        [.identifier, .closeBrace] => true,
+        [.closeBrace, _] => true,
+        [.dotdot, _]=> true,
+        _ => false,
+      };
+      if (isBeginningOfRecord) {
+        return recordLiteral();
+      } else {
+        return blockExpression();
+      }
     }
     if (matchFirst(.dot)) {
       return tagConstructor();
@@ -563,6 +594,19 @@ class Parser {
       return RecordUpdate(dotdot, record, fields, closingBrace);
     }
     return Record(closingBrace, fields);
+  }
+
+  BlockExpr blockExpression() {
+    final openBrace = previous();
+    final statements = [
+      for (;!check(.closeBrace) && !isAtEnd();)
+        declaration()
+    ];
+    final closeBrace = consume(.closeBrace, "Expected '}' after block.");
+    if (statements.isEmpty) {
+      throwParseError(previous(), 'Block expressions must have at least 1 statement.');
+    }
+    return BlockExpr(openBrace, statements, closeBrace);
   }
 
   // listLiteral    → "[" listElement ( "," listElement )* "]"

@@ -147,6 +147,9 @@ class DefaultCaseMustBeLast implements TypeCheckException {
 class MatchingNestedTagPatternsUnsupported implements TypeCheckException {
   @override toString() => 'Type checking nested tag patterns is not supported yet.';
 }
+class BlockMustEndWithExpr implements TypeCheckException {
+  @override toString() => 'Block must end with an expression';
+}
 
 Ty rewriteRow(
   Ty row2,

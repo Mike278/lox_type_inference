@@ -339,6 +339,12 @@ List<(Token, String)> displayExpression(
     ...displayExpression(tagExpr, typeOf),
     if (fallback != null) ...displayExpression(fallback, typeOf),
   ],
+  BlockExpr(:final openBrace, :final statements, :final closeBrace) => [
+    (openBrace, '{ ... }: ${displayType(typeOf(expr))}'),
+    (closeBrace, '{ ... }: ${displayType(typeOf(expr))}'),
+    for (final statement in statements)
+      ...displayStatement(statement, typeOf),
+  ],
 };
 
 String displayType(Ty? type) =>
@@ -468,4 +474,7 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
 
   TagCastOk(:final operator) =>
       operator.span,
+
+  BlockExpr(:final openBrace, :final closeBrace) =>
+    openBrace.span.extendedBy(closeBrace.span),
 };

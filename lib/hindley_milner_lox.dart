@@ -159,6 +159,7 @@ class TypeInference {
         Import()         => inferImport(env, level, expr),
         UnaryMinus()     => inferUnaryOperation(env, level, expr),
         UnaryBang()      => inferUnaryOperation(env, level, expr),
+        BlockExpr()      => inferBlockExpression(env, level, expr),
         Binary(operator: Token(type: .pipeline)) => inferPipeline(env, level, expr),
         Binary(:final left, :final right, operator: final keyword)
         || LogicalOr(:final left, :final right, :final keyword)
@@ -328,7 +329,7 @@ class TypeInference {
     final exports = import(expr.path);
     final module = exports.pairs().fold({...loxStandardLibraryEnv}, (moduleEnv, pair) {
       final (pattern, initializer) = pair;
-      return inferLet(moduleEnv, 0, LetDeclaration(pattern, initializer));
+      return inferLet(moduleEnv, 0, LetDeclaration(expr.keyword, pattern, initializer));
     });
     final type = instantiate(level, LoxType.record({
       for (final (name, value) in module.pairs())
@@ -679,6 +680,23 @@ class TypeInference {
     );
     final type = inferArrowFunction(env, level, function, functionBody);
     return setType(call, type);
+  }
+
+  LoxType inferBlockExpression(Map<String, LoxType> env, int level, BlockExpr expr) {
+    env = {...env};
+    for (final statement in expr.statements.skipLast()) {
+      env = inferStatement(env, level, statement);
+    }
+    final type = switch (expr.statements.last) {
+      ExpressionStatement(:final expr) => inferExpr(env, level, expr),
+      PrintStatement() ||
+      AssertStatement() ||
+      IfStatement() ||
+      Block() ||
+      LetDeclaration() =>
+        throw BlockMustEndWithExpr(),
+    };
+    return setType(expr, type);
   }
 
 }
