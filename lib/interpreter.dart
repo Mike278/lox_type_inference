@@ -77,10 +77,6 @@ class LoxRuntime {
   
   Env execute(Env env, Statement statement) {
     switch (statement) {
-      case PrintStatement(:final expr):
-        io.print(eval(expr, env));
-      case AssertStatement(:final keyword, :final source, :final expr):
-        runAssert(keyword, source, eval(expr, env));
       case ExpressionStatement(:final expr):
         eval(expr, env);
       case LetDeclaration(:final pattern, :final initializer):
@@ -148,6 +144,16 @@ class LoxRuntime {
       Import(:final keyword, :final path) => instantiateImport(keyword, path),
       TagCastOk() => evalTagCast(expr, env),
       BlockExpr() => evalBlockExpr(expr, env),
+      Print(:final expr) => () {
+        final value = eval(expr, env);
+        io.print(value);
+        return value;
+      } (),
+      Assertion(:final keyword, :final source, :final expr) => () {
+        final value = eval(expr, env);
+        runAssert(keyword, source, value);
+        return value;
+      } (),
     };
   }
 
@@ -398,8 +404,6 @@ class LoxRuntime {
     }
     return switch (expr.statements.last) {
       ExpressionStatement(:final expr) => eval(expr, env),
-      PrintStatement(:final keyword) ||
-      AssertStatement(:final keyword) ||
       IfStatement(:final keyword) ||
       LetDeclaration(:final keyword) =>
         throw LoxRuntimeException(keyword, 'Block must end with an expression'),

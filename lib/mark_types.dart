@@ -127,11 +127,6 @@ List<(Token, String)> displayStatement(
   ExpressionStatement(:final expr) =>
       displayExpression(expr, typeOf),
 
-  AssertStatement(:final keyword, :final expr) ||
-  PrintStatement(:final keyword, :final expr) => [
-      (keyword, '${keyword.lexeme}: ${displayType(typeOf(expr))}'),
-      ...displayExpression(expr, typeOf),
-  ],
 
   LetDeclaration(:final pattern, :final initializer) => [
       ...displayPattern(pattern),
@@ -307,6 +302,8 @@ List<(Token, String)> displayExpression(
   ],
 
 
+  Assertion(keyword: final operator, :final expr) ||
+  Print(keyword: final operator, :final expr) ||
   UnaryMinus(:final operator, :final expr) ||
   UnaryBang(:final operator, :final expr) => [
     (operator, '${operator.lexeme}: ${displayType(typeOf(expr))}'),
@@ -444,6 +441,8 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
       closingBrace.span, // todo
 
 
+  Assertion(keyword: final operator, :final expr) ||
+  Print(keyword: final operator, :final expr) ||
   UnaryMinus(:final operator, :final expr) ||
   UnaryBang(:final operator, :final expr) =>
       [

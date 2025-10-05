@@ -51,8 +51,6 @@ class TypeInference {
     switch (statement) {
 
       case ExpressionStatement(:final expr):
-      case PrintStatement(:final expr):
-      case AssertStatement(:final expr):
         final _ = inferExpr(env, level, expr);
 
       case LetDeclaration():
@@ -134,6 +132,8 @@ class TypeInference {
   LoxType inferExpr(Map<String, LoxType> env, int level, Expr expr) {
     try {
       return switch (expr) {
+        Print(:final expr) ||
+        Assertion(:final expr) => inferExpr(env, level, expr),
         Literal()        => inferLiteral(env, level, expr),
         Variable()       => inferVariable(env, level, expr),
         Call()           => inferFunctionCall(env, level, expr),
@@ -681,8 +681,6 @@ class TypeInference {
     }
     final type = switch (expr.statements.last) {
       ExpressionStatement(:final expr) => inferExpr(env, level, expr),
-      PrintStatement() ||
-      AssertStatement() ||
       IfStatement() ||
       LetDeclaration() =>
         throw BlockMustEndWithExpr(),

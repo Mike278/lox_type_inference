@@ -232,22 +232,23 @@ class BlockExpr extends Expr with EquatableMixin {
   BlockExpr(this.openBrace, this.statements, this.closeBrace) : assert(statements.isNotEmpty);
 }
 
+class Print extends Expr {
+  final Expr expr;
+  final Token keyword;
+  Print(this.expr, this.keyword);
+}
+class Assertion extends Expr {
+  final Token keyword;
+  final String source;
+  final Expr expr;
+  Assertion(this.keyword, this.source, this.expr);
+}
+
 sealed class Statement {}
 class ExpressionStatement extends Statement {
   final Expr expr;
   final Token semicolon;
   ExpressionStatement(this.expr, this.semicolon);
-}
-class PrintStatement extends Statement {
-  final Expr expr;
-  final Token keyword;
-  PrintStatement(this.expr, this.keyword);
-}
-class AssertStatement extends Statement {
-  final Token keyword;
-  final String source;
-  final Expr expr;
-  AssertStatement(this.keyword, this.source, this.expr);
 }
 class LetDeclaration extends Statement {
   final Token keyword;
@@ -302,8 +303,6 @@ mixin TypeReference {
 extension StatementAPI on Statement {
   Iterable<Expr> allExpressions() sync* {
     switch (this) {
-      case PrintStatement(:final expr):
-      case AssertStatement(:final expr):
       case ExpressionStatement(:final expr):
         yield* expr.subExpressions();
       case LetDeclaration(:final initializer):
@@ -316,8 +315,6 @@ extension StatementAPI on Statement {
   }
   Iterable<Pattern> allPatterns() sync* {
     switch (this) {
-      case PrintStatement(:final expr):
-      case AssertStatement(:final expr):
       case ExpressionStatement(:final expr):
         yield* expr.allPatterns();
       case LetDeclaration(:final pattern, :final initializer):
@@ -342,6 +339,8 @@ extension ExprAPI on Expr {
       case LogicalOr(:final left, :final right):
         yield* left.subExpressions();
         yield* right.subExpressions();
+      case Assertion(:final expr):
+      case Print(:final expr):
       case UnaryMinus(:final expr):
       case UnaryBang(:final expr):
       case Grouping(:final expr):
@@ -413,6 +412,8 @@ extension ExprAPI on Expr {
       case LogicalOr(:final left, :final right):
         yield* left.allPatterns();
         yield* right.allPatterns();
+      case Assertion(:final expr):
+      case Print(:final expr):
       case UnaryMinus(:final expr):
       case UnaryBang(:final expr):
       case Grouping(:final expr):

@@ -1176,17 +1176,10 @@ dynamic _inferSource(String source, [Map<String, String> files = const {}]) {
 
 extension on List<Statement> {
   LoxType? get typeOfLastStatement => switch (lastOrNull) {
-    null => null,
-    ExpressionStatement(:final expr)
-    || PrintStatement(:final expr)
-    || AssertStatement(:final expr)
-      => expr.type,
-
-    LetDeclaration(:final initializer)
-      => initializer.type,
-
-    IfStatement()
-      => fail('doesnt make sense'),
+    ExpressionStatement(:final expr)   => expr.type,
+    LetDeclaration(:final initializer) => initializer.type,
+    IfStatement()                      => fail('doesnt make sense'),
+    null                               => null,
   };
 }
 

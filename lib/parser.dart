@@ -157,8 +157,6 @@ class Parser {
   //                | returnStmt
   //                | exprStmt
   Statement statement() {
-    if (matchFirst(.assert_)) return assertStatement();
-    if (matchFirst(.print)) return printStatement();
     if (matchFirst(.if_)) return ifStatement();
     return expressionStatement();
   }
@@ -194,21 +192,19 @@ class Parser {
     return IfStatement(keyword, condition, thenBranch, elseBranch);
   }
 
-  Statement printStatement() {
+  Expr printExpr() {
     final keyword = previous();
     final value = expression();
-    consume(.semicolon, "Expected ';' after value.");
-    return PrintStatement(value, keyword);
+    return Print(value, keyword);
   }
 
-  Statement assertStatement() {
+  Expr assertExpr() {
     var start = current;
     final keyword = previous();
     final value = expression();
-    consume(.semicolon, "Expected ';' after value.");
     var end = current;
     final source = tokens.sublist(start, end).map((t) => t.lexeme).join();
-    return AssertStatement(keyword, source, value);
+    return Assertion(keyword, source, value);
   }
 
   Statement expressionStatement() {
@@ -461,6 +457,13 @@ class Parser {
     if (matchFirst(.import)) {
       return import();
     }
+    if (matchFirst(.assert_)) {
+      return assertExpr();
+    }
+    if (matchFirst(.print)) {
+      return printExpr();
+    }
+
     if (matchFirst(.if_)) {
       final keyword = previous();
       final condition = expression();
