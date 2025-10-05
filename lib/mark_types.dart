@@ -260,7 +260,7 @@ List<(Token, String)> displayExpression(
     (ifKeyword, 'if: ${displayType(typeOf(expr))}'),
     ...displayExpression(condition, typeOf),
     ...displayExpression(ifTrue, typeOf),
-    ...displayExpression(ifFalse, typeOf),
+    if (ifFalse != null) ...displayExpression(ifFalse, typeOf),
   ],
 
 
@@ -412,7 +412,7 @@ CodeSpan? locationForErrorUnderline(Expr expr) => switch (expr) {
         ifKeyword.span,
         locationForErrorUnderline(condition),
         locationForErrorUnderline(ifTrue),
-        locationForErrorUnderline(ifFalse),
+        if (ifFalse != null) locationForErrorUnderline(ifFalse),
       ].whereNotNull().reduce(extend),
 
 

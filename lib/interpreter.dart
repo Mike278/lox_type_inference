@@ -125,7 +125,9 @@ class LoxRuntime {
       IfExpression(:final ifKeyword, :final condition, :final ifTrue, :final ifFalse) =>
         evalAs<bool>(condition, ifKeyword, env)
           ? eval(ifTrue, env)
-          : eval(ifFalse, env),
+          : ifFalse == null
+              ? null
+              : eval(ifFalse, env),
       Record(:final fields) => {
         for (final (field, expr) in fields.pairs())
           field.lexeme: eval(expr, env),

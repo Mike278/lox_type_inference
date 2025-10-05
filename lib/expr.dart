@@ -139,7 +139,7 @@ class IfExpression extends Expr with EquatableMixin {
   final Token ifKeyword;
   final Expr condition;
   final Expr ifTrue;
-  final Expr ifFalse;
+  final Expr? ifFalse;
   IfExpression(this.ifKeyword, this.condition, this.ifTrue, this.ifFalse);
   @override get props => [...super.props, ifKeyword, condition, ifTrue, ifFalse];
 }
@@ -365,7 +365,7 @@ extension ExprAPI on Expr {
       case IfExpression(:final condition, :final ifTrue, :final ifFalse):
         yield* condition.subExpressions();
         yield* ifTrue.subExpressions();
-        yield* ifFalse.subExpressions();
+        if (ifFalse != null) yield* ifFalse.subExpressions();
       case TagConstructor(:final payload):
         if (payload != null)
         yield* payload.subExpressions();
@@ -440,7 +440,7 @@ extension ExprAPI on Expr {
       case IfExpression(:final condition, :final ifTrue, :final ifFalse):
         yield* condition.allPatterns();
         yield* ifTrue.allPatterns();
-        yield* ifFalse.allPatterns();
+        if (ifFalse != null) yield* ifFalse.allPatterns();
       case TagConstructor(:final payload):
         if (payload != null)
         yield* payload.allPatterns();

@@ -270,7 +270,10 @@ class TypeInference {
       from: [
         inferExpr(env, level, expr.condition),
         inferExpr(env, level, expr.ifTrue),
-        inferExpr(env, level, expr.ifFalse),
+        if (expr.ifFalse case final ifFalse?)
+          inferExpr(env, level, ifFalse)
+        else
+          .unit,
       ],
       to: evaluatesToType,
     );

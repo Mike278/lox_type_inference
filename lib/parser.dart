@@ -465,13 +465,7 @@ class Parser {
     }
 
     if (matchFirst(.if_)) {
-      final keyword = previous();
-      final condition = expression();
-      consume(.then, 'Expected "then"');
-      final ifTrue = expression();
-      consume(.else_, 'Expected "else"');
-      final ifFalse = expression();
-      return IfExpression(keyword, condition, ifTrue, ifFalse);
+      return ifExpression();
     }
 
     return call();
@@ -618,6 +612,18 @@ class Parser {
     }
     return BlockExpr(openBrace, statements, closeBrace);
   }
+
+  Expr ifExpression() {
+    final keyword = previous();
+    final condition = expression();
+    consume(.then, 'Expected "then"');
+    final ifTrue = expression();
+    final ifFalse = matchFirst(.else_)
+      ? expression()
+      : null;
+    return IfExpression(keyword, condition, ifTrue, ifFalse);
+  }
+
 
   // listLiteral    → "[" listElement ( "," listElement )* "]"
   // listElement    → ".." expression
