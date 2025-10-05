@@ -19,46 +19,80 @@ count(3);
 
 print if 1 > 2 then "a" else "b";
 
-{
+
+//
+// as last statement in block
+//
+print {
+    if true then { 1; } else { 1; };
+};
+
+print {
+    let x = 1;
+    if true then { x } else { x };
+};
+
+print {
+    let x = 1;
+    if true then { x; } else { x; };
+};
+
+print {
+    let x = 1;
+    let y = 1;
+    if true then { x } else { x: y };
+};
+
+print {
+    let x = 1;
+    let y = 1;
+    if true then { x; } else { y; };
+};
+
+print {
+    let x = 1;
+    let y = 1;
+    if true then x else y;
+};
+
+
+//
+// not as last statement in block
+//
+print {
     let z = if true then { 1; } else { 1; };
-    print z;
     z;
 };
 
-{
+print {
     let x = 1;
     let z = if true then { x } else { x };
-    print z;
     z;
 };
 
-{
+print {
     let x = 1;
     let z = if true then { x; } else { x; };
-    print z;
     z;
 };
 
-{
+print {
     let x = 1;
     let y = 1;
     let z = if true then { x } else { x: y };
-    print z;
     z;
 };
 
-{
+print {
     let x = 1;
     let y = 1;
     let z = if true then { x; } else { y; };
-    print z;
     z;
 };
 
-{
+print {
     let x = 1;
     let y = 1;
     let z = if true then x else y;
-    print z;
     z;
 };
