@@ -8,7 +8,7 @@ let maybe = \ { return false; };
 if maybe() or 2 > 1 then {
     let a = "b";
     print a;
-}
+};
 
 let count = \n {
     if n > 1 then count(n-1);

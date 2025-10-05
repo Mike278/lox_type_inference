@@ -132,8 +132,8 @@ class TypeInference {
   LoxType inferExpr(Map<String, LoxType> env, int level, Expr expr) {
     try {
       return switch (expr) {
-        Print(:final expr) ||
-        Assertion(:final expr) => inferExpr(env, level, expr),
+        Print()          => inferPrint(env, level, expr),
+        Assertion()      => inferAssert(env, level, expr),
         Literal()        => inferLiteral(env, level, expr),
         Variable()       => inferVariable(env, level, expr),
         Call()           => inferFunctionCall(env, level, expr),
@@ -175,6 +175,16 @@ class TypeInference {
   LoxType setType(Expr expr, LoxType type) {
     expr.type = type;
     return type;
+  }
+
+  LoxType inferPrint(Map<String, LoxType> env, int level, Print expr) {
+    final _ = inferExpr(env, level, expr.expr);
+    return setType(expr, .unit);
+  }
+
+  LoxType inferAssert(Map<String, LoxType> env, int level, Assertion expr) {
+    final _ = inferExpr(env, level, expr.expr);
+    return setType(expr, .unit);
   }
 
   LoxType inferLiteral(Map<String, LoxType> env, int level, Literal literal) {

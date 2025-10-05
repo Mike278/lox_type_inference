@@ -147,14 +147,12 @@ class LoxRuntime {
       TagCastOk() => evalTagCast(expr, env),
       BlockExpr() => evalBlockExpr(expr, env),
       Print(:final expr) => () {
-        final value = eval(expr, env);
-        io.print(value);
-        return value;
+        io.print(eval(expr, env));
+        return null;
       } (),
       Assertion(:final keyword, :final source, :final expr) => () {
-        final value = eval(expr, env);
-        runAssert(keyword, source, value);
-        return value;
+        runAssert(keyword, source, eval(expr, env));
+        return null;
       } (),
     };
   }

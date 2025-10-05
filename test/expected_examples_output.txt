@@ -61,6 +61,7 @@ ___ TYPES ___
 25:32 - 25:33  String -> {y: Num, x: Num}
 31:0 - 31:1    String -> {y: Num, x: Num}
 25:28 - 25:31  dir: String
+26:4 - 26:6    if: Unit
 26:11 - 26:13  ==: Bool
 26:7 - 26:10   dir: String
 26:29 - 26:35  {y: Num, x: Num}
@@ -68,12 +69,14 @@ ___ TYPES ___
 26:37 - 26:38  y: Num
 26:40 - 26:41  -: Num
 26:44 - 26:45  x: Num
+27:4 - 27:6    if: Unit
 27:11 - 27:13  ==: Bool
 27:7 - 27:10   dir: String
 27:29 - 27:35  {y: Num, x: Num}
 27:47 - 27:48  {...}: {y: Num, x: Num}
 27:37 - 27:38  y: Num
 27:43 - 27:44  x: Num
+28:4 - 28:6    if: Unit
 28:11 - 28:13  ==: Bool
 28:7 - 28:10   dir: String
 28:29 - 28:35  {y: Num, x: Num}
@@ -139,6 +142,7 @@ ___ TYPES ___
 54:8 - 54:12   arg2: d
 54:14 - 54:17  mag: d
 55:8 - 55:13   instr: {arg2: d, arg1: String}
+59:4 - 59:6    if: Unit
 59:11 - 59:13  ==: Bool
 59:7 - 59:10   dir: String
 59:26 - 59:32  .ok({aim: Num, pos: {x: Num, y: Num}}) | .err(String)
@@ -150,6 +154,7 @@ ___ TYPES ___
 60:19 - 60:22  mag: Num
 61:8 - 61:11   pos: {x: Num, y: Num}
 61:8 - 61:11   pos: {x: Num, y: Num}
+64:4 - 64:6    if: Unit
 64:11 - 64:13  ==: Bool
 64:7 - 64:10   dir: String
 64:24 - 64:30  .ok({aim: Num, pos: {x: Num, y: Num}}) | .err(String)
@@ -161,6 +166,7 @@ ___ TYPES ___
 65:19 - 65:22  mag: Num
 66:8 - 66:11   pos: {x: Num, y: Num}
 66:8 - 66:11   pos: {x: Num, y: Num}
+69:4 - 69:6    if: Unit
 69:11 - 69:13  ==: Bool
 69:7 - 69:10   dir: String
 69:29 - 69:35  .ok({aim: Num, pos: {x: Num, y: Num}}) | .err(String)
@@ -783,18 +789,24 @@ true
 
 ====== if.lox =====
 ___ TYPES ___
+1:0 - 1:2      if: Unit
 1:9 - 1:11     or: Bool
 1:5 - 1:6      >: Bool
+1:22 - 1:23    { ... }: Unit
+3:0 - 3:1      { ... }: Unit
 2:4 - 2:9      print: String
 3:7 - 3:12     print: Num
 5:4 - 5:9      maybe: a -> Bool
 5:14 - 5:15    a -> Bool
 5:30 - 5:31    a -> Bool
 5:16 - 5:22    Bool
+7:0 - 7:2      if: Unit
 7:11 - 7:13    or: Bool
 7:9 - 7:10     Bool
 7:3 - 7:8      maybe: Unit -> Bool
 7:16 - 7:17    >: Bool
+7:25 - 7:26    { ... }: Unit
+10:0 - 10:1    { ... }: Unit
 8:8 - 8:9      a: String
 9:4 - 9:9      print: String
 9:10 - 9:11    a: String
@@ -802,6 +814,7 @@ ___ TYPES ___
 12:15 - 12:16  Num -> Unit
 15:0 - 15:1    Num -> Unit
 12:13 - 12:14  n: Num
+13:4 - 13:6    if: Unit
 13:9 - 13:10   >: Bool
 13:7 - 13:8    n: Num
 13:27 - 13:28  Unit
@@ -1955,10 +1968,12 @@ ___ TYPES ___
 4:4 - 4:11     connect: a -> .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
 4:16 - 4:17    a -> .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
 11:0 - 11:1    a -> .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
+5:4 - 5:6      if: Unit
 5:15 - 5:16    Bool
 5:7 - 5:14     unlucky: Unit -> Bool
 5:22 - 5:28    .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
 5:30 - 5:38    bad_luck: .bad_luck | .connection({some_connection_details: Num, download: c -> String}) | .offline
+6:4 - 6:6      if: Unit
 6:7 - 6:8      !: Bool
 6:15 - 6:16    Bool
 6:8 - 6:14     online: Unit -> Bool
@@ -1974,10 +1989,12 @@ ___ TYPES ___
 13:27 - 13:28  {download: Unit -> b} -> .auth_expired | .download_interrupted | .the_data(b)
 18:0 - 18:1    {download: Unit -> b} -> .auth_expired | .download_interrupted | .the_data(b)
 13:16 - 13:26  connection: {download: Unit -> b}
+14:4 - 14:6    if: Unit
 14:23 - 14:24  Bool
 14:7 - 14:22   is_auth_expired: Unit -> Bool
 14:30 - 14:36  .auth_expired | .download_interrupted | .the_data(b)
 14:38 - 14:50  auth_expired: .auth_expired | .download_interrupted | .the_data(b)
+15:4 - 15:6    if: Unit
 15:15 - 15:16  Bool
 15:7 - 15:14   unlucky: Unit -> Bool
 15:22 - 15:28  .auth_expired | .download_interrupted | .the_data(b)
@@ -2565,6 +2582,7 @@ ___ TYPES ___
 10:17 - 10:19  or: Bool
 10:15 - 10:16  x: Bool
 10:20 - 10:21  y: Bool
+12:4 - 12:6    if: Unit
 12:7 - 12:11   good: Bool
 12:17 - 12:22  print: String
 14:4 - 14:10   Bool
@@ -2655,12 +2673,14 @@ ___ TYPES ___
 15:0 - 15:1    Num, {eggs: Num} -> .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
 1:17 - 1:23    amount: Num
 1:25 - 1:30    stock: {eggs: Num}
+3:4 - 3:6      if: Unit
 3:18 - 3:20    ==: Bool
 3:13 - 3:17    eggs: Num
 3:7 - 3:12     stock: {eggs: Num}
 4:9 - 4:15     .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
 4:17 - 4:20    err: .ok({eggs: Num, eggs: Num}) | .err(.insufficient_stock(Num) | .out_of_stock)
 4:22 - 4:34    out_of_stock: .insufficient_stock(Num) | .out_of_stock
+6:4 - 6:6      if: Unit
 6:18 - 6:19    <: Bool
 6:13 - 6:17    eggs: Num
 6:7 - 6:12     stock: {eggs: Num}

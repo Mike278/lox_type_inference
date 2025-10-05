@@ -157,7 +157,7 @@ class Parser {
   //                | returnStmt
   //                | exprStmt
   Statement statement() {
-    if (matchFirst(.if_)) return ifStatement();
+    //if (matchFirst(.if_)) return ifStatement();
     return expressionStatement();
   }
 
