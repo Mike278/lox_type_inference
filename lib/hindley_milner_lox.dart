@@ -55,16 +55,6 @@ class TypeInference {
 
       case LetDeclaration():
         env = inferLet(env, level, statement);
-
-      case IfStatement(
-        :final condition,
-        :final thenBranch,
-        :final elseBranch,
-      ):
-        final type = inferExpr(env, level, condition);
-        unify(type, LoxType.bool);
-        for (final statement in thenBranch) env = inferStatement(env, level, statement);
-        for (final statement in elseBranch) env = inferStatement(env, level, statement);
     }
 
     return env;
@@ -694,7 +684,6 @@ class TypeInference {
     }
     final type = switch (expr.statements.last) {
       ExpressionStatement(:final expr) => inferExpr(env, level, expr),
-      IfStatement() ||
       LetDeclaration() =>
         throw BlockMustEndWithExpr(),
     };

@@ -256,13 +256,6 @@ class LetDeclaration extends Statement {
   final Expr initializer;
   LetDeclaration(this.keyword, this.pattern, this.initializer);
 }
-class IfStatement extends Statement {
-  final Token keyword;
-  final Expr condition;
-  final List<Statement> thenBranch;
-  final List<Statement> elseBranch;
-  IfStatement(this.keyword, this.condition, this.thenBranch, this.elseBranch);
-}
 
 sealed class Pattern {}
 
@@ -307,10 +300,6 @@ extension StatementAPI on Statement {
         yield* expr.subExpressions();
       case LetDeclaration(:final initializer):
         yield* initializer.subExpressions();
-      case IfStatement(:final condition, :final thenBranch, :final elseBranch):
-        yield* condition.subExpressions();
-        for (final branch in thenBranch) yield* branch.allExpressions();
-        for (final branch in elseBranch) yield* branch.allExpressions();
     }
   }
   Iterable<Pattern> allPatterns() sync* {
@@ -320,10 +309,6 @@ extension StatementAPI on Statement {
       case LetDeclaration(:final pattern, :final initializer):
         yield* pattern.subPatterns();
         yield* initializer.allPatterns();
-      case IfStatement(:final condition, :final thenBranch, :final elseBranch):
-        yield* condition.allPatterns();
-        for (final branch in thenBranch) yield* branch.allPatterns();
-        for (final branch in elseBranch) yield* branch.allPatterns();
     }
   }
 }

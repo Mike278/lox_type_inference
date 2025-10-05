@@ -138,7 +138,7 @@ class Parser {
     if (matchFirst(.let)) {
       return letDeclaration();
     }
-    return statement();
+    return expressionStatement();
   }
 
   // letDecl       → "let" pattern "=" expression ";" ;
@@ -149,62 +149,6 @@ class Parser {
     final initializer = expression();
     consume(.semicolon, "Expected ';' after variable declaration.");
     return LetDeclaration(keyword, pat, initializer);
-  }
-
-  // statement      → printStmt
-  //                | ifStmt
-  //                | block
-  //                | returnStmt
-  //                | exprStmt
-  Statement statement() {
-    //if (matchFirst(.if_)) return ifStatement();
-    return expressionStatement();
-  }
-
-  // ifStmt         → "if" expression "then" statement
-  //                ( "else" statement )?;
-  Statement ifStatement() {
-    final keyword = previous();
-    final condition = expression();
-    consume(.then, "Expected 'then' after if condition.");
-
-    final List<Statement> thenBranch;
-    final List<Statement> elseBranch;
-
-    if (matchFirst(.openBrace)) {
-      thenBranch = [ for (;!check(.closeBrace) && !isAtEnd();) declaration() ];
-      consume(.closeBrace, "Expected '}'");
-    } else {
-      thenBranch = [ statement() ];
-    }
-
-    if (matchFirst(.else_)) {
-      if (matchFirst(.openBrace)) {
-        elseBranch = [ for (;!check(.closeBrace) && !isAtEnd();) declaration() ];
-        consume(.closeBrace, "Expected '}'");
-      } else {
-        elseBranch = [ statement() ];
-      }
-    } else {
-      elseBranch = [];
-    }
-
-    return IfStatement(keyword, condition, thenBranch, elseBranch);
-  }
-
-  Expr printExpr() {
-    final keyword = previous();
-    final value = expression();
-    return Print(value, keyword);
-  }
-
-  Expr assertExpr() {
-    var start = current;
-    final keyword = previous();
-    final value = expression();
-    var end = current;
-    final source = tokens.sublist(start, end).map((t) => t.lexeme).join();
-    return Assertion(keyword, source, value);
   }
 
   Statement expressionStatement() {
@@ -611,6 +555,21 @@ class Parser {
       throwParseError(previous(), 'Block expressions must have at least 1 statement.');
     }
     return BlockExpr(openBrace, statements, closeBrace);
+  }
+
+  Expr printExpr() {
+    final keyword = previous();
+    final value = expression();
+    return Print(value, keyword);
+  }
+
+  Expr assertExpr() {
+    var start = current;
+    final keyword = previous();
+    final value = expression();
+    var end = current;
+    final source = tokens.sublist(start, end).map((t) => t.lexeme).join();
+    return Assertion(keyword, source, value);
   }
 
   Expr ifExpression() {

@@ -132,16 +132,6 @@ List<(Token, String)> displayStatement(
       ...displayPattern(pattern),
       ...displayExpression(initializer, typeOf),
   ],
-
-  IfStatement(
-    :final condition,
-    :final thenBranch,
-    :final elseBranch,
-  ) => [
-      ...displayExpression(condition, typeOf),
-    for (final statement in thenBranch) ...displayStatement(statement, typeOf),
-    for (final statement in elseBranch) ...displayStatement(statement, typeOf),
-  ],
 };
 
 List<(Token, String)> displayPattern(Pattern pattern) =>

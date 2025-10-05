@@ -81,11 +81,6 @@ class LoxRuntime {
         eval(expr, env);
       case LetDeclaration(:final pattern, :final initializer):
         return handleAssignment(env, pattern, initializer);
-      case IfStatement(:final keyword, :final condition, :final thenBranch, :final elseBranch):
-        final result = evalAs<bool>(condition, keyword, env);
-        for (final stmt in result ? thenBranch : elseBranch) {
-          env = execute(env, stmt);
-        }
     }
     return env;
   }
@@ -404,7 +399,6 @@ class LoxRuntime {
     }
     return switch (expr.statements.last) {
       ExpressionStatement(:final expr) => eval(expr, env),
-      IfStatement(:final keyword) ||
       LetDeclaration(:final keyword) =>
         throw LoxRuntimeException(keyword, 'Block must end with an expression'),
     };
