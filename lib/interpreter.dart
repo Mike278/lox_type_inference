@@ -499,6 +499,10 @@ class Env {
     if (_enclosing case final env?) {
       return env[name];
     }
-    return throw LoxRuntimeException(name, "Undefined variable '${name.lexeme}'.");
+    return throw UndefinedVariable(name, "Undefined variable '${name.lexeme}'.");
   }
+}
+
+class UndefinedVariable extends LoxRuntimeException {
+  UndefinedVariable(super.token, super.message);
 }

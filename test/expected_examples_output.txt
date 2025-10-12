@@ -787,6 +787,49 @@ side effect!
 true
 
 
+====== decl_order.lox =====
+___ TYPES ___
+2:4 - 2:5      a: Num
+1:4 - 1:5      b: Num
+1:10 - 1:11    +: Num
+1:8 - 1:9      a: Num
+0:0 - 0:6      assert: Bool
+0:9 - 0:11     ==: Bool
+0:7 - 0:8      b: Num
+9:4 - 9:11     is_good: Num -> Bool
+9:17 - 9:19    Num -> Bool
+9:22 - 9:23    >: Bool
+9:20 - 9:21    x: Num
+9:15 - 9:16    x: Num
+7:4 - 7:7      foo: Num -> Num
+7:15 - 7:17    Num -> Num
+7:18 - 7:20    if: Num
+7:32 - 7:33    Bool
+7:21 - 7:28    is_good: Num -> Bool
+7:29 - 7:32    num: Num
+7:43 - 7:44    +: Num
+7:39 - 7:42    num: Num
+7:52 - 7:55    num: Num
+7:11 - 7:14    num: Num
+4:4 - 4:10     result: Num
+4:18 - 4:19    Num
+4:13 - 4:16    foo: Num -> Num
+5:0 - 5:6      assert: Bool
+5:14 - 5:16    ==: Bool
+5:7 - 5:13     result: Num
+16:4 - 16:21   from_inside_block: a -> Num
+16:26 - 16:28  a -> Num
+11:4 - 11:5    x: Num
+11:8 - 11:9    { ... }: Num
+14:0 - 14:1    { ... }: Num
+12:8 - 12:10   ok: Num
+12:31 - 12:32  Num
+12:13 - 12:30  from_inside_block: Unit -> Num
+13:7 - 13:8    +: Num
+13:4 - 13:6    ok: Num
+___ OUTPUT ___
+
+
 ====== if.lox =====
 ___ TYPES ___
 1:0 - 1:2      if: Unit
@@ -1494,6 +1537,19 @@ ___ TYPES ___
 0:5 - 0:9      join: List[String] -> String
 0:13 - 0:19    util/lists.lox: {plus: Num, Num -> Num, elements: List[a] -> .ok({first: a, rest: List[a]}) | .err(.empty_list), fold: d, (d, e -> d), List[e] -> d, try_fold: f, (f, g -> .ok(f) | .err(h)), List[g] -> .ok(f) | .err(h), map: (i -> j), List[i] -> List[j], try_map: (k -> .ok(l) | .err(m)), List[k] -> .ok(List[l]) | .err(m), reduce: (n, n -> n), List[n] -> .ok(n) | .err(.empty_list), reverse: List[q] -> List[q], where: (r -> Bool), List[r] -> List[r], enumerated: List[s] -> List[{element: s, index: Num}], count_where: (t -> Bool), List[t] -> Num, sort: List[Num] -> List[Num], zip: List[u], List[v], (u, v -> w) -> List[w], zip_with_tail: (x, x -> y), List[x] -> List[y], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: bb, (bb, cc -> .break(bb) | .continue(bb)), List[cc] -> bb, any: (dd -> Bool), List[dd] -> Bool, all: (ee -> Bool), List[ee] -> Bool, drop_at: Num, List[ff] -> List[ff], join: List[String] -> String, element_at: Num, List[gg] -> .ok(gg) | .err(.out_of_bounds), length: List[jj] -> Num, is_empty: List[kk] -> Bool}
 0:20 - 0:36    util/lists.lox: {plus: Num, Num -> Num, elements: List[a] -> .ok({first: a, rest: List[a]}) | .err(.empty_list), fold: d, (d, e -> d), List[e] -> d, try_fold: f, (f, g -> .ok(f) | .err(h)), List[g] -> .ok(f) | .err(h), map: (i -> j), List[i] -> List[j], try_map: (k -> .ok(l) | .err(m)), List[k] -> .ok(List[l]) | .err(m), reduce: (n, n -> n), List[n] -> .ok(n) | .err(.empty_list), reverse: List[q] -> List[q], where: (r -> Bool), List[r] -> List[r], enumerated: List[s] -> List[{element: s, index: Num}], count_where: (t -> Bool), List[t] -> Num, sort: List[Num] -> List[Num], zip: List[u], List[v], (u, v -> w) -> List[w], zip_with_tail: (x, x -> y), List[x] -> List[y], sum: List[Num] -> .ok(Num) | .err(.empty_list), fold_until: bb, (bb, cc -> .break(bb) | .continue(bb)), List[cc] -> bb, any: (dd -> Bool), List[dd] -> Bool, all: (ee -> Bool), List[ee] -> Bool, drop_at: Num, List[ff] -> List[ff], join: List[String] -> String, element_at: Num, List[gg] -> .ok(gg) | .err(.out_of_bounds), length: List[jj] -> Num, is_empty: List[kk] -> Bool}
+12:4 - 12:9    robot: {name: {label: String, title: String, version: String}, manufacture_date: {year: Num, month: Num, day: Num}, serial_number: String}
+24:0 - 24:1    {...}: {name: {label: String, title: String, version: String}, manufacture_date: {year: Num, month: Num, day: Num}, serial_number: String}
+13:4 - 13:8    name: {label: String, title: String, version: String}
+17:4 - 17:5    {...}: {label: String, title: String, version: String}
+14:8 - 14:13   label: String
+15:8 - 15:13   title: String
+16:8 - 16:15   version: String
+18:4 - 18:20   manufacture_date: {year: Num, month: Num, day: Num}
+22:4 - 22:5    {...}: {year: Num, month: Num, day: Num}
+19:8 - 19:12   year: Num
+20:8 - 20:13   month: Num
+21:8 - 21:11   day: Num
+23:4 - 23:17   serial_number: String
 2:4 - 2:12     describe: {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
 2:38 - 2:40    {as_of: Num}, {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
 2:48 - 2:49    {serial_number: c, manufacture_date: {year: e}, name: {label: String}} -> String
@@ -1521,19 +1577,6 @@ ___ TYPES ___
 9:92 - 9:96    join: List[String] -> String
 2:17 - 2:22    as_of: Num
 2:24 - 2:36    current_year: Num
-12:4 - 12:9    robot: {name: {label: String, title: String, version: String}, manufacture_date: {year: Num, month: Num, day: Num}, serial_number: String}
-24:0 - 24:1    {...}: {name: {label: String, title: String, version: String}, manufacture_date: {year: Num, month: Num, day: Num}, serial_number: String}
-13:4 - 13:8    name: {label: String, title: String, version: String}
-17:4 - 17:5    {...}: {label: String, title: String, version: String}
-14:8 - 14:13   label: String
-15:8 - 15:13   title: String
-16:8 - 16:15   version: String
-18:4 - 18:20   manufacture_date: {year: Num, month: Num, day: Num}
-22:4 - 22:5    {...}: {year: Num, month: Num, day: Num}
-19:8 - 19:12   year: Num
-20:8 - 20:13   month: Num
-21:8 - 21:11   day: Num
-23:4 - 23:17   serial_number: String
 26:4 - 26:15   description: String
 26:24 - 26:26  |>: String
 26:18 - 26:23  robot: {name: {label: String, title: String, version: String}, manufacture_date: {year: Num, month: Num, day: Num}, serial_number: String}
@@ -2496,7 +2539,7 @@ green
 
 ====== tag_pattern_err_let.lox =====
 ___ Type checking failed ___
-(Lambda(null, [Instance of 'Identifier'], FunctionBody(openBrace { (ln2:11), [Instance of 'LetDeclaration'], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
+(Lambda(null, [Identifier(identifier x (ln2:9))], FunctionBody(openBrace { (ln2:11), [LetDeclaration(let let (ln3:4), TagPattern(identifier foo (ln3:9), Identifier(identifier y (ln3:13))), Variable(null, identifier x (ln3:18)))], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
 LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can only be used in match expressions.}
@@ -2504,7 +2547,7 @@ LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can onl
 
 ====== tag_pattern_err_let_no_payload.lox =====
 ___ Type checking failed ___
-(Lambda(null, [Instance of 'Identifier'], FunctionBody(openBrace { (ln2:11), [Instance of 'LetDeclaration'], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
+(Lambda(null, [Identifier(identifier x (ln2:9))], FunctionBody(openBrace { (ln2:11), [LetDeclaration(let let (ln3:4), TagPattern(identifier foo (ln3:9), null), Variable(null, identifier x (ln3:15)))], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
 LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can only be used in match expressions.}
@@ -2512,7 +2555,7 @@ LoxRuntimeException{token: identifier foo (ln3:9), message: Tag patterns can onl
 
 ====== tag_pattern_err_param.lox =====
 ___ Type checking failed ___
-(Lambda(null, [Instance of 'TagPattern'], FunctionBody(openBrace { (ln2:17), [], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
+(Lambda(null, [TagPattern(identifier foo (ln2:10), Identifier(identifier y (ln2:14)))], FunctionBody(openBrace { (ln2:17), [], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
 LoxRuntimeException{token: identifier foo (ln2:10), message: Tag patterns can only be used in match expressions.}
@@ -2520,7 +2563,7 @@ LoxRuntimeException{token: identifier foo (ln2:10), message: Tag patterns can on
 
 ====== tag_pattern_err_param_no_payload.lox =====
 ___ Type checking failed ___
-(Lambda(null, [Instance of 'TagPattern'], FunctionBody(openBrace { (ln2:14), [], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
+(Lambda(null, [TagPattern(identifier foo (ln2:10), null)], FunctionBody(openBrace { (ln2:14), [], closeBrace } (ln4:0))), Tag patterns can only be used in match expressions.)
 ___ Continuing with execution ___
 ___ OUTPUT ___
 LoxRuntimeException{token: identifier foo (ln2:10), message: Tag patterns can only be used in match expressions.}

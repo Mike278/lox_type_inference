@@ -1,0 +1,17 @@
+assert b == 2;
+let b = a + 1;
+let a = 1;
+
+let result = foo(1);
+assert result == 1;
+
+let foo = \num -> if is_good(num) then num + 1 else num;
+
+let is_good = \x -> x > 5;
+
+let x = {
+    let ok = from_inside_block();
+    ok + 1;
+};
+
+let from_inside_block = \ -> 1;

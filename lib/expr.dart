@@ -245,26 +245,29 @@ class Assertion extends Expr {
 }
 
 sealed class Statement {}
-class ExpressionStatement extends Statement {
+class ExpressionStatement extends Statement with EquatableMixin {
   final Expr expr;
   final Token semicolon;
   ExpressionStatement(this.expr, this.semicolon);
+  @override get props => [expr, semicolon];
 }
-class LetDeclaration extends Statement {
+class LetDeclaration extends Statement with EquatableMixin {
   final Token keyword;
   final Pattern pattern;
   final Expr initializer;
   LetDeclaration(this.keyword, this.pattern, this.initializer);
+  @override get props => [keyword, pattern, initializer];
 }
 
 sealed class Pattern {}
 
-class Identifier extends Pattern with TypeReference {
+class Identifier extends Pattern with TypeReference, EquatableMixin {
   final Token name;
   Identifier(this.name);
+  @override get props => [name];
 }
 
-class RecordDestructure extends Pattern {
+class RecordDestructure extends Pattern with EquatableMixin {
   final Token openBrace;
   final Token closeBrace;
   final List<RecordDestructuringElement> elements;
@@ -273,17 +276,21 @@ class RecordDestructure extends Pattern {
     required this.elements,
     required this.closeBrace,
   });
+  @override get props => [openBrace, elements, closeBrace];
 }
-class RecordDestructuringElement with TypeReference {
+
+class RecordDestructuringElement with TypeReference, EquatableMixin {
   final Token name;
   final Pattern? pattern;
   RecordDestructuringElement(this.name, [this.pattern]);
+  @override get props => [name, pattern];
 }
 
-class TagPattern extends Pattern with TypeReference {
+class TagPattern extends Pattern with TypeReference, EquatableMixin {
   final Token tag;
   final Pattern? payload;
   TagPattern(this.tag, this.payload);
+  @override get props => [tag, payload];
 }
 
 mixin TypeReference {
