@@ -1,0 +1,45 @@
+// Obligatory
+print "Hello, World!";
+
+
+// `let` statements assign a name to an expression
+let lucky = true;
+let year = 2025;
+let next_year = year + 1;
+let some_condition = lucky and false;
+let unit_type = nil;
+
+
+
+// Blocks are expressions - they evaluate to the value of the last statement
+let total = {
+    let first = 50;
+    let last = first + 100;
+    print "nice";
+    last;
+};
+
+
+
+// `if`s are expressions too
+let count =
+    if
+        some_condition or cached_result != 0
+    then
+        cached_result
+    else {
+        let random = 123;
+        let value = random + 1;
+        value;
+    };
+
+
+// The `else` branch can be omitted
+if year > 2000 then {
+    let answer = 1 + 2 - 3;
+    print answer;
+};
+
+
+
+let cached_result = 123;

@@ -1,0 +1,54 @@
+// Create a record
+let contact = {
+    name: "Bob",
+    company: "Vance Refrigeration",
+};
+
+
+
+// Records can be nested
+let job = {
+    contact: contact,
+    remote: true,
+};
+
+
+
+// Record fields can be named implicitly - this is equivalent to the record above:
+let same = {
+    contact,
+    remote: true,
+};
+
+
+
+// Access a record's fields using the dot operator
+print contact.company;
+
+
+
+// Access some or all of a record's fields by destructuring
+let { name, company } = contact;
+
+
+
+// Optionally give destructured fields a new name
+let { name: boss_name } = contact;
+
+
+
+// Create a new record with all of the fields of an existing record, plus a new field:
+print {
+    ..contact,
+    line_of_work: "Refrigeration",
+};
+
+
+
+// Create a new record with all of the fields of an existing record,
+// and one or more updated fields:
+print {
+    ..contact,
+    name: "Bob Vance",
+};
+

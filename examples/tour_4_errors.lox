@@ -1,0 +1,107 @@
+// Functions that can fail should return `.ok(data)` on success or `.err(e)` on error
+let http_get = \url ->
+    if
+        some_condition()
+    then
+        .ok({ body: "active" })
+    else
+        .err(
+          if true then .offline else .timeout
+        )
+    ;
+
+
+
+// This enables the `??` error-fallback operator:
+print http_get("example.com") ?? { body: "some default data" };
+
+
+// Which is equivalent to this match expression which
+// extracts the value from the .ok variant or else
+// ignores the .err variant, providing a default value instead
+print match http_get("example.com") {
+    .ok(result) -> result,
+    .err(_) -> { body: "some default data" },
+};
+
+
+
+
+let get_status = \ {
+    // It also enables the `!` early-return operator:
+    let { body } = http_get("example.com/status")!;
+
+
+    // Which is equivalent to this match expression which
+    // extracts the value from the .ok variant or else
+    // returns from the function with the .err variant
+    //
+    // let { body } = match http_get("example.com/status") {
+    //     .ok(result) -> result,
+    //     .err(e) -> return .err(e);
+    // };
+
+    let status =
+        if
+            body == "active"
+        then
+            .active
+        else
+            .inactive;
+
+    return .ok(status);
+};
+
+
+
+// Fallible functions compose nicely by accumulating .err variants
+
+let has_latest_data = \ {
+
+    let status = match get_status() {
+      .ok(s) -> s,
+      .err(e) ->
+          match e {
+            .timeout -> .inactive,
+            other -> return .err(other),
+          },
+    };
+
+    match status {
+        .inactive -> return .err(.source_is_inactive),
+        .active -> nil,
+    };
+
+    let data = read_file_as_string("latest.txt")!;
+    return .ok(data != "");
+};
+
+
+print match has_latest_data() {
+  .ok(has_latest) ->
+      if has_latest
+      then "up to date"
+      else "needs update",
+  .err(e) -> match e {
+    .offline -> "check connection",
+    .file_not_found -> "corrupt cache",
+    .source_is_inactive -> "waiting for upstream",
+  }
+};
+
+
+
+
+
+
+let read_file_as_string = \path ->
+    if
+        some_condition()
+    then
+        .ok("the data")
+    else
+        .err(.file_not_found)
+    ;
+
+
+let some_condition = \ -> false;

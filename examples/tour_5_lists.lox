@@ -1,0 +1,27 @@
+// List literal syntax
+let friends = ["alice", "bob"];
+let family = ["charlie", "devin"];
+
+
+
+// Use the .. operator to expand a list inside another list
+let people = ["joe", ..friends, "john", ..family];
+
+
+
+// Destructure a list using the `elements` function.
+// It returns .err(.empty_list) if the list is empty, otherwise
+// it returns .ok with a record containing the first element of the list
+// and the remaining elements of the list.
+let { elements } = import "util/lists.lox";
+
+print match people |> elements {
+    .err(_) -> "nobody",
+    .ok({ first, rest }) ->
+        if
+            rest |> (import "util/lists.lox").is_empty
+        then
+            String.concat("just ", first)
+        else
+            String.concat(first, " and others"),
+};

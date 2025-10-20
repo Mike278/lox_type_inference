@@ -1,0 +1,93 @@
+// Create a function
+let add_one = \x -> x + 1;
+
+
+// Call a function
+print add_one(5);
+
+
+
+// Functions can also be called with the pipeline operator
+let flat =
+    "Bob"
+    |> new_user
+    |> grant_admin
+    |> display_name
+    ;
+
+
+// Which is often more readable than the nested version:
+let nested = display_name(grant_admin(new_user("Bob")));
+
+
+
+// Here's a function with multiple parameters and a block body
+let is_good = \x, y {
+    let good = x or y;
+
+    if good then print "nice";
+
+    return good;
+};
+
+
+
+// Omit a parameter by passing _
+// This creates a new function which takes that parameter as an argument
+let always_good = is_good(true, _);
+print always_good(true);
+print always_good(false);
+
+
+
+// Record parameters can be destructured
+let has_silly_name = \{ first, last } ->
+    first == last;
+
+print has_silly_name({
+   first: "Joe",
+   last: "Joe",
+});
+
+
+
+// Which is useful for letting the caller and callee use different names
+print move(point, { by: 4 });
+
+let move = \{x, y}, { by: offset } ->
+    {
+        x: x + offset,
+        y: y + offset,
+    };
+
+
+
+
+
+
+
+let new_user = \username ->
+    {
+        username,
+        registered: true,
+    };
+
+
+let grant_admin = \user ->
+    {
+        ..user,
+        is_admin: true,
+    };
+
+
+let display_name = \{ is_admin, username } ->
+    if
+        is_admin
+    then
+        "<Admin>"
+    else
+        username
+    ;
+
+
+let point = { x: 5, y: 6 };

@@ -24,62 +24,135 @@ extension SampleAPI on Sample {
 }
 
 final samples = [
-  (SampleName('tour_0_records.lox'),  SampleContent(r'''// Create a record
-let boss = {
+  (SampleName('tour_0_basics.lox'),  SampleContent(r'''// Obligatory
+print "Hello, World!";
+
+
+// `let` statements assign a name to an expression
+let lucky = true;
+let year = 2025;
+let next_year = year + 1;
+let some_condition = lucky and false;
+let unit_type = nil;
+
+
+
+// Blocks are expressions - they evaluate to the value of the last statement
+let total = {
+    let first = 50;
+    let last = first + 100;
+    print "nice";
+    last;
+};
+
+
+
+// `if`s are expressions too
+let count =
+    if
+        some_condition or cached_result != 0
+    then
+        cached_result
+    else {
+        let random = 123;
+        let value = random + 1;
+        value;
+    };
+
+
+// The `else` branch can be omitted
+if year > 2000 then {
+    let answer = 1 + 2 - 3;
+    print answer;
+};
+
+
+
+let cached_result = 123;
+''')),
+(SampleName('tour_1_records.lox'),  SampleContent(r'''// Create a record
+let contact = {
     name: "Bob",
     company: "Vance Refrigeration",
 };
 
 
+
+// Records can be nested
+let job = {
+    contact: contact,
+    remote: true,
+};
+
+
+
+// Record fields can be named implicitly - this is equivalent to the record above:
+let same = {
+    contact,
+    remote: true,
+};
+
+
+
 // Access a record's fields using the dot operator
-print boss.company;
+print contact.company;
 
 
-// Destructure some or all of its fields
-let { name } = boss;
+
+// Access some or all of a record's fields by destructuring
+let { name, company } = contact;
+
 
 
 // Optionally give destructured fields a new name
-let { name: boss_name, company } = boss;
+let { name: boss_name } = contact;
 
 
-// Update an existing field
-let fixed_name = {..boss, name: "Bob Vance"};
 
-print boss.name;
-
-print fixed_name.name;
-
-
-// Add a new field
-print { ..fixed_name, line_of_work: "Refrigeration" };
+// Create a new record with all of the fields of an existing record, plus a new field:
+print {
+    ..contact,
+    line_of_work: "Refrigeration",
+};
 
 
-// You can use a variable's name as the field name - these two records are equivalent
-let subtitle = "world";
-let card = { title: "hello", subtitle: subtitle };
-let same = { title: "hello", subtitle };
+
+// Create a new record with all of the fields of an existing record,
+// and one or more updated fields:
+print {
+    ..contact,
+    name: "Bob Vance",
+};
+
 ''')),
-(SampleName('tour_1_variants.lox'),  SampleContent(r'''// Create a variant
+(SampleName('tour_2_variants.lox'),  SampleContent(r'''// Create a variant
 let color = .green;
 
 
-// Variants can union with other variants
-let either = if true then color else .red;
+
+// Variants can accumulate other variants
+let either = if some_condition() then color else .red;
+
 
 
 // Variants can have a payload
 let event =
-    if true
-    then .key("\n")
-    else .mouse({ x: 50, y: 50 });
+    if
+        some_condition()
+    then
+        .key("\n")
+    else
+        .mouse({ x: 50, y: 50 })
+    ;
 
 
-// Use the match keyword to act on each possible variant
+
+// Use the match keyword to examine each possible variant
 print match either {
     .green -> 0,
     .red -> 1,
 };
+
 
 print match event {
     .key(char) -> char,
@@ -87,18 +160,24 @@ print match event {
 };
 
 
-// Or use a final catch-all branch to act on only some variants
+
+// Or examine only some possible variants and
+// handle the rest with a final catch-all branch
 print match either {
     .green -> .good,
     other -> other,
 };
 
+
 print match event {
     .key(char) -> char,
     _ -> "<ignored>"
 };
-''')),
-(SampleName('tour_2_functions.lox'),  SampleContent(r'''// Create a function
+
+
+
+let some_condition = \ -> true;''')),
+(SampleName('tour_3_functions.lox'),  SampleContent(r'''// Create a function
 let add_one = \x -> x + 1;
 
 
@@ -106,8 +185,23 @@ let add_one = \x -> x + 1;
 print add_one(5);
 
 
+
+// Functions can also be called with the pipeline operator
+let flat =
+    "Bob"
+    |> new_user
+    |> grant_admin
+    |> display_name
+    ;
+
+
+// Which is often more readable than the nested version:
+let nested = display_name(grant_admin(new_user("Bob")));
+
+
+
 // Here's a function with multiple parameters and a block body
-let describe = \x, y {
+let is_good = \x, y {
     let good = x or y;
 
     if good then print "nice";
@@ -116,116 +210,199 @@ let describe = \x, y {
 };
 
 
-// When calling a function you can use _ to omit a parameter.
-// This creates new function that takes the remaining parameter.
-let always_good = describe(true, _);
 
+// Omit a parameter by passing _
+// This creates a new function which takes that parameter as an argument
+let always_good = is_good(true, _);
 print always_good(true);
-
 print always_good(false);
 
 
-// Parameters can use record destructuring to emulate named parameters.
-let has_silly_name = \{ first, last } -> first == last;
 
-print has_silly_name({ first: "Joe", last: "Joe" });
+// Record parameters can be destructured
+let has_silly_name = \{ first, last } ->
+    first == last;
 
-
-// Destructuring with an alias allows both caller and callee to use an appropriate name.
-let is_new = \{ as_of_year: current_year } -> current_year > 2025;
-
-print is_new({ as_of_year: 1999 });
-
-
-// Functions can also be called with the pipeline operator
-let new_user = \username -> { username, registered: true };
-
-let grant_admin = \user -> { ..user, is_admin: true };
-
-let display_name = \user -> if user.is_admin then "<Admin>" else user.username; 
+print has_silly_name({
+   first: "Joe",
+   last: "Joe",
+});
 
 
-let nested = display_name(grant_admin(new_user("Bob")));
 
-let flat =
-    "Bob"
-    |> new_user
-    |> grant_admin
-    |> display_name
-    ;
-''')),
-(SampleName('tour_3_errors.lox'),  SampleContent(r'''// Functions that can fail should return `.ok(data)` on success or `.err(e)` on error.
-let sell_eggs = \amount, stock {
+// Which is useful for letting the caller and callee use different names
+print move(point, { by: 4 });
 
-    if stock.eggs == 0
-    then return .err(.out_of_stock);
-
-    if stock.eggs < amount
-    then return .err(.insufficient_stock(stock.eggs));
-
-    let new_stock = {
-        ..stock,
-        eggs: stock.eggs - amount,
+let move = \{x, y}, { by: offset } ->
+    {
+        x: x + offset,
+        y: y + offset,
     };
 
-    return .ok(new_stock);
+
+
+
+
+
+
+let new_user = \username ->
+    {
+        username,
+        registered: true,
+    };
+
+
+let grant_admin = \user ->
+    {
+        ..user,
+        is_admin: true,
+    };
+
+
+let display_name = \{ is_admin, username } ->
+    if
+        is_admin
+    then
+        "<Admin>"
+    else
+        username
+    ;
+
+
+let point = { x: 5, y: 6 };''')),
+(SampleName('tour_4_errors.lox'),  SampleContent(r'''// Functions that can fail should return `.ok(data)` on success or `.err(e)` on error
+let http_get = \url ->
+    if
+        some_condition()
+    then
+        .ok({ body: "active" })
+    else
+        .err(
+          if true then .offline else .timeout
+        )
+    ;
+
+
+
+// This enables the `??` error-fallback operator:
+print http_get("example.com") ?? { body: "some default data" };
+
+
+// Which is equivalent to this match expression which
+// extracts the value from the .ok variant or else
+// ignores the .err variant, providing a default value instead
+print match http_get("example.com") {
+    .ok(result) -> result,
+    .err(_) -> { body: "some default data" },
 };
 
 
-// Use the ! operator inside a function to extract the payload from an `.ok` variant,
-// or else return from the function with the `.err` variant.
-let process = \ {
-    let stock = { eggs: 5, bacon: 1 };
 
-    let new_stock = sell_eggs(5, stock)!;
+
+let get_status = \ {
+    // It also enables the `!` early-return operator:
+    let { body } = http_get("example.com/status")!;
+
+
+    // Which is equivalent to this match expression which
+    // extracts the value from the .ok variant or else
+    // returns from the function with the .err variant
+    //
+    // let { body } = match http_get("example.com/status") {
+    //     .ok(result) -> result,
+    //     .err(e) -> return .err(e);
+    // };
 
     let status =
-        if new_stock.eggs < 2
-        then .low_stock(new_stock.eggs)
-        else .done;
+        if
+            body == "active"
+        then
+            .active
+        else
+            .inactive;
 
     return .ok(status);
 };
 
-print match process() {
 
-    .ok(status) -> match status {
-        .done -> "no problems",
-        .low_stock(_) -> "finished but low stock",
-    },
 
-    .err(e) -> match e {
-        .out_of_stock -> "out of stock",
-        .insufficient_stock(amount) -> "tried to buy too many"
-    }
+// Fallible functions compose nicely by accumulating .err variants
+
+let has_latest_data = \ {
+
+    let status = match get_status() {
+      .ok(s) -> s,
+      .err(e) ->
+          match e {
+            .timeout -> .inactive,
+            other -> return .err(other),
+          },
+    };
+
+    match status {
+        .inactive -> return .err(.source_is_inactive),
+        .active -> nil,
+    };
+
+    let data = read_file_as_string("latest.txt")!;
+    return .ok(data != "");
 };
 
 
-// Use the ?? operator to extract the payload from an `.ok` variant,
-// or provide a fallback value if it's an `.err` variant.
-let download = \url -> if true then .ok("some data") else .err(.offline);
+print match has_latest_data() {
+  .ok(has_latest) ->
+      if has_latest
+      then "up to date"
+      else "needs update",
+  .err(e) -> match e {
+    .offline -> "check connection",
+    .file_not_found -> "corrupt cache",
+    .source_is_inactive -> "waiting for upstream",
+  }
+};
 
-print download() ?? "some default data";
-''')),
-(SampleName('tour_4_lists.lox'),  SampleContent(r'''// List literal syntax
+
+
+
+
+
+let read_file_as_string = \path ->
+    if
+        some_condition()
+    then
+        .ok("the data")
+    else
+        .err(.file_not_found)
+    ;
+
+
+let some_condition = \ -> false;''')),
+(SampleName('tour_5_lists.lox'),  SampleContent(r'''// List literal syntax
 let friends = ["alice", "bob"];
 let family = ["charlie", "devin"];
+
 
 
 // Use the .. operator to expand a list inside another list
 let people = ["joe", ..friends, "john", ..family];
 
 
-// Destructure a list
-let { elements, is_empty } = import "util/lists.lox";
+
+// Destructure a list using the `elements` function.
+// It returns .err(.empty_list) if the list is empty, otherwise
+// it returns .ok with a record containing the first element of the list
+// and the remaining elements of the list.
+let { elements } = import "util/lists.lox";
+
 print match people |> elements {
-
-    .err(_) -> "none",
-
+    .err(_) -> "nobody",
     .ok({ first, rest }) ->
-        if rest |> is_empty
-        then String.concat("just ", first)
-        else String.concat(first, " and others")
+        if
+            rest |> (import "util/lists.lox").is_empty
+        then
+            String.concat("just ", first)
+        else
+            String.concat(first, " and others"),
 };
 ''')),
 (SampleName('advent_of_code_2024_day_1.lox'),  SampleContent(r'''let {fold, try_fold, count_where, zip, sort, sum, elements, element_at} = import "util/lists.lox";

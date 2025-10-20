@@ -5,11 +5,12 @@ import 'package:path/path.dart';
 
 void main() async {
   final keep = [
-    'tour_0_records.lox',
-    'tour_1_variants.lox',
-    'tour_2_functions.lox',
-    'tour_3_errors.lox',
-    'tour_4_lists.lox',
+    'tour_0_basics.lox',
+    'tour_1_records.lox',
+    'tour_2_variants.lox',
+    'tour_3_functions.lox',
+    'tour_4_errors.lox',
+    'tour_5_lists.lox',
     'advent_of_code_2024_day_1.lox',
     'advent_of_code_2024_day_2.lox',
     'advent_of_code_2024_day_3.lox',
@@ -39,6 +40,7 @@ void main() async {
     'tag_pattern_err_param_no_payload.lox',
     'tags.lox',
     'return_expr.lox',
+    'fwd_decl.lox',
   };
   bool shouldKeep(String name) {
     if (keep.contains(name)) return true;
